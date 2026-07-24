@@ -111,13 +111,13 @@
   </div>
 
   <script>
-    // ⚙️ CONFIGURATION SUPABASE
+    // ⚙️ CONFIGURATION SUPABASE OFFICIELLE
     const SUPABASE_URL = 'https://tbsroleffqhyzbbfmtvp.supabase.co';
-    const SUPABASE_ANON_KEY = 'Sb_publishable_kpRe7ijZbdkNe-uM0X0yyw_QQTJoxDf';
+    const SUPABASE_ANON_KEY = 'EyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRic3JvbGVmZnFoeXpiYmZtdHZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MzUyMzMsImV4cCI6MjEwMDQxMTIzM30.oNKhoPJ7v__YJQW7flC9UsP2cIDHLMuxjqmf6_NvYW4';
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Convertisseur d'image direct (Base64) sans passer par Supabase Storage
+    // Module de conversion de photo instantané (Base64)
     document.addEventListener('DOMContentLoaded', () => {
       const fileInput = document.getElementById('imageFileInput');
       if (fileInput) {
@@ -136,7 +136,7 @@
             statusEl.className = "text-[10px] text-green-600 font-semibold mb-2";
           };
           reader.onerror = function(err) {
-            statusEl.innerText = "❌ Erreur de lecture du fichier";
+            statusEl.innerText = "❌ Erreur lors de la lecture du fichier";
             statusEl.className = "text-[10px] text-red-600 font-semibold mb-2";
           };
           reader.readAsDataURL(file);
@@ -267,7 +267,7 @@
     async function saveAdminData() {
       const imageUrl = document.getElementById('adm_image').value;
       if (!imageUrl) {
-        alert("Veuillez choisir une photo avant de publier.");
+        alert("Veuillez sélectionner une photo avant de publier.");
         return;
       }
 
