@@ -98,7 +98,7 @@
           <div>
             <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblService">Service Type</label>
             <select id="req_service" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 outline-none">
-              <!-- Rempli dynamiquement selon la langue -->
+              <!-- Rempli dynamiquement -->
             </select>
           </div>
           <div>
@@ -346,11 +346,11 @@
         statusInProgress: "🔵 In Progress",
         statusCompleted: "🟢 Completed",
         services: [
-          { val: "Housekeeping / Towels", text: "Housekeeping / Extra Towels" },
-          { val: "Room Service / Dining", text: "Room Service / Order Food" },
-          { val: "Maintenance / Technical", text: "Maintenance / Technical Support" },
           { val: "Front Desk Inquiry", text: "Front Desk Inquiry" },
-          { val: "Luggage Assistance", text: "Luggage Assistance" }
+          { val: "Luggage Assistance", text: "Luggage Assistance" },
+          { val: "Room Service / Dining", text: "Room Service / Order Food" },
+          { val: "Maintenance / Technical Support", text: "Maintenance / Technical Support" },
+          { val: "Laundry", text: "Laundry" }
         ]
       },
       ar: {
@@ -367,7 +367,7 @@
         lblDetails: "ملاحظات إضافية / تفاصيل الطلب",
         placeholderDetails: "اكتب تفاصيل طلبك هنا...",
         btnSubmit: "إرسال الطلب إلى الاستقبال",
-        whatsappText: "واتساب الاستقبال",
+        whatsappBtn: "واتساب الاستقبال",
         successMsg: "تم إرسال طلبك بنجاح!",
         whatsappSub: "هل ترغب في المتابعة مباشرة عبر واتساب؟",
         chatWhatsapp: "💬 التحدث عبر واتساب",
@@ -383,11 +383,11 @@
         statusInProgress: "🔵 قيد التنفيذ",
         statusCompleted: "🟢 تم الإنجاز",
         services: [
-          { val: "Housekeeping / Towels", text: "تنظيف الغرفة / مناشف إضافية" },
-          { val: "Room Service / Dining", text: "خدمة الغرف / طلب طعام" },
-          { val: "Maintenance / Technical", text: "الصيانة / الدعم الفني" },
           { val: "Front Desk Inquiry", text: "استفسار الاستقبال" },
-          { val: "Luggage Assistance", text: "مساعدة في الأمتعة" }
+          { val: "Luggage Assistance", text: "مساعدة في الأمتعة" },
+          { val: "Room Service / Dining", text: "خدمة الغرف / طلب طعام" },
+          { val: "Maintenance / Technical Support", text: "الصيانة / الدعم الفني" },
+          { val: "Laundry", text: "خدمة الغسيل (Laundry)" }
         ]
       },
       hi: {
@@ -404,7 +404,7 @@
         lblDetails: "अतिरिक्त विवरण / अनुरोध",
         placeholderDetails: "अपना अनुरोध यहां दर्ज करें...",
         btnSubmit: "रिसेप्शन को अनुरोध भेजें",
-        whatsappText: "व्हाट्सएप रिसेप्शन",
+        whatsappBtn: "व्हाट्सएप रिसेप्शन",
         successMsg: "आपका अनुरोध सफलतापूर्वक भेजा गया!",
         whatsappSub: "क्या आप व्हाट्सएप पर सीधे बात करना चाहते हैं?",
         chatWhatsapp: "💬 व्हाट्सएप पर चैट करें",
@@ -420,11 +420,11 @@
         statusInProgress: "🔵 प्रगति पर है",
         statusCompleted: "🟢 पूरा हुआ",
         services: [
-          { val: "Housekeeping / Towels", text: "हाउसकीपिंग / अतिरिक्त तौलिए" },
-          { val: "Room Service / Dining", text: "रूम सर्विस / खाना ऑर्डर करें" },
-          { val: "Maintenance / Technical", text: "रखरखाव / तकनीकी सहायता" },
           { val: "Front Desk Inquiry", text: "फ्रंट डेस्क पूछताछ" },
-          { val: "Luggage Assistance", text: "सामान सहायता" }
+          { val: "Luggage Assistance", text: "सामान सहायता" },
+          { val: "Room Service / Dining", text: "रूम सर्विस / खाना ऑर्डर करें" },
+          { val: "Maintenance / Technical Support", text: "रखरखाव / तकनीकी सहायता" },
+          { val: "Laundry", text: "लॉन्ड्ररी (कपड़े धोने की सेवा)" }
         ]
       }
     };
@@ -449,7 +449,7 @@
         images: ['Gym.jpg'],
         title: { en: 'Recreation & Fitness Gym', ar: 'مركز اللياقة والصالة الرياضية', hi: 'फिटनेस और जिम' },
         desc: { en: 'Stay active with modern fitness equipment designed for your daily workouts.', ar: 'حافظ على نشاطك وصحتك مع أحدث معدات اللياقة البدنية.', hi: 'हमारे आधुनिक जिम उपकरणों के साथ फिट रहें।' },
-        timing: { en: '06:00 AM - 10:00 PM', ar: '٠٦:٠0 صباحاً - ١٠:٠٠ مساءً', hi: 'सुबह 06:00 - रात 10:00' }
+        timing: { en: '06:00 AM - 10:00 PM', ar: '٠٦:٠٠ صباحاً - ١٠:٠٠ مساءً', hi: 'सुबह 06:00 - रात 10:00' }
       },
       {
         id: 'kids',
@@ -606,7 +606,6 @@
       renderClientTracker();
     }
 
-    // AFFICHER ET SUIVRE LES DEMANDES CÔTÉ CLIENT (ENTIÈREMENT TRADUIT)
     function renderClientTracker() {
       const roomNum = document.getElementById('req_room')?.value?.trim();
       const container = document.getElementById('clientTrackerContainer');
@@ -830,20 +829,17 @@
       }
     }
 
-    // SYSTEME DE CHANGEMENT DE LANGUE HARMONISÉ & SANS MÉLANGE
     function setLang(lang) {
       currentLang = lang;
       const root = document.getElementById('htmlRoot');
       const t = i18n[lang] || i18n.en;
 
-      // Direction du texte
       if (lang === 'ar') {
         root.setAttribute('dir', 'rtl');
       } else {
         root.setAttribute('dir', 'ltr');
       }
 
-      // Styles boutons de langue
       ['en', 'ar', 'hi'].forEach(l => {
         const btn = document.getElementById(`btn-${l}`);
         if (btn) {
@@ -855,7 +851,6 @@
         }
       });
 
-      // Mises à jour des textes
       document.getElementById('welcomeMsg').innerText = t.welcome;
       document.getElementById('lblTabOffers').innerText = t.lblOffers;
       document.getElementById('lblTabFacilities').innerText = t.lblFacilities;
@@ -877,7 +872,6 @@
       document.getElementById('lblTrackHeader').innerText = t.trackHeader;
       document.getElementById('lblLiveStatus').innerText = t.liveStatus;
 
-      // Options du select de service
       const selectService = document.getElementById('req_service');
       selectService.innerHTML = t.services.map(s => `<option value="${s.val}">${s.text}</option>`).join('');
 
