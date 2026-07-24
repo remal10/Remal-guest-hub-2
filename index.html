@@ -134,8 +134,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Envoi dans Supabase Storage ('remal-images')
         const { data, error } = await supabaseClient.storage
-          .from('remal-images')
-          .upload(fileName, file);
+  .from('remal-images')
+  .upload(fileName, file, {
+    headers: {
+      Authorization: `Bearer ${SUPABASE_ANON_KEY}`
+    }
+  });
+
 
         if (error) throw error;
 
