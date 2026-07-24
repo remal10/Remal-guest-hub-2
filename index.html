@@ -19,7 +19,6 @@
     .scrollbar-none::-webkit-scrollbar { display: none; }
     .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
     
-    /* Couleurs de la charte officielle Remal */
     .bg-remal-sand { background-color: #E2B383; }
     .text-remal-sand { color: #DCA773; }
     .border-remal-sand { border-color: #E2B383; }
@@ -31,13 +30,13 @@
     }
   </style>
 </head>
-<body class="min-h-screen pb-12">
+<body class="min-h-screen pb-20">
 
-  <!-- HEADER BLANC & ÉLÉGANT (Exactement comme le site) -->
+  <!-- HEADER BLANC & ÉLÉGANT -->
   <header class="bg-white sticky top-0 z-50 border-b border-stone-200 shadow-sm">
     <div class="max-w-2xl mx-auto px-5 py-3 flex justify-between items-center">
       
-      <!-- LOGO REMAL (À GAUCHE COMME LE SITE) -->
+      <!-- LOGO REMAL -->
       <div class="flex items-center space-x-2">
         <img src="logo.png" alt="Remal Hotel & Villas" class="h-10 sm:h-12 object-contain" onerror="this.style.display='none'; document.getElementById('textLogo').classList.remove('hidden');">
         <div id="textLogo" class="hidden">
@@ -46,16 +45,14 @@
         </div>
       </div>
 
-      <!-- DROITE : SÉLECTEUR DE LANGUE & ADMIN -->
+      <!-- SÉLECTEUR DE LANGUE & ADMIN -->
       <div class="flex items-center space-x-2">
-        <!-- Trilingual Language Selector -->
         <div id="langSelector" class="flex bg-stone-100 p-1 rounded-full border border-stone-200 text-[11px] font-semibold">
           <button onclick="setLang('en')" id="btn-en" class="px-2.5 py-1 rounded-full bg-remal-sand text-white shadow-sm">EN</button>
           <button onclick="setLang('ar')" id="btn-ar" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">العربية</button>
           <button onclick="setLang('hi')" id="btn-hi" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">हिन्दी</button>
         </div>
 
-        <!-- Bouton Admin (Visible si ?admin=true) -->
         <button onclick="toggleView()" id="viewToggleBtn" class="hidden bg-stone-900 text-white px-3 py-1.5 rounded-full text-xs font-semibold shadow">
           📱 Vue Client
         </button>
@@ -72,7 +69,6 @@
   <!-- 1. GUEST VIEW -->
   <div id="clientView" class="max-w-md mx-auto px-4 py-6 space-y-6">
     
-    <!-- En-tête de bienvenue -->
     <div class="text-center space-y-1">
       <h2 class="text-2xl font-serif-luxury text-stone-900 font-normal tracking-wide" id="welcomeMsg">Welcome to Remal Hotel & Villas</h2>
       <p class="text-[10px] text-stone-400 uppercase tracking-widest" id="roomIndicator">Al Dhannah City • Guest Hub</p>
@@ -103,12 +99,12 @@
       <form id="guestRequestForm" class="space-y-4">
         <div>
           <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblRoom">Room / Villa Number</label>
-          <input type="text" id="req_room" placeholder="e.g., 104 or Villa 02" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 focus:bg-white focus:ring-2 focus:ring-amber-500/20 outline-none" required>
+          <input type="text" id="req_room" placeholder="e.g., 104 or Villa 02" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/55 outline-none" required>
         </div>
 
         <div>
           <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblService">Service Type</label>
-          <select id="req_service" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 focus:bg-white focus:ring-2 focus:ring-amber-500/20 outline-none">
+          <select id="req_service" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 outline-none">
             <option value="Housekeeping / Towels">Housekeeping / Extra Towels</option>
             <option value="Room Service / Dining">Room Service / Order Food</option>
             <option value="Maintenance / Technical">Maintenance / Technical Support</option>
@@ -119,7 +115,7 @@
 
         <div>
           <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblDetails">Additional Notes / Request Details</label>
-          <textarea id="req_details" rows="3" placeholder="Specify your request here..." class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 focus:bg-white focus:ring-2 focus:ring-amber-500/20 outline-none" required></textarea>
+          <textarea id="req_details" rows="3" placeholder="Specify your request here..." class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 outline-none" required></textarea>
         </div>
 
         <button type="button" onclick="submitGuestRequest()" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-bold py-3.5 rounded-xl shadow-lg transition text-sm tracking-wider">
@@ -129,21 +125,25 @@
     </div>
   </div>
 
+  <!-- BOUTON WHATSAPP FLOTTANT (AVEC LE NUMÉRO 971526966865) -->
+  <div id="whatsappContainer" class="fixed bottom-5 right-5 z-50">
+    <a href="https://wa.me/971526966865?text=Hello%2C%20I%20am%20contacting%20from%20Remal%20Hotel%20Guest%20Hub." 
+       target="_blank" 
+       class="flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 rounded-full shadow-2xl transition transform hover:scale-105 border border-emerald-500 font-semibold text-xs">
+      <span class="text-lg">💬</span>
+      <span id="whatsappText">WhatsApp Reception</span>
+    </a>
+  </div>
+
   <!-- 2. ADMIN VIEW -->
   <div id="adminView" class="hidden max-w-2xl mx-auto px-4 py-6 space-y-6">
     <div class="flex bg-stone-200 p-1 rounded-2xl text-xs font-bold">
-      <button onclick="switchAdminTab('offers')" id="admTabOffers" class="flex-1 py-2.5 rounded-xl bg-stone-900 text-white">
-        🏷️ Offres
-      </button>
-      <button onclick="switchAdminTab('requests')" id="admTabRequests" class="flex-1 py-2.5 rounded-xl text-stone-600">
-        🔔 Demandes
-      </button>
-      <button onclick="switchAdminTab('banner')" id="admTabBanner" class="flex-1 py-2.5 rounded-xl text-stone-600">
-        📢 Annonce
-      </button>
+      <button onclick="switchAdminTab('offers')" id="admTabOffers" class="flex-1 py-2.5 rounded-xl bg-stone-900 text-white">🏷️ Offres</button>
+      <button onclick="switchAdminTab('requests')" id="admTabRequests" class="flex-1 py-2.5 rounded-xl text-stone-600">🔔 Demandes</button>
+      <button onclick="switchAdminTab('banner')" id="admTabBanner" class="flex-1 py-2.5 rounded-xl text-stone-600">📢 Annonce</button>
     </div>
 
-    <!-- ADMIN: GESTION DES OFFRES -->
+    <!-- ADMIN: GESTION OFFRES -->
     <div id="adminOffersPanel" class="space-y-6">
       <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
         <div class="flex justify-between items-center border-b border-stone-100 pb-3">
@@ -200,7 +200,7 @@
       </div>
     </div>
 
-    <!-- ADMIN: SUIVI DES DEMANDES CLIENTS -->
+    <!-- ADMIN: DEMANDES -->
     <div id="adminRequestsPanel" class="hidden space-y-4">
       <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
         <div class="flex justify-between items-center border-b border-stone-100 pb-3">
@@ -209,39 +209,30 @@
             🔄 Rafraîchir
           </button>
         </div>
-
         <div id="adminRequestsContainer" class="space-y-3">
           <p class="text-xs text-stone-400">Chargement des demandes...</p>
         </div>
       </div>
     </div>
 
-    <!-- ADMIN: GESTION DE LA BANNIÈRE -->
+    <!-- ADMIN: BANNIÈRE -->
     <div id="adminBannerPanel" class="hidden space-y-4">
       <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
-        <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-2">Gestion de la Bannière d'Annonce</h2>
-
+        <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-2">Gestion de la Bannière</h2>
         <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-2">
-          <p class="text-xs font-bold text-stone-700">Message de l'Annonce (Multilingue)</p>
           <input type="text" id="ann_en" placeholder="Announcement (English)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white">
           <input type="text" id="ann_ar" placeholder="الإعلان (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white">
           <input type="text" id="ann_hi" placeholder="घोषणा (हिंदी)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white">
         </div>
-
         <div class="flex space-x-3">
-          <button onclick="saveAnnouncement(true)" class="flex-1 bg-remal-sand text-white font-bold py-3 rounded-xl text-xs hover:opacity-90 shadow-sm">
-            📢 Publier & Activer
-          </button>
-          <button onclick="saveAnnouncement(false)" class="flex-1 bg-stone-100 text-stone-700 font-bold py-3 rounded-xl text-xs hover:bg-stone-200 border border-stone-200">
-            🚫 Masquer la Bannière
-          </button>
+          <button onclick="saveAnnouncement(true)" class="flex-1 bg-remal-sand text-white font-bold py-3 rounded-xl text-xs">📢 Publier & Activer</button>
+          <button onclick="saveAnnouncement(false)" class="flex-1 bg-stone-100 text-stone-700 font-bold py-3 rounded-xl text-xs">🚫 Masquer</button>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    // ⚙️ CONFIGURATION SUPABASE
     const SUPABASE_URL = 'https://tbsroleffqhyzbbfmtvp.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRic3JvbGVmZnFoeXpiYmZtdHZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MzUyMzMsImV4cCI6MjEwMDQxMTIzM30.oNKhoPJ7v__YJQW7flC9UsP2cIDHLMuxjqmf6_NvYW4';
 
@@ -254,19 +245,11 @@
           const file = e.target.files[0];
           const statusEl = document.getElementById('uploadStatus');
           if (!file) return;
-
           statusEl.innerText = "⏳ Traitement de l'image...";
-          statusEl.className = "text-[10px] text-amber-600 font-semibold mb-2";
-
           const reader = new FileReader();
           reader.onload = function(event) {
             document.getElementById('adm_image').value = event.target.result;
             statusEl.innerText = "✅ Image prête à être publiée !";
-            statusEl.className = "text-[10px] text-emerald-600 font-semibold mb-2";
-          };
-          reader.onerror = function(err) {
-            statusEl.innerText = "❌ Erreur de lecture du fichier";
-            statusEl.className = "text-[10px] text-rose-600 font-semibold mb-2";
           };
           reader.readAsDataURL(file);
         });
@@ -306,17 +289,8 @@
     }
 
     async function fetchAnnouncementFromCloud() {
-      const { data, error } = await supabaseClient
-        .from('announcements')
-        .select('*')
-        .order('id', { ascending: false })
-        .limit(1);
-
-      if (error || !data || data.length === 0) {
-        document.getElementById('announcementBanner').classList.add('hidden');
-        return;
-      }
-
+      const { data } = await supabaseClient.from('announcements').select('*').order('id', { ascending: false }).limit(1);
+      if (!data || data.length === 0) return;
       activeAnnouncement = data[0];
       renderAnnouncement();
     }
@@ -324,10 +298,8 @@
     function renderAnnouncement() {
       const banner = document.getElementById('announcementBanner');
       const textEl = document.getElementById('announcementText');
-
       if (activeAnnouncement && activeAnnouncement.is_active) {
-        const msg = activeAnnouncement.message[currentLang] || activeAnnouncement.message['en'];
-        textEl.innerText = `📢 ${msg}`;
+        textEl.innerText = `📢 ${activeAnnouncement.message[currentLang] || activeAnnouncement.message['en']}`;
         banner.classList.remove('hidden');
       } else {
         banner.classList.add('hidden');
@@ -336,52 +308,23 @@
 
     async function saveAnnouncement(isActive) {
       const newAnn = {
-        message: {
-          en: document.getElementById('ann_en').value,
-          ar: document.getElementById('ann_ar').value,
-          hi: document.getElementById('ann_hi').value
-        },
+        message: { en: document.getElementById('ann_en').value, ar: document.getElementById('ann_ar').value, hi: document.getElementById('ann_hi').value },
         is_active: isActive
       };
-
-      const { error } = await supabaseClient.from('announcements').insert([newAnn]);
-
-      if (error) {
-        alert("Erreur d'enregistrement : " + error.message);
-        return;
-      }
-
-      alert(isActive ? "Bannière publiée !" : "Bannière masquée !");
+      await supabaseClient.from('announcements').insert([newAnn]);
+      alert("Bannière mise à jour !");
       await fetchAnnouncementFromCloud();
     }
 
     async function fetchOffersFromCloud() {
-      const { data, error } = await supabaseClient
-        .from('offers')
-        .select('*')
-        .order('id', { ascending: false });
-
-      if (error) {
-        console.error('Erreur Supabase:', error);
-        return;
-      }
-
+      const { data } = await supabaseClient.from('offers').select('*').order('id', { ascending: false });
       cachedOffers = data || [];
       renderClientCards();
       if (currentView === 'admin') renderAdminList();
     }
 
     async function fetchRequestsFromCloud() {
-      const { data, error } = await supabaseClient
-        .from('requests')
-        .select('*')
-        .order('id', { ascending: false });
-
-      if (error) {
-        console.error('Erreur Supabase Requests:', error);
-        return;
-      }
-
+      const { data } = await supabaseClient.from('requests').select('*').order('id', { ascending: false });
       cachedRequests = data || [];
       renderAdminRequests();
     }
@@ -389,20 +332,226 @@
     function renderCategoryFilters() {
       const container = document.getElementById('categoryFilters');
       const cats = ['All', 'Falaj Restaurant', 'Sarab', 'Al Waha Pool', 'The Spa'];
-      
-      container.innerHTML = cats.map(cat => {
-        const isSelected = currentCategory === cat;
-        const label = categoriesTranslations[currentLang][cat] || cat;
-        return `
-          <button onclick="filterCategory('${cat}')" 
-            class="px-4 py-2 rounded-full whitespace-nowrap transition-all duration-300 text-xs font-semibold ${
-              isSelected ? 'bg-remal-sand text-white shadow-sm' : 'bg-white text-stone-600 border border-stone-200 hover:border-stone-300'
-            }">
-            ${label}
-          </button>
-        `;
-      }).join('');
+      container.innerHTML = cats.map(cat => `
+        <button onclick="filterCategory('${cat}')" class="px-4 py-2 rounded-full whitespace-nowrap transition text-xs font-semibold ${currentCategory === cat ? 'bg-remal-sand text-white shadow-sm' : 'bg-white text-stone-600 border border-stone-200'}">
+          ${categoriesTranslations[currentLang][cat] || cat}
+        </button>
+      `).join('');
     }
+
+    function renderClientCards() {
+      const container = document.getElementById('cardsContainer');
+      container.innerHTML = '';
+      const filtered = currentCategory === 'All' ? cachedOffers : cachedOffers.filter(item => item.category === currentCategory);
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<p class="text-center text-xs text-stone-400 py-8">Aucune offre disponible.</p>`;
+        return;
+      }
+
+      filtered.forEach(item => {
+        container.innerHTML += `
+          <div class="remal-card rounded-3xl overflow-hidden">
+            <div class="relative">
+              <img src="${item.image}" class="w-full h-48 object-cover" loading="lazy">
+              <span class="absolute top-3 left-3 text-[9px] font-bold uppercase tracking-widest text-stone-800 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full shadow-sm">${item.category}</span>
+            </div>
+            <div class="p-5 space-y-3">
+              <h3 class="text-lg font-serif-luxury font-bold text-stone-900">${item.title[currentLang] || item.title['en']}</h3>
+              <div class="flex justify-between items-center pt-3 border-t border-stone-100 text-xs font-medium">
+                <span class="text-stone-500">🕒 ${item.timing[currentLang] || item.timing['en']}</span>
+                <span class="text-remal-sand font-bold text-base font-serif-luxury">${item.price}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function renderAdminList() {
+      const container = document.getElementById('adminListContainer');
+      if (cachedOffers.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400">Aucune offre.</p>`; return; }
+      container.innerHTML = cachedOffers.map(item => `
+        <div class="flex items-center justify-between p-3 bg-stone-50 rounded-2xl border border-stone-200 text-xs">
+          <div class="flex items-center space-x-3">
+            <img src="${item.image}" class="w-12 h-12 object-cover rounded-xl">
+            <div>
+              <p class="font-bold text-stone-800">${item.title.en}</p>
+              <p class="text-[10px] text-remal-sand font-semibold">${item.category} • ${item.price}</p>
+            </div>
+          </div>
+          <button onclick="deleteOffer(${item.id})" class="text-rose-600 font-bold p-2">🗑️</button>
+        </div>
+      `).join('');
+    }
+
+    function renderAdminRequests() {
+      const container = document.getElementById('adminRequestsContainer');
+      if (cachedRequests.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400 text-center py-4">Aucune demande.</p>`; return; }
+      container.innerHTML = cachedRequests.map(req => `
+        <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 text-xs space-y-3">
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="font-bold text-stone-900 text-sm">Chambre : ${req.room || 'N/A'}</span>
+              <p class="text-remal-sand font-semibold">${req.service}</p>
+            </div>
+            <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800">${req.status || 'Pending'}</span>
+          </div>
+          <p class="text-stone-700 bg-white p-3 rounded-xl border border-stone-100">${req.details}</p>
+          <div class="flex justify-between items-center pt-2 border-t border-stone-200 text-[11px]">
+            <div class="space-x-1">
+              <button onclick="updateRequestStatus(${req.id}, 'Pending')" class="px-2 py-1 bg-amber-100 text-amber-800 rounded">Attente</button>
+              <button onclick="updateRequestStatus(${req.id}, 'In Progress')" class="px-2 py-1 bg-blue-100 text-blue-800 rounded">En cours</button>
+              <button onclick="updateRequestStatus(${req.id}, 'Completed')" class="px-2 py-1 bg-emerald-100 text-emerald-800 rounded">Terminé</button>
+            </div>
+            <button onclick="deleteRequest(${req.id})" class="text-rose-600 font-bold p-1">🗑️</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function saveAdminData() {
+      const imageUrl = document.getElementById('adm_image').value;
+      if (!imageUrl) { alert("Veuillez sélectionner une photo."); return; }
+      const newItem = {
+        category: document.getElementById('adm_category').value,
+        price: document.getElementById('adm_price').value,
+        image: imageUrl,
+        title: { en: document.getElementById('adm_title_en').value, ar: document.getElementById('adm_title_ar').value, hi: document.getElementById('adm_title_hi').value },
+        timing: { en: document.getElementById('adm_timing_en').value, ar: document.getElementById('adm_timing_ar').value, hi: document.getElementById('adm_timing_hi').value }
+      };
+      await supabaseClient.from('offers').insert([newItem]);
+      alert('Offre publiée !');
+      document.getElementById('adminForm').reset();
+      await fetchOffersFromCloud();
+    }
+
+    async function submitGuestRequest() {
+      const room = document.getElementById('req_room').value;
+      const service = document.getElementById('req_service').value;
+      const details = document.getElementById('req_details').value;
+      if (!room || !details) { alert("Remplissez la chambre et les détails."); return; }
+      await supabaseClient.from('requests').insert([{ room, service, details, status: 'Pending' }]);
+      alert("Votre demande a été envoyée à la réception !");
+      document.getElementById('req_details').value = '';
+    }
+
+    async function updateRequestStatus(id, newStatus) {
+      await supabaseClient.from('requests').update({ status: newStatus }).eq('id', id);
+      await fetchRequestsFromCloud();
+    }
+
+    async function deleteRequest(id) {
+      if (confirm('Supprimer ?')) { await supabaseClient.from('requests').delete().eq('id', id); await fetchRequestsFromCloud(); }
+    }
+
+    async function deleteOffer(id) {
+      if (confirm('Supprimer ?')) { await supabaseClient.from('offers').delete().eq('id', id); await fetchOffersFromCloud(); }
+    }
+
+    function switchGuestTab(tab) {
+      const offersSec = document.getElementById('guestOffersSection');
+      const reqSec = document.getElementById('guestRequestSection');
+      const btnO = document.getElementById('tabOffersBtn');
+      const btnR = document.getElementById('tabRequestBtn');
+      const waBtn = document.getElementById('whatsappContainer');
+
+      if (tab === 'offers') {
+        offersSec.classList.remove('hidden');
+        reqSec.classList.add('hidden');
+        btnO.className = "flex-1 py-2.5 rounded-xl bg-white text-stone-900 font-bold shadow-sm";
+        btnR.className = "flex-1 py-2.5 rounded-xl text-stone-500";
+        waBtn.classList.remove('hidden');
+      } else {
+        reqSec.classList.remove('hidden');
+        offersSec.classList.add('hidden');
+        btnR.className = "flex-1 py-2.5 rounded-xl bg-white text-stone-900 font-bold shadow-sm";
+        btnO.className = "flex-1 py-2.5 rounded-xl text-stone-500";
+        waBtn.classList.remove('hidden');
+      }
+    }
+
+    function switchAdminTab(tab) {
+      ['adminOffersPanel', 'adminRequestsPanel', 'adminBannerPanel'].forEach(p => document.getElementById(p).classList.add('hidden'));
+      ['admTabOffers', 'admTabRequests', 'admTabBanner'].forEach(b => document.getElementById(b).className = "flex-1 py-2.5 rounded-xl text-stone-600 font-bold");
+
+      if (tab === 'offers') {
+        document.getElementById('adminOffersPanel').classList.remove('hidden');
+        document.getElementById('admTabOffers').className = "flex-1 py-2.5 rounded-xl bg-stone-900 text-white font-bold";
+      } else if (tab === 'requests') {
+        document.getElementById('adminRequestsPanel').classList.remove('hidden');
+        document.getElementById('admTabRequests').className = "flex-1 py-2.5 rounded-xl bg-stone-900 text-white font-bold";
+        fetchRequestsFromCloud();
+      } else if (tab === 'banner') {
+        document.getElementById('adminBannerPanel').classList.remove('hidden');
+        document.getElementById('admTabBanner').className = "flex-1 py-2.5 rounded-xl bg-stone-900 text-white font-bold";
+      }
+    }
+
+    function setLang(lang) {
+      currentLang = lang;
+      const root = document.getElementById('htmlRoot');
+      if (lang === 'ar') {
+        root.setAttribute('dir', 'rtl');
+        document.getElementById('welcomeMsg').innerText = "مرحباً بكم في فندق وڤلل رمال";
+        document.getElementById('lblTabOffers').innerText = "العروض الخاصة";
+        document.getElementById('lblTabRequest').innerText = "طلب خدمة الغرف";
+        document.getElementById('reqHeader').innerText = "طلب خدمة النزلاء";
+        document.getElementById('whatsappText').innerText = "واتساب الاستقبال";
+      } else if (lang === 'hi') {
+        root.setAttribute('dir', 'ltr');
+        document.getElementById('welcomeMsg').innerText = "रेमल होटल एंड विला में आपका स्वागत है";
+        document.getElementById('lblTabOffers').innerText = "विशेष ऑफ़र";
+        document.getElementById('lblTabRequest').innerText = "अतिथि सेवा अनुरोध";
+        document.getElementById('reqHeader').innerText = "अतिथि सेवा का अनुरोध करें";
+        document.getElementById('whatsappText').innerText = "व्हाट्सएप रिसेप्शन";
+      } else {
+        root.setAttribute('dir', 'ltr');
+        document.getElementById('welcomeMsg').innerText = "Welcome to Remal Hotel & Villas";
+        document.getElementById('lblTabOffers').innerText = "Special Offers";
+        document.getElementById('lblTabRequest').innerText = "Guest Request / Service";
+        document.getElementById('reqHeader').innerText = "Request Guest Service";
+        document.getElementById('whatsappText').innerText = "WhatsApp Reception";
+      }
+      renderCategoryFilters();
+      renderClientCards();
+      renderAnnouncement();
+    }
+
+    function toggleView() {
+      const clientV = document.getElementById('clientView');
+      const adminV = document.getElementById('adminView');
+      const btn = document.getElementById('viewToggleBtn');
+      const waBtn = document.getElementById('whatsappContainer');
+
+      if (currentView === 'client') {
+        currentView = 'admin';
+        clientV.classList.add('hidden');
+        adminV.classList.remove('hidden');
+        waBtn.classList.add('hidden');
+        btn.innerText = "📱 Vue Client";
+        renderAdminList();
+      } else {
+        currentView = 'client';
+        adminV.classList.add('hidden');
+        clientV.classList.remove('hidden');
+        waBtn.classList.remove('hidden');
+        btn.innerText = "⚙️ Admin Panel";
+        renderClientCards();
+      }
+    }
+
+    function filterCategory(cat) {
+      currentCategory = cat;
+      renderCategoryFilters();
+      renderClientCards();
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
+
 
     function renderClientCards() {
       const container = document.getElementById('cardsContainer');
