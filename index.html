@@ -23,7 +23,7 @@
       </div>
 
       <div class="flex items-center space-x-2">
-        <!-- Bouton Admin (Visible uniquement si ?admin=true dans l'URL) -->
+        <!-- Bouton Admin (Visible si ?admin=true) -->
         <button onclick="toggleView()" id="viewToggleBtn" class="hidden bg-amber-700 text-white px-2.5 py-1 rounded text-xs font-semibold hover:bg-amber-800">
           📱 Vue Client
         </button>
@@ -39,85 +39,159 @@
   </header>
 
   <!-- 1. GUEST VIEW -->
-  <div id="clientView" class="max-w-md mx-auto p-4 space-y-4">
+  <div id="clientView" class="max-w-md mx-auto p-4 space-y-5">
     <div class="bg-amber-800 text-amber-100 p-3 rounded-xl shadow text-center text-xs font-medium">
       <span id="welcomeMsg">Welcome to Remal Hotel & Villas</span>
     </div>
 
-    <!-- Category Filters -->
-    <div id="categoryFilters" class="flex space-x-2 overflow-x-auto pb-1 text-xs font-semibold scrollbar-none"></div>
+    <!-- Navigation Onglets Client (Offres / Demande de Service) -->
+    <div class="flex border-b border-stone-300">
+      <button onclick="switchGuestTab('offers')" id="tabOffersBtn" class="flex-1 py-2 text-xs font-bold border-b-2 border-amber-700 text-amber-800">
+        🏷️ <span id="lblTabOffers">Special Offers</span>
+      </button>
+      <button onclick="switchGuestTab('request')" id="tabRequestBtn" class="flex-1 py-2 text-xs font-bold text-stone-500 border-b-2 border-transparent">
+        🔔 <span id="lblTabRequest">Guest Request / Service</span>
+      </button>
+    </div>
 
-    <!-- Cards Container -->
-    <div id="cardsContainer" class="space-y-4">
-      <p class="text-center text-xs text-stone-400 py-8">Chargement des offres en direct...</p>
+    <!-- SECTION OFFRES -->
+    <div id="guestOffersSection" class="space-y-4">
+      <!-- Category Filters -->
+      <div id="categoryFilters" class="flex space-x-2 overflow-x-auto pb-1 text-xs font-semibold scrollbar-none"></div>
+
+      <!-- Cards Container -->
+      <div id="cardsContainer" class="space-y-4">
+        <p class="text-center text-xs text-stone-400 py-8">Chargement des offres en direct...</p>
+      </div>
+    </div>
+
+    <!-- SECTION DEMANDE DE SERVICE -->
+    <div id="guestRequestSection" class="hidden bg-white p-5 rounded-2xl shadow-md border border-stone-200 space-y-4">
+      <h2 class="text-sm font-bold text-stone-900 uppercase tracking-wide border-b pb-2" id="reqHeader">Request Guest Service</h2>
+      
+      <form id="guestRequestForm" class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-stone-600 mb-1" id="lblRoom">Room / Villa Number</label>
+          <input type="text" id="req_room" placeholder="e.g., 104 or Villa 02" class="w-full border rounded-lg p-2.5 text-sm bg-stone-50" required>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-stone-600 mb-1" id="lblService">Service Type</label>
+          <select id="req_service" class="w-full border rounded-lg p-2.5 text-sm bg-stone-50">
+            <option value="Housekeeping / Towels">Housekeeping / Extra Towels</option>
+            <option value="Room Service / Dining">Room Service / Order Food</option>
+            <option value="Maintenance / Technical">Maintenance / Technical Support</option>
+            <option value="Front Desk Inquiry">Front Desk Inquiry</option>
+            <option value="Luggage Assistance">Luggage Assistance</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-stone-600 mb-1" id="lblDetails">Additional Notes / Request Details</label>
+          <textarea id="req_details" rows="3" placeholder="Specify your request here..." class="w-full border rounded-lg p-2.5 text-sm bg-stone-50" required></textarea>
+        </div>
+
+        <button type="button" onclick="submitGuestRequest()" class="w-full bg-amber-800 text-white font-bold py-3 rounded-xl shadow hover:bg-amber-900 transition text-sm">
+          <span id="btnSubmitReq">Send Request to Reception</span>
+        </button>
+      </form>
     </div>
   </div>
 
   <!-- 2. ADMIN VIEW -->
   <div id="adminView" class="hidden max-w-2xl mx-auto p-4 space-y-6">
-    <div class="bg-white rounded-2xl p-6 shadow-md border border-stone-200">
-      <div class="flex justify-between items-center border-b pb-3 mb-4">
-        <h2 class="text-lg font-bold text-stone-900">Live Database Management (Supabase)</h2>
-        <span class="text-xs bg-emerald-100 text-emerald-800 font-semibold px-2.5 py-1 rounded-full">Cloud Synchronisé</span>
-      </div>
-
-      <form id="adminForm" class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Category</label>
-          <select id="adm_category" class="w-full border rounded-lg p-2 bg-stone-50 text-sm">
-            <option value="Falaj Restaurant">Falaj Restaurant</option>
-            <option value="Sarab">Sarab Bar & Lounge</option>
-            <option value="Al Waha Pool">Al Waha Pool</option>
-            <option value="The Spa">The Spa</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Price / Rate (e.g., AED 75)</label>
-          <input type="text" id="adm_price" placeholder="AED 75" class="w-full border rounded-lg p-2 text-sm" required>
-        </div>
-
-        <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 space-y-2">
-          <p class="text-xs font-bold text-amber-900">Offer Titles</p>
-          <input type="text" id="adm_title_en" placeholder="Title (English)" class="w-full border rounded p-2 text-sm bg-white" required>
-          <input type="text" id="adm_title_ar" placeholder="العنوان (بالعربية)" dir="rtl" class="w-full border rounded p-2 text-sm bg-white" required>
-          <input type="text" id="adm_title_hi" placeholder="शीर्षक (हिंदी)" class="w-full border rounded p-2 text-sm bg-white" required>
-        </div>
-
-        <div class="p-3 bg-stone-50 rounded-xl border border-stone-200 space-y-2">
-          <p class="text-xs font-bold text-stone-700">Timings / Operating Days</p>
-          <input type="text" id="adm_timing_en" placeholder="Timings (English)" class="w-full border rounded p-2 text-sm bg-white" required>
-          <input type="text" id="adm_timing_ar" placeholder="الأوقات (بالعربية)" dir="rtl" class="w-full border rounded p-2 text-sm bg-white" required>
-          <input type="text" id="adm_timing_hi" placeholder="समय (हिंदी)" class="w-full border rounded p-2 text-sm bg-white" required>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-stone-700 uppercase mb-1">Photo de l'offre</label>
-          <input type="file" id="imageFileInput" accept="image/*" class="w-full text-xs text-stone-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-800 file:text-white hover:file:bg-amber-900 cursor-pointer mb-2" />
-          <p id="uploadStatus" class="text-[10px] text-stone-500 mb-2"></p>
-          <input type="hidden" id="adm_image" />
-        </div>
-
-        <button type="button" onclick="saveAdminData()" class="w-full bg-amber-800 text-white font-bold py-3 rounded-xl shadow hover:bg-amber-900 transition text-sm">
-          Publier dans le Cloud (Instant Sync)
-        </button>
-      </form>
+    <!-- Onglets Admin (Gestion Offres / Demandes Clients) -->
+    <div class="flex bg-stone-200 p-1 rounded-xl text-xs font-bold">
+      <button onclick="switchAdminTab('offers')" id="admTabOffers" class="flex-1 py-2 rounded-lg bg-amber-800 text-white">
+        🏷️ Gestion des Offres
+      </button>
+      <button onclick="switchAdminTab('requests')" id="admTabRequests" class="flex-1 py-2 rounded-lg text-stone-600">
+        🔔 Demandes Clients
+      </button>
     </div>
 
-    <div class="bg-white rounded-2xl p-6 shadow-md border border-stone-200 space-y-3">
-      <h3 class="text-sm font-bold text-stone-800 uppercase tracking-wider">Gestion des offres existantes</h3>
-      <div id="adminListContainer" class="space-y-2"></div>
+    <!-- ADMIN: GESTION DES OFFRES -->
+    <div id="adminOffersPanel" class="space-y-6">
+      <div class="bg-white rounded-2xl p-6 shadow-md border border-stone-200">
+        <div class="flex justify-between items-center border-b pb-3 mb-4">
+          <h2 class="text-lg font-bold text-stone-900">Nouvelle Offre Cloud</h2>
+          <span class="text-xs bg-emerald-100 text-emerald-800 font-semibold px-2.5 py-1 rounded-full">Supabase Live</span>
+        </div>
+
+        <form id="adminForm" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Category</label>
+            <select id="adm_category" class="w-full border rounded-lg p-2 bg-stone-50 text-sm">
+              <option value="Falaj Restaurant">Falaj Restaurant</option>
+              <option value="Sarab">Sarab Bar & Lounge</option>
+              <option value="Al Waha Pool">Al Waha Pool</option>
+              <option value="The Spa">The Spa</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Price / Rate (e.g., AED 75)</label>
+            <input type="text" id="adm_price" placeholder="AED 75" class="w-full border rounded-lg p-2 text-sm" required>
+          </div>
+
+          <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 space-y-2">
+            <p class="text-xs font-bold text-amber-900">Offer Titles</p>
+            <input type="text" id="adm_title_en" placeholder="Title (English)" class="w-full border rounded p-2 text-sm bg-white" required>
+            <input type="text" id="adm_title_ar" placeholder="العنوان (بالعربية)" dir="rtl" class="w-full border rounded p-2 text-sm bg-white" required>
+            <input type="text" id="adm_title_hi" placeholder="शीर्षक (हिंदी)" class="w-full border rounded p-2 text-sm bg-white" required>
+          </div>
+
+          <div class="p-3 bg-stone-50 rounded-xl border border-stone-200 space-y-2">
+            <p class="text-xs font-bold text-stone-700">Timings / Operating Days</p>
+            <input type="text" id="adm_timing_en" placeholder="Timings (English)" class="w-full border rounded p-2 text-sm bg-white" required>
+            <input type="text" id="adm_timing_ar" placeholder="الأوقات (بالعربية)" dir="rtl" class="w-full border rounded p-2 text-sm bg-white" required>
+            <input type="text" id="adm_timing_hi" placeholder="समय (हिंदी)" class="w-full border rounded p-2 text-sm bg-white" required>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-stone-700 uppercase mb-1">Photo de l'offre</label>
+            <input type="file" id="imageFileInput" accept="image/*" class="w-full text-xs text-stone-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-800 file:text-white hover:file:bg-amber-900 cursor-pointer mb-2" />
+            <p id="uploadStatus" class="text-[10px] text-stone-500 mb-2"></p>
+            <input type="hidden" id="adm_image" />
+          </div>
+
+          <button type="button" onclick="saveAdminData()" class="w-full bg-amber-800 text-white font-bold py-3 rounded-xl shadow hover:bg-amber-900 transition text-sm">
+            Publier l'offre dans le Cloud
+          </button>
+        </form>
+      </div>
+
+      <div class="bg-white rounded-2xl p-6 shadow-md border border-stone-200 space-y-3">
+        <h3 class="text-sm font-bold text-stone-800 uppercase tracking-wider">Offres Actives</h3>
+        <div id="adminListContainer" class="space-y-2"></div>
+      </div>
+    </div>
+
+    <!-- ADMIN: SUIVI DES DEMANDES CLIENTS -->
+    <div id="adminRequestsPanel" class="hidden space-y-4">
+      <div class="bg-white rounded-2xl p-6 shadow-md border border-stone-200 space-y-4">
+        <div class="flex justify-between items-center border-b pb-3">
+          <h2 class="text-lg font-bold text-stone-900">Demandes de Service en Direct</h2>
+          <button onclick="fetchRequestsFromCloud()" class="text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 px-3 py-1 rounded-lg font-semibold">
+            🔄 Rafraîchir
+          </button>
+        </div>
+
+        <div id="adminRequestsContainer" class="space-y-3">
+          <p class="text-xs text-stone-400">Chargement des demandes...</p>
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
-    // ⚙️ CONFIGURATION SUPABASE OFFICIELLE
+    // ⚙️ CONFIGURATION SUPABASE SÉCURISÉE (Clé publique ANON avec 'e' minuscule)
     const SUPABASE_URL = 'https://tbsroleffqhyzbbfmtvp.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRic3JvbGVmZnFoeXpiYmZtdHZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MzUyMzMsImV4cCI6MjEwMDQxMTIzM30.oNKhoPJ7v__YJQW7flC9UsP2cIDHLMuxjqmf6_NvYW4';
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Module de conversion de photo instantané (Base64)
+    // Dynamic Image Base64 Converter
     document.addEventListener('DOMContentLoaded', () => {
       const fileInput = document.getElementById('imageFileInput');
       if (fileInput) {
@@ -136,7 +210,7 @@
             statusEl.className = "text-[10px] text-green-600 font-semibold mb-2";
           };
           reader.onerror = function(err) {
-            statusEl.innerText = "❌ Erreur lors de la lecture du fichier";
+            statusEl.innerText = "❌ Erreur de lecture du fichier";
             statusEl.className = "text-[10px] text-red-600 font-semibold mb-2";
           };
           reader.readAsDataURL(file);
@@ -148,6 +222,7 @@
     let currentView = 'client';
     let currentCategory = 'All';
     let cachedOffers = [];
+    let cachedRequests = [];
 
     const categoriesTranslations = {
       en: { 'All': 'All Services', 'Falaj Restaurant': 'Falaj Restaurant', 'Sarab': 'Sarab Bar', 'Al Waha Pool': 'Al Waha Pool', 'The Spa': 'The Spa' },
@@ -162,6 +237,7 @@
 
       if (room) {
         document.getElementById('roomIndicator').innerText = `Room/Villa: ${room} • Remal Hotel`;
+        document.getElementById('req_room').value = room;
       }
 
       if (adminParam === 'true') {
@@ -172,6 +248,7 @@
       await fetchOffersFromCloud();
     }
 
+    // OFFERS FETCH
     async function fetchOffersFromCloud() {
       const { data, error } = await supabaseClient
         .from('offers')
@@ -186,6 +263,22 @@
       cachedOffers = data || [];
       renderClientCards();
       if (currentView === 'admin') renderAdminList();
+    }
+
+    // REQUESTS FETCH
+    async function fetchRequestsFromCloud() {
+      const { data, error } = await supabaseClient
+        .from('requests')
+        .select('*')
+        .order('id', { ascending: false });
+
+      if (error) {
+        console.error('Erreur Supabase Requests:', error);
+        return;
+      }
+
+      cachedRequests = data || [];
+      renderAdminRequests();
     }
 
     function renderCategoryFilters() {
@@ -264,6 +357,44 @@
       `).join('');
     }
 
+    function renderAdminRequests() {
+      const container = document.getElementById('adminRequestsContainer');
+      if (cachedRequests.length === 0) {
+        container.innerHTML = `<p class="text-xs text-stone-400 text-center py-4">Aucune demande client enregistrée.</p>`;
+        return;
+      }
+
+      container.innerHTML = cachedRequests.map(req => {
+        let badgeBg = 'bg-amber-100 text-amber-800';
+        if (req.status === 'In Progress') badgeBg = 'bg-blue-100 text-blue-800';
+        if (req.status === 'Completed') badgeBg = 'bg-emerald-100 text-emerald-800';
+
+        return `
+          <div class="p-3.5 bg-stone-50 rounded-xl border border-stone-200 text-xs space-y-2">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="font-bold text-stone-900 text-sm">Chambre/Villa : ${req.room || 'N/A'}</span>
+                <p class="text-amber-800 font-semibold">${req.service}</p>
+              </div>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${badgeBg}">
+                ${req.status || 'Pending'}
+              </span>
+            </div>
+            <p class="text-stone-600 bg-white p-2 rounded border border-stone-100">${req.details}</p>
+            <div class="flex justify-between items-center pt-2 border-t text-[11px]">
+              <div class="space-x-1">
+                <button onclick="updateRequestStatus(${req.id}, 'Pending')" class="px-2 py-1 bg-amber-100 text-amber-800 rounded font-bold hover:bg-amber-200">⏳ En attente</button>
+                <button onclick="updateRequestStatus(${req.id}, 'In Progress')" class="px-2 py-1 bg-blue-100 text-blue-800 rounded font-bold hover:bg-blue-200">🔄 En cours</button>
+                <button onclick="updateRequestStatus(${req.id}, 'Completed')" class="px-2 py-1 bg-emerald-100 text-emerald-800 rounded font-bold hover:bg-emerald-200">✅ Terminé</button>
+              </div>
+              <button onclick="deleteRequest(${req.id})" class="text-red-600 font-bold p-1 hover:bg-red-50 rounded">🗑️</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // SAVE OFFER
     async function saveAdminData() {
       const imageUrl = document.getElementById('adm_image').value;
       if (!imageUrl) {
@@ -298,7 +429,61 @@
       document.getElementById('adminForm').reset();
       document.getElementById('uploadStatus').innerText = '';
       await fetchOffersFromCloud();
-      toggleView();
+    }
+
+    // SUBMIT GUEST REQUEST
+    async function submitGuestRequest() {
+      const room = document.getElementById('req_room').value;
+      const service = document.getElementById('req_service').value;
+      const details = document.getElementById('req_details').value;
+
+      if (!room || !details) {
+        alert("Veuillez remplir le numéro de chambre et les détails de votre demande.");
+        return;
+      }
+
+      const newRequest = {
+        room: room,
+        service: service,
+        details: details,
+        status: 'Pending'
+      };
+
+      const { error } = await supabaseClient.from('requests').insert([newRequest]);
+
+      if (error) {
+        alert("Erreur lors de l'envoi de la demande : " + error.message);
+        return;
+      }
+
+      const alertMsgs = {
+        en: "Your request has been sent to the front desk successfully!",
+        ar: "تم إرسال طلبكم إلى الاستقبال بنجاح!",
+        hi: "आपकी प्रार्थना स्वागत कक्ष में सफलतापूर्वक भेज दी गई है!"
+      };
+
+      alert(alertMsgs[currentLang] || alertMsgs['en']);
+      document.getElementById('req_details').value = '';
+    }
+
+    async function updateRequestStatus(id, newStatus) {
+      const { error } = await supabaseClient.from('requests').update({ status: newStatus }).eq('id', id);
+      if (error) {
+        alert('Erreur de mise à jour : ' + error.message);
+        return;
+      }
+      await fetchRequestsFromCloud();
+    }
+
+    async function deleteRequest(id) {
+      if (confirm('Voulez-vous supprimer cette demande ?')) {
+        const { error } = await supabaseClient.from('requests').delete().eq('id', id);
+        if (error) {
+          alert('Erreur de suppression : ' + error.message);
+          return;
+        }
+        await fetchRequestsFromCloud();
+      }
     }
 
     async function deleteOffer(id) {
@@ -312,6 +497,46 @@
       }
     }
 
+    // NAVIGATION SWITCHERS
+    function switchGuestTab(tab) {
+      const offersSec = document.getElementById('guestOffersSection');
+      const reqSec = document.getElementById('guestRequestSection');
+      const btnO = document.getElementById('tabOffersBtn');
+      const btnR = document.getElementById('tabRequestBtn');
+
+      if (tab === 'offers') {
+        offersSec.classList.remove('hidden');
+        reqSec.classList.add('hidden');
+        btnO.className = "flex-1 py-2 text-xs font-bold border-b-2 border-amber-700 text-amber-800";
+        btnR.className = "flex-1 py-2 text-xs font-bold text-stone-500 border-b-2 border-transparent";
+      } else {
+        reqSec.classList.remove('hidden');
+        offersSec.classList.add('hidden');
+        btnR.className = "flex-1 py-2 text-xs font-bold border-b-2 border-amber-700 text-amber-800";
+        btnO.className = "flex-1 py-2 text-xs font-bold text-stone-500 border-b-2 border-transparent";
+      }
+    }
+
+    function switchAdminTab(tab) {
+      const panelO = document.getElementById('adminOffersPanel');
+      const panelR = document.getElementById('adminRequestsPanel');
+      const btnO = document.getElementById('admTabOffers');
+      const btnR = document.getElementById('admTabRequests');
+
+      if (tab === 'offers') {
+        panelO.classList.remove('hidden');
+        panelR.classList.add('hidden');
+        btnO.className = "flex-1 py-2 rounded-lg bg-amber-800 text-white font-bold";
+        btnR.className = "flex-1 py-2 rounded-lg text-stone-600 font-bold";
+      } else {
+        panelR.classList.remove('hidden');
+        panelO.classList.add('hidden');
+        btnR.className = "flex-1 py-2 rounded-lg bg-amber-800 text-white font-bold";
+        btnO.className = "flex-1 py-2 rounded-lg text-stone-600 font-bold";
+        fetchRequestsFromCloud();
+      }
+    }
+
     function setLang(lang) {
       currentLang = lang;
       const root = document.getElementById('htmlRoot');
@@ -319,12 +544,33 @@
       if (lang === 'ar') {
         root.setAttribute('dir', 'rtl');
         document.getElementById('welcomeMsg').innerText = "مرحباً بكم في فندق وڤلل رمال";
+        document.getElementById('lblTabOffers').innerText = "العروض الخاصة";
+        document.getElementById('lblTabRequest').innerText = "طلب خدمة الغرف";
+        document.getElementById('reqHeader').innerText = "طلب خدمة النزلاء";
+        document.getElementById('lblRoom').innerText = "رقم الغرفة / الفيلا";
+        document.getElementById('lblService').innerText = "نوع الخدمة";
+        document.getElementById('lblDetails').innerText = "تفاصيل الطلب";
+        document.getElementById('btnSubmitReq').innerText = "إرسال الطلب إلى الاستقبال";
       } else if (lang === 'hi') {
         root.setAttribute('dir', 'ltr');
         document.getElementById('welcomeMsg').innerText = "रेमल होटल एंड विला में आपका स्वागत है";
+        document.getElementById('lblTabOffers').innerText = "विशेष ऑफ़र";
+        document.getElementById('lblTabRequest').innerText = "अतिथि सेवा अनुरोध";
+        document.getElementById('reqHeader').innerText = "अतिथि सेवा का अनुरोध करें";
+        document.getElementById('lblRoom').innerText = "कमरा / विला संख्या";
+        document.getElementById('lblService').innerText = "सेवा का प्रकार";
+        document.getElementById('lblDetails').innerText = "अनुरोध का विवरण";
+        document.getElementById('btnSubmitReq').innerText = "रिसेप्शन को अनुरोध भेजें";
       } else {
         root.setAttribute('dir', 'ltr');
         document.getElementById('welcomeMsg').innerText = "Welcome to Remal Hotel & Villas";
+        document.getElementById('lblTabOffers').innerText = "Special Offers";
+        document.getElementById('lblTabRequest').innerText = "Guest Request / Service";
+        document.getElementById('reqHeader').innerText = "Request Guest Service";
+        document.getElementById('lblRoom').innerText = "Room / Villa Number";
+        document.getElementById('lblService').innerText = "Service Type";
+        document.getElementById('lblDetails').innerText = "Additional Notes / Request Details";
+        document.getElementById('btnSubmitReq').innerText = "Send Request to Reception";
       }
 
       ['en', 'ar', 'hi'].forEach(l => {
