@@ -19,6 +19,7 @@
 </head>
 <body class="min-h-screen pb-20">
 
+  <!-- HEADER BLANC & ÉLÉGANT -->
   <header class="bg-white sticky top-0 z-50 border-b border-stone-200 shadow-sm">
     <div class="max-w-2xl mx-auto px-5 py-3 flex justify-between items-center">
       <div class="flex items-center space-x-2">
@@ -39,21 +40,26 @@
     </div>
   </header>
 
+  <!-- BANNIÈRE D'ANNONCE DYNAMIQUE -->
   <div id="announcementBanner" class="hidden bg-remal-sand text-white px-4 py-2.5 text-center text-xs font-medium tracking-wide shadow-sm">
     <span id="announcementText">📢 Special Announcement</span>
   </div>
 
+  <!-- 1. GUEST VIEW -->
   <div id="clientView" class="max-w-md mx-auto px-4 py-6 space-y-6">
     <div class="text-center space-y-1">
       <h2 class="text-2xl font-serif-luxury text-stone-900 font-normal tracking-wide" id="welcomeMsg">Welcome to Remal Hotel & Villas</h2>
       <p class="text-[10px] text-stone-400 uppercase tracking-widest" id="roomIndicator">Al Dhannah City • Guest Hub</p>
     </div>
 
-    <div class="flex bg-stone-200/60 p-1 rounded-2xl text-xs font-medium border border-stone-200">
-      <button onclick="switchGuestTab('offers')" id="tabOffersBtn" class="flex-1 py-2.5 rounded-xl bg-white text-stone-900 font-bold shadow-sm">🏷️ <span id="lblTabOffers">Special Offers</span></button>
-      <button onclick="switchGuestTab('request')" id="tabRequestBtn" class="flex-1 py-2.5 rounded-xl text-stone-500 hover:text-stone-900">🔔 <span id="lblTabRequest">Guest Request / Service</span></button>
+    <!-- Navigation Onglets Client (3 Onglets) -->
+    <div class="flex bg-stone-200/60 p-1 rounded-2xl text-[11px] font-medium border border-stone-200 overflow-x-auto scrollbar-none">
+      <button onclick="switchGuestTab('offers')" id="tabOffersBtn" class="flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-sm whitespace-nowrap">🏷️ <span id="lblTabOffers">Offers</span></button>
+      <button onclick="switchGuestTab('facilities')" id="tabFacilitiesBtn" class="flex-1 py-2.5 px-3 rounded-xl text-stone-500 hover:text-stone-900 whitespace-nowrap">🏛️ <span id="lblTabFacilities">Facilities</span></button>
+      <button onclick="switchGuestTab('request')" id="tabRequestBtn" class="flex-1 py-2.5 px-3 rounded-xl text-stone-500 hover:text-stone-900 whitespace-nowrap">🔔 <span id="lblTabRequest">Service</span></button>
     </div>
 
+    <!-- SECTION 1: OFFRES -->
     <div id="guestOffersSection" class="space-y-5">
       <div id="categoryFilters" class="flex space-x-2 overflow-x-auto pb-1 text-xs font-semibold scrollbar-none"></div>
       <div id="cardsContainer" class="space-y-5">
@@ -61,6 +67,19 @@
       </div>
     </div>
 
+    <!-- SECTION 2: FACILITIES & GALLERY -->
+    <div id="guestFacilitiesSection" class="hidden space-y-5">
+      <div class="text-center border-b border-stone-200 pb-3">
+        <h3 class="text-lg font-serif-luxury font-bold text-stone-900" id="facHeader">Hotel Facilities & Amenities</h3>
+        <p class="text-xs text-stone-500" id="facSub">Explore our premium venues and services</p>
+      </div>
+
+      <div id="facilitiesContainer" class="space-y-5">
+        <!-- Contenu injecté dynamiquement par JavaScript -->
+      </div>
+    </div>
+
+    <!-- SECTION 3: DEMANDE DE SERVICE -->
     <div id="guestRequestSection" class="hidden remal-card p-6 rounded-3xl space-y-5">
       <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-3" id="reqHeader">Request Guest Service</h2>
       <form id="guestRequestForm" class="space-y-4">
@@ -89,6 +108,7 @@
     </div>
   </div>
 
+  <!-- BOUTON WHATSAPP FLOTTANT -->
   <div id="whatsappContainer" class="fixed bottom-5 right-5 z-50">
     <a href="https://wa.me/971526966865?text=Hello%2C%20I%20am%20contacting%20from%20Remal%20Hotel%20Guest%20Hub." target="_blank" class="flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 rounded-full shadow-2xl transition transform hover:scale-105 border border-emerald-500 font-semibold text-xs">
       <span class="text-lg">💬</span>
@@ -96,6 +116,7 @@
     </a>
   </div>
 
+  <!-- 2. ADMIN VIEW -->
   <div id="adminView" class="hidden max-w-2xl mx-auto px-4 py-6 space-y-6">
     <div class="flex bg-stone-200 p-1 rounded-2xl text-xs font-bold">
       <button onclick="switchAdminTab('offers')" id="admTabOffers" class="flex-1 py-2.5 rounded-xl bg-stone-900 text-white">🏷️ Offres</button>
@@ -103,6 +124,7 @@
       <button onclick="switchAdminTab('banner')" id="admTabBanner" class="flex-1 py-2.5 rounded-xl text-stone-600">📢 Annonce</button>
     </div>
 
+    <!-- ADMIN: OFFRES -->
     <div id="adminOffersPanel" class="space-y-6">
       <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
         <div class="flex justify-between items-center border-b border-stone-100 pb-3">
@@ -150,6 +172,7 @@
       </div>
     </div>
 
+    <!-- ADMIN: DEMANDES -->
     <div id="adminRequestsPanel" class="hidden space-y-4">
       <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
         <div class="flex justify-between items-center border-b border-stone-100 pb-3">
@@ -160,6 +183,7 @@
       </div>
     </div>
 
+    <!-- ADMIN: BANNIÈRE -->
     <div id="adminBannerPanel" class="hidden space-y-4">
       <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
         <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-2">Gestion de la Bannière</h2>
@@ -206,6 +230,65 @@
     let cachedRequests = [];
     let activeAnnouncement = null;
 
+    // Données fixes de la Galerie des Équipements (Facilities)
+    const facilitiesData = [
+      {
+        id: 'falaj',
+        image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80',
+        title: { en: 'Falaj Restaurant', ar: 'مطعم الفلج', hi: 'फलज रेस्टोरेंट' },
+        desc: { 
+          en: 'International Breakfast & All-Day Fine Dining featuring local and global flavors.', 
+          ar: 'بوفيه إفطار عالمي وتجربة طعام فاخرة على مدار اليوم.', 
+          hi: 'अंतर्राष्ट्रीय नाश्ता और दिनभर बेहतरीन भोजन।' 
+        },
+        timing: { en: '06:30 AM - 11:00 PM', ar: '٠٦:٣٠ صباحاً - ١١:٠٠ مساءً', hi: 'सुबह 06:30 - रात 11:00' }
+      },
+      {
+        id: 'pool',
+        image: 'https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=800&q=80',
+        title: { en: 'Al Waha Swimming Pool', ar: 'مسبح الواحة', hi: 'अल वाहा स्विमिंग पूल' },
+        desc: { 
+          en: 'Relax by our temperature-controlled outdoor swimming pool with sunbeds and refreshments.', 
+          ar: 'استرخِ بجانب المسبح الخارجي المبتكر مع الكراسي المريحة والمشروبات.', 
+          hi: 'धूप सेंकने की जगह और ताज़ा पेय के साथ आउटडोर पूल।' 
+        },
+        timing: { en: '07:00 AM - 08:00 PM', ar: '٠٧:٠٠ صباحاً - ٠٨:٠٠ مساءً', hi: 'सुबह 07:00 - रात 08:00' }
+      },
+      {
+        id: 'recreation',
+        image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80',
+        title: { en: 'Recreation & Fitness Centre', ar: 'مركز اللياقة والترفيه', hi: 'मनोरंजन और फिटनेस सेंटर' },
+        desc: { 
+          en: 'Stay in shape with our contemporary gym equipment and sporting facilities.', 
+          ar: 'حافظ على لياقتك البدنية مع أحدث الأجهزة الرياضية العصرية.', 
+          hi: 'हमारे आधुनिक जिम उपकरणों के साथ फिट रहें।' 
+        },
+        timing: { en: '06:00 AM - 10:00 PM', ar: '٠٦:٠٠ صباحاً - ١٠:٠٠ مساءً', hi: 'सुबह 06:00 - रात 10:00' }
+      },
+      {
+        id: 'spa',
+        image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=800&q=80',
+        title: { en: 'The Wellness Spa', ar: 'السبا ومركز الاسترخاء', hi: 'द वेलनेस स्पा' },
+        desc: { 
+          en: 'Rejuvenate your senses with our soothing massage therapy and beauty treatments.', 
+          ar: 'جدد حيوية جسمك وعقلك مع علاجات المساج وجلسات الاسترخاء الفاخرة.', 
+          hi: 'मालिश और सौंदर्य उपचार के साथ अपनी इंद्रियों को तरोताज़ा करें।' 
+        },
+        timing: { en: '10:00 AM - 09:00 PM', ar: '١٠:٠٠ صباحاً - ٠٩:٠٠ مساءً', hi: 'सुबह 10:00 - रात 09:00' }
+      },
+      {
+        id: 'villas',
+        image: 'https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=80',
+        title: { en: 'VIP Royal Suites & Villas', ar: 'الأجنحة والفيلا الملكية VIP', hi: 'वीआईपी रॉयल सूट और विला' },
+        desc: { 
+          en: 'Live and stay in luxury with fully furnished private villas and tailored VIP care.', 
+          ar: 'عش تجربة الفخامة المطلقة في الفيلات المفروشة بالكامل والخدمة الملكية الخاصة.', 
+          hi: 'निजी विला और वीआईपी देखभाल के साथ विलासिता में रहें।' 
+        },
+        timing: { en: '24/7 Concierge Service', ar: 'خدمة الكونسيرج على مدار الساعة', hi: '24/7 द्वारपाल सेवा' }
+      }
+    ];
+
     const categoriesTranslations = {
       en: { 'All': 'All Services', 'Falaj Restaurant': 'Falaj Restaurant', 'Sarab': 'Sarab Bar', 'Al Waha Pool': 'Al Waha Pool', 'The Spa': 'The Spa' },
       ar: { 'All': 'جميع الخدمات', 'Falaj Restaurant': 'مطعم الفلج', 'Sarab': 'بار سراب', 'Al Waha Pool': 'مسبح الواحة', 'The Spa': 'السبا' },
@@ -226,8 +309,26 @@
       }
 
       renderCategoryFilters();
+      renderFacilities();
       await fetchOffersFromCloud();
       await fetchAnnouncementFromCloud();
+    }
+
+    function renderFacilities() {
+      const container = document.getElementById('facilitiesContainer');
+      container.innerHTML = facilitiesData.map(item => `
+        <div class="remal-card rounded-3xl overflow-hidden shadow-sm">
+          <img src="${item.image}" class="w-full h-48 object-cover" loading="lazy">
+          <div class="p-5 space-y-2">
+            <h4 class="text-base font-serif-luxury font-bold text-stone-900">${item.title[currentLang] || item.title['en']}</h4>
+            <p class="text-xs text-stone-600 leading-relaxed">${item.desc[currentLang] || item.desc['en']}</p>
+            <div class="pt-2 border-t border-stone-100 flex justify-between items-center text-[11px] font-semibold text-stone-500">
+              <span>🕒 ${item.timing[currentLang] || item.timing['en']}</span>
+              <button onclick="switchGuestTab('request')" class="text-remal-sand hover:underline">Book / Request →</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
     }
 
     async function fetchAnnouncementFromCloud() {
@@ -395,23 +496,30 @@
 
     function switchGuestTab(tab) {
       const offersSec = document.getElementById('guestOffersSection');
+      const facSec = document.getElementById('guestFacilitiesSection');
       const reqSec = document.getElementById('guestRequestSection');
+      
       const btnO = document.getElementById('tabOffersBtn');
+      const btnF = document.getElementById('tabFacilitiesBtn');
       const btnR = document.getElementById('tabRequestBtn');
-      const waBtn = document.getElementById('whatsappContainer');
+
+      offersSec.classList.add('hidden');
+      facSec.classList.add('hidden');
+      reqSec.classList.add('hidden');
+
+      btnO.className = "flex-1 py-2.5 px-3 rounded-xl text-stone-500 hover:text-stone-900 whitespace-nowrap";
+      btnF.className = "flex-1 py-2.5 px-3 rounded-xl text-stone-500 hover:text-stone-900 whitespace-nowrap";
+      btnR.className = "flex-1 py-2.5 px-3 rounded-xl text-stone-500 hover:text-stone-900 whitespace-nowrap";
 
       if (tab === 'offers') {
         offersSec.classList.remove('hidden');
-        reqSec.classList.add('hidden');
-        btnO.className = "flex-1 py-2.5 rounded-xl bg-white text-stone-900 font-bold shadow-sm";
-        btnR.className = "flex-1 py-2.5 rounded-xl text-stone-500";
-        waBtn.classList.remove('hidden');
-      } else {
+        btnO.className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-sm whitespace-nowrap";
+      } else if (tab === 'facilities') {
+        facSec.classList.remove('hidden');
+        btnF.className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-sm whitespace-nowrap";
+      } else if (tab === 'request') {
         reqSec.classList.remove('hidden');
-        offersSec.classList.add('hidden');
-        btnR.className = "flex-1 py-2.5 rounded-xl bg-white text-stone-900 font-bold shadow-sm";
-        btnO.className = "flex-1 py-2.5 rounded-xl text-stone-500";
-        waBtn.classList.remove('hidden');
+        btnR.className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-sm whitespace-nowrap";
       }
     }
 
@@ -438,27 +546,37 @@
       if (lang === 'ar') {
         root.setAttribute('dir', 'rtl');
         document.getElementById('welcomeMsg').innerText = "مرحباً بكم في فندق وڤلل رمال";
-        document.getElementById('lblTabOffers').innerText = "العروض الخاصة";
-        document.getElementById('lblTabRequest').innerText = "طلب خدمة الغرف";
+        document.getElementById('lblTabOffers').innerText = "العروض";
+        document.getElementById('lblTabFacilities').innerText = "المرافق والخدمات";
+        document.getElementById('lblTabRequest').innerText = "طلب خدمة";
+        document.getElementById('facHeader').innerText = "مرافق الفندق والخدمات";
+        document.getElementById('facSub').innerText = "استكشف أرقى مرافقنا وخدماتنا المميزة";
         document.getElementById('reqHeader').innerText = "طلب خدمة النزلاء";
         document.getElementById('whatsappText').innerText = "واتساب الاستقبال";
       } else if (lang === 'hi') {
         root.setAttribute('dir', 'ltr');
         document.getElementById('welcomeMsg').innerText = "रेमल होटल एंड विला में आपका स्वागत है";
         document.getElementById('lblTabOffers').innerText = "विशेष ऑफ़र";
-        document.getElementById('lblTabRequest').innerText = "अतिथि सेवा अनुरोध";
+        document.getElementById('lblTabFacilities').innerText = "सुविधाएं";
+        document.getElementById('lblTabRequest').innerText = "सेवा अनुरोध";
+        document.getElementById('facHeader').innerText = "होटल सुविधाएं";
+        document.getElementById('facSub').innerText = "हमारे प्रीमियम स्थानों और सेवाओं का अन्वेषण करें";
         document.getElementById('reqHeader').innerText = "अतिथि सेवा का अनुरोध करें";
         document.getElementById('whatsappText').innerText = "व्हाट्सएप रिसेप्शन";
       } else {
         root.setAttribute('dir', 'ltr');
         document.getElementById('welcomeMsg').innerText = "Welcome to Remal Hotel & Villas";
-        document.getElementById('lblTabOffers').innerText = "Special Offers";
-        document.getElementById('lblTabRequest').innerText = "Guest Request / Service";
+        document.getElementById('lblTabOffers').innerText = "Offers";
+        document.getElementById('lblTabFacilities').innerText = "Facilities";
+        document.getElementById('lblTabRequest').innerText = "Service";
+        document.getElementById('facHeader').innerText = "Hotel Facilities & Amenities";
+        document.getElementById('facSub').innerText = "Explore our premium venues and services";
         document.getElementById('reqHeader').innerText = "Request Guest Service";
         document.getElementById('whatsappText').innerText = "WhatsApp Reception";
       }
       renderCategoryFilters();
       renderClientCards();
+      renderFacilities();
       renderAnnouncement();
     }
 
