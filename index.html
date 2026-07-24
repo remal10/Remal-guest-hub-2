@@ -15,13 +15,19 @@
     .bg-remal-sand { background-color: #E2B383; }
     .text-remal-sand { color: #DCA773; }
     .remal-card { background: #FFFFFF; border: 1px solid #EAEAEA; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); }
+    
+    @keyframes pulse-red {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.05); }
+    }
+    .pulse-notification { animation: pulse-red 1.5s infinite; }
   </style>
 </head>
 <body class="min-h-screen pb-20">
 
   <!-- HEADER BLANC & ÉLÉGANT -->
   <header class="bg-white sticky top-0 z-50 border-b border-stone-200 shadow-sm">
-    <div class="max-w-2xl mx-auto px-5 py-3 flex justify-between items-center">
+    <div class="max-w-6xl mx-auto px-5 py-3 flex justify-between items-center">
       <div class="flex items-center space-x-2">
         <img src="logo.png" alt="Remal Hotel & Villas" class="h-10 sm:h-12 object-contain" onerror="this.style.display='none'; document.getElementById('textLogo').classList.remove('hidden');">
         <div id="textLogo" class="hidden">
@@ -35,7 +41,9 @@
           <button onclick="setLang('ar')" id="btn-ar" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">العربية</button>
           <button onclick="setLang('hi')" id="btn-hi" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">हिन्दी</button>
         </div>
-        <button onclick="toggleView()" id="viewToggleBtn" class="hidden bg-stone-900 text-white px-3 py-1.5 rounded-full text-xs font-semibold shadow">📱 Vue Client</button>
+        <button onclick="toggleView()" id="viewToggleBtn" class="hidden bg-stone-900 text-white px-3 py-1.5 rounded-full text-xs font-semibold shadow relative">
+          📱 Vue Client
+        </button>
       </div>
     </div>
   </header>
@@ -45,7 +53,7 @@
     <span id="announcementText">📢 Special Announcement</span>
   </div>
 
-  <!-- 1. GUEST VIEW -->
+  <!-- 1. GUEST VIEW (GARDÉE AU FORMAT MOBILE HARMONIEUX) -->
   <div id="clientView" class="max-w-md mx-auto px-4 py-6 space-y-6">
     <div class="text-center space-y-1">
       <h2 class="text-2xl font-serif-luxury text-stone-900 font-normal tracking-wide" id="welcomeMsg">Welcome to Remal Hotel & Villas</h2>
@@ -73,7 +81,6 @@
         <h3 class="text-lg font-serif-luxury font-bold text-stone-900" id="facHeader">Hotel Facilities & Amenities</h3>
         <p class="text-xs text-stone-500" id="facSub">Explore our premium venues and spaces</p>
       </div>
-
       <div id="facilitiesContainer" class="space-y-6"></div>
     </div>
 
@@ -114,17 +121,40 @@
     </a>
   </div>
 
-  <!-- 2. ADMIN VIEW -->
-  <div id="adminView" class="hidden max-w-2xl mx-auto px-4 py-6 space-y-6">
-    <div class="flex bg-stone-200 p-1 rounded-2xl text-xs font-bold">
-      <button onclick="switchAdminTab('offers')" id="admTabOffers" class="flex-1 py-2.5 rounded-xl bg-stone-900 text-white">🏷️ Offres</button>
-      <button onclick="switchAdminTab('requests')" id="admTabRequests" class="flex-1 py-2.5 rounded-xl text-stone-600">🔔 Demandes</button>
-      <button onclick="switchAdminTab('banner')" id="admTabBanner" class="flex-1 py-2.5 rounded-xl text-stone-600">📢 Annonce</button>
+  <!-- 2. ADMIN VIEW (OPTIMISÉE TABLETTE ET ORDINATEUR) -->
+  <div id="adminView" class="hidden max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+    <div class="flex justify-between items-center bg-stone-200/80 p-1.5 rounded-2xl text-xs font-bold">
+      <div class="flex space-x-2 w-full md:w-auto">
+        <button onclick="switchAdminTab('offers')" id="admTabOffers" class="flex-1 md:flex-none px-6 py-2.5 rounded-xl bg-stone-900 text-white">🏷️ Offres</button>
+        <button onclick="switchAdminTab('requests')" id="admTabRequests" class="flex-1 md:flex-none px-6 py-2.5 rounded-xl text-stone-600 relative">
+          🔔 Demandes
+          <span id="requestBadge" class="hidden absolute -top-1 -right-1 bg-rose-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full pulse-notification">0</span>
+        </button>
+        <button onclick="switchAdminTab('banner')" id="admTabBanner" class="flex-1 md:flex-none px-6 py-2.5 rounded-xl text-stone-600">📢 Annonce</button>
+      </div>
+      <div class="hidden md:flex items-center space-x-2 bg-white px-4 py-1.5 rounded-xl border border-stone-300 text-stone-700 text-xs">
+        <span>🔔 Son d'alerte :</span>
+        <span id="audioStatusText" class="font-bold text-amber-700">Inactif</span>
+        <button onclick="enableAudioAlerts()" class="ml-2 bg-amber-600 hover:bg-amber-700 text-white px-2.5 py-1 rounded-lg text-[11px]">Activer</button>
+      </div>
     </div>
 
-    <!-- ADMIN: OFFRES -->
-    <div id="adminOffersPanel" class="space-y-6">
-      <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
+    <!-- BANNIÈRE AUDIO POUR PETITS ÉCRANS EN ADMIN -->
+    <div class="md:hidden bg-amber-50 border border-amber-200 p-3 rounded-2xl flex justify-between items-center text-xs text-amber-900">
+      <div class="flex items-center space-x-2">
+        <span>🔔 Alertes Sonores :</span>
+        <span id="audioStatusTextMobile" class="font-bold text-amber-700">Inactif</span>
+      </div>
+      <button onclick="enableAudioAlerts()" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1 rounded-xl font-bold shadow-sm">
+        🔊 Activer
+      </button>
+    </div>
+
+    <!-- ADMIN: GESTION DES OFFRES (LAYOUT CÔTÉ À CÔTÉ SUR TABLETTE/PC) -->
+    <div id="adminOffersPanel" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- Formulaire de création (5 colonnes) -->
+      <div class="lg:col-span-5 bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4 h-fit">
         <div class="flex justify-between items-center border-b border-stone-100 pb-3">
           <h2 class="text-base font-serif-luxury font-bold text-stone-900">Nouvelle Offre Cloud</h2>
           <span class="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold px-3 py-1 rounded-full">Supabase Live</span>
@@ -132,7 +162,7 @@
         <form id="adminForm" class="space-y-4">
           <div>
             <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Category</label>
-            <select id="adm_category" class="w-full border border-stone-200 rounded-xl p-3 bg-stone-50 text-sm">
+            <select id="adm_category" class="w-full border border-stone-200 rounded-xl p-3 bg-stone-50 text-sm outline-none">
               <option value="Falaj Restaurant">Falaj Restaurant</option>
               <option value="Sarab">Sarab Bar & Lounge</option>
               <option value="Al Waha Pool">Al Waha Pool</option>
@@ -141,19 +171,19 @@
           </div>
           <div>
             <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Price / Rate (e.g., AED 75)</label>
-            <input type="text" id="adm_price" placeholder="AED 75" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50" required>
+            <input type="text" id="adm_price" placeholder="AED 75" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50 outline-none" required>
           </div>
           <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-2">
             <p class="text-xs font-bold text-stone-700">Offer Titles</p>
-            <input type="text" id="adm_title_en" placeholder="Title (English)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white" required>
-            <input type="text" id="adm_title_ar" placeholder="العنوان (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white" required>
-            <input type="text" id="adm_title_hi" placeholder="शीर्षक (हिंदी)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white" required>
+            <input type="text" id="adm_title_en" placeholder="Title (English)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none" required>
+            <input type="text" id="adm_title_ar" placeholder="العنوان (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none" required>
+            <input type="text" id="adm_title_hi" placeholder="शीर्षक (हिंदी)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none" required>
           </div>
           <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-2">
             <p class="text-xs font-bold text-stone-700">Timings / Operating Days</p>
-            <input type="text" id="adm_timing_en" placeholder="Timings (English)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white" required>
-            <input type="text" id="adm_timing_ar" placeholder="الأوقات (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white" required>
-            <input type="text" id="adm_timing_hi" placeholder="समय (हिंदी)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white" required>
+            <input type="text" id="adm_timing_en" placeholder="Timings (English)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none" required>
+            <input type="text" id="adm_timing_ar" placeholder="الأوقات (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none" required>
+            <input type="text" id="adm_timing_hi" placeholder="समय (हिंदी)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none" required>
           </div>
           <div>
             <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Photo de l'offre</label>
@@ -164,31 +194,36 @@
           <button type="button" onclick="saveAdminData()" class="w-full bg-remal-sand hover:opacity-90 text-white font-bold py-3.5 rounded-xl shadow-md transition text-sm">Publier l'offre dans le Cloud</button>
         </form>
       </div>
-      <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-3">
-        <h3 class="text-xs font-bold text-stone-500 uppercase tracking-widest">Offres Actives</h3>
-        <div id="adminListContainer" class="space-y-2"></div>
+
+      <!-- Liste des offres actives (7 colonnes) -->
+      <div class="lg:col-span-7 bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
+        <h3 class="text-xs font-bold text-stone-500 uppercase tracking-widest border-b border-stone-100 pb-2">Offres Actives en Base</h3>
+        <div id="adminListContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3"></div>
       </div>
+
     </div>
 
-    <!-- ADMIN: DEMANDES -->
+    <!-- ADMIN: DEMANDES (TABLEAU D'AFFICHAGE LARGE) -->
     <div id="adminRequestsPanel" class="hidden space-y-4">
       <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
         <div class="flex justify-between items-center border-b border-stone-100 pb-3">
           <h2 class="text-base font-serif-luxury font-bold text-stone-900">Demandes de Service en Direct</h2>
-          <button onclick="fetchRequestsFromCloud()" class="text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 px-3 py-1.5 rounded-xl font-semibold border border-stone-200">🔄 Rafraîchir</button>
+          <button onclick="fetchRequestsFromCloud()" class="text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 px-4 py-2 rounded-xl font-semibold border border-stone-200">🔄 Rafraîchir</button>
         </div>
-        <div id="adminRequestsContainer" class="space-y-3"><p class="text-xs text-stone-400">Chargement des demandes...</p></div>
+        <div id="adminRequestsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <p class="text-xs text-stone-400">Chargement des demandes...</p>
+        </div>
       </div>
     </div>
 
     <!-- ADMIN: BANNIÈRE -->
-    <div id="adminBannerPanel" class="hidden space-y-4">
+    <div id="adminBannerPanel" class="hidden space-y-4 max-w-2xl mx-auto">
       <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
         <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-2">Gestion de la Bannière</h2>
         <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-2">
-          <input type="text" id="ann_en" placeholder="Announcement (English)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white">
-          <input type="text" id="ann_ar" placeholder="الإعلان (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white">
-          <input type="text" id="ann_hi" placeholder="घोषणा (हिंदी)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white">
+          <input type="text" id="ann_en" placeholder="Announcement (English)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none">
+          <input type="text" id="ann_ar" placeholder="الإعلان (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none">
+          <input type="text" id="ann_hi" placeholder="घोषणा (हिंदी)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none">
         </div>
         <div class="flex space-x-3">
           <button onclick="saveAnnouncement(true)" class="flex-1 bg-remal-sand text-white font-bold py-3 rounded-xl text-xs">📢 Publier & Activer</button>
@@ -202,6 +237,39 @@
     const SUPABASE_URL = 'https://tbsroleffqhyzbbfmtvp.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRic3JvbGVmZnFoeXpiYmZtdHZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MzUyMzMsImV4cCI6MjEwMDQxMTIzM30.oNKhoPJ7v__YJQW7flC9UsP2cIDHLMuxjqmf6_NvYW4';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let audioContext = null;
+    let audioEnabled = false;
+    let previousPendingCount = 0;
+
+    function enableAudioAlerts() {
+      try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        audioEnabled = true;
+        const textDesktop = document.getElementById('audioStatusText');
+        const textMobile = document.getElementById('audioStatusTextMobile');
+        if (textDesktop) { textDesktop.innerText = "✅ Actif"; textDesktop.className = "font-bold text-emerald-700"; }
+        if (textMobile) { textMobile.innerText = "✅ Actif"; textMobile.className = "font-bold text-emerald-700"; }
+        playNotificationSound();
+      } catch (e) { console.error("Erreur Audio:", e); }
+    }
+
+    function playNotificationSound() {
+      if (!audioEnabled || !audioContext) return;
+      try {
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, audioContext.currentTime);
+        osc.frequency.setValueAtTime(880, audioContext.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.start();
+        osc.stop(audioContext.currentTime + 0.5);
+      } catch (e) { console.error(e); }
+    }
 
     document.addEventListener('DOMContentLoaded', () => {
       const fileInput = document.getElementById('imageFileInput');
@@ -228,106 +296,69 @@
     let cachedRequests = [];
     let activeAnnouncement = null;
 
-    // 📸 DONNÉES COMPLETES AVEC VOTRE POOL.JPG, GYM.JPG ET KID_CLUB.JPG !
     const facilitiesData = [
       {
         id: 'exterior',
         images: ['Remal_exterior_view1.jpg', 'Remal_exterior_view2.jpg', 'Remal_exterior_view3.jpg', 'Remal_exterior_view4.jpg'],
         title: { en: 'Hotel Exterior & Grounds', ar: 'المظهر الخارجي والمحيط', hi: 'होटल का बाहरी दृश्य' },
-        desc: { 
-          en: 'Experience our pristine architecture and welcoming surroundings at Remal Hotel & Villas.', 
-          ar: 'استمتع بالتصميم المعماري الفريد والمحيط الهادئ في فندق وڤلل رمال.', 
-          hi: 'रेमल होटल एंड विला के शानदार वास्तुशिल्प का अनुभव करें।' 
-        },
+        desc: { en: 'Experience our pristine architecture and welcoming surroundings at Remal Hotel & Villas.', ar: 'استمتع بالتصميم المعماري الفريد والمحيط الهادئ في فندق وڤلل رمال.', hi: 'रेमल होटल एंड विला के शानदार वास्तुशिल्प का अनुभव करें।' },
         timing: { en: '24/7 Welcome', ar: 'ترحيب على مدار الساعة', hi: '24 घंटे स्वागत' }
       },
       {
         id: 'pool',
         images: ['Pool.jpg'],
         title: { en: 'Al Waha Swimming Pool', ar: 'مسبح الواحة', hi: 'अल वाहा स्विमिंग पूल' },
-        desc: { 
-          en: 'Relax by our outdoor swimming pool with comfortable loungers and refreshing drinks.', 
-          ar: 'استرخِ بجانب المسبح الخارجي الجميل مع المشروبات المنعشة.', 
-          hi: 'हमारे बाहरी स्विमिंग पूल के पास आराम करें।' 
-        },
+        desc: { en: 'Relax by our outdoor swimming pool with comfortable loungers and refreshing drinks.', ar: 'استرخِ بجانب المسبح الخارجي الجميل مع المشروبات المنعشة.', hi: 'हमारे बाहरी स्विमिंग पूल के पास आराम करें।' },
         timing: { en: '07:00 AM - 08:00 PM', ar: '٠٧:٠٠ صباحاً - ٠٨:٠٠ مساءً', hi: 'सुबह 07:00 - रात 08:00' }
       },
       {
         id: 'gym',
         images: ['Gym.jpg'],
         title: { en: 'Recreation & Fitness Gym', ar: 'مركز اللياقة والصالة الرياضية', hi: 'फिटनेस और जिम' },
-        desc: { 
-          en: 'Stay active with modern fitness equipment designed for your daily workouts.', 
-          ar: 'حافظ على نشاطك وصحتك مع أحدث معدات اللياقة البدنية.', 
-          hi: 'हमारे आधुनिक जिम उपकरणों के साथ फिट रहें।' 
-        },
+        desc: { en: 'Stay active with modern fitness equipment designed for your daily workouts.', ar: 'حافظ على نشاطك وصحتك مع أحدث معدات اللياقة البدنية.', hi: 'हमारे आधुनिक जिम उपकरणों के साथ फिट रहें।' },
         timing: { en: '06:00 AM - 10:00 PM', ar: '٠٦:٠٠ صباحاً - ١٠:٠٠ مساءً', hi: 'सुबह 06:00 - रात 10:00' }
       },
       {
         id: 'kids',
         images: ['Kid_club.jpg'],
-        title: { en: 'Kids Club & Play Area', ar: 'nادي الأطفال ومجهزة الألعاب', hi: 'किड्स क्लब और प्ले एरिया' },
-        desc: { 
-          en: 'A safe, fun, and engaging play area for our young guests.', 
-          ar: 'منطقة ألعاب آمنة وممتعة ومخصصة لأطفالنا الأعزاء.', 
-          hi: 'हमारे छोटे मेहमानों के लिए एक सुरक्षित और मज़ेदार खेल क्षेत्र।' 
-        },
+        title: { en: 'Kids Club & Play Area', ar: 'نادي الأطفال ومجهزة الألعاب', hi: 'किड्स क्लब और प्ले एरिया' },
+        desc: { en: 'A safe, fun, and engaging play area for our young guests.', ar: 'منطقة ألعاب آمنة وممتعة ومخصصة لأطفالنا الأعزاء.', hi: 'हमारे छोटे मेहमानों के लिए एक सुरक्षित और मज़ेदार खेल क्षेत्र।' },
         timing: { en: '09:00 AM - 07:00 PM', ar: '٠٩:٠٠ صباحاً - ٠٧:٠٠ مساءً', hi: 'सुबह 09:00 - शाम 07:00' }
       },
       {
         id: 'lobby',
         images: ['Lobby_1.jpg', 'Lobby_2.jpg', 'Lobby_3.jpg', 'Lobby_4.jpg'],
         title: { en: 'Grand Lobby & Reception', ar: 'البهو الرئيسي والاستقبال', hi: 'भव्य लॉबी और रिसेप्शन' },
-        desc: { 
-          en: 'An elegant welcoming ambiance with 24/7 concierge assistance.', 
-          ar: 'أجواء ترحيبية راقية مع خدمة الكونسيرج الممتازة على مدار الساعة.', 
-          hi: '24/7 द्वारपाल सहायता के साथ एक सुरुचिपूर्ण स्वागत योग्य माहौल।' 
-        },
+        desc: { en: 'An elegant welcoming ambiance with 24/7 concierge assistance.', ar: 'أجواء ترحيبية راقية مع خدمة الكونسيرج الممتازة على مدار الساعة.', hi: '24/7 द्वारपाल सहायता के साथ एक सुरुचिपूर्ण स्वागत योग्य माहौल।' },
         timing: { en: '24 Hours Open', ar: 'مفتوح ٢٤ ساعة', hi: '24 घंटे खुला है' }
       },
       {
         id: 'restaurant',
         images: ['Restaurant-1.jpg', 'Restaurant-2.jpg', 'Restaurant-3.jpg', 'Restaurant-4.jpg'],
         title: { en: 'Falaj Restaurant & Dining', ar: 'مطعم الفلج والوجبات', hi: 'फलज रेस्टोरेंट और भोजन' },
-        desc: { 
-          en: 'International buffet breakfast & fine dining options serving delicious global cuisines.', 
-          ar: 'بوفيه إفطار عالمي وتجربة طعام فاخرة تقدم أشهى المأكولات العالمية.', 
-          hi: 'अंतर्राष्ट्रीय बफ़े नाश्ता और स्वादिष्ट वैश्विक व्यंजन।' 
-        },
+        desc: { en: 'International buffet breakfast & fine dining options serving delicious global cuisines.', ar: 'بوفيه إفطار عالمي وتجربة طعام فاخرة تقدم أشهى المأكولات العالمية.', hi: 'अंतर्राष्ट्रीय बफ़े नाश्ता और स्वादिष्ट वैश्विक व्यंजन।' },
         timing: { en: '06:30 AM - 11:00 PM', ar: '٠٦:٣٠ صباحاً - ١١:٠٠ مساءً', hi: 'सुबह 06:30 - रात 11:00' }
       },
       {
         id: 'rooms',
         images: ['Room1.jpg', 'Room2.jpg', 'Room3.jpg', 'Room4.jpg', 'Room5.jpg', 'Room6.jpg', 'Room7.jpg', 'Room8.jpg'],
         title: { en: 'Luxury Guest Rooms', ar: 'غرف النزلاء الفاخرة', hi: 'लक्जरी अतिथि कमरे' },
-        desc: { 
-          en: 'Spacious, modernly equipped rooms designed for maximum comfort and relaxation.', 
-          ar: 'غرف واسعة ومجهزة بأحدث وسائل الراحة المصممة لضمان أقصى درجات الاسترخاء.', 
-          hi: 'अधिकतम आराम और विश्राम के लिए डिज़ाइन किए गए विशाल कमरे।' 
-        },
-        timing: { en: 'Daily Housekeeping', ar: 'تنظيف يومي للغرف', hi: 'दैनिक सफाई' }
+        desc: { en: 'Spacious, modernly equipped rooms designed for maximum comfort and relaxation.', ar: 'غرف واسعة ومجهزة بأحدث وسائل الراحة المصممة لضمان أقصى درجات الاسترخاء.', hi: 'अधिकतम आराम और विश्राम के लिए डिज़ाइन किए गए विशाल कमरे।' },
+        timing: { en: 'Daily Housekeeping', ar: 'تنظيف يومي للغرف', hi: 'دैनिक सफाई' }
       },
       {
         id: 'villas',
         images: ['Villa1.jpg', 'Villa2.jpg', 'Villa3.jpg', 'Villa4.jpg', 'Villa5.jpg'],
-        title: { en: 'VIP Private Villas', ar: 'الفيلات الملكية الخاصة VIP', hi: 'वीआईपी निजी विला' },
-        desc: { 
-          en: 'Fully furnished private luxury villas for a premium private stay experience.', 
-          ar: 'فيلات فاخرة مفروشة بالكامل لإقامة خاصة وفخمة لا تُنسى.', 
-          hi: 'प्रीमियम निजी प्रवास के अनुभव के लिए पूरी तरह से सुसज्जित निजी विला।' 
-        },
+        title: { en: 'VIP Private Villas', ar: 'الفيلات الملكية الخاصة VIP', hi: 'वीआईपी निजी विلا' },
+        desc: { en: 'Fully furnished private luxury villas for a premium private stay experience.', ar: 'فيلات فاخرة مفروشة بالكامل لإقامة خاصة وفخمة لا تُنسى.', hi: 'प्रीमियम निजी प्रवास के अनुभव के लिए पूरी तरह से सुसज्जित निजी विला।' },
         timing: { en: 'VIP Concierge Service', ar: 'خدمة كونسيرج خاصة', hi: 'वीआईपी सेवा' }
       },
       {
         id: 'meeting',
         images: ['Meeting_room1.jpg', 'Meeting_room2.jpg', 'Meeting_room3.jpg', 'Meeting_room4.jpg'],
         title: { en: 'Meeting & Event Halls', ar: 'قاعات الاجتماعات والفعاليات', hi: 'मीटिंग और इवेंट हॉल' },
-        desc: { 
-          en: 'First-class venues featuring contemporary furnishings for conferences and business events.', 
-          ar: 'قاعات ممتازة مجهزة بأحدث التقنيات لعقد المؤتمرات والاجتماعات.', 
-          hi: 'सम्मेलनों और व्यावसायिक आयोजनों के लिए प्रथम श्रेणी के स्थान।' 
-        },
-        timing: { en: 'By Reservation', ar: 'حسب الحجز', hi: 'आरक्षण द्वारा' }
+        desc: { en: 'First-class venues featuring contemporary furnishings for conferences and business events.', ar: 'قاعات ممتازة مجهزة بأحدث التقنيات لعقد المؤتمرات والاجتماعات.', hi: 'सम्मेलनों और व्यावसायिक आयोजनों के लिए प्रथम श्रेणी के स्थान।' },
+        timing: { en: 'By Reservation', ar: 'حسب الحجز', hi: 'اراض الرعاية' }
       }
     ];
 
@@ -354,6 +385,9 @@
       renderFacilities();
       await fetchOffersFromCloud();
       await fetchAnnouncementFromCloud();
+      await fetchRequestsFromCloud();
+
+      setInterval(fetchRequestsFromCloud, 5000);
     }
 
     function renderFacilities() {
@@ -414,9 +448,27 @@
     }
 
     async function fetchRequestsFromCloud() {
-      const { data } = await supabaseClient.from('requests').select('*').order('id', { ascending: false });
+      const { data, error } = await supabaseClient.from('requests').select('*').order('id', { ascending: false });
+      if (error) return;
+
       cachedRequests = data || [];
-      renderAdminRequests();
+      const pendingRequests = cachedRequests.filter(r => r.status === 'Pending' || !r.status);
+      const pendingCount = pendingRequests.length;
+
+      if (pendingCount > previousPendingCount) {
+        playNotificationSound();
+      }
+      previousPendingCount = pendingCount;
+
+      const badge = document.getElementById('requestBadge');
+      if (pendingCount > 0) {
+        badge.innerText = pendingCount;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+
+      if (currentView === 'admin') renderAdminRequests();
     }
 
     function renderCategoryFilters() {
@@ -479,24 +531,26 @@
 
     function renderAdminRequests() {
       const container = document.getElementById('adminRequestsContainer');
-      if (cachedRequests.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400 text-center py-4">Aucune demande.</p>`; return; }
+      if (cachedRequests.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400 text-center py-4 col-span-2">Aucune demande.</p>`; return; }
       container.innerHTML = cachedRequests.map(req => `
-        <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 text-xs space-y-3">
-          <div class="flex justify-between items-start">
-            <div>
-              <span class="font-bold text-stone-900 text-sm">Chambre : ${req.room || 'N/A'}</span>
-              <p class="text-remal-sand font-semibold">${req.service}</p>
+        <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 text-xs space-y-3 flex flex-col justify-between">
+          <div class="space-y-2">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="font-bold text-stone-900 text-sm">Chambre : ${req.room || 'N/A'}</span>
+                <p class="text-remal-sand font-semibold">${req.service}</p>
+              </div>
+              <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full ${req.status === 'Completed' ? 'bg-emerald-100 text-emerald-800' : req.status === 'In Progress' ? 'bg-blue-100 text-blue-800' : 'bg-rose-100 text-rose-800 pulse-notification'}">${req.status || 'Pending'}</span>
             </div>
-            <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800">${req.status || 'Pending'}</span>
+            <p class="text-stone-700 bg-white p-3 rounded-xl border border-stone-100">${req.details}</p>
           </div>
-          <p class="text-stone-700 bg-white p-3 rounded-xl border border-stone-100">${req.details}</p>
           <div class="flex justify-between items-center pt-2 border-t border-stone-200 text-[11px]">
             <div class="space-x-1">
-              <button onclick="updateRequestStatus(${req.id}, 'Pending')" class="px-2 py-1 bg-amber-100 text-amber-800 rounded">Attente</button>
-              <button onclick="updateRequestStatus(${req.id}, 'In Progress')" class="px-2 py-1 bg-blue-100 text-blue-800 rounded">En cours</button>
-              <button onclick="updateRequestStatus(${req.id}, 'Completed')" class="px-2 py-1 bg-emerald-100 text-emerald-800 rounded">Terminé</button>
+              <button onclick="updateRequestStatus(${req.id}, 'Pending')" class="px-2 py-1 bg-amber-100 text-amber-800 rounded font-semibold">Attente</button>
+              <button onclick="updateRequestStatus(${req.id}, 'In Progress')" class="px-2 py-1 bg-blue-100 text-blue-800 rounded font-semibold">En cours</button>
+              <button onclick="updateRequestStatus(${req.id}, 'Completed')" class="px-2 py-1 bg-emerald-100 text-emerald-800 rounded font-semibold">Terminé</button>
             </div>
-            <button onclick="deleteRequest(${req.id})" class="text-rose-600 font-bold p-1">🗑️</button>
+            <button onclick="deleteRequest(${req.id})" class="text-rose-600 font-bold p-1 hover:bg-rose-50 rounded">🗑️</button>
           </div>
         </div>
       `).join('');
@@ -572,18 +626,18 @@
 
     function switchAdminTab(tab) {
       ['adminOffersPanel', 'adminRequestsPanel', 'adminBannerPanel'].forEach(p => document.getElementById(p).classList.add('hidden'));
-      ['admTabOffers', 'admTabRequests', 'admTabBanner'].forEach(b => document.getElementById(b).className = "flex-1 py-2.5 rounded-xl text-stone-600 font-bold");
+      ['admTabOffers', 'admTabRequests', 'admTabBanner'].forEach(b => document.getElementById(b).className = "flex-1 md:flex-none px-6 py-2.5 rounded-xl text-stone-600 font-bold relative");
 
       if (tab === 'offers') {
         document.getElementById('adminOffersPanel').classList.remove('hidden');
-        document.getElementById('admTabOffers').className = "flex-1 py-2.5 rounded-xl bg-stone-900 text-white font-bold";
+        document.getElementById('admTabOffers').className = "flex-1 md:flex-none px-6 py-2.5 rounded-xl bg-stone-900 text-white font-bold relative";
       } else if (tab === 'requests') {
         document.getElementById('adminRequestsPanel').classList.remove('hidden');
-        document.getElementById('admTabRequests').className = "flex-1 py-2.5 rounded-xl bg-stone-900 text-white font-bold";
+        document.getElementById('admTabRequests').className = "flex-1 md:flex-none px-6 py-2.5 rounded-xl bg-stone-900 text-white font-bold relative";
         fetchRequestsFromCloud();
       } else if (tab === 'banner') {
         document.getElementById('adminBannerPanel').classList.remove('hidden');
-        document.getElementById('admTabBanner').className = "flex-1 py-2.5 rounded-xl bg-stone-900 text-white font-bold";
+        document.getElementById('admTabBanner').className = "flex-1 md:flex-none px-6 py-2.5 rounded-xl bg-stone-900 text-white font-bold relative";
       }
     }
 
