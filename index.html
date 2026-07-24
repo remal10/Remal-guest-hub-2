@@ -5,81 +5,111 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Remal Hotel & Villas - Guest Hub</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Playfair Display & Plus Jakarta Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .font-serif-luxury { font-family: 'Playfair Display', serif; }
     .scrollbar-none::-webkit-scrollbar { display: none; }
     .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+    }
+    .gold-gradient-bg {
+      background: linear-gradient(135deg, #1C1917 0%, #292524 100%);
+    }
+    .gold-text {
+      background: linear-gradient(135deg, #DFBA73 0%, #C5A059 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
   </style>
 </head>
-<body class="bg-stone-100 text-stone-800 font-sans min-h-screen">
+<body class="bg-stone-900 text-stone-100 min-h-screen">
 
-  <!-- NAVIGATION BAR -->
-  <header class="bg-stone-900 text-white sticky top-0 z-50 shadow-lg border-b-2 border-amber-600">
-    <div class="max-w-2xl mx-auto px-4 py-3 flex justify-between items-center">
-      <div>
-        <h1 class="text-lg font-serif text-amber-500 font-bold tracking-wider">REMAL HOTEL & VILLAS</h1>
-        <p class="text-[9px] text-stone-400 tracking-widest uppercase" id="roomIndicator">Al Dhannah City • Guest Hub</p>
-      </div>
+  <!-- HEADER HAUT DE GAMME -->
+  <header class="bg-stone-950/90 backdrop-blur-md sticky top-0 z-50 border-b border-amber-600/30 shadow-2xl">
+    <div class="max-w-2xl mx-auto px-5 py-3 flex justify-between items-center">
+      
+      <!-- GAUCHE : SÉLECTEUR DE LANGUE & BOUTON ADMIN -->
+      <div class="flex items-center space-x-3">
+        <!-- Trilingual Language Selector -->
+        <div id="langSelector" class="flex bg-stone-900/80 p-1 rounded-full border border-amber-500/20 text-[11px] font-medium">
+          <button onclick="setLang('en')" id="btn-en" class="px-2.5 py-1 rounded-full bg-amber-600 text-white font-semibold shadow">EN</button>
+          <button onclick="setLang('ar')" id="btn-ar" class="px-2.5 py-1 rounded-full text-stone-400 hover:text-amber-400">العربية</button>
+          <button onclick="setLang('hi')" id="btn-hi" class="px-2.5 py-1 rounded-full text-stone-400 hover:text-amber-400">हिन्दी</button>
+        </div>
 
-      <div class="flex items-center space-x-2">
         <!-- Bouton Admin (Visible si ?admin=true) -->
-        <button onclick="toggleView()" id="viewToggleBtn" class="hidden bg-amber-700 text-white px-2.5 py-1 rounded text-xs font-semibold hover:bg-amber-800">
+        <button onclick="toggleView()" id="viewToggleBtn" class="hidden bg-gradient-to-r from-amber-700 to-amber-900 text-white px-3 py-1.5 rounded-full text-xs font-semibold shadow border border-amber-500/30">
           📱 Vue Client
         </button>
+      </div>
 
-        <!-- Trilingual Language Selector -->
-        <div id="langSelector" class="flex bg-stone-800 p-0.5 rounded text-xs font-bold border border-stone-700">
-          <button onclick="setLang('en')" id="btn-en" class="px-2 py-0.5 rounded bg-amber-600 text-white">EN</button>
-          <button onclick="setLang('ar')" id="btn-ar" class="px-2 py-0.5 rounded text-stone-400">العربية</button>
-          <button onclick="setLang('hi')" id="btn-hi" class="px-2 py-0.5 rounded text-stone-400">हिन्दी</button>
+      <!-- DROITE : LOGO OFFICIAL REMAL -->
+      <div class="flex items-center space-x-2">
+        <div class="text-right hidden sm:block">
+          <p class="text-[9px] text-amber-500/80 tracking-widest uppercase font-semibold" id="roomIndicator">Al Dhannah City</p>
+        </div>
+        <!-- Utilisation de l'image du logo Remal -->
+        <img src="logo.png" alt="Remal Hotel & Villas" class="h-10 sm:h-12 object-contain drop-shadow-md" onerror="this.style.display='none'; document.getElementById('textLogo').classList.remove('hidden');">
+        <div id="textLogo" class="hidden text-right">
+          <h1 class="text-sm font-serif-luxury gold-text font-bold tracking-widest">REMAL</h1>
+          <p class="text-[8px] text-stone-400 uppercase tracking-wider">Hotel & Villas</p>
         </div>
       </div>
+
     </div>
   </header>
 
-  <!-- BANNIÈRE D'ANNONCE DYNAMIQUE (VUE CLIENT) -->
-  <div id="announcementBanner" class="hidden bg-amber-600 text-white px-4 py-2 text-center text-xs font-bold shadow-md animate-pulse">
+  <!-- BANNIÈRE D'ANNONCE DYNAMIQUE -->
+  <div id="announcementBanner" class="hidden bg-gradient-to-r from-amber-700 via-amber-600 to-amber-800 text-amber-50 px-4 py-2.5 text-center text-xs font-medium tracking-wide shadow-lg border-b border-amber-500/30">
     <span id="announcementText">📢 Special Announcement</span>
   </div>
 
   <!-- 1. GUEST VIEW -->
-  <div id="clientView" class="max-w-md mx-auto p-4 space-y-5">
-    <div class="bg-amber-800 text-amber-100 p-3 rounded-xl shadow text-center text-xs font-medium">
-      <span id="welcomeMsg">Welcome to Remal Hotel & Villas</span>
+  <div id="clientView" class="max-w-md mx-auto px-4 py-6 space-y-6">
+    
+    <!-- En-tête de bienvenue -->
+    <div class="glass-card rounded-2xl p-4 text-center border border-amber-500/20 shadow-xl">
+      <p class="text-xs font-serif-luxury italic text-stone-700 tracking-wide" id="welcomeMsg">Welcome to Remal Hotel & Villas</p>
     </div>
 
     <!-- Navigation Onglets Client -->
-    <div class="flex border-b border-stone-300">
-      <button onclick="switchGuestTab('offers')" id="tabOffersBtn" class="flex-1 py-2 text-xs font-bold border-b-2 border-amber-700 text-amber-800">
+    <div class="flex bg-stone-950/60 p-1.5 rounded-2xl border border-amber-600/20 text-xs font-medium">
+      <button onclick="switchGuestTab('offers')" id="tabOffersBtn" class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 text-white font-semibold shadow-lg">
         🏷️ <span id="lblTabOffers">Special Offers</span>
       </button>
-      <button onclick="switchGuestTab('request')" id="tabRequestBtn" class="flex-1 py-2 text-xs font-bold text-stone-500 border-b-2 border-transparent">
+      <button onclick="switchGuestTab('request')" id="tabRequestBtn" class="flex-1 py-2.5 rounded-xl text-stone-400 hover:text-stone-200">
         🔔 <span id="lblTabRequest">Guest Request / Service</span>
       </button>
     </div>
 
     <!-- SECTION OFFRES -->
-    <div id="guestOffersSection" class="space-y-4">
+    <div id="guestOffersSection" class="space-y-5">
       <div id="categoryFilters" class="flex space-x-2 overflow-x-auto pb-1 text-xs font-semibold scrollbar-none"></div>
-      <div id="cardsContainer" class="space-y-4">
-        <p class="text-center text-xs text-stone-400 py-8">Chargement des offres en direct...</p>
+      <div id="cardsContainer" class="space-y-5">
+        <p class="text-center text-xs text-stone-500 py-8">Chargement des offres en direct...</p>
       </div>
     </div>
 
     <!-- SECTION DEMANDE DE SERVICE -->
-    <div id="guestRequestSection" class="hidden bg-white p-5 rounded-2xl shadow-md border border-stone-200 space-y-4">
-      <h2 class="text-sm font-bold text-stone-900 uppercase tracking-wide border-b pb-2" id="reqHeader">Request Guest Service</h2>
+    <div id="guestRequestSection" class="hidden glass-card p-6 rounded-3xl shadow-2xl border border-amber-500/20 space-y-5 text-stone-800">
+      <h2 class="text-sm font-bold text-stone-900 uppercase tracking-widest border-b border-stone-200 pb-3 font-serif-luxury" id="reqHeader">Request Guest Service</h2>
       
-      <form id="guestRequestForm" class="space-y-3">
+      <form id="guestRequestForm" class="space-y-4">
         <div>
-          <label class="block text-xs font-bold text-stone-600 mb-1" id="lblRoom">Room / Villa Number</label>
-          <input type="text" id="req_room" placeholder="e.g., 104 or Villa 02" class="w-full border rounded-lg p-2.5 text-sm bg-stone-50" required>
+          <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblRoom">Room / Villa Number</label>
+          <input type="text" id="req_room" placeholder="e.g., 104 or Villa 02" class="w-full border border-stone-300 rounded-xl p-3 text-sm bg-white/80 focus:ring-2 focus:ring-amber-500 outline-none" required>
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-stone-600 mb-1" id="lblService">Service Type</label>
-          <select id="req_service" class="w-full border rounded-lg p-2.5 text-sm bg-stone-50">
+          <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblService">Service Type</label>
+          <select id="req_service" class="w-full border border-stone-300 rounded-xl p-3 text-sm bg-white/80 focus:ring-2 focus:ring-amber-500 outline-none">
             <option value="Housekeeping / Towels">Housekeeping / Extra Towels</option>
             <option value="Room Service / Dining">Room Service / Order Food</option>
             <option value="Maintenance / Technical">Maintenance / Technical Support</option>
@@ -89,11 +119,11 @@
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-stone-600 mb-1" id="lblDetails">Additional Notes / Request Details</label>
-          <textarea id="req_details" rows="3" placeholder="Specify your request here..." class="w-full border rounded-lg p-2.5 text-sm bg-stone-50" required></textarea>
+          <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblDetails">Additional Notes / Request Details</label>
+          <textarea id="req_details" rows="3" placeholder="Specify your request here..." class="w-full border border-stone-300 rounded-xl p-3 text-sm bg-white/80 focus:ring-2 focus:ring-amber-500 outline-none" required></textarea>
         </div>
 
-        <button type="button" onclick="submitGuestRequest()" class="w-full bg-amber-800 text-white font-bold py-3 rounded-xl shadow hover:bg-amber-900 transition text-sm">
+        <button type="button" onclick="submitGuestRequest()" class="w-full bg-gradient-to-r from-amber-700 via-amber-800 to-amber-900 text-amber-50 font-bold py-3.5 rounded-xl shadow-xl hover:opacity-95 transition text-sm tracking-wider">
           <span id="btnSubmitReq">Send Request to Reception</span>
         </button>
       </form>
@@ -101,32 +131,32 @@
   </div>
 
   <!-- 2. ADMIN VIEW -->
-  <div id="adminView" class="hidden max-w-2xl mx-auto p-4 space-y-6">
+  <div id="adminView" class="hidden max-w-2xl mx-auto px-4 py-6 space-y-6">
     <!-- Onglets Admin -->
-    <div class="flex bg-stone-200 p-1 rounded-xl text-xs font-bold">
-      <button onclick="switchAdminTab('offers')" id="admTabOffers" class="flex-1 py-2 rounded-lg bg-amber-800 text-white">
+    <div class="flex bg-stone-950 p-1.5 rounded-2xl border border-amber-600/20 text-xs font-bold">
+      <button onclick="switchAdminTab('offers')" id="admTabOffers" class="flex-1 py-2.5 rounded-xl bg-amber-800 text-white">
         🏷️ Offres
       </button>
-      <button onclick="switchAdminTab('requests')" id="admTabRequests" class="flex-1 py-2 rounded-lg text-stone-600">
+      <button onclick="switchAdminTab('requests')" id="admTabRequests" class="flex-1 py-2.5 rounded-xl text-stone-400">
         🔔 Demandes
       </button>
-      <button onclick="switchAdminTab('banner')" id="admTabBanner" class="flex-1 py-2 rounded-lg text-stone-600">
+      <button onclick="switchAdminTab('banner')" id="admTabBanner" class="flex-1 py-2.5 rounded-xl text-stone-400">
         📢 Annonce
       </button>
     </div>
 
     <!-- ADMIN: GESTION DES OFFRES -->
     <div id="adminOffersPanel" class="space-y-6">
-      <div class="bg-white rounded-2xl p-6 shadow-md border border-stone-200">
-        <div class="flex justify-between items-center border-b pb-3 mb-4">
-          <h2 class="text-lg font-bold text-stone-900">Nouvelle Offre Cloud</h2>
-          <span class="text-xs bg-emerald-100 text-emerald-800 font-semibold px-2.5 py-1 rounded-full">Supabase Live</span>
+      <div class="bg-stone-900 rounded-3xl p-6 shadow-2xl border border-amber-600/30">
+        <div class="flex justify-between items-center border-b border-stone-800 pb-3 mb-5">
+          <h2 class="text-base font-serif-luxury font-bold text-amber-400 tracking-wide">Nouvelle Offre Cloud</h2>
+          <span class="text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-800 font-semibold px-3 py-1 rounded-full">Supabase Live</span>
         </div>
 
         <form id="adminForm" class="space-y-4">
           <div>
-            <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Category</label>
-            <select id="adm_category" class="w-full border rounded-lg p-2 bg-stone-50 text-sm">
+            <label class="block text-xs font-bold text-stone-400 uppercase mb-1">Category</label>
+            <select id="adm_category" class="w-full border border-stone-700 rounded-xl p-3 bg-stone-800 text-sm text-stone-200">
               <option value="Falaj Restaurant">Falaj Restaurant</option>
               <option value="Sarab">Sarab Bar & Lounge</option>
               <option value="Al Waha Pool">Al Waha Pool</option>
@@ -135,76 +165,76 @@
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Price / Rate (e.g., AED 75)</label>
-            <input type="text" id="adm_price" placeholder="AED 75" class="w-full border rounded-lg p-2 text-sm" required>
+            <label class="block text-xs font-bold text-stone-400 uppercase mb-1">Price / Rate (e.g., AED 75)</label>
+            <input type="text" id="adm_price" placeholder="AED 75" class="w-full border border-stone-700 rounded-xl p-3 text-sm bg-stone-800 text-stone-100" required>
           </div>
 
-          <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 space-y-2">
-            <p class="text-xs font-bold text-amber-900">Offer Titles</p>
-            <input type="text" id="adm_title_en" placeholder="Title (English)" class="w-full border rounded p-2 text-sm bg-white" required>
-            <input type="text" id="adm_title_ar" placeholder="العنوان (بالعربية)" dir="rtl" class="w-full border rounded p-2 text-sm bg-white" required>
-            <input type="text" id="adm_title_hi" placeholder="शीर्षक (हिंदी)" class="w-full border rounded p-2 text-sm bg-white" required>
+          <div class="p-4 bg-stone-950/60 rounded-2xl border border-amber-600/20 space-y-2">
+            <p class="text-xs font-bold text-amber-400">Offer Titles</p>
+            <input type="text" id="adm_title_en" placeholder="Title (English)" class="w-full border border-stone-700 rounded-lg p-2.5 text-sm bg-stone-900 text-stone-100" required>
+            <input type="text" id="adm_title_ar" placeholder="العنوان (بالعربية)" dir="rtl" class="w-full border border-stone-700 rounded-lg p-2.5 text-sm bg-stone-900 text-stone-100" required>
+            <input type="text" id="adm_title_hi" placeholder="शीर्षक (हिंदी)" class="w-full border border-stone-700 rounded-lg p-2.5 text-sm bg-stone-900 text-stone-100" required>
           </div>
 
-          <div class="p-3 bg-stone-50 rounded-xl border border-stone-200 space-y-2">
-            <p class="text-xs font-bold text-stone-700">Timings / Operating Days</p>
-            <input type="text" id="adm_timing_en" placeholder="Timings (English)" class="w-full border rounded p-2 text-sm bg-white" required>
-            <input type="text" id="adm_timing_ar" placeholder="الأوقات (بالعربية)" dir="rtl" class="w-full border rounded p-2 text-sm bg-white" required>
-            <input type="text" id="adm_timing_hi" placeholder="समय (हिंदी)" class="w-full border rounded p-2 text-sm bg-white" required>
+          <div class="p-4 bg-stone-950/60 rounded-2xl border border-stone-800 space-y-2">
+            <p class="text-xs font-bold text-stone-400">Timings / Operating Days</p>
+            <input type="text" id="adm_timing_en" placeholder="Timings (English)" class="w-full border border-stone-700 rounded-lg p-2.5 text-sm bg-stone-900 text-stone-100" required>
+            <input type="text" id="adm_timing_ar" placeholder="الأوقات (بالعربية)" dir="rtl" class="w-full border border-stone-700 rounded-lg p-2.5 text-sm bg-stone-900 text-stone-100" required>
+            <input type="text" id="adm_timing_hi" placeholder="समय (हिंदी)" class="w-full border border-stone-700 rounded-lg p-2.5 text-sm bg-stone-900 text-stone-100" required>
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-stone-700 uppercase mb-1">Photo de l'offre</label>
-            <input type="file" id="imageFileInput" accept="image/*" class="w-full text-xs text-stone-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-800 file:text-white hover:file:bg-amber-900 cursor-pointer mb-2" />
-            <p id="uploadStatus" class="text-[10px] text-stone-500 mb-2"></p>
+            <label class="block text-xs font-bold text-stone-400 uppercase mb-1">Photo de l'offre</label>
+            <input type="file" id="imageFileInput" accept="image/*" class="w-full text-xs text-stone-400 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-amber-800 file:text-white hover:file:bg-amber-900 cursor-pointer mb-2" />
+            <p id="uploadStatus" class="text-[10px] text-stone-400 mb-2"></p>
             <input type="hidden" id="adm_image" />
           </div>
 
-          <button type="button" onclick="saveAdminData()" class="w-full bg-amber-800 text-white font-bold py-3 rounded-xl shadow hover:bg-amber-900 transition text-sm">
+          <button type="button" onclick="saveAdminData()" class="w-full bg-gradient-to-r from-amber-700 to-amber-900 text-white font-bold py-3.5 rounded-xl shadow-xl hover:opacity-95 transition text-sm">
             Publier l'offre dans le Cloud
           </button>
         </form>
       </div>
 
-      <div class="bg-white rounded-2xl p-6 shadow-md border border-stone-200 space-y-3">
-        <h3 class="text-sm font-bold text-stone-800 uppercase tracking-wider">Offres Actives</h3>
+      <div class="bg-stone-900 rounded-3xl p-6 shadow-2xl border border-stone-800 space-y-3">
+        <h3 class="text-xs font-bold text-stone-400 uppercase tracking-widest">Offres Actives</h3>
         <div id="adminListContainer" class="space-y-2"></div>
       </div>
     </div>
 
     <!-- ADMIN: SUIVI DES DEMANDES CLIENTS -->
     <div id="adminRequestsPanel" class="hidden space-y-4">
-      <div class="bg-white rounded-2xl p-6 shadow-md border border-stone-200 space-y-4">
-        <div class="flex justify-between items-center border-b pb-3">
-          <h2 class="text-lg font-bold text-stone-900">Demandes de Service en Direct</h2>
-          <button onclick="fetchRequestsFromCloud()" class="text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 px-3 py-1 rounded-lg font-semibold">
+      <div class="bg-stone-900 rounded-3xl p-6 shadow-2xl border border-stone-800 space-y-4">
+        <div class="flex justify-between items-center border-b border-stone-800 pb-3">
+          <h2 class="text-base font-serif-luxury font-bold text-amber-400">Demandes de Service en Direct</h2>
+          <button onclick="fetchRequestsFromCloud()" class="text-xs bg-stone-800 hover:bg-stone-700 text-stone-200 px-3 py-1.5 rounded-xl font-semibold border border-stone-700">
             🔄 Rafraîchir
           </button>
         </div>
 
         <div id="adminRequestsContainer" class="space-y-3">
-          <p class="text-xs text-stone-400">Chargement des demandes...</p>
+          <p class="text-xs text-stone-500">Chargement des demandes...</p>
         </div>
       </div>
     </div>
 
     <!-- ADMIN: GESTION DE LA BANNIÈRE -->
     <div id="adminBannerPanel" class="hidden space-y-4">
-      <div class="bg-white rounded-2xl p-6 shadow-md border border-stone-200 space-y-4">
-        <h2 class="text-lg font-bold text-stone-900 border-b pb-2">Gestion de la Bannière d'Annonce</h2>
+      <div class="bg-stone-900 rounded-3xl p-6 shadow-2xl border border-stone-800 space-y-4">
+        <h2 class="text-base font-serif-luxury font-bold text-amber-400 border-b border-stone-800 pb-2">Gestion de la Bannière d'Annonce</h2>
 
-        <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 space-y-2">
-          <p class="text-xs font-bold text-amber-900">Message de l'Annonce (Multilingue)</p>
-          <input type="text" id="ann_en" placeholder="Announcement (English)" class="w-full border rounded p-2 text-sm bg-white">
-          <input type="text" id="ann_ar" placeholder="الإعلان (بالعربية)" dir="rtl" class="w-full border rounded p-2 text-sm bg-white">
-          <input type="text" id="ann_hi" placeholder="घोषणा (हिंदी)" class="w-full border rounded p-2 text-sm bg-white">
+        <div class="p-4 bg-stone-950/60 rounded-2xl border border-amber-600/20 space-y-2">
+          <p class="text-xs font-bold text-amber-400">Message de l'Annonce (Multilingue)</p>
+          <input type="text" id="ann_en" placeholder="Announcement (English)" class="w-full border border-stone-700 rounded-lg p-2.5 text-sm bg-stone-900 text-stone-100">
+          <input type="text" id="ann_ar" placeholder="الإعلان (بالعربية)" dir="rtl" class="w-full border border-stone-700 rounded-lg p-2.5 text-sm bg-stone-900 text-stone-100">
+          <input type="text" id="ann_hi" placeholder="घोषणा (हिंदी)" class="w-full border border-stone-700 rounded-lg p-2.5 text-sm bg-stone-900 text-stone-100">
         </div>
 
         <div class="flex space-x-3">
-          <button onclick="saveAnnouncement(true)" class="flex-1 bg-amber-800 text-white font-bold py-2.5 rounded-xl text-xs hover:bg-amber-900">
+          <button onclick="saveAnnouncement(true)" class="flex-1 bg-amber-700 text-white font-bold py-3 rounded-xl text-xs hover:bg-amber-800 shadow-lg">
             📢 Publier & Activer
           </button>
-          <button onclick="saveAnnouncement(false)" class="flex-1 bg-stone-200 text-stone-700 font-bold py-2.5 rounded-xl text-xs hover:bg-stone-300">
+          <button onclick="saveAnnouncement(false)" class="flex-1 bg-stone-800 text-stone-300 font-bold py-3 rounded-xl text-xs hover:bg-stone-700 border border-stone-700">
             🚫 Masquer la Bannière
           </button>
         </div>
@@ -228,17 +258,17 @@
           if (!file) return;
 
           statusEl.innerText = "⏳ Traitement de l'image...";
-          statusEl.className = "text-[10px] text-amber-600 font-semibold mb-2";
+          statusEl.className = "text-[10px] text-amber-400 font-semibold mb-2";
 
           const reader = new FileReader();
           reader.onload = function(event) {
             document.getElementById('adm_image').value = event.target.result;
             statusEl.innerText = "✅ Image prête à être publiée !";
-            statusEl.className = "text-[10px] text-green-600 font-semibold mb-2";
+            statusEl.className = "text-[10px] text-emerald-400 font-semibold mb-2";
           };
           reader.onerror = function(err) {
             statusEl.innerText = "❌ Erreur de lecture du fichier";
-            statusEl.className = "text-[10px] text-red-600 font-semibold mb-2";
+            statusEl.className = "text-[10px] text-rose-400 font-semibold mb-2";
           };
           reader.readAsDataURL(file);
         });
@@ -264,7 +294,7 @@
       const adminParam = urlParams.get('admin');
 
       if (room) {
-        document.getElementById('roomIndicator').innerText = `Room/Villa: ${room} • Remal Hotel`;
+        document.getElementById('roomIndicator').innerText = `Room/Villa: ${room}`;
         document.getElementById('req_room').value = room;
       }
 
@@ -277,7 +307,6 @@
       await fetchAnnouncementFromCloud();
     }
 
-    // ANNOUNCEMENT FETCH
     async function fetchAnnouncementFromCloud() {
       const { data, error } = await supabaseClient
         .from('announcements')
@@ -328,7 +357,6 @@
       await fetchAnnouncementFromCloud();
     }
 
-    // OFFERS FETCH
     async function fetchOffersFromCloud() {
       const { data, error } = await supabaseClient
         .from('offers')
@@ -345,7 +373,6 @@
       if (currentView === 'admin') renderAdminList();
     }
 
-    // REQUESTS FETCH
     async function fetchRequestsFromCloud() {
       const { data, error } = await supabaseClient
         .from('requests')
@@ -370,8 +397,8 @@
         const label = categoriesTranslations[currentLang][cat] || cat;
         return `
           <button onclick="filterCategory('${cat}')" 
-            class="px-3 py-1.5 rounded-full whitespace-nowrap transition ${
-              isSelected ? 'bg-amber-700 text-white' : 'bg-white text-stone-700 border border-stone-200'
+            class="px-4 py-2 rounded-full whitespace-nowrap transition-all duration-300 text-xs font-semibold shadow-md ${
+              isSelected ? 'bg-gradient-to-r from-amber-600 to-amber-700 text-white border border-amber-400/40' : 'bg-stone-800/80 text-stone-300 border border-stone-700 hover:text-white'
             }">
             ${label}
           </button>
@@ -388,7 +415,7 @@
         : cachedOffers.filter(item => item.category === currentCategory);
 
       if (filtered.length === 0) {
-        container.innerHTML = `<p class="text-center text-xs text-stone-400 py-8">Aucune offre disponible dans cette catégorie.</p>`;
+        container.innerHTML = `<p class="text-center text-xs text-stone-500 py-8">Aucune offre disponible dans cette catégorie.</p>`;
         return;
       }
 
@@ -397,16 +424,18 @@
         const timing = item.timing[currentLang] || item.timing['en'];
 
         container.innerHTML += `
-          <div class="bg-white rounded-2xl overflow-hidden shadow-md border border-stone-200">
-            <img src="${item.image}" class="w-full h-40 object-cover" loading="lazy">
-            <div class="p-4 space-y-2">
-              <span class="text-[10px] font-bold uppercase tracking-wider text-amber-800 bg-amber-100 px-2 py-0.5 rounded">
+          <div class="glass-card rounded-3xl overflow-hidden shadow-2xl border border-amber-500/20 transform transition duration-300 hover:scale-[1.01]">
+            <div class="relative">
+              <img src="${item.image}" class="w-full h-48 object-cover" loading="lazy">
+              <span class="absolute top-3 left-3 text-[9px] font-bold uppercase tracking-widest text-amber-200 bg-stone-950/80 backdrop-blur-md px-3 py-1 rounded-full border border-amber-500/30">
                 ${item.category}
               </span>
-              <h3 class="text-base font-bold text-stone-900">${title}</h3>
-              <div class="flex justify-between items-center pt-2 border-t text-xs font-medium">
-                <span class="text-stone-500">${timing}</span>
-                <span class="text-amber-800 font-bold text-sm">${item.price}</span>
+            </div>
+            <div class="p-5 space-y-3">
+              <h3 class="text-lg font-serif-luxury font-bold text-stone-900">${title}</h3>
+              <div class="flex justify-between items-center pt-3 border-t border-stone-200/60 text-xs font-medium">
+                <span class="text-stone-500 flex items-center">🕒 ${timing}</span>
+                <span class="text-amber-800 font-bold text-base font-serif-luxury">${item.price}</span>
               </div>
             </div>
           </div>
@@ -417,20 +446,20 @@
     function renderAdminList() {
       const container = document.getElementById('adminListContainer');
       if (cachedOffers.length === 0) {
-        container.innerHTML = `<p class="text-xs text-stone-400">Aucune offre en base de données.</p>`;
+        container.innerHTML = `<p class="text-xs text-stone-500">Aucune offre en base de données.</p>`;
         return;
       }
 
       container.innerHTML = cachedOffers.map(item => `
-        <div class="flex items-center justify-between p-2.5 bg-stone-50 rounded-xl border border-stone-200 text-xs">
+        <div class="flex items-center justify-between p-3 bg-stone-950/80 rounded-2xl border border-stone-800 text-xs">
           <div class="flex items-center space-x-3">
-            <img src="${item.image}" class="w-10 h-10 object-cover rounded-lg">
+            <img src="${item.image}" class="w-12 h-12 object-cover rounded-xl border border-stone-700">
             <div>
-              <p class="font-bold text-stone-800">${item.title.en}</p>
-              <p class="text-[10px] text-stone-500">${item.category} • ${item.price}</p>
+              <p class="font-bold text-stone-200">${item.title.en}</p>
+              <p class="text-[10px] text-amber-500">${item.category} • ${item.price}</p>
             </div>
           </div>
-          <button onclick="deleteOffer(${item.id})" class="text-red-600 hover:bg-red-50 p-1.5 rounded-lg font-bold">
+          <button onclick="deleteOffer(${item.id})" class="text-rose-400 hover:bg-rose-950/50 p-2 rounded-xl font-bold transition">
             🗑️ Supprimer
           </button>
         </div>
@@ -440,34 +469,34 @@
     function renderAdminRequests() {
       const container = document.getElementById('adminRequestsContainer');
       if (cachedRequests.length === 0) {
-        container.innerHTML = `<p class="text-xs text-stone-400 text-center py-4">Aucune demande client enregistrée.</p>`;
+        container.innerHTML = `<p class="text-xs text-stone-500 text-center py-4">Aucune demande client enregistrée.</p>`;
         return;
       }
 
       container.innerHTML = cachedRequests.map(req => {
-        let badgeBg = 'bg-amber-100 text-amber-800';
-        if (req.status === 'In Progress') badgeBg = 'bg-blue-100 text-blue-800';
-        if (req.status === 'Completed') badgeBg = 'bg-emerald-100 text-emerald-800';
+        let badgeBg = 'bg-amber-950 text-amber-400 border-amber-800';
+        if (req.status === 'In Progress') badgeBg = 'bg-blue-950 text-blue-400 border-blue-800';
+        if (req.status === 'Completed') badgeBg = 'bg-emerald-950 text-emerald-400 border-emerald-800';
 
         return `
-          <div class="p-3.5 bg-stone-50 rounded-xl border border-stone-200 text-xs space-y-2">
+          <div class="p-4 bg-stone-950/80 rounded-2xl border border-stone-800 text-xs space-y-3">
             <div class="flex justify-between items-start">
               <div>
-                <span class="font-bold text-stone-900 text-sm">Chambre/Villa : ${req.room || 'N/A'}</span>
-                <p class="text-amber-800 font-semibold">${req.service}</p>
+                <span class="font-bold text-stone-100 text-sm">Chambre/Villa : ${req.room || 'N/A'}</span>
+                <p class="text-amber-400 font-semibold">${req.service}</p>
               </div>
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${badgeBg}">
+              <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${badgeBg}">
                 ${req.status || 'Pending'}
               </span>
             </div>
-            <p class="text-stone-600 bg-white p-2 rounded border border-stone-100">${req.details}</p>
-            <div class="flex justify-between items-center pt-2 border-t text-[11px]">
+            <p class="text-stone-300 bg-stone-900 p-2.5 rounded-xl border border-stone-800">${req.details}</p>
+            <div class="flex justify-between items-center pt-2 border-t border-stone-800 text-[11px]">
               <div class="space-x-1">
-                <button onclick="updateRequestStatus(${req.id}, 'Pending')" class="px-2 py-1 bg-amber-100 text-amber-800 rounded font-bold hover:bg-amber-200">⏳ En attente</button>
-                <button onclick="updateRequestStatus(${req.id}, 'In Progress')" class="px-2 py-1 bg-blue-100 text-blue-800 rounded font-bold hover:bg-blue-200">🔄 En cours</button>
-                <button onclick="updateRequestStatus(${req.id}, 'Completed')" class="px-2 py-1 bg-emerald-100 text-emerald-800 rounded font-bold hover:bg-emerald-200">✅ Terminé</button>
+                <button onclick="updateRequestStatus(${req.id}, 'Pending')" class="px-2.5 py-1 bg-amber-950 text-amber-400 rounded-lg font-bold border border-amber-800">⏳ Attente</button>
+                <button onclick="updateRequestStatus(${req.id}, 'In Progress')" class="px-2.5 py-1 bg-blue-950 text-blue-400 rounded-lg font-bold border border-blue-800">🔄 En cours</button>
+                <button onclick="updateRequestStatus(${req.id}, 'Completed')" class="px-2.5 py-1 bg-emerald-950 text-emerald-400 rounded-lg font-bold border border-emerald-800">✅ Terminé</button>
               </div>
-              <button onclick="deleteRequest(${req.id})" class="text-red-600 font-bold p-1 hover:bg-red-50 rounded">🗑️</button>
+              <button onclick="deleteRequest(${req.id})" class="text-rose-400 font-bold p-1 hover:bg-rose-950 rounded-lg">🗑️</button>
             </div>
           </div>
         `;
@@ -584,13 +613,13 @@
       if (tab === 'offers') {
         offersSec.classList.remove('hidden');
         reqSec.classList.add('hidden');
-        btnO.className = "flex-1 py-2 text-xs font-bold border-b-2 border-amber-700 text-amber-800";
-        btnR.className = "flex-1 py-2 text-xs font-bold text-stone-500 border-b-2 border-transparent";
+        btnO.className = "flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 text-white font-semibold shadow-lg";
+        btnR.className = "flex-1 py-2.5 rounded-xl text-stone-400 hover:text-stone-200";
       } else {
         reqSec.classList.remove('hidden');
         offersSec.classList.add('hidden');
-        btnR.className = "flex-1 py-2 text-xs font-bold border-b-2 border-amber-700 text-amber-800";
-        btnO.className = "flex-1 py-2 text-xs font-bold text-stone-500 border-b-2 border-transparent";
+        btnR.className = "flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 text-white font-semibold shadow-lg";
+        btnO.className = "flex-1 py-2.5 rounded-xl text-stone-400 hover:text-stone-200";
       }
     }
 
@@ -606,20 +635,20 @@
       panelR.classList.add('hidden');
       panelB.classList.add('hidden');
 
-      btnO.className = "flex-1 py-2 rounded-lg text-stone-600 font-bold";
-      btnR.className = "flex-1 py-2 rounded-lg text-stone-600 font-bold";
-      btnB.className = "flex-1 py-2 rounded-lg text-stone-600 font-bold";
+      btnO.className = "flex-1 py-2.5 rounded-xl text-stone-400 font-bold";
+      btnR.className = "flex-1 py-2.5 rounded-xl text-stone-400 font-bold";
+      btnB.className = "flex-1 py-2.5 rounded-xl text-stone-400 font-bold";
 
       if (tab === 'offers') {
         panelO.classList.remove('hidden');
-        btnO.className = "flex-1 py-2 rounded-lg bg-amber-800 text-white font-bold";
+        btnO.className = "flex-1 py-2.5 rounded-xl bg-amber-800 text-white font-bold";
       } else if (tab === 'requests') {
         panelR.classList.remove('hidden');
-        btnR.className = "flex-1 py-2 rounded-lg bg-amber-800 text-white font-bold";
+        btnR.className = "flex-1 py-2.5 rounded-xl bg-amber-800 text-white font-bold";
         fetchRequestsFromCloud();
       } else if (tab === 'banner') {
         panelB.classList.remove('hidden');
-        btnB.className = "flex-1 py-2 rounded-lg bg-amber-800 text-white font-bold";
+        btnB.className = "flex-1 py-2.5 rounded-xl bg-amber-800 text-white font-bold";
       }
     }
 
@@ -661,7 +690,7 @@
 
       ['en', 'ar', 'hi'].forEach(l => {
         const btn = document.getElementById(`btn-${l}`);
-        btn.className = l === lang ? "px-2 py-0.5 rounded bg-amber-600 text-white font-bold" : "px-2 py-0.5 rounded text-stone-400";
+        btn.className = l === lang ? "px-2.5 py-1 rounded-full bg-amber-600 text-white font-semibold shadow" : "px-2.5 py-1 rounded-full text-stone-400 hover:text-amber-400";
       });
 
       renderCategoryFilters();
