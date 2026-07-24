@@ -111,51 +111,35 @@
   </div>
 
   <script>
-    // ⚙️ CONFIGURATION SUPABASE VÉRIFIÉE
+    // ⚙️ CONFIGURATION SUPABASE
     const SUPABASE_URL = 'https://tbsroleffqhyzbbfmtvp.supabase.co';
     const SUPABASE_ANON_KEY = 'Sb_publishable_kpRe7ijZbdkNe-uM0X0yyw_QQTJoxDf';
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Module d'envoi automatique de l'image vers Supabase Storage
+    // Convertisseur d'image direct (Base64) sans passer par Supabase Storage
     document.addEventListener('DOMContentLoaded', () => {
       const fileInput = document.getElementById('imageFileInput');
       if (fileInput) {
-        fileInput.addEventListener('change', async (e) => {
+        fileInput.addEventListener('change', (e) => {
           const file = e.target.files[0];
           const statusEl = document.getElementById('uploadStatus');
           if (!file) return;
 
-          statusEl.innerText = "⏳ Envoi de l'image en cours...";
+          statusEl.innerText = "⏳ Traitement de l'image...";
           statusEl.className = "text-[10px] text-amber-600 font-semibold mb-2";
 
-          try {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${Date.now()}.${fileExt}`;
-
-            // Transfert vers le bucket Storage 'remal-images'
-            const { data, error } = await supabaseClient.storage
-              .from('remal-images')
-              .upload(fileName, file, {
-                cacheControl: '3600',
-                upsert: false
-              });
-
-            if (error) throw error;
-
-            // Récupération de l'URL publique
-            const { data: urlData } = supabaseClient.storage
-              .from('remal-images')
-              .getPublicUrl(fileName);
-
-            document.getElementById('adm_image').value = urlData.publicUrl;
-            statusEl.innerText = "✅ Image importée avec succès !";
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            document.getElementById('adm_image').value = event.target.result;
+            statusEl.innerText = "✅ Image prête à être publiée !";
             statusEl.className = "text-[10px] text-green-600 font-semibold mb-2";
-          } catch (err) {
-            console.error(err);
-            statusEl.innerText = "❌ Erreur : " + err.message;
+          };
+          reader.onerror = function(err) {
+            statusEl.innerText = "❌ Erreur de lecture du fichier";
             statusEl.className = "text-[10px] text-red-600 font-semibold mb-2";
-          }
+          };
+          reader.readAsDataURL(file);
         });
       }
     });
@@ -283,7 +267,7 @@
     async function saveAdminData() {
       const imageUrl = document.getElementById('adm_image').value;
       if (!imageUrl) {
-        alert("Veuillez sélectionner et charger une photo avant de publier.");
+        alert("Veuillez choisir une photo avant de publier.");
         return;
       }
 
