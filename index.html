@@ -5,38 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Remal Hotel & Villas - Guest Hub</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts: Playfair Display & Plus Jakarta Sans -->
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    body { 
-      font-family: 'Plus Jakarta Sans', sans-serif; 
-      background-color: #FAFAFA;
-      color: #222222;
-    }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FAFAFA; color: #222222; }
     .font-serif-luxury { font-family: 'Playfair Display', serif; }
     .scrollbar-none::-webkit-scrollbar { display: none; }
     .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
-    
     .bg-remal-sand { background-color: #E2B383; }
     .text-remal-sand { color: #DCA773; }
-    .border-remal-sand { border-color: #E2B383; }
-    
-    .remal-card {
-      background: #FFFFFF;
-      border: 1px solid #EAEAEA;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-    }
+    .remal-card { background: #FFFFFF; border: 1px solid #EAEAEA; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); }
   </style>
 </head>
 <body class="min-h-screen pb-20">
 
-  <!-- HEADER BLANC & ÉLÉGANT -->
   <header class="bg-white sticky top-0 z-50 border-b border-stone-200 shadow-sm">
     <div class="max-w-2xl mx-auto px-5 py-3 flex justify-between items-center">
-      
-      <!-- LOGO REMAL -->
       <div class="flex items-center space-x-2">
         <img src="logo.png" alt="Remal Hotel & Villas" class="h-10 sm:h-12 object-contain" onerror="this.style.display='none'; document.getElementById('textLogo').classList.remove('hidden');">
         <div id="textLogo" class="hidden">
@@ -44,47 +28,32 @@
           <p class="text-[8px] text-stone-500 uppercase tracking-wider">Hotel & Villas</p>
         </div>
       </div>
-
-      <!-- SÉLECTEUR DE LANGUE & ADMIN -->
       <div class="flex items-center space-x-2">
         <div id="langSelector" class="flex bg-stone-100 p-1 rounded-full border border-stone-200 text-[11px] font-semibold">
           <button onclick="setLang('en')" id="btn-en" class="px-2.5 py-1 rounded-full bg-remal-sand text-white shadow-sm">EN</button>
           <button onclick="setLang('ar')" id="btn-ar" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">العربية</button>
           <button onclick="setLang('hi')" id="btn-hi" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">हिन्दी</button>
         </div>
-
-        <button onclick="toggleView()" id="viewToggleBtn" class="hidden bg-stone-900 text-white px-3 py-1.5 rounded-full text-xs font-semibold shadow">
-          📱 Vue Client
-        </button>
+        <button onclick="toggleView()" id="viewToggleBtn" class="hidden bg-stone-900 text-white px-3 py-1.5 rounded-full text-xs font-semibold shadow">📱 Vue Client</button>
       </div>
-
     </div>
   </header>
 
-  <!-- BANNIÈRE D'ANNONCE DYNAMIQUE -->
   <div id="announcementBanner" class="hidden bg-remal-sand text-white px-4 py-2.5 text-center text-xs font-medium tracking-wide shadow-sm">
     <span id="announcementText">📢 Special Announcement</span>
   </div>
 
-  <!-- 1. GUEST VIEW -->
   <div id="clientView" class="max-w-md mx-auto px-4 py-6 space-y-6">
-    
     <div class="text-center space-y-1">
       <h2 class="text-2xl font-serif-luxury text-stone-900 font-normal tracking-wide" id="welcomeMsg">Welcome to Remal Hotel & Villas</h2>
       <p class="text-[10px] text-stone-400 uppercase tracking-widest" id="roomIndicator">Al Dhannah City • Guest Hub</p>
     </div>
 
-    <!-- Navigation Onglets Client -->
     <div class="flex bg-stone-200/60 p-1 rounded-2xl text-xs font-medium border border-stone-200">
-      <button onclick="switchGuestTab('offers')" id="tabOffersBtn" class="flex-1 py-2.5 rounded-xl bg-white text-stone-900 font-bold shadow-sm">
-        🏷️ <span id="lblTabOffers">Special Offers</span>
-      </button>
-      <button onclick="switchGuestTab('request')" id="tabRequestBtn" class="flex-1 py-2.5 rounded-xl text-stone-500 hover:text-stone-900">
-        🔔 <span id="lblTabRequest">Guest Request / Service</span>
-      </button>
+      <button onclick="switchGuestTab('offers')" id="tabOffersBtn" class="flex-1 py-2.5 rounded-xl bg-white text-stone-900 font-bold shadow-sm">🏷️ <span id="lblTabOffers">Special Offers</span></button>
+      <button onclick="switchGuestTab('request')" id="tabRequestBtn" class="flex-1 py-2.5 rounded-xl text-stone-500 hover:text-stone-900">🔔 <span id="lblTabRequest">Guest Request / Service</span></button>
     </div>
 
-    <!-- SECTION OFFRES -->
     <div id="guestOffersSection" class="space-y-5">
       <div id="categoryFilters" class="flex space-x-2 overflow-x-auto pb-1 text-xs font-semibold scrollbar-none"></div>
       <div id="cardsContainer" class="space-y-5">
@@ -92,16 +61,13 @@
       </div>
     </div>
 
-    <!-- SECTION DEMANDE DE SERVICE -->
     <div id="guestRequestSection" class="hidden remal-card p-6 rounded-3xl space-y-5">
       <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-3" id="reqHeader">Request Guest Service</h2>
-      
       <form id="guestRequestForm" class="space-y-4">
         <div>
           <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblRoom">Room / Villa Number</label>
           <input type="text" id="req_room" placeholder="e.g., 104 or Villa 02" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/55 outline-none" required>
         </div>
-
         <div>
           <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblService">Service Type</label>
           <select id="req_service" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 outline-none">
@@ -112,12 +78,10 @@
             <option value="Luggage Assistance">Luggage Assistance</option>
           </select>
         </div>
-
         <div>
           <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblDetails">Additional Notes / Request Details</label>
           <textarea id="req_details" rows="3" placeholder="Specify your request here..." class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 outline-none" required></textarea>
         </div>
-
         <button type="button" onclick="submitGuestRequest()" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-bold py-3.5 rounded-xl shadow-lg transition text-sm tracking-wider">
           <span id="btnSubmitReq">Send Request to Reception</span>
         </button>
@@ -125,17 +89,13 @@
     </div>
   </div>
 
-  <!-- BOUTON WHATSAPP FLOTTANT (AVEC LE NUMÉRO 971526966865) -->
   <div id="whatsappContainer" class="fixed bottom-5 right-5 z-50">
-    <a href="https://wa.me/971526966865?text=Hello%2C%20I%20am%20contacting%20from%20Remal%20Hotel%20Guest%20Hub." 
-       target="_blank" 
-       class="flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 rounded-full shadow-2xl transition transform hover:scale-105 border border-emerald-500 font-semibold text-xs">
+    <a href="https://wa.me/971526966865?text=Hello%2C%20I%20am%20contacting%20from%20Remal%20Hotel%20Guest%20Hub." target="_blank" class="flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 rounded-full shadow-2xl transition transform hover:scale-105 border border-emerald-500 font-semibold text-xs">
       <span class="text-lg">💬</span>
       <span id="whatsappText">WhatsApp Reception</span>
     </a>
   </div>
 
-  <!-- 2. ADMIN VIEW -->
   <div id="adminView" class="hidden max-w-2xl mx-auto px-4 py-6 space-y-6">
     <div class="flex bg-stone-200 p-1 rounded-2xl text-xs font-bold">
       <button onclick="switchAdminTab('offers')" id="admTabOffers" class="flex-1 py-2.5 rounded-xl bg-stone-900 text-white">🏷️ Offres</button>
@@ -143,14 +103,12 @@
       <button onclick="switchAdminTab('banner')" id="admTabBanner" class="flex-1 py-2.5 rounded-xl text-stone-600">📢 Annonce</button>
     </div>
 
-    <!-- ADMIN: GESTION OFFRES -->
     <div id="adminOffersPanel" class="space-y-6">
       <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
         <div class="flex justify-between items-center border-b border-stone-100 pb-3">
           <h2 class="text-base font-serif-luxury font-bold text-stone-900">Nouvelle Offre Cloud</h2>
           <span class="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold px-3 py-1 rounded-full">Supabase Live</span>
         </div>
-
         <form id="adminForm" class="space-y-4">
           <div>
             <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Category</label>
@@ -161,61 +119,47 @@
               <option value="The Spa">The Spa</option>
             </select>
           </div>
-
           <div>
             <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Price / Rate (e.g., AED 75)</label>
             <input type="text" id="adm_price" placeholder="AED 75" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50" required>
           </div>
-
           <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-2">
             <p class="text-xs font-bold text-stone-700">Offer Titles</p>
             <input type="text" id="adm_title_en" placeholder="Title (English)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white" required>
             <input type="text" id="adm_title_ar" placeholder="العنوان (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white" required>
             <input type="text" id="adm_title_hi" placeholder="शीर्षक (हिंदी)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white" required>
           </div>
-
           <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-2">
             <p class="text-xs font-bold text-stone-700">Timings / Operating Days</p>
             <input type="text" id="adm_timing_en" placeholder="Timings (English)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white" required>
             <input type="text" id="adm_timing_ar" placeholder="الأوقات (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white" required>
             <input type="text" id="adm_timing_hi" placeholder="समय (हिंदी)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white" required>
           </div>
-
           <div>
             <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Photo de l'offre</label>
             <input type="file" id="imageFileInput" accept="image/*" class="w-full text-xs text-stone-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-stone-900 file:text-white hover:file:bg-stone-800 cursor-pointer mb-2" />
             <p id="uploadStatus" class="text-[10px] text-stone-500 mb-2"></p>
             <input type="hidden" id="adm_image" />
           </div>
-
-          <button type="button" onclick="saveAdminData()" class="w-full bg-remal-sand hover:opacity-90 text-white font-bold py-3.5 rounded-xl shadow-md transition text-sm">
-            Publier l'offre dans le Cloud
-          </button>
+          <button type="button" onclick="saveAdminData()" class="w-full bg-remal-sand hover:opacity-90 text-white font-bold py-3.5 rounded-xl shadow-md transition text-sm">Publier l'offre dans le Cloud</button>
         </form>
       </div>
-
       <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-3">
         <h3 class="text-xs font-bold text-stone-500 uppercase tracking-widest">Offres Actives</h3>
         <div id="adminListContainer" class="space-y-2"></div>
       </div>
     </div>
 
-    <!-- ADMIN: DEMANDES -->
     <div id="adminRequestsPanel" class="hidden space-y-4">
       <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
         <div class="flex justify-between items-center border-b border-stone-100 pb-3">
           <h2 class="text-base font-serif-luxury font-bold text-stone-900">Demandes de Service en Direct</h2>
-          <button onclick="fetchRequestsFromCloud()" class="text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 px-3 py-1.5 rounded-xl font-semibold border border-stone-200">
-            🔄 Rafraîchir
-          </button>
+          <button onclick="fetchRequestsFromCloud()" class="text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 px-3 py-1.5 rounded-xl font-semibold border border-stone-200">🔄 Rafraîchir</button>
         </div>
-        <div id="adminRequestsContainer" class="space-y-3">
-          <p class="text-xs text-stone-400">Chargement des demandes...</p>
-        </div>
+        <div id="adminRequestsContainer" class="space-y-3"><p class="text-xs text-stone-400">Chargement des demandes...</p></div>
       </div>
     </div>
 
-    <!-- ADMIN: BANNIÈRE -->
     <div id="adminBannerPanel" class="hidden space-y-4">
       <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
         <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-2">Gestion de la Bannière</h2>
@@ -235,7 +179,6 @@
   <script>
     const SUPABASE_URL = 'https://tbsroleffqhyzbbfmtvp.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRic3JvbGVmZnFoeXpiYmZtdHZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MzUyMzMsImV4cCI6MjEwMDQxMTIzM30.oNKhoPJ7v__YJQW7flC9UsP2cIDHLMuxjqmf6_NvYW4';
-
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -278,7 +221,6 @@
         document.getElementById('roomIndicator').innerText = `Room/Villa: ${room} • Remal Hotel`;
         document.getElementById('req_room').value = room;
       }
-
       if (adminParam === 'true') {
         document.getElementById('viewToggleBtn').classList.remove('hidden');
       }
@@ -350,6 +292,8 @@
       }
 
       filtered.forEach(item => {
+        const title = item.title[currentLang] || item.title['en'];
+        const timing = item.timing[currentLang] || item.timing['en'];
         container.innerHTML += `
           <div class="remal-card rounded-3xl overflow-hidden">
             <div class="relative">
@@ -357,9 +301,9 @@
               <span class="absolute top-3 left-3 text-[9px] font-bold uppercase tracking-widest text-stone-800 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full shadow-sm">${item.category}</span>
             </div>
             <div class="p-5 space-y-3">
-              <h3 class="text-lg font-serif-luxury font-bold text-stone-900">${item.title[currentLang] || item.title['en']}</h3>
+              <h3 class="text-lg font-serif-luxury font-bold text-stone-900">${title}</h3>
               <div class="flex justify-between items-center pt-3 border-t border-stone-100 text-xs font-medium">
-                <span class="text-stone-500">🕒 ${item.timing[currentLang] || item.timing['en']}</span>
+                <span class="text-stone-500">🕒 ${timing}</span>
                 <span class="text-remal-sand font-bold text-base font-serif-luxury">${item.price}</span>
               </div>
             </div>
@@ -536,333 +480,6 @@
         adminV.classList.add('hidden');
         clientV.classList.remove('hidden');
         waBtn.classList.remove('hidden');
-        btn.innerText = "⚙️ Admin Panel";
-        renderClientCards();
-      }
-    }
-
-    function filterCategory(cat) {
-      currentCategory = cat;
-      renderCategoryFilters();
-      renderClientCards();
-    }
-
-    window.onload = init;
-  </script>
-</body>
-</html>
-
-
-    function renderClientCards() {
-      const container = document.getElementById('cardsContainer');
-      container.innerHTML = '';
-
-      const filtered = currentCategory === 'All' 
-        ? cachedOffers 
-        : cachedOffers.filter(item => item.category === currentCategory);
-
-      if (filtered.length === 0) {
-        container.innerHTML = `<p class="text-center text-xs text-stone-400 py-8">Aucune offre disponible dans cette catégorie.</p>`;
-        return;
-      }
-
-      filtered.forEach(item => {
-        const title = item.title[currentLang] || item.title['en'];
-        const timing = item.timing[currentLang] || item.timing['en'];
-
-        container.innerHTML += `
-          <div class="remal-card rounded-3xl overflow-hidden">
-            <div class="relative">
-              <img src="${item.image}" class="w-full h-48 object-cover" loading="lazy">
-              <span class="absolute top-3 left-3 text-[9px] font-bold uppercase tracking-widest text-stone-800 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full shadow-sm">
-                ${item.category}
-              </span>
-            </div>
-            <div class="p-5 space-y-3">
-              <h3 class="text-lg font-serif-luxury font-bold text-stone-900">${title}</h3>
-              <div class="flex justify-between items-center pt-3 border-t border-stone-100 text-xs font-medium">
-                <span class="text-stone-500">🕒 ${timing}</span>
-                <span class="text-remal-sand font-bold text-base font-serif-luxury">${item.price}</span>
-              </div>
-            </div>
-          </div>
-        `;
-      });
-    }
-
-    function renderAdminList() {
-      const container = document.getElementById('adminListContainer');
-      if (cachedOffers.length === 0) {
-        container.innerHTML = `<p class="text-xs text-stone-400">Aucune offre en base de données.</p>`;
-        return;
-      }
-
-      container.innerHTML = cachedOffers.map(item => `
-        <div class="flex items-center justify-between p-3 bg-stone-50 rounded-2xl border border-stone-200 text-xs">
-          <div class="flex items-center space-x-3">
-            <img src="${item.image}" class="w-12 h-12 object-cover rounded-xl">
-            <div>
-              <p class="font-bold text-stone-800">${item.title.en}</p>
-              <p class="text-[10px] text-remal-sand font-semibold">${item.category} • ${item.price}</p>
-            </div>
-          </div>
-          <button onclick="deleteOffer(${item.id})" class="text-rose-600 hover:bg-rose-50 p-2 rounded-xl font-bold transition">
-            🗑️ Supprimer
-          </button>
-        </div>
-      `).join('');
-    }
-
-    function renderAdminRequests() {
-      const container = document.getElementById('adminRequestsContainer');
-      if (cachedRequests.length === 0) {
-        container.innerHTML = `<p class="text-xs text-stone-400 text-center py-4">Aucune demande client enregistrée.</p>`;
-        return;
-      }
-
-      container.innerHTML = cachedRequests.map(req => {
-        let badgeBg = 'bg-amber-100 text-amber-800';
-        if (req.status === 'In Progress') badgeBg = 'bg-blue-100 text-blue-800';
-        if (req.status === 'Completed') badgeBg = 'bg-emerald-100 text-emerald-800';
-
-        return `
-          <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 text-xs space-y-3">
-            <div class="flex justify-between items-start">
-              <div>
-                <span class="font-bold text-stone-900 text-sm">Chambre/Villa : ${req.room || 'N/A'}</span>
-                <p class="text-remal-sand font-semibold">${req.service}</p>
-              </div>
-              <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full ${badgeBg}">
-                ${req.status || 'Pending'}
-              </span>
-            </div>
-            <p class="text-stone-700 bg-white p-3 rounded-xl border border-stone-100">${req.details}</p>
-            <div class="flex justify-between items-center pt-2 border-t border-stone-200 text-[11px]">
-              <div class="space-x-1">
-                <button onclick="updateRequestStatus(${req.id}, 'Pending')" class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-lg font-bold">⏳ Attente</button>
-                <button onclick="updateRequestStatus(${req.id}, 'In Progress')" class="px-2.5 py-1 bg-blue-100 text-blue-800 rounded-lg font-bold">🔄 En cours</button>
-                <button onclick="updateRequestStatus(${req.id}, 'Completed')" class="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-lg font-bold">✅ Terminé</button>
-              </div>
-              <button onclick="deleteRequest(${req.id})" class="text-rose-600 font-bold p-1 hover:bg-rose-50 rounded-lg">🗑️</button>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    async function saveAdminData() {
-      const imageUrl = document.getElementById('adm_image').value;
-      if (!imageUrl) {
-        alert("Veuillez sélectionner une photo avant de publier.");
-        return;
-      }
-
-      const newItem = {
-        category: document.getElementById('adm_category').value,
-        price: document.getElementById('adm_price').value,
-        image: imageUrl,
-        title: {
-          en: document.getElementById('adm_title_en').value,
-          ar: document.getElementById('adm_title_ar').value,
-          hi: document.getElementById('adm_title_hi').value
-        },
-        timing: {
-          en: document.getElementById('adm_timing_en').value,
-          ar: document.getElementById('adm_timing_ar').value,
-          hi: document.getElementById('adm_timing_hi').value
-        }
-      };
-
-      const { error } = await supabaseClient.from('offers').insert([newItem]);
-
-      if (error) {
-        alert('Erreur lors de l\'enregistrement : ' + error.message);
-        return;
-      }
-
-      alert('Offre publiée avec succès dans le Cloud !');
-      document.getElementById('adminForm').reset();
-      document.getElementById('uploadStatus').innerText = '';
-      await fetchOffersFromCloud();
-    }
-
-    async function submitGuestRequest() {
-      const room = document.getElementById('req_room').value;
-      const service = document.getElementById('req_service').value;
-      const details = document.getElementById('req_details').value;
-
-      if (!room || !details) {
-        alert("Veuillez remplir le numéro de chambre et les détails de votre demande.");
-        return;
-      }
-
-      const newRequest = {
-        room: room,
-        service: service,
-        details: details,
-        status: 'Pending'
-      };
-
-      const { error } = await supabaseClient.from('requests').insert([newRequest]);
-
-      if (error) {
-        alert("Erreur lors de l'envoi de la demande : " + error.message);
-        return;
-      }
-
-      const alertMsgs = {
-        en: "Your request has been sent to the front desk successfully!",
-        ar: "تم إرسال طلبكم إلى الاستقبال بنجاح!",
-        hi: "आपकी प्रार्थना स्वागत कक्ष में सफलतापूर्वक भेज दी गई है!"
-      };
-
-      alert(alertMsgs[currentLang] || alertMsgs['en']);
-      document.getElementById('req_details').value = '';
-    }
-
-    async function updateRequestStatus(id, newStatus) {
-      const { error } = await supabaseClient.from('requests').update({ status: newStatus }).eq('id', id);
-      if (error) {
-        alert('Erreur de mise à jour : ' + error.message);
-        return;
-      }
-      await fetchRequestsFromCloud();
-    }
-
-    async function deleteRequest(id) {
-      if (confirm('Voulez-vous supprimer cette demande ?')) {
-        const { error } = await supabaseClient.from('requests').delete().eq('id', id);
-        if (error) {
-          alert('Erreur de suppression : ' + error.message);
-          return;
-        }
-        await fetchRequestsFromCloud();
-      }
-    }
-
-    async function deleteOffer(id) {
-      if (confirm('Voulez-vous vraiment supprimer cette offre du Cloud ?')) {
-        const { error } = await supabaseClient.from('offers').delete().eq('id', id);
-        if (error) {
-          alert('Erreur lors de la suppression : ' + error.message);
-          return;
-        }
-        await fetchOffersFromCloud();
-      }
-    }
-
-    function switchGuestTab(tab) {
-      const offersSec = document.getElementById('guestOffersSection');
-      const reqSec = document.getElementById('guestRequestSection');
-      const btnO = document.getElementById('tabOffersBtn');
-      const btnR = document.getElementById('tabRequestBtn');
-
-      if (tab === 'offers') {
-        offersSec.classList.remove('hidden');
-        reqSec.classList.add('hidden');
-        btnO.className = "flex-1 py-2.5 rounded-xl bg-white text-stone-900 font-bold shadow-sm";
-        btnR.className = "flex-1 py-2.5 rounded-xl text-stone-500 hover:text-stone-900";
-      } else {
-        reqSec.classList.remove('hidden');
-        offersSec.classList.add('hidden');
-        btnR.className = "flex-1 py-2.5 rounded-xl bg-white text-stone-900 font-bold shadow-sm";
-        btnO.className = "flex-1 py-2.5 rounded-xl text-stone-500 hover:text-stone-900";
-      }
-    }
-
-    function switchAdminTab(tab) {
-      const panelO = document.getElementById('adminOffersPanel');
-      const panelR = document.getElementById('adminRequestsPanel');
-      const panelB = document.getElementById('adminBannerPanel');
-      const btnO = document.getElementById('admTabOffers');
-      const btnR = document.getElementById('admTabRequests');
-      const btnB = document.getElementById('admTabBanner');
-
-      panelO.classList.add('hidden');
-      panelR.classList.add('hidden');
-      panelB.classList.add('hidden');
-
-      btnO.className = "flex-1 py-2.5 rounded-xl text-stone-600 font-bold";
-      btnR.className = "flex-1 py-2.5 rounded-xl text-stone-600 font-bold";
-      btnB.className = "flex-1 py-2.5 rounded-xl text-stone-600 font-bold";
-
-      if (tab === 'offers') {
-        panelO.classList.remove('hidden');
-        btnO.className = "flex-1 py-2.5 rounded-xl bg-stone-900 text-white font-bold";
-      } else if (tab === 'requests') {
-        panelR.classList.remove('hidden');
-        btnR.className = "flex-1 py-2.5 rounded-xl bg-stone-900 text-white font-bold";
-        fetchRequestsFromCloud();
-      } else if (tab === 'banner') {
-        panelB.classList.remove('hidden');
-        btnB.className = "flex-1 py-2.5 rounded-xl bg-stone-900 text-white font-bold";
-      }
-    }
-
-    function setLang(lang) {
-      currentLang = lang;
-      const root = document.getElementById('htmlRoot');
-
-      if (lang === 'ar') {
-        root.setAttribute('dir', 'rtl');
-        document.getElementById('welcomeMsg').innerText = "مرحباً بكم في فندق وڤلل رمال";
-        document.getElementById('lblTabOffers').innerText = "العروض الخاصة";
-        document.getElementById('lblTabRequest').innerText = "طلب خدمة الغرف";
-        document.getElementById('reqHeader').innerText = "طلب خدمة النزلاء";
-        document.getElementById('lblRoom').innerText = "رقم الغرفة / الفيلا";
-        document.getElementById('lblService').innerText = "نوع الخدمة";
-        document.getElementById('lblDetails').innerText = "تفاصيل الطلب";
-        document.getElementById('btnSubmitReq').innerText = "إرسال الطلب إلى الاستقبال";
-      } else if (lang === 'hi') {
-        root.setAttribute('dir', 'ltr');
-        document.getElementById('welcomeMsg').innerText = "रेमल होटल एंड विला में आपका स्वागत है";
-        document.getElementById('lblTabOffers').innerText = "विशेष ऑफ़र";
-        document.getElementById('lblTabRequest').innerText = "अतिथि सेवा अनुरोध";
-        document.getElementById('reqHeader').innerText = "अतिथि सेवा का अनुरोध करें";
-        document.getElementById('lblRoom').innerText = "कमरा / विला संख्या";
-        document.getElementById('lblService').innerText = "सेवा का प्रकार";
-        document.getElementById('lblDetails').innerText = "अनुरोध का विवरण";
-        document.getElementById('btnSubmitReq').innerText = "रिसेप्शन को अनुरोध भेजें";
-      } else {
-        root.setAttribute('dir', 'ltr');
-        document.getElementById('welcomeMsg').innerText = "Welcome to Remal Hotel & Villas";
-        document.getElementById('lblTabOffers').innerText = "Special Offers";
-        document.getElementById('lblTabRequest').innerText = "Guest Request / Service";
-        document.getElementById('reqHeader').innerText = "Request Guest Service";
-        document.getElementById('lblRoom').innerText = "Room / Villa Number";
-        document.getElementById('lblService').innerText = "Service Type";
-        document.getElementById('lblDetails').innerText = "Additional Notes / Request Details";
-        document.getElementById('btnSubmitReq').innerText = "Send Request to Reception";
-      }
-
-      ['en', 'ar', 'hi'].forEach(l => {
-        const btn = document.getElementById(`btn-${l}`);
-        btn.className = l === lang ? "px-2.5 py-1 rounded-full bg-remal-sand text-white font-semibold shadow-sm" : "px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900";
-      });
-
-      renderCategoryFilters();
-      renderClientCards();
-      renderAnnouncement();
-    }
-
-    function toggleView() {
-      const clientV = document.getElementById('clientView');
-      const adminV = document.getElementById('adminView');
-      const btn = document.getElementById('viewToggleBtn');
-      const langSel = document.getElementById('langSelector');
-
-      if (currentView === 'client') {
-        currentView = 'admin';
-        clientV.classList.add('hidden');
-        adminV.classList.remove('hidden');
-        langSel.classList.add('hidden');
-        btn.innerText = "📱 Vue Client";
-        renderAdminList();
-      } else {
-        currentView = 'client';
-        adminV.classList.add('hidden');
-        clientV.classList.remove('hidden');
-        langSel.classList.remove('hidden');
         btn.innerText = "⚙️ Admin Panel";
         renderClientCards();
       }
