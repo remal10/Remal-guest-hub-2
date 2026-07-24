@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en" id="htmlRoot" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Remal Hotel & Villas - Guest Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .scrollbar-none::-webkit-scrollbar { display: none; }
+    .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-stone-100 text-stone-800 font-sans min-h-screen">
+
+  <!-- NAVIGATION BAR -->
+  <header class="bg-stone-900 text-white sticky top-0 z-50 shadow-lg border-b-2 border-amber-600">
+    <div class="max-w-2xl mx-auto px-4 py-3 flex justify-between items-center">
+      <div>
+        <h1 class="text-lg font-serif text-amber-500 font-bold tracking-wider">REMAL HOTEL & VILLAS</h1>
+        <p class="text-[9px] text-stone-400 tracking-widest uppercase" id="roomIndicator">Al Dhannah City • Guest Hub</p>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <!-- Bouton Admin (Visible uniquement si ?admin=true dans l'URL) -->
+        <button onclick="toggleView()" id="viewToggleBtn" class="hidden bg-amber-700 text-white px-2.5 py-1 rounded text-xs font-semibold hover:bg-amber-800">
+          📱 Vue Client
+        </button>
+
+        <!-- Trilingual Language Selector -->
+        <div id="langSelector" class="flex bg-stone-800 p-0.5 rounded text-xs font-bold border border-stone-700">
+          <button onclick="setLang('en')" id="btn-en" class="px-2 py-0.5 rounded bg-amber-600 text-white">EN</button>
+          <button onclick="setLang('ar')" id="btn-ar" class="px-2 py-0.5 rounded text-stone-400">العربية</button>
+          <button onclick="setLang('hi')" id="btn-hi" class="px-2 py-0.5 rounded text-stone-400">हिन्दी</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 1. GUEST VIEW -->
+  <div id="clientView" class="max-w-md mx-auto p-4 space-y-4">
+    <div class="bg-amber-800 text-amber-100 p-3 rounded-xl shadow text-center text-xs font-medium">
+      <span id="welcomeMsg">Welcome to Remal Hotel & Villas</span>
+    </div>
+
+    <!-- Category Filters -->
+    <div id="categoryFilters" class="flex space-x-2 overflow-x-auto pb-1 text-xs font-semibold scrollbar-none"></div>
+
+    <!-- Cards Container -->
+    <div id="cardsContainer" class="space-y-4">
+      <p class="text-center text-xs text-stone-400 py-8">Chargement des offres en direct...</p>
+    </div>
+  </div>
+
+  <!-- 2. ADMIN VIEW -->
+  <div id="adminView" class="hidden max-w-2xl mx-auto p-4 space-y-6">
+    <div class="bg-white rounded-2xl p-6 shadow-md border border-stone-200">
+      <div class="flex justify-between items-center border-b pb-3 mb-4">
+        <h2 class="text-lg font-bold text-stone-900">Live Database Management (Supabase)</h2>
+        <span class="text-xs bg-emerald-100 text-emerald-800 font-semibold px-2.5 py-1 rounded-full">Cloud Synchronisé</span>
+      </div>
+
+      <form id="adminForm" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Category</label>
+          <select id="adm_category" class="w-full border rounded-lg p-2 bg-stone-50 text-sm">
+            <option value="Falaj Restaurant">Falaj Restaurant</option>
+            <option value="Sarab">Sarab Bar & Lounge</option>
+            <option value="Al Waha Pool">Al Waha Pool</option>
+            <option value="The Spa">The Spa</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Price / Rate (e.g., AED 75)</label>
+          <input type="text" id="adm_price" placeholder="AED 75" class="w-full border rounded-lg p-2 text-sm" required>
+        </div>
+
+        <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 space-y-2">
+          <p class="text-xs font-bold text-amber-900">Offer Titles</p>
+          <input type="text" id="adm_title_en" placeholder="Title (English)" class="w-full border rounded p-2 text-sm bg-white" required>
+          <input type="text" id="adm_title_ar" placeholder="العنوان (بالعربية)" dir="rtl" class="w-full border rounded p-2 text-sm bg-white" required>
+          <input type="text" id="adm_title_hi" placeholder="शीर्षक (हिंदी)" class="w-full border rounded p-2 text-sm bg-white" required>
+        </div>
+
+        <div class="p-3 bg-stone-50 rounded-xl border border-stone-200 space-y-2">
+          <p class="text-xs font-bold text-stone-700">Timings / Operating Days</p>
+          <input type="text" id="adm_timing_en" placeholder="Timings (English)" class="w-full border rounded p-2 text-sm bg-white" required>
+          <input type="text" id="adm_timing_ar" placeholder="الأوقات (بالعربية)" dir="rtl" class="w-full border rounded p-2 text-sm bg-white" required>
+          <input type="text" id="adm_timing_hi" placeholder="समय (हिंदी)" class="w-full border rounded p-2 text-sm bg-white" required>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Image URL (Photo)</label>
+          <input type="url" id="adm_image" placeholder="https://..." class="w-full border rounded-lg p-2 text-sm" required>
+        </div>
+
+        <button type="button" onclick="saveAdminData()" class="w-full bg-amber-800 text-white font-bold py-3 rounded-xl shadow hover:bg-amber-900 transition text-sm">
+          Publier dans le Cloud (Instant Sync)
+        </button>
+      </form>
+    </div>
+
+    <div class="bg-white rounded-2xl p-6 shadow-md border border-stone-200 space-y-3">
+      <h3 class="text-sm font-bold text-stone-800 uppercase tracking-wider">Gestion des offres existantes</h3>
+      <div id="adminListContainer" class="space-y-2"></div>
+    </div>
+  </div>
+
+  <script>
+    // ⚙️ CONFIGURATION SUPABASE VÉRIFIÉE & INTÉGRÉE
+    const SUPABASE_URL = 'https://tbsroleffqhyzbbfmtvp.supabase.co';
+    const SUPABASE_ANON_KEY = 'Sb_publishable_kpRe7ijZbdkNe-uM0X0yyw_QQTJoxDf';
+
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let currentLang = 'en';
+    let currentView = 'client';
+    let currentCategory = 'All';
+    let cachedOffers = [];
+
+    const categoriesTranslations = {
+      en: { 'All': 'All Services', 'Falaj Restaurant': 'Falaj Restaurant', 'Sarab': 'Sarab Bar', 'Al Waha Pool': 'Al Waha Pool', 'The Spa': 'The Spa' },
+      ar: { 'All': 'جميع الخدمات', 'Falaj Restaurant': 'مطعم الفلج', 'Sarab': 'بار سراب', 'Al Waha Pool': 'مسبح الواحة', 'The Spa': 'السبا' },
+      hi: { 'All': 'सभी सेवाएं', 'Falaj Restaurant': 'फलज रेस्टोरेंट', 'Sarab': 'सराब बार', 'Al Waha Pool': 'अल वाहा पूल', 'The Spa': 'द स्पा' }
+    };
+
+    async function init() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const room = urlParams.get('room');
+      const adminParam = urlParams.get('admin');
+
+      if (room) {
+        document.getElementById('roomIndicator').innerText = `Room/Villa: ${room} • Remal Hotel`;
+      }
+
+      if (adminParam === 'true') {
+        document.getElementById('viewToggleBtn').classList.remove('hidden');
+      }
+
+      renderCategoryFilters();
+      await fetchOffersFromCloud();
+    }
+
+    async function fetchOffersFromCloud() {
+      const { data, error } = await supabaseClient
+        .from('offers')
+        .select('*')
+        .order('id', { ascending: false });
+
+      if (error) {
+        console.error('Erreur Supabase:', error);
+        return;
+      }
+
+      cachedOffers = data || [];
+      renderClientCards();
+      if (currentView === 'admin') renderAdminList();
+    }
+
+    function renderCategoryFilters() {
+      const container = document.getElementById('categoryFilters');
+      const cats = ['All', 'Falaj Restaurant', 'Sarab', 'Al Waha Pool', 'The Spa'];
+      
+      container.innerHTML = cats.map(cat => {
+        const isSelected = currentCategory === cat;
+        const label = categoriesTranslations[currentLang][cat] || cat;
+        return `
+          <button onclick="filterCategory('${cat}')" 
+            class="px-3 py-1.5 rounded-full whitespace-nowrap transition ${
+              isSelected ? 'bg-amber-700 text-white' : 'bg-white text-stone-700 border border-stone-200'
+            }">
+            ${label}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function renderClientCards() {
+      const container = document.getElementById('cardsContainer');
+      container.innerHTML = '';
+
+      const filtered = currentCategory === 'All' 
+        ? cachedOffers 
+        : cachedOffers.filter(item => item.category === currentCategory);
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<p class="text-center text-xs text-stone-400 py-8">Aucune offre disponible dans cette catégorie.</p>`;
+        return;
+      }
+
+      filtered.forEach(item => {
+        const title = item.title[currentLang] || item.title['en'];
+        const timing = item.timing[currentLang] || item.timing['en'];
+
+        container.innerHTML += `
+          <div class="bg-white rounded-2xl overflow-hidden shadow-md border border-stone-200">
+            <img src="${item.image}" class="w-full h-40 object-cover" loading="lazy">
+            <div class="p-4 space-y-2">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-amber-800 bg-amber-100 px-2 py-0.5 rounded">
+                ${item.category}
+              </span>
+              <h3 class="text-base font-bold text-stone-900">${title}</h3>
+              <div class="flex justify-between items-center pt-2 border-t text-xs font-medium">
+                <span class="text-stone-500">${timing}</span>
+                <span class="text-amber-800 font-bold text-sm">${item.price}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function renderAdminList() {
+      const container = document.getElementById('adminListContainer');
+      if (cachedOffers.length === 0) {
+        container.innerHTML = `<p class="text-xs text-stone-400">Aucune offre en base de données.</p>`;
+        return;
+      }
+
+      container.innerHTML = cachedOffers.map(item => `
+        <div class="flex items-center justify-between p-2.5 bg-stone-50 rounded-xl border border-stone-200 text-xs">
+          <div class="flex items-center space-x-3">
+            <img src="${item.image}" class="w-10 h-10 object-cover rounded-lg">
+            <div>
+              <p class="font-bold text-stone-800">${item.title.en}</p>
+              <p class="text-[10px] text-stone-500">${item.category} • ${item.price}</p>
+            </div>
+          </div>
+          <button onclick="deleteOffer(${item.id})" class="text-red-600 hover:bg-red-50 p-1.5 rounded-lg font-bold">
+            🗑️ Supprimer
+          </button>
+        </div>
+      `).join('');
+    }
+
+    async function saveAdminData() {
+      const newItem = {
+        category: document.getElementById('adm_category').value,
+        price: document.getElementById('adm_price').value,
+        image: document.getElementById('adm_image').value,
+        title: {
+          en: document.getElementById('adm_title_en').value,
+          ar: document.getElementById('adm_title_ar').value,
+          hi: document.getElementById('adm_title_hi').value
+        },
+        timing: {
+          en: document.getElementById('adm_timing_en').value,
+          ar: document.getElementById('adm_timing_ar').value,
+          hi: document.getElementById('adm_timing_hi').value
+        }
+      };
+
+      const { error } = await supabaseClient.from('offers').insert([newItem]);
+
+      if (error) {
+        alert('Erreur lors de l\'enregistrement : ' + error.message);
+        return;
+      }
+
+      alert('Offre publiée avec succès dans le Cloud !');
+      document.getElementById('adminForm').reset();
+      await fetchOffersFromCloud();
+      toggleView();
+    }
+
+    async function deleteOffer(id) {
+      if (confirm('Voulez-vous vraiment supprimer cette offre du Cloud ?')) {
+        const { error } = await supabaseClient.from('offers').delete().eq('id', id);
+        if (error) {
+          alert('Erreur lors de la suppression : ' + error.message);
+          return;
+        }
+        await fetchOffersFromCloud();
+      }
+    }
+
+    function setLang(lang) {
+      currentLang = lang;
+      const root = document.getElementById('htmlRoot');
+
+      if (lang === 'ar') {
+        root.setAttribute('dir', 'rtl');
+        document.getElementById('welcomeMsg').innerText = "مرحباً بكم في فندق وڤلل رمال";
+      } else if (lang === 'hi') {
+        root.setAttribute('dir', 'ltr');
+        document.getElementById('welcomeMsg').innerText = "रेमल होटल एंड विला में आपका स्वागत है";
+      } else {
+        root.setAttribute('dir', 'ltr');
+        document.getElementById('welcomeMsg').innerText = "Welcome to Remal Hotel & Villas";
+      }
+
+      ['en', 'ar', 'hi'].forEach(l => {
+        const btn = document.getElementById(`btn-${l}`);
+        btn.className = l === lang ? "px-2 py-0.5 rounded bg-amber-600 text-white font-bold" : "px-2 py-0.5 rounded text-stone-400";
+      });
+
+      renderCategoryFilters();
+      renderClientCards();
+    }
+
+    function toggleView() {
+      const clientV = document.getElementById('clientView');
+      const adminV = document.getElementById('adminView');
+      const btn = document.getElementById('viewToggleBtn');
+      const langSel = document.getElementById('langSelector');
+
+      if (currentView === 'client') {
+        currentView = 'admin';
+        clientV.classList.add('hidden');
+        adminV.classList.remove('hidden');
+        langSel.classList.add('hidden');
+        btn.innerText = "📱 Vue Client";
+        renderAdminList();
+      } else {
+        currentView = 'client';
+        adminV.classList.add('hidden');
+        clientV.classList.remove('hidden');
+        langSel.classList.remove('hidden');
+        btn.innerText = "⚙️ Admin Panel";
+        renderClientCards();
+      }
+    }
+
+    function filterCategory(cat) {
+      currentCategory = cat;
+      renderCategoryFilters();
+      renderClientCards();
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
