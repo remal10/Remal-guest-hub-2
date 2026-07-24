@@ -55,16 +55,20 @@
 
   <!-- 1. GUEST VIEW -->
   <div id="clientView" class="max-w-md mx-auto px-4 py-6 space-y-6">
-    <div class="text-center space-y-1">
-      <h2 class="text-2xl font-serif-luxury text-stone-900 font-normal tracking-wide" id="welcomeMsg">Welcome to Remal Hotel & Villas</h2>
-      <p class="text-[10px] text-stone-400 uppercase tracking-widest" id="roomIndicator">Al Dhannah City • Guest Hub</p>
-    </div>
+    
+    <!-- CARTE D'ACCUEIL AVEC IMAGE D'ARRIÈRE-PLAN LUXUEUSE -->
+    <div class="relative rounded-3xl overflow-hidden shadow-xl p-6 text-white space-y-6 bg-cover bg-center" style="background-image: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.65)), url('Remal_exterior_view1.jpg');">
+      <div class="text-center space-y-1">
+        <h2 class="text-2xl font-serif-luxury text-white font-normal tracking-wide drop-shadow-md" id="welcomeMsg">Welcome to Remal Hotel & Villas</h2>
+        <p class="text-[10px] text-stone-200 uppercase tracking-widest font-medium drop-shadow" id="roomIndicator">Al Dhannah City • Guest Hub</p>
+      </div>
 
-    <!-- Navigation Onglets Client -->
-    <div class="flex bg-stone-200/60 p-1 rounded-2xl text-[11px] font-medium border border-stone-200 overflow-x-auto scrollbar-none">
-      <button onclick="switchGuestTab('offers')" id="tabOffersBtn" class="flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-sm whitespace-nowrap">🏷️ <span id="lblTabOffers">Offers</span></button>
-      <button onclick="switchGuestTab('facilities')" id="tabFacilitiesBtn" class="flex-1 py-2.5 px-3 rounded-xl text-stone-500 hover:text-stone-900 whitespace-nowrap">🏛️ <span id="lblTabFacilities">Facilities</span></button>
-      <button onclick="switchGuestTab('request')" id="tabRequestBtn" class="flex-1 py-2.5 px-3 rounded-xl text-stone-500 hover:text-stone-900 whitespace-nowrap">🔔 <span id="lblTabRequest">Service</span></button>
+      <!-- Navigation Onglets Client en Overlay semi-transparent -->
+      <div class="flex bg-black/40 backdrop-blur-md p-1.5 rounded-2xl text-[11px] font-medium border border-white/20 overflow-x-auto scrollbar-none">
+        <button onclick="switchGuestTab('offers')" id="tabOffersBtn" class="flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap">🏷️ <span id="lblTabOffers">Offers</span></button>
+        <button onclick="switchGuestTab('facilities')" id="tabFacilitiesBtn" class="flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap">🏛️ <span id="lblTabFacilities">Facilities</span></button>
+        <button onclick="switchGuestTab('request')" id="tabRequestBtn" class="flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap">🔔 <span id="lblTabRequest">Service</span></button>
+      </div>
     </div>
 
     <!-- SECTION 1: OFFRES -->
@@ -404,7 +408,7 @@
         lblDetails: "अतिरिक्त विवरण / अनुरोध",
         placeholderDetails: "अपना अनुरोध यहां दर्ज करें...",
         btnSubmit: "रिसेप्शन को अनुरोध भेजें",
-        whatsappBtn: "व्हाट्सएप रिसेप्शन",
+        whatsappText: "व्हाट्सएप रिसेप्शन",
         successMsg: "आपका अनुरोध सफलतापूर्वक भेजा गया!",
         whatsappSub: "क्या आप व्हाट्सएप पर सीधे बात करना चाहते हैं?",
         chatWhatsapp: "💬 व्हाट्सएप पर चैट करें",
@@ -449,7 +453,7 @@
         images: ['Gym.jpg'],
         title: { en: 'Recreation & Fitness Gym', ar: 'مركز اللياقة والصالة الرياضية', hi: 'फिटनेस और जिम' },
         desc: { en: 'Stay active with modern fitness equipment designed for your daily workouts.', ar: 'حافظ على نشاطك وصحتك مع أحدث معدات اللياقة البدنية.', hi: 'हमारे आधुनिक जिम उपकरणों के साथ फिट रहें।' },
-        timing: { en: '06:00 AM - 10:00 PM', ar: '٠٦:٠٠ صباحاً - ١٠:٠٠ مساءً', hi: 'सुबह 06:00 - रात 10:00' }
+        timing: { en: '06:00 AM - 10:00 PM', ar: '٠٦:٠0 صباحاً - ١٠:٠٠ مساءً', hi: 'सुबह 06:00 - रात 10:00' }
       },
       {
         id: 'kids',
@@ -477,7 +481,7 @@
         images: ['Room1.jpg', 'Room2.jpg', 'Room3.jpg', 'Room4.jpg', 'Room5.jpg', 'Room6.jpg', 'Room7.jpg', 'Room8.jpg'],
         title: { en: 'Luxury Guest Rooms', ar: 'غرف النزلاء الفاخرة', hi: 'लक्जरी अतिथि कमरे' },
         desc: { en: 'Spacious, modernly equipped rooms designed for maximum comfort and relaxation.', ar: 'غرف واسعة ومجهزة بأحدث وسائل الراحة المصممة لضمان أقصى درجات الاسترخاء.', hi: 'अधिकतम आराम और विश्राम के लिए डिज़ाइन किए गए विशाल कमरे।' },
-        timing: { en: 'Daily Housekeeping', ar: 'تنظيف يومي للغرف', hi: 'दैनिक सफाई' }
+        timing: { en: 'Daily Housekeeping', ar: 'تنظيف يومي للغرف', hi: 'دैनिक सफाई' }
       },
       {
         id: 'villas',
@@ -795,19 +799,19 @@
       facSec.classList.add('hidden');
       reqSec.classList.add('hidden');
 
-      btnO.className = "flex-1 py-2.5 px-3 rounded-xl text-stone-500 hover:text-stone-900 whitespace-nowrap";
-      btnF.className = "flex-1 py-2.5 px-3 rounded-xl text-stone-500 hover:text-stone-900 whitespace-nowrap";
-      btnR.className = "flex-1 py-2.5 px-3 rounded-xl text-stone-500 hover:text-stone-900 whitespace-nowrap";
+      btnO.className = "flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap";
+      btnF.className = "flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap";
+      btnR.className = "flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap";
 
       if (tab === 'offers') {
         offersSec.classList.remove('hidden');
-        btnO.className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-sm whitespace-nowrap";
+        btnO.className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap";
       } else if (tab === 'facilities') {
         facSec.classList.remove('hidden');
-        btnF.className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-sm whitespace-nowrap";
+        btnF.className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap";
       } else if (tab === 'request') {
         reqSec.classList.remove('hidden');
-        btnR.className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-sm whitespace-nowrap";
+        btnR.className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap";
         renderClientTracker();
       }
     }
