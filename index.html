@@ -84,7 +84,7 @@
       <div id="facilitiesContainer" class="space-y-6"></div>
     </div>
 
-    <!-- SECTION 3: DEMANDE DE SERVICE + SUIVI EN DIRECT -->
+    <!-- SECTION 3: DEMANDE DE SERVICE + SUIVI INTEGRÉ -->
     <div id="guestRequestSection" class="hidden space-y-6">
       
       <!-- Formulaire de demande -->
@@ -93,7 +93,7 @@
         <form id="guestRequestForm" class="space-y-4">
           <div>
             <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblRoom">Room / Villa Number</label>
-            <input type="text" id="req_room" placeholder="e.g., 104 or Villa 02" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/55 outline-none" required>
+            <input type="text" id="req_room" placeholder="e.g., 104 or Villa 02" onkeyup="renderClientTracker()" onchange="renderClientTracker()" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/55 outline-none" required>
           </div>
           <div>
             <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblService">Service Type</label>
@@ -114,7 +114,7 @@
           </button>
         </form>
 
-        <!-- CONFIRMATION & RACCOURCI WHATSAPP (OPTION B) -->
+        <!-- CONFIRMATION & RACCOURCI WHATSAPP -->
         <div id="whatsappConfirmation" class="hidden bg-emerald-50 border border-emerald-200 p-4 rounded-2xl space-y-3">
           <div class="flex items-center space-x-2 text-emerald-900 font-bold text-xs">
             <span>✅</span>
@@ -127,14 +127,14 @@
         </div>
       </div>
 
-      <!-- SUIVI EN TEMPS RÉEL DE LA CHAMBRE (OPTION A) -->
+      <!-- SUIVI EN TEMPS RÉEL (PLOTE DIRECTEMENT DANS LA VUE MOBILE) -->
       <div class="remal-card p-6 rounded-3xl space-y-4">
         <div class="flex justify-between items-center border-b border-stone-100 pb-3">
           <h3 class="text-sm font-serif-luxury font-bold text-stone-900">📡 Track Active Requests</h3>
           <span class="text-[10px] bg-stone-100 text-stone-600 font-semibold px-2.5 py-1 rounded-full">Live Status</span>
         </div>
         <div id="clientTrackerContainer" class="space-y-3">
-          <p class="text-center text-xs text-stone-400 py-3">Saisissez votre numéro de chambre pour voir vos demandes.</p>
+          <p class="text-center text-xs text-stone-400 py-3">Entrez votre numéro de chambre pour afficher le suivi en direct.</p>
         </div>
       </div>
 
@@ -309,12 +309,6 @@
           };
           reader.readAsDataURL(file);
         });
-      }
-
-      // Écoute des changements dans le champ numéro de chambre
-      const roomInput = document.getElementById('req_room');
-      if (roomInput) {
-        roomInput.addEventListener('input', renderClientTracker);
       }
     });
 
@@ -501,21 +495,21 @@
       renderClientTracker();
     }
 
-    // AFFICHER ET SUIVRE LES DEMANDES CÔTÉ CLIENT (OPTION A)
+    // AFFICHER ET SUIVRE LES DEMANDES CÔTÉ CLIENT
     function renderClientTracker() {
       const roomNum = document.getElementById('req_room')?.value?.trim();
       const container = document.getElementById('clientTrackerContainer');
       if (!container) return;
 
       if (!roomNum) {
-        container.innerHTML = `<p class="text-center text-xs text-stone-400 py-3">Saisissez votre numéro de chambre pour suivre vos demandes.</p>`;
+        container.innerHTML = `<p class="text-center text-xs text-stone-400 py-3">Entrez votre numéro de chambre ci-dessus pour afficher le suivi en direct.</p>`;
         return;
       }
 
       const myRequests = cachedRequests.filter(r => String(r.room).trim().toLowerCase() === roomNum.toLowerCase());
 
       if (myRequests.length === 0) {
-        container.innerHTML = `<p class="text-center text-xs text-stone-400 py-3">Aucune demande en cours pour la chambre ${roomNum}.</p>`;
+        container.innerHTML = `<p class="text-center text-xs text-stone-400 py-3">Aucune demande enregistrée pour la chambre ${roomNum}.</p>`;
         return;
       }
 
@@ -640,7 +634,6 @@
       await fetchOffersFromCloud();
     }
 
-    // ENVOI DE LA DEMANDE ET EXPÉRIENCE DE CONFIRMATION (OPTION B)
     async function submitGuestRequest() {
       const room = document.getElementById('req_room').value;
       const service = document.getElementById('req_service').value;
@@ -649,7 +642,6 @@
       
       await supabaseClient.from('requests').insert([{ room, service, details, status: 'Pending' }]);
 
-      // Préparation du message WhatsApp pré-rempli
       const textMessage = encodeURIComponent(`Hello Remal Reception,\nI submitted a request for Room/Villa ${room}.\n\n*Service:* ${service}\n*Details:* ${details}`);
       const whatsappUrl = `https://wa.me/971526966865?text=${textMessage}`;
 
@@ -740,7 +732,7 @@
       } else if (lang === 'hi') {
         root.setAttribute('dir', 'ltr');
         document.getElementById('welcomeMsg').innerText = "रेमल होटल एंड विला में आपका स्वागत है";
-        document.getElementById('lblTabOffers').innerText = "विशेष ऑफ़र";
+        document.getElementById('lblTabOffers').innerText = "विशेष ऑफ़ر";
         document.getElementById('lblTabFacilities').innerText = "सुविधाएं";
         document.getElementById('lblTabRequest').innerText = "सेवा अनुरोध";
         document.getElementById('facHeader').innerText = "होटल सुविधाएं";
