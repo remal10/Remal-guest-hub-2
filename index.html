@@ -92,9 +92,12 @@
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Image URL (Photo)</label>
-          <input type="url" id="adm_image" placeholder="https://..." class="w-full border rounded-lg p-2 text-sm" required>
-        </div>
+  <label class="block text-xs font-bold text-stone-700 uppercase mb-1">Photo de l'offre</label>
+  <input type="file" id="imageFileInput" accept="image/*" class="w-full text-xs text-stone-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-800 file:text-white hover:file:bg-amber-900 cursor-pointer mb-2" />
+  <p id="uploadStatus" class="text-[10px] text-stone-500 mb-2"></p>
+  <input type="hidden" id="adm_image" />
+</div>
+
 
         <button type="button" onclick="saveAdminData()" class="w-full bg-amber-800 text-white font-bold py-3 rounded-xl shadow hover:bg-amber-900 transition text-sm">
           Publier dans le Cloud (Instant Sync)
@@ -114,6 +117,44 @@
     const SUPABASE_ANON_KEY = 'Sb_publishable_kpRe7ijZbdkNe-uM0X0yyw_QQTJoxDf';
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+document.addEventListener('DOMContentLoaded', () => {
+  const fileInput = document.getElementById('imageFileInput');
+  if (fileInput) {
+    fileInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      const statusEl = document.getElementById('uploadStatus');
+      if (!file) return;
+
+      statusEl.innerText = "⏳ Envoi de l'image en cours...";
+      statusEl.className = "text-[10px] text-amber-600 font-semibold mb-2";
+
+      try {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}.${fileExt}`;
+
+        // Envoi dans Supabase Storage ('remal-images')
+        const { data, error } = await supabaseClient.storage
+          .from('remal-images')
+          .upload(fileName, file);
+
+        if (error) throw error;
+
+        // Récupération de l'URL publique
+        const { data: urlData } = supabaseClient.storage
+          .from('remal-images')
+          .getPublicUrl(fileName);
+
+        document.getElementById('adm_image').value = urlData.publicUrl;
+        statusEl.innerText = "✅ Image importée avec succès !";
+        statusEl.className = "text-[10px] text-green-600 font-semibold mb-2";
+      } catch (err) {
+        console.error(err);
+        statusEl.innerText = "❌ Erreur : " + err.message;
+        statusEl.className = "text-[10px] text-red-600 font-semibold mb-2";
+      }
+    });
+  }
+});
 
     let currentLang = 'en';
     let currentView = 'client';
