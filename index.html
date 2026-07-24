@@ -53,7 +53,7 @@
     <span id="announcementText">📢 Special Announcement</span>
   </div>
 
-  <!-- 1. GUEST VIEW (GARDÉE AU FORMAT MOBILE HARMONIEUX) -->
+  <!-- 1. GUEST VIEW -->
   <div id="clientView" class="max-w-md mx-auto px-4 py-6 space-y-6">
     <div class="text-center space-y-1">
       <h2 class="text-2xl font-serif-luxury text-stone-900 font-normal tracking-wide" id="welcomeMsg">Welcome to Remal Hotel & Villas</h2>
@@ -84,32 +84,60 @@
       <div id="facilitiesContainer" class="space-y-6"></div>
     </div>
 
-    <!-- SECTION 3: DEMANDE DE SERVICE -->
-    <div id="guestRequestSection" class="hidden remal-card p-6 rounded-3xl space-y-5">
-      <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-3" id="reqHeader">Request Guest Service</h2>
-      <form id="guestRequestForm" class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblRoom">Room / Villa Number</label>
-          <input type="text" id="req_room" placeholder="e.g., 104 or Villa 02" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/55 outline-none" required>
+    <!-- SECTION 3: DEMANDE DE SERVICE + SUIVI EN DIRECT -->
+    <div id="guestRequestSection" class="hidden space-y-6">
+      
+      <!-- Formulaire de demande -->
+      <div class="remal-card p-6 rounded-3xl space-y-5">
+        <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-3" id="reqHeader">Request Guest Service</h2>
+        <form id="guestRequestForm" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblRoom">Room / Villa Number</label>
+            <input type="text" id="req_room" placeholder="e.g., 104 or Villa 02" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/55 outline-none" required>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblService">Service Type</label>
+            <select id="req_service" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 outline-none">
+              <option value="Housekeeping / Towels">Housekeeping / Extra Towels</option>
+              <option value="Room Service / Dining">Room Service / Order Food</option>
+              <option value="Maintenance / Technical">Maintenance / Technical Support</option>
+              <option value="Front Desk Inquiry">Front Desk Inquiry</option>
+              <option value="Luggage Assistance">Luggage Assistance</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblDetails">Additional Notes / Request Details</label>
+            <textarea id="req_details" rows="3" placeholder="Specify your request here..." class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 outline-none" required></textarea>
+          </div>
+          <button type="button" onclick="submitGuestRequest()" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-bold py-3.5 rounded-xl shadow-lg transition text-sm tracking-wider">
+            <span id="btnSubmitReq">Send Request to Reception</span>
+          </button>
+        </form>
+
+        <!-- CONFIRMATION & RACCOURCI WHATSAPP (OPTION B) -->
+        <div id="whatsappConfirmation" class="hidden bg-emerald-50 border border-emerald-200 p-4 rounded-2xl space-y-3">
+          <div class="flex items-center space-x-2 text-emerald-900 font-bold text-xs">
+            <span>✅</span>
+            <span>Demande transmise avec succès !</span>
+          </div>
+          <p class="text-[11px] text-emerald-700">Souhaitez-vous échanger en direct ou suivre votre demande sur WhatsApp ?</p>
+          <a id="btnWhatsappDirect" href="#" target="_blank" class="flex items-center justify-center space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 px-4 rounded-xl font-bold text-xs shadow-md transition">
+            <span>💬 Discuter sur WhatsApp</span>
+          </a>
         </div>
-        <div>
-          <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblService">Service Type</label>
-          <select id="req_service" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 outline-none">
-            <option value="Housekeeping / Towels">Housekeeping / Extra Towels</option>
-            <option value="Room Service / Dining">Room Service / Order Food</option>
-            <option value="Maintenance / Technical">Maintenance / Technical Support</option>
-            <option value="Front Desk Inquiry">Front Desk Inquiry</option>
-            <option value="Luggage Assistance">Luggage Assistance</option>
-          </select>
+      </div>
+
+      <!-- SUIVI EN TEMPS RÉEL DE LA CHAMBRE (OPTION A) -->
+      <div class="remal-card p-6 rounded-3xl space-y-4">
+        <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+          <h3 class="text-sm font-serif-luxury font-bold text-stone-900">📡 Track Active Requests</h3>
+          <span class="text-[10px] bg-stone-100 text-stone-600 font-semibold px-2.5 py-1 rounded-full">Live Status</span>
         </div>
-        <div>
-          <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblDetails">Additional Notes / Request Details</label>
-          <textarea id="req_details" rows="3" placeholder="Specify your request here..." class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 outline-none" required></textarea>
+        <div id="clientTrackerContainer" class="space-y-3">
+          <p class="text-center text-xs text-stone-400 py-3">Saisissez votre numéro de chambre pour voir vos demandes.</p>
         </div>
-        <button type="button" onclick="submitGuestRequest()" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-bold py-3.5 rounded-xl shadow-lg transition text-sm tracking-wider">
-          <span id="btnSubmitReq">Send Request to Reception</span>
-        </button>
-      </form>
+      </div>
+
     </div>
   </div>
 
@@ -121,7 +149,7 @@
     </a>
   </div>
 
-  <!-- 2. ADMIN VIEW (OPTIMISÉE TABLETTE ET ORDINATEUR) -->
+  <!-- 2. ADMIN VIEW -->
   <div id="adminView" class="hidden max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-6">
     <div class="flex justify-between items-center bg-stone-200/80 p-1.5 rounded-2xl text-xs font-bold">
       <div class="flex space-x-2 w-full md:w-auto">
@@ -139,7 +167,6 @@
       </div>
     </div>
 
-    <!-- BANNIÈRE AUDIO POUR PETITS ÉCRANS EN ADMIN -->
     <div class="md:hidden bg-amber-50 border border-amber-200 p-3 rounded-2xl flex justify-between items-center text-xs text-amber-900">
       <div class="flex items-center space-x-2">
         <span>🔔 Alertes Sonores :</span>
@@ -150,10 +177,8 @@
       </button>
     </div>
 
-    <!-- ADMIN: GESTION DES OFFRES (LAYOUT CÔTÉ À CÔTÉ SUR TABLETTE/PC) -->
+    <!-- ADMIN: OFFRES -->
     <div id="adminOffersPanel" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-      
-      <!-- Formulaire de création (5 colonnes) -->
       <div class="lg:col-span-5 bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4 h-fit">
         <div class="flex justify-between items-center border-b border-stone-100 pb-3">
           <h2 class="text-base font-serif-luxury font-bold text-stone-900">Nouvelle Offre Cloud</h2>
@@ -195,15 +220,13 @@
         </form>
       </div>
 
-      <!-- Liste des offres actives (7 colonnes) -->
       <div class="lg:col-span-7 bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
         <h3 class="text-xs font-bold text-stone-500 uppercase tracking-widest border-b border-stone-100 pb-2">Offres Actives en Base</h3>
         <div id="adminListContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3"></div>
       </div>
-
     </div>
 
-    <!-- ADMIN: DEMANDES (TABLEAU D'AFFICHAGE LARGE) -->
+    <!-- ADMIN: DEMANDES -->
     <div id="adminRequestsPanel" class="hidden space-y-4">
       <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
         <div class="flex justify-between items-center border-b border-stone-100 pb-3">
@@ -287,6 +310,12 @@
           reader.readAsDataURL(file);
         });
       }
+
+      // Écoute des changements dans le champ numéro de chambre
+      const roomInput = document.getElementById('req_room');
+      if (roomInput) {
+        roomInput.addEventListener('input', renderClientTracker);
+      }
     });
 
     let currentLang = 'en';
@@ -351,14 +380,14 @@
         images: ['Villa1.jpg', 'Villa2.jpg', 'Villa3.jpg', 'Villa4.jpg', 'Villa5.jpg'],
         title: { en: 'VIP Private Villas', ar: 'الفيلات الملكية الخاصة VIP', hi: 'वीआईपी निजी विلا' },
         desc: { en: 'Fully furnished private luxury villas for a premium private stay experience.', ar: 'فيلات فاخرة مفروشة بالكامل لإقامة خاصة وفخمة لا تُنسى.', hi: 'प्रीमियम निजी प्रवास के अनुभव के लिए पूरी तरह से सुसज्जित निजी विला।' },
-        timing: { en: 'VIP Concierge Service', ar: 'خدمة كونسيرج خاصة', hi: 'वीआईपी सेवा' }
+        timing: { en: 'VIP Concierge Service', ar: 'خدمة كونسيرج خاصة', hi: 'خدمة كونسيرج خاصة' }
       },
       {
         id: 'meeting',
         images: ['Meeting_room1.jpg', 'Meeting_room2.jpg', 'Meeting_room3.jpg', 'Meeting_room4.jpg'],
         title: { en: 'Meeting & Event Halls', ar: 'قاعات الاجتماعات والفعاليات', hi: 'मीटिंग और इवेंट हॉल' },
         desc: { en: 'First-class venues featuring contemporary furnishings for conferences and business events.', ar: 'قاعات ممتازة مجهزة بأحدث التقنيات لعقد المؤتمرات والاجتماعات.', hi: 'सम्मेलनों और व्यावसायिक आयोजनों के लिए प्रथम श्रेणी के स्थान।' },
-        timing: { en: 'By Reservation', ar: 'حسب الحجز', hi: 'اراض الرعاية' }
+        timing: { en: 'By Reservation', ar: 'حسب الحجز', hi: 'आरक्षण द्वारा' }
       }
     ];
 
@@ -469,6 +498,45 @@
       }
 
       if (currentView === 'admin') renderAdminRequests();
+      renderClientTracker();
+    }
+
+    // AFFICHER ET SUIVRE LES DEMANDES CÔTÉ CLIENT (OPTION A)
+    function renderClientTracker() {
+      const roomNum = document.getElementById('req_room')?.value?.trim();
+      const container = document.getElementById('clientTrackerContainer');
+      if (!container) return;
+
+      if (!roomNum) {
+        container.innerHTML = `<p class="text-center text-xs text-stone-400 py-3">Saisissez votre numéro de chambre pour suivre vos demandes.</p>`;
+        return;
+      }
+
+      const myRequests = cachedRequests.filter(r => String(r.room).trim().toLowerCase() === roomNum.toLowerCase());
+
+      if (myRequests.length === 0) {
+        container.innerHTML = `<p class="text-center text-xs text-stone-400 py-3">Aucune demande en cours pour la chambre ${roomNum}.</p>`;
+        return;
+      }
+
+      container.innerHTML = myRequests.map(req => {
+        let statusBadge = `<span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-1 rounded-full pulse-notification">🟡 Pending / En attente</span>`;
+        if (req.status === 'In Progress') {
+          statusBadge = `<span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2.5 py-1 rounded-full">🔵 In Progress / En cours</span>`;
+        } else if (req.status === 'Completed') {
+          statusBadge = `<span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2.5 py-1 rounded-full">🟢 Completed / Terminé</span>`;
+        }
+
+        return `
+          <div class="p-3.5 bg-stone-50 rounded-2xl border border-stone-200 text-xs space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-stone-900">${req.service}</span>
+              ${statusBadge}
+            </div>
+            <p class="text-stone-600 bg-white p-2.5 rounded-xl border border-stone-100">${req.details}</p>
+          </div>
+        `;
+      }).join('');
     }
 
     function renderCategoryFilters() {
@@ -572,14 +640,28 @@
       await fetchOffersFromCloud();
     }
 
+    // ENVOI DE LA DEMANDE ET EXPÉRIENCE DE CONFIRMATION (OPTION B)
     async function submitGuestRequest() {
       const room = document.getElementById('req_room').value;
       const service = document.getElementById('req_service').value;
       const details = document.getElementById('req_details').value;
       if (!room || !details) { alert("Remplissez la chambre et les détails."); return; }
+      
       await supabaseClient.from('requests').insert([{ room, service, details, status: 'Pending' }]);
-      alert("Votre demande a été envoyée à la réception !");
+
+      // Préparation du message WhatsApp pré-rempli
+      const textMessage = encodeURIComponent(`Hello Remal Reception,\nI submitted a request for Room/Villa ${room}.\n\n*Service:* ${service}\n*Details:* ${details}`);
+      const whatsappUrl = `https://wa.me/971526966865?text=${textMessage}`;
+
+      const btnWa = document.getElementById('btnWhatsappDirect');
+      const boxWa = document.getElementById('whatsappConfirmation');
+      if (btnWa && boxWa) {
+        btnWa.href = whatsappUrl;
+        boxWa.classList.remove('hidden');
+      }
+
       document.getElementById('req_details').value = '';
+      await fetchRequestsFromCloud();
     }
 
     async function updateRequestStatus(id, newStatus) {
@@ -621,6 +703,7 @@
       } else if (tab === 'request') {
         reqSec.classList.remove('hidden');
         btnR.className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-sm whitespace-nowrap";
+        renderClientTracker();
       }
     }
 
