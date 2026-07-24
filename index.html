@@ -52,7 +52,7 @@
       <p class="text-[10px] text-stone-400 uppercase tracking-widest" id="roomIndicator">Al Dhannah City • Guest Hub</p>
     </div>
 
-    <!-- Navigation Onglets Client (3 Onglets) -->
+    <!-- Navigation Onglets Client -->
     <div class="flex bg-stone-200/60 p-1 rounded-2xl text-[11px] font-medium border border-stone-200 overflow-x-auto scrollbar-none">
       <button onclick="switchGuestTab('offers')" id="tabOffersBtn" class="flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-sm whitespace-nowrap">🏷️ <span id="lblTabOffers">Offers</span></button>
       <button onclick="switchGuestTab('facilities')" id="tabFacilitiesBtn" class="flex-1 py-2.5 px-3 rounded-xl text-stone-500 hover:text-stone-900 whitespace-nowrap">🏛️ <span id="lblTabFacilities">Facilities</span></button>
@@ -71,12 +71,10 @@
     <div id="guestFacilitiesSection" class="hidden space-y-5">
       <div class="text-center border-b border-stone-200 pb-3">
         <h3 class="text-lg font-serif-luxury font-bold text-stone-900" id="facHeader">Hotel Facilities & Amenities</h3>
-        <p class="text-xs text-stone-500" id="facSub">Explore our premium venues and services</p>
+        <p class="text-xs text-stone-500" id="facSub">Explore our premium venues and spaces</p>
       </div>
 
-      <div id="facilitiesContainer" class="space-y-5">
-        <!-- Contenu injecté dynamiquement par JavaScript -->
-      </div>
+      <div id="facilitiesContainer" class="space-y-6"></div>
     </div>
 
     <!-- SECTION 3: DEMANDE DE SERVICE -->
@@ -230,62 +228,106 @@
     let cachedRequests = [];
     let activeAnnouncement = null;
 
-    // Données fixes de la Galerie des Équipements (Facilities)
+    // 📸 DONNÉES COMPLETES AVEC VOTRE POOL.JPG, GYM.JPG ET KID_CLUB.JPG !
     const facilitiesData = [
       {
-        id: 'falaj',
-        image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80',
-        title: { en: 'Falaj Restaurant', ar: 'مطعم الفلج', hi: 'फलज रेस्टोरेंट' },
+        id: 'exterior',
+        images: ['Remal_exterior_view1.jpg', 'Remal_exterior_view2.jpg', 'Remal_exterior_view3.jpg', 'Remal_exterior_view4.jpg'],
+        title: { en: 'Hotel Exterior & Grounds', ar: 'المظهر الخارجي والمحيط', hi: 'होटल का बाहरी दृश्य' },
         desc: { 
-          en: 'International Breakfast & All-Day Fine Dining featuring local and global flavors.', 
-          ar: 'بوفيه إفطار عالمي وتجربة طعام فاخرة على مدار اليوم.', 
-          hi: 'अंतर्राष्ट्रीय नाश्ता और दिनभर बेहतरीन भोजन।' 
+          en: 'Experience our pristine architecture and welcoming surroundings at Remal Hotel & Villas.', 
+          ar: 'استمتع بالتصميم المعماري الفريد والمحيط الهادئ في فندق وڤلل رمال.', 
+          hi: 'रेमल होटल एंड विला के शानदार वास्तुशिल्प का अनुभव करें।' 
         },
-        timing: { en: '06:30 AM - 11:00 PM', ar: '٠٦:٣٠ صباحاً - ١١:٠٠ مساءً', hi: 'सुबह 06:30 - रात 11:00' }
+        timing: { en: '24/7 Welcome', ar: 'ترحيب على مدار الساعة', hi: '24 घंटे स्वागत' }
       },
       {
         id: 'pool',
-        image: 'https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=800&q=80',
+        images: ['Pool.jpg'],
         title: { en: 'Al Waha Swimming Pool', ar: 'مسبح الواحة', hi: 'अल वाहा स्विमिंग पूल' },
         desc: { 
-          en: 'Relax by our temperature-controlled outdoor swimming pool with sunbeds and refreshments.', 
-          ar: 'استرخِ بجانب المسبح الخارجي المبتكر مع الكراسي المريحة والمشروبات.', 
-          hi: 'धूप सेंकने की जगह और ताज़ा पेय के साथ आउटडोर पूल।' 
+          en: 'Relax by our outdoor swimming pool with comfortable loungers and refreshing drinks.', 
+          ar: 'استرخِ بجانب المسبح الخارجي الجميل مع المشروبات المنعشة.', 
+          hi: 'हमारे बाहरी स्विमिंग पूल के पास आराम करें।' 
         },
         timing: { en: '07:00 AM - 08:00 PM', ar: '٠٧:٠٠ صباحاً - ٠٨:٠٠ مساءً', hi: 'सुबह 07:00 - रात 08:00' }
       },
       {
-        id: 'recreation',
-        image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80',
-        title: { en: 'Recreation & Fitness Centre', ar: 'مركز اللياقة والترفيه', hi: 'मनोरंजन और फिटनेस सेंटर' },
+        id: 'gym',
+        images: ['Gym.jpg'],
+        title: { en: 'Recreation & Fitness Gym', ar: 'مركز اللياقة والصالة الرياضية', hi: 'फिटनेस और जिम' },
         desc: { 
-          en: 'Stay in shape with our contemporary gym equipment and sporting facilities.', 
-          ar: 'حافظ على لياقتك البدنية مع أحدث الأجهزة الرياضية العصرية.', 
+          en: 'Stay active with modern fitness equipment designed for your daily workouts.', 
+          ar: 'حافظ على نشاطك وصحتك مع أحدث معدات اللياقة البدنية.', 
           hi: 'हमारे आधुनिक जिम उपकरणों के साथ फिट रहें।' 
         },
         timing: { en: '06:00 AM - 10:00 PM', ar: '٠٦:٠٠ صباحاً - ١٠:٠٠ مساءً', hi: 'सुबह 06:00 - रात 10:00' }
       },
       {
-        id: 'spa',
-        image: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=800&q=80',
-        title: { en: 'The Wellness Spa', ar: 'السبا ومركز الاسترخاء', hi: 'द वेलनेस स्पा' },
+        id: 'kids',
+        images: ['Kid_club.jpg'],
+        title: { en: 'Kids Club & Play Area', ar: 'nادي الأطفال ومجهزة الألعاب', hi: 'किड्स क्लब और प्ले एरिया' },
         desc: { 
-          en: 'Rejuvenate your senses with our soothing massage therapy and beauty treatments.', 
-          ar: 'جدد حيوية جسمك وعقلك مع علاجات المساج وجلسات الاسترخاء الفاخرة.', 
-          hi: 'मालिश और सौंदर्य उपचार के साथ अपनी इंद्रियों को तरोताज़ा करें।' 
+          en: 'A safe, fun, and engaging play area for our young guests.', 
+          ar: 'منطقة ألعاب آمنة وممتعة ومخصصة لأطفالنا الأعزاء.', 
+          hi: 'हमारे छोटे मेहमानों के लिए एक सुरक्षित और मज़ेदार खेल क्षेत्र।' 
         },
-        timing: { en: '10:00 AM - 09:00 PM', ar: '١٠:٠٠ صباحاً - ٠٩:٠٠ مساءً', hi: 'सुबह 10:00 - रात 09:00' }
+        timing: { en: '09:00 AM - 07:00 PM', ar: '٠٩:٠٠ صباحاً - ٠٧:٠٠ مساءً', hi: 'सुबह 09:00 - शाम 07:00' }
+      },
+      {
+        id: 'lobby',
+        images: ['Lobby_1.jpg', 'Lobby_2.jpg', 'Lobby_3.jpg', 'Lobby_4.jpg'],
+        title: { en: 'Grand Lobby & Reception', ar: 'البهو الرئيسي والاستقبال', hi: 'भव्य लॉबी और रिसेप्शन' },
+        desc: { 
+          en: 'An elegant welcoming ambiance with 24/7 concierge assistance.', 
+          ar: 'أجواء ترحيبية راقية مع خدمة الكونسيرج الممتازة على مدار الساعة.', 
+          hi: '24/7 द्वारपाल सहायता के साथ एक सुरुचिपूर्ण स्वागत योग्य माहौल।' 
+        },
+        timing: { en: '24 Hours Open', ar: 'مفتوح ٢٤ ساعة', hi: '24 घंटे खुला है' }
+      },
+      {
+        id: 'restaurant',
+        images: ['Restaurant-1.jpg', 'Restaurant-2.jpg', 'Restaurant-3.jpg', 'Restaurant-4.jpg'],
+        title: { en: 'Falaj Restaurant & Dining', ar: 'مطعم الفلج والوجبات', hi: 'फलज रेस्टोरेंट और भोजन' },
+        desc: { 
+          en: 'International buffet breakfast & fine dining options serving delicious global cuisines.', 
+          ar: 'بوفيه إفطار عالمي وتجربة طعام فاخرة تقدم أشهى المأكولات العالمية.', 
+          hi: 'अंतर्राष्ट्रीय बफ़े नाश्ता और स्वादिष्ट वैश्विक व्यंजन।' 
+        },
+        timing: { en: '06:30 AM - 11:00 PM', ar: '٠٦:٣٠ صباحاً - ١١:٠٠ مساءً', hi: 'सुबह 06:30 - रात 11:00' }
+      },
+      {
+        id: 'rooms',
+        images: ['Room1.jpg', 'Room2.jpg', 'Room3.jpg', 'Room4.jpg', 'Room5.jpg', 'Room6.jpg', 'Room7.jpg', 'Room8.jpg'],
+        title: { en: 'Luxury Guest Rooms', ar: 'غرف النزلاء الفاخرة', hi: 'लक्जरी अतिथि कमरे' },
+        desc: { 
+          en: 'Spacious, modernly equipped rooms designed for maximum comfort and relaxation.', 
+          ar: 'غرف واسعة ومجهزة بأحدث وسائل الراحة المصممة لضمان أقصى درجات الاسترخاء.', 
+          hi: 'अधिकतम आराम और विश्राम के लिए डिज़ाइन किए गए विशाल कमरे।' 
+        },
+        timing: { en: 'Daily Housekeeping', ar: 'تنظيف يومي للغرف', hi: 'दैनिक सफाई' }
       },
       {
         id: 'villas',
-        image: 'https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=80',
-        title: { en: 'VIP Royal Suites & Villas', ar: 'الأجنحة والفيلا الملكية VIP', hi: 'वीआईपी रॉयल सूट और विला' },
+        images: ['Villa1.jpg', 'Villa2.jpg', 'Villa3.jpg', 'Villa4.jpg', 'Villa5.jpg'],
+        title: { en: 'VIP Private Villas', ar: 'الفيلات الملكية الخاصة VIP', hi: 'वीआईपी निजी विला' },
         desc: { 
-          en: 'Live and stay in luxury with fully furnished private villas and tailored VIP care.', 
-          ar: 'عش تجربة الفخامة المطلقة في الفيلات المفروشة بالكامل والخدمة الملكية الخاصة.', 
-          hi: 'निजी विला और वीआईपी देखभाल के साथ विलासिता में रहें।' 
+          en: 'Fully furnished private luxury villas for a premium private stay experience.', 
+          ar: 'فيلات فاخرة مفروشة بالكامل لإقامة خاصة وفخمة لا تُنسى.', 
+          hi: 'प्रीमियम निजी प्रवास के अनुभव के लिए पूरी तरह से सुसज्जित निजी विला।' 
         },
-        timing: { en: '24/7 Concierge Service', ar: 'خدمة الكونسيرج على مدار الساعة', hi: '24/7 द्वारपाल सेवा' }
+        timing: { en: 'VIP Concierge Service', ar: 'خدمة كونسيرج خاصة', hi: 'वीआईपी सेवा' }
+      },
+      {
+        id: 'meeting',
+        images: ['Meeting_room1.jpg', 'Meeting_room2.jpg', 'Meeting_room3.jpg', 'Meeting_room4.jpg'],
+        title: { en: 'Meeting & Event Halls', ar: 'قاعات الاجتماعات والفعاليات', hi: 'मीटिंग और इवेंट हॉल' },
+        desc: { 
+          en: 'First-class venues featuring contemporary furnishings for conferences and business events.', 
+          ar: 'قاعات ممتازة مجهزة بأحدث التقنيات لعقد المؤتمرات والاجتماعات.', 
+          hi: 'सम्मेलनों और व्यावसायिक आयोजनों के लिए प्रथम श्रेणी के स्थान।' 
+        },
+        timing: { en: 'By Reservation', ar: 'حسب الحجز', hi: 'आरक्षण द्वारा' }
       }
     ];
 
@@ -318,13 +360,18 @@
       const container = document.getElementById('facilitiesContainer');
       container.innerHTML = facilitiesData.map(item => `
         <div class="remal-card rounded-3xl overflow-hidden shadow-sm">
-          <img src="${item.image}" class="w-full h-48 object-cover" loading="lazy">
+          <div class="flex overflow-x-auto snap-x snap-mandatory scrollbar-none h-52 bg-stone-100">
+            ${item.images.map(img => `
+              <img src="${img}" class="w-full h-full object-cover flex-shrink-0 snap-center" loading="lazy">
+            `).join('')}
+          </div>
+          ${item.images.length > 1 ? '<p class="text-[9px] text-stone-400 text-center pt-1 font-semibold">👈 Swipe for more photos 👉</p>' : ''}
           <div class="p-5 space-y-2">
             <h4 class="text-base font-serif-luxury font-bold text-stone-900">${item.title[currentLang] || item.title['en']}</h4>
             <p class="text-xs text-stone-600 leading-relaxed">${item.desc[currentLang] || item.desc['en']}</p>
             <div class="pt-2 border-t border-stone-100 flex justify-between items-center text-[11px] font-semibold text-stone-500">
               <span>🕒 ${item.timing[currentLang] || item.timing['en']}</span>
-              <button onclick="switchGuestTab('request')" class="text-remal-sand hover:underline">Book / Request →</button>
+              <button onclick="switchGuestTab('request')" class="text-remal-sand hover:underline font-bold">Book / Inquiry →</button>
             </div>
           </div>
         </div>
