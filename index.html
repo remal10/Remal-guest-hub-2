@@ -92,10 +92,11 @@
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-stone-700 uppercase mb-1">Photo de l'offre</label>
-          <input type="file" id="imageFileInput" accept="image/*" class="w-full text-xs text-stone-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-800 file:text-white hover:file:bg-amber-900 cursor-pointer mb-2" />
-          <p id="uploadStatus" class="text-[10px] text-stone-500 mb-2"></p>
-          <input type="hidden" id="adm_image" />
+          <div class="flex justify-between items-center mb-1">
+            <label class="block text-xs font-bold text-stone-700 uppercase">Image URL de l'offre</label>
+            <a href="https://imgbb.com" target="_blank" class="text-xs text-amber-700 font-bold underline">🔗 Héberger une photo sur ImgBB</a>
+          </div>
+          <input type="url" id="adm_image" placeholder="Collez le lien direct de l'image ici..." class="w-full border rounded-lg p-2 text-sm bg-stone-50" required>
         </div>
 
         <button type="button" onclick="saveAdminData()" class="w-full bg-amber-800 text-white font-bold py-3 rounded-xl shadow hover:bg-amber-900 transition text-sm">
@@ -116,53 +117,6 @@
     const SUPABASE_ANON_KEY = 'Sb_publishable_kpRe7ijZbdkNe-uM0X0yyw_QQTJoxDf';
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // Module d'envoi direct de l'image
-    document.addEventListener('DOMContentLoaded', () => {
-      const fileInput = document.getElementById('imageFileInput');
-      if (fileInput) {
-        fileInput.addEventListener('change', async (e) => {
-          const file = e.target.files[0];
-          const statusEl = document.getElementById('uploadStatus');
-          if (!file) return;
-
-          statusEl.innerText = "⏳ Envoi de l'image en cours...";
-          statusEl.className = "text-[10px] text-amber-600 font-semibold mb-2";
-
-          try {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${Date.now()}.${fileExt}`;
-
-            // Envoi direct par API REST sans problème de jetons JWT
-            const response = await fetch(`${SUPABASE_URL}/storage/v1/object/remal-images/${fileName}`, {
-              method: 'POST',
-              headers: {
-                'apikey': SUPABASE_ANON_KEY,
-                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                'Content-Type': file.type
-              },
-              body: file
-            });
-
-            if (!response.ok) {
-              const errData = await response.json();
-              throw new Error(errData.message || 'Erreur lors de l\'envoi');
-            }
-
-            // Génération de l'URL publique
-            const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/remal-images/${fileName}`;
-
-            document.getElementById('adm_image').value = publicUrl;
-            statusEl.innerText = "✅ Image importée avec succès !";
-            statusEl.className = "text-[10px] text-green-600 font-semibold mb-2";
-          } catch (err) {
-            console.error(err);
-            statusEl.innerText = "❌ Erreur : " + err.message;
-            statusEl.className = "text-[10px] text-red-600 font-semibold mb-2";
-          }
-        });
-      }
-    });
 
     let currentLang = 'en';
     let currentView = 'client';
