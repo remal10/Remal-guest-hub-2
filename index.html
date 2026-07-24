@@ -38,13 +38,18 @@
     </div>
   </header>
 
+  <!-- BANNIÈRE D'ANNONCE DYNAMIQUE (VUE CLIENT) -->
+  <div id="announcementBanner" class="hidden bg-amber-600 text-white px-4 py-2 text-center text-xs font-bold shadow-md animate-pulse">
+    <span id="announcementText">📢 Special Announcement</span>
+  </div>
+
   <!-- 1. GUEST VIEW -->
   <div id="clientView" class="max-w-md mx-auto p-4 space-y-5">
     <div class="bg-amber-800 text-amber-100 p-3 rounded-xl shadow text-center text-xs font-medium">
       <span id="welcomeMsg">Welcome to Remal Hotel & Villas</span>
     </div>
 
-    <!-- Navigation Onglets Client (Offres / Demande de Service) -->
+    <!-- Navigation Onglets Client -->
     <div class="flex border-b border-stone-300">
       <button onclick="switchGuestTab('offers')" id="tabOffersBtn" class="flex-1 py-2 text-xs font-bold border-b-2 border-amber-700 text-amber-800">
         🏷️ <span id="lblTabOffers">Special Offers</span>
@@ -56,10 +61,7 @@
 
     <!-- SECTION OFFRES -->
     <div id="guestOffersSection" class="space-y-4">
-      <!-- Category Filters -->
       <div id="categoryFilters" class="flex space-x-2 overflow-x-auto pb-1 text-xs font-semibold scrollbar-none"></div>
-
-      <!-- Cards Container -->
       <div id="cardsContainer" class="space-y-4">
         <p class="text-center text-xs text-stone-400 py-8">Chargement des offres en direct...</p>
       </div>
@@ -100,13 +102,16 @@
 
   <!-- 2. ADMIN VIEW -->
   <div id="adminView" class="hidden max-w-2xl mx-auto p-4 space-y-6">
-    <!-- Onglets Admin (Gestion Offres / Demandes Clients) -->
+    <!-- Onglets Admin -->
     <div class="flex bg-stone-200 p-1 rounded-xl text-xs font-bold">
       <button onclick="switchAdminTab('offers')" id="admTabOffers" class="flex-1 py-2 rounded-lg bg-amber-800 text-white">
-        🏷️ Gestion des Offres
+        🏷️ Offres
       </button>
       <button onclick="switchAdminTab('requests')" id="admTabRequests" class="flex-1 py-2 rounded-lg text-stone-600">
-        🔔 Demandes Clients
+        🔔 Demandes
+      </button>
+      <button onclick="switchAdminTab('banner')" id="admTabBanner" class="flex-1 py-2 rounded-lg text-stone-600">
+        📢 Annonce
       </button>
     </div>
 
@@ -182,16 +187,38 @@
         </div>
       </div>
     </div>
+
+    <!-- ADMIN: GESTION DE LA BANNIÈRE -->
+    <div id="adminBannerPanel" class="hidden space-y-4">
+      <div class="bg-white rounded-2xl p-6 shadow-md border border-stone-200 space-y-4">
+        <h2 class="text-lg font-bold text-stone-900 border-b pb-2">Gestion de la Bannière d'Annonce</h2>
+
+        <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 space-y-2">
+          <p class="text-xs font-bold text-amber-900">Message de l'Annonce (Multilingue)</p>
+          <input type="text" id="ann_en" placeholder="Announcement (English)" class="w-full border rounded p-2 text-sm bg-white">
+          <input type="text" id="ann_ar" placeholder="الإعلان (بالعربية)" dir="rtl" class="w-full border rounded p-2 text-sm bg-white">
+          <input type="text" id="ann_hi" placeholder="घोषणा (हिंदी)" class="w-full border rounded p-2 text-sm bg-white">
+        </div>
+
+        <div class="flex space-x-3">
+          <button onclick="saveAnnouncement(true)" class="flex-1 bg-amber-800 text-white font-bold py-2.5 rounded-xl text-xs hover:bg-amber-900">
+            📢 Publier & Activer
+          </button>
+          <button onclick="saveAnnouncement(false)" class="flex-1 bg-stone-200 text-stone-700 font-bold py-2.5 rounded-xl text-xs hover:bg-stone-300">
+            🚫 Masquer la Bannière
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
-    // ⚙️ CONFIGURATION SUPABASE SÉCURISÉE (Clé publique ANON avec 'e' minuscule)
+    // ⚙️ CONFIGURATION SUPABASE
     const SUPABASE_URL = 'https://tbsroleffqhyzbbfmtvp.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRic3JvbGVmZnFoeXpiYmZtdHZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MzUyMzMsImV4cCI6MjEwMDQxMTIzM30.oNKhoPJ7v__YJQW7flC9UsP2cIDHLMuxjqmf6_NvYW4';
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Dynamic Image Base64 Converter
     document.addEventListener('DOMContentLoaded', () => {
       const fileInput = document.getElementById('imageFileInput');
       if (fileInput) {
@@ -223,6 +250,7 @@
     let currentCategory = 'All';
     let cachedOffers = [];
     let cachedRequests = [];
+    let activeAnnouncement = null;
 
     const categoriesTranslations = {
       en: { 'All': 'All Services', 'Falaj Restaurant': 'Falaj Restaurant', 'Sarab': 'Sarab Bar', 'Al Waha Pool': 'Al Waha Pool', 'The Spa': 'The Spa' },
@@ -246,6 +274,58 @@
 
       renderCategoryFilters();
       await fetchOffersFromCloud();
+      await fetchAnnouncementFromCloud();
+    }
+
+    // ANNOUNCEMENT FETCH
+    async function fetchAnnouncementFromCloud() {
+      const { data, error } = await supabaseClient
+        .from('announcements')
+        .select('*')
+        .order('id', { ascending: false })
+        .limit(1);
+
+      if (error || !data || data.length === 0) {
+        document.getElementById('announcementBanner').classList.add('hidden');
+        return;
+      }
+
+      activeAnnouncement = data[0];
+      renderAnnouncement();
+    }
+
+    function renderAnnouncement() {
+      const banner = document.getElementById('announcementBanner');
+      const textEl = document.getElementById('announcementText');
+
+      if (activeAnnouncement && activeAnnouncement.is_active) {
+        const msg = activeAnnouncement.message[currentLang] || activeAnnouncement.message['en'];
+        textEl.innerText = `📢 ${msg}`;
+        banner.classList.remove('hidden');
+      } else {
+        banner.classList.add('hidden');
+      }
+    }
+
+    async function saveAnnouncement(isActive) {
+      const newAnn = {
+        message: {
+          en: document.getElementById('ann_en').value,
+          ar: document.getElementById('ann_ar').value,
+          hi: document.getElementById('ann_hi').value
+        },
+        is_active: isActive
+      };
+
+      const { error } = await supabaseClient.from('announcements').insert([newAnn]);
+
+      if (error) {
+        alert("Erreur d'enregistrement : " + error.message);
+        return;
+      }
+
+      alert(isActive ? "Bannière publiée !" : "Bannière masquée !");
+      await fetchAnnouncementFromCloud();
     }
 
     // OFFERS FETCH
@@ -394,7 +474,6 @@
       }).join('');
     }
 
-    // SAVE OFFER
     async function saveAdminData() {
       const imageUrl = document.getElementById('adm_image').value;
       if (!imageUrl) {
@@ -431,7 +510,6 @@
       await fetchOffersFromCloud();
     }
 
-    // SUBMIT GUEST REQUEST
     async function submitGuestRequest() {
       const room = document.getElementById('req_room').value;
       const service = document.getElementById('req_service').value;
@@ -497,7 +575,6 @@
       }
     }
 
-    // NAVIGATION SWITCHERS
     function switchGuestTab(tab) {
       const offersSec = document.getElementById('guestOffersSection');
       const reqSec = document.getElementById('guestRequestSection');
@@ -520,20 +597,29 @@
     function switchAdminTab(tab) {
       const panelO = document.getElementById('adminOffersPanel');
       const panelR = document.getElementById('adminRequestsPanel');
+      const panelB = document.getElementById('adminBannerPanel');
       const btnO = document.getElementById('admTabOffers');
       const btnR = document.getElementById('admTabRequests');
+      const btnB = document.getElementById('admTabBanner');
+
+      panelO.classList.add('hidden');
+      panelR.classList.add('hidden');
+      panelB.classList.add('hidden');
+
+      btnO.className = "flex-1 py-2 rounded-lg text-stone-600 font-bold";
+      btnR.className = "flex-1 py-2 rounded-lg text-stone-600 font-bold";
+      btnB.className = "flex-1 py-2 rounded-lg text-stone-600 font-bold";
 
       if (tab === 'offers') {
         panelO.classList.remove('hidden');
-        panelR.classList.add('hidden');
         btnO.className = "flex-1 py-2 rounded-lg bg-amber-800 text-white font-bold";
-        btnR.className = "flex-1 py-2 rounded-lg text-stone-600 font-bold";
-      } else {
+      } else if (tab === 'requests') {
         panelR.classList.remove('hidden');
-        panelO.classList.add('hidden');
         btnR.className = "flex-1 py-2 rounded-lg bg-amber-800 text-white font-bold";
-        btnO.className = "flex-1 py-2 rounded-lg text-stone-600 font-bold";
         fetchRequestsFromCloud();
+      } else if (tab === 'banner') {
+        panelB.classList.remove('hidden');
+        btnB.className = "flex-1 py-2 rounded-lg bg-amber-800 text-white font-bold";
       }
     }
 
@@ -580,6 +666,7 @@
 
       renderCategoryFilters();
       renderClientCards();
+      renderAnnouncement();
     }
 
     function toggleView() {
