@@ -16,6 +16,12 @@
         .bg-remal-sand { background-color: #E2B383; }
         .text-remal-sand { color: #DCA773; }
         .remal-card { background: #FFFFFF; border: 1px solid #EAEAEA; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08); }
+        
+        @keyframes pulse-red {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.03); }
+        }
+        .pulse-notification { animation: pulse-red 1.5s infinite; }
     </style>
 </head>
 <body class="min-h-screen pb-20">
@@ -42,6 +48,11 @@
         </div>
     </header>
 
+    <!-- BANNIÈRE ROUGE D'ALERTE (S'AFFICHE SEULEMENT SI UNE DEMANDE LAUNDRY ARRIVE) -->
+    <div id="laundryPlantAlert" class="hidden bg-rose-600 text-white px-4 py-3 text-center text-xs font-bold tracking-wide shadow-md pulse-notification flex items-center justify-center gap-2">
+        <span>🚨 Nouvelle demande de blanchisserie reçue depuis une chambre !</span>
+    </div>
+
     <div class="max-w-2xl mx-auto px-4 py-4 space-y-4">
 
         <!-- BOUTONS DE NAVIGATION DU HAUT -->
@@ -65,12 +76,10 @@
 
                 <input type="hidden" id="editingRecordId" value="">
 
-                <!-- NUMÉRO DE CHAMBRE AVEC VALIDATION EN TEMPS RÉEL -->
+                <!-- NUMÉRO DE CHAMBRE AVEC VALIDATION -->
                 <div>
                     <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblRoomNum">Room Number</label>
                     <input type="number" id="roomNumber" oninput="validateRoomNumber()" placeholder="e.g., 104, 223, 305..." class="w-full border border-stone-200 rounded-xl p-3 text-sm font-bold bg-stone-50 outline-none transition focus:border-stone-400">
-                    
-                    <!-- MESSAGE D'ERREUR ROUGE -->
                     <p id="roomErrorMsg" class="hidden text-rose-600 text-xs font-bold mt-1.5 flex items-center gap-1">
                         ⚠️ <span id="lblRoomError">Invalid room number! Allowed ranges: 103-144, 201-246, 301-348, 401-448, 501-520, 601-608.</span>
                     </p>
@@ -89,7 +98,7 @@
                     <button onclick="switchService('pressing')" id="tab-service-pressing" class="flex-1 py-2.5 rounded-xl bg-stone-100 text-stone-700">PRESSING</button>
                 </div>
 
-                <!-- OPTIONS DE CONDITIONNEMENT (F, H/F, S) -->
+                <!-- OPTIONS DE CONDITIONNEMENT -->
                 <div class="grid grid-cols-3 gap-2 p-2 bg-stone-50 rounded-2xl border border-stone-200 text-xs font-bold text-center">
                     <label class="flex items-center justify-center gap-1.5 p-2.5 bg-white rounded-xl border border-stone-200 cursor-pointer">
                         <input type="radio" name="foldingOption" value="F — Folding" checked class="accent-stone-900"> F — Folding
@@ -135,7 +144,6 @@
                     <span class="text-[10px] bg-stone-100 text-stone-600 font-bold px-2.5 py-1 rounded-full" id="lblAutoArchive">Auto-Archive at 00:00</span>
                 </div>
 
-                <!-- RECHERCHE CHAMBRE ET DATE -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-stone-50 p-3 rounded-2xl border border-stone-200">
                     <div>
                         <label class="block text-[10px] font-bold text-stone-500 uppercase mb-1" id="lblSearchRoom">Search Room</label>
@@ -222,7 +230,6 @@
 
         let currentLang = 'en';
 
-        // TRADUCTIONS DE L'INTERFACE
         const i18n = {
             en: {
                 txtBtnNewRecord: "New Record", txtBtnPdfList: "PDF List",
@@ -320,9 +327,32 @@
             selectCountType('hotel');
             renderItems();
             afficherListeBordereauxFromCloud();
+            
+            // Écoute en temps réel des requêtes entrantes pour la bannière rouge
+            checkIncomingLaundryRequests();
+            setInterval(checkIncomingLaundryRequests, 5000);
         });
 
-        /* FONCTION DE VALIDATION STRICTE DU NUMÉRO DE CHAMBRE */
+        // FONCTION DE SURVEILLANCE DES DEMANDES DE BLANCHISSERIE
+        async function checkIncomingLaundryRequests() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('requests')
+                    .select('*')
+                    .eq('service', 'Laundry')
+                    .eq('status', 'Pending');
+                
+                const alertBanner = document.getElementById('laundryPlantAlert');
+                if (data && data.length > 0) {
+                    alertBanner.classList.remove('hidden');
+                } else {
+                    alertBanner.classList.add('hidden');
+                }
+            } catch (e) {
+                console.error("Erreur de synchronisation:", e);
+            }
+        }
+
         function isRoomNumberValid(val) {
             const room = parseInt(val, 10);
             if (isNaN(room)) return false;
