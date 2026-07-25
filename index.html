@@ -88,7 +88,7 @@
       <div id="facilitiesContainer" class="space-y-6"></div>
     </div>
 
-    <!-- SECTION 3: DEMANDE DE SERVICE + SUIVI INTEGRÉ -->
+    <!-- SECTION 3: DEMANDE DE SERVICE + ROOM SERVICE DIGITALE -->
     <div id="guestRequestSection" class="hidden space-y-6">
       <div class="remal-card p-6 rounded-3xl space-y-5">
         <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-3" id="reqHeader">Request Guest Service</h2>
@@ -99,11 +99,41 @@
           </div>
           <div>
             <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblService">Service Type</label>
-            <select id="req_service" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 outline-none"></select>
+            <select id="req_service" onchange="toggleRoomServiceMenu()" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 outline-none"></select>
           </div>
+
+          <!-- MODULE ROOM SERVICE INTERACTIF (S'AFFFICHE SI ROOM SERVICE SÉLECTIONNÉ) -->
+          <div id="roomServiceMenuBlock" class="hidden space-y-4 bg-stone-50 p-4 rounded-2xl border border-stone-200">
+            <div class="flex justify-between items-center border-b border-stone-200 pb-2">
+              <span class="text-xs font-bold text-stone-800">🍽️ Select Menu Items</span>
+              <span class="text-[10px] bg-remal-sand text-white font-bold px-2 py-0.5 rounded-full">In-Room Dining</span>
+            </div>
+            
+            <div id="foodItemsContainer" class="space-y-3">
+              <!-- Plats générés dynamiquement -->
+            </div>
+
+            <div class="pt-2 border-t border-stone-200 space-y-2">
+              <div class="flex justify-between text-xs font-bold text-stone-900">
+                <span>Total Amount:</span>
+                <span id="cartTotalDisplay" class="text-remal-sand font-serif-luxury text-sm">AED 0</span>
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-stone-600 mb-1">Preferred Delivery Time</label>
+                <select id="delivery_time" class="w-full border border-stone-200 rounded-xl p-2.5 text-xs bg-white outline-none">
+                  <option value="As soon as possible">⚡ As soon as possible (~30 min)</option>
+                  <option value="In 45 minutes">🕒 In 45 minutes</option>
+                  <option value="In 1 hour">🕒 In 1 hour</option>
+                  <option value="Scheduled Breakfast (07:00 AM - 08:00 AM)">🥐 Scheduled Breakfast (07:00 AM - 08:00 AM)</option>
+                  <option value="Scheduled Breakfast (08:00 AM - 09:00 AM)">🥐 Scheduled Breakfast (08:00 AM - 09:00 AM)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
           <div>
-            <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblDetails">Additional Notes / Request Details</label>
-            <textarea id="req_details" rows="3" placeholder="Specify your request here..." class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 outline-none" required></textarea>
+            <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblDetails">Additional Notes / Special Instructions</label>
+            <textarea id="req_details" rows="3" placeholder="Specify request details, dietary requirements or allergies..." class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 outline-none" required></textarea>
           </div>
           <button type="button" onclick="submitGuestRequest()" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-bold py-3.5 rounded-xl shadow-lg transition text-sm tracking-wider">
             <span id="btnSubmitReq">Send Request to Reception</span>
@@ -274,6 +304,19 @@
     let previousPendingCount = 0;
     let currentUserSession = null;
 
+    // MENU FOOD INTERACTIF AVEC PRIX EN AED
+    const roomServiceMenu = [
+      { id: 1, name: 'Continental Breakfast Set', price: 65 },
+      { id: 2, name: 'Angus Beef Burger & Fries', price: 75 },
+      { id: 3, name: 'Club Sandwich', price: 55 },
+      { id: 4, name: 'Penne Arrabbiata Pasta', price: 60 },
+      { id: 5, name: 'Fresh Fruit Platter', price: 35 },
+      { id: 6, name: 'Fresh Orange Juice / Smoothies', price: 25 },
+      { id: 7, name: 'Espresso / Cappuccino Coffee', price: 20 }
+    ];
+
+    let cartState = {};
+
     function enableAudioAlerts() {
       try {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -413,7 +456,7 @@
         lblDetails: "अतिरिक्त विवरण / अनुरोध",
         placeholderDetails: "अपना अनुरोध यहां दर्ज करें...",
         btnSubmit: "रिसेप्शन को अनुरोध भेजें",
-        whatsappText: "व्हाट्सएप रिसेप्शन",
+        whatsappBtn: "व्हाट्सएप रिसेप्शन",
         successMsg: "आपका अनुरोध सफलतापूर्वक भेजा गया!",
         whatsappSub: "क्या आप व्हाट्सएप पर सीधे बात करना चाहते हैं?",
         chatWhatsapp: "💬 व्हाट्सएप पर चैट करें",
@@ -491,8 +534,8 @@
       {
         id: 'villas',
         images: ['Villa1.jpg', 'Villa2.jpg', 'Villa3.jpg', 'Villa4.jpg', 'Villa5.jpg'],
-        title: { en: 'VIP Private Villas', ar: 'الفيلات الملكية الخاصة VIP', hi: 'ويآيبي خاص فيلا' },
-        desc: { en: 'Fully furnished private luxury villas for a premium private stay experience.', ar: 'فيلات فاخرة مفروشة بالكامل لإقامة خاصة وفخمة لا تُنسى.', hi: 'प्रीमियम निजी प्रवास के अनुभव के लिए पूरी तरह से सुसज्जित निजी विला।' },
+        title: { en: 'VIP Private Villas', ar: 'الفيلات الملكية الخاصة VIP', hi: 'वीआईपी निजी विला' },
+        desc: { en: 'Fully furnished private luxury villas for a premium private stay experience.', ar: 'فيلات فاخرة مفروشة بالكامل لإقامة خاصة وفخمة لا تُنسى.', hi: 'प्रीमियम निजी प्रवास के अनुभव के लिए पूरी तरह से सुسज्जित निजी विला।' },
         timing: { en: 'VIP Concierge Service', ar: 'خدمة كونسيرج خاصة', hi: 'वीआईपी सेवा' }
       },
       {
@@ -524,6 +567,7 @@
 
       setLang('en');
       renderFacilities();
+      renderRoomServiceMenu();
       await fetchOffersFromCloud();
       await fetchAnnouncementFromCloud();
       await fetchRequestsFromCloud();
@@ -575,7 +619,6 @@
       toggleAdminView();
     }
 
-    /* BASCULE DE VUE CLIENT / ADMIN SANS SUPERPOSITION */
     function toggleAdminView() {
       const clientV = document.getElementById('clientView');
       const adminV = document.getElementById('adminView');
@@ -597,6 +640,54 @@
         btn.innerText = "⚙️ Admin Panel";
         renderClientCards();
       }
+    }
+
+    /* ROOM SERVICE LOGIC */
+    function toggleRoomServiceMenu() {
+      const selectedService = document.getElementById('req_service').value;
+      const block = document.getElementById('roomServiceMenuBlock');
+      if (selectedService === 'Room Service / Dining') {
+        block.classList.remove('hidden');
+      } else {
+        block.classList.add('hidden');
+      }
+    }
+
+    function renderRoomServiceMenu() {
+      const container = document.getElementById('foodItemsContainer');
+      container.innerHTML = roomServiceMenu.map(item => `
+        <div class="flex justify-between items-center bg-white p-2.5 rounded-xl border border-stone-200 text-xs">
+          <div>
+            <p class="font-bold text-stone-900">${item.name}</p>
+            <p class="text-remal-sand font-semibold">AED ${item.price}</p>
+          </div>
+          <div class="flex items-center space-x-2 bg-stone-100 rounded-lg p-1">
+            <button type="button" onclick="updateCart(${item.id}, -1)" class="w-6 h-6 bg-white rounded font-bold text-stone-700 shadow-sm">-</button>
+            <span id="qty-item-${item.id}" class="font-bold px-1.5 text-stone-900">0</span>
+            <button type="button" onclick="updateCart(${item.id}, 1)" class="w-6 h-6 bg-stone-900 text-white rounded font-bold shadow-sm">+</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateCart(itemId, change) {
+      if (!cartState[itemId]) cartState[itemId] = 0;
+      cartState[itemId] = Math.max(0, cartState[itemId] + change);
+      
+      const qtySpan = document.getElementById(`qty-item-${itemId}`);
+      if (qtySpan) qtySpan.innerText = cartState[itemId];
+
+      calculateCartTotal();
+    }
+
+    function calculateCartTotal() {
+      let total = 0;
+      roomServiceMenu.forEach(item => {
+        const qty = cartState[item.id] || 0;
+        total += item.price * qty;
+      });
+      document.getElementById('cartTotalDisplay').innerText = `AED ${total}`;
+      return total;
     }
 
     function renderFacilities() {
@@ -826,12 +917,37 @@
     async function submitGuestRequest() {
       const room = document.getElementById('req_room').value;
       const service = document.getElementById('req_service').value;
-      const details = document.getElementById('req_details').value;
-      if (!room || !details) { alert("Please fill in room and request details."); return; }
+      let details = document.getElementById('req_details').value;
+
+      if (!room) { alert("Please enter your Room / Villa number."); return; }
+
+      // Traitement spécifique pour Room Service
+      if (service === 'Room Service / Dining') {
+        const total = calculateCartTotal();
+        const deliveryTime = document.getElementById('delivery_time').value;
+        
+        let orderSummary = [];
+        roomServiceMenu.forEach(item => {
+          if (cartState[item.id] > 0) {
+            orderSummary.push(`${cartState[item.id]}x ${item.name}`);
+          }
+        });
+
+        if (orderSummary.length === 0 && !details) {
+          alert("Please select at least one menu item or write your request in the notes.");
+          return;
+        }
+
+        const fullDetails = `🛒 ORDER: ${orderSummary.join(', ')}\n💰 Total: AED ${total}\n🕒 Time: ${deliveryTime}\n📝 Notes: ${details || 'None'}`;
+        details = fullDetails;
+      } else if (!details) {
+        alert("Please specify your request details.");
+        return;
+      }
       
       await supabaseClient.from('requests').insert([{ room, service, details, status: 'Pending' }]);
 
-      const textMessage = encodeURIComponent(`Hello Remal Reception,\nI submitted a request for Room/Villa ${room}.\n\n*Service:* ${service}\n*Details:* ${details}`);
+      const textMessage = encodeURIComponent(`Hello Remal Reception,\nI submitted a request for Room/Villa ${room}.\n\n*Service:* ${service}\n*Details:*\n${details}`);
       const whatsappUrl = `https://wa.me/971526966865?text=${textMessage}`;
 
       const btnWa = document.getElementById('btnWhatsappDirect');
@@ -842,6 +958,10 @@
       }
 
       document.getElementById('req_details').value = '';
+      cartState = {};
+      renderRoomServiceMenu();
+      calculateCartTotal();
+
       await fetchRequestsFromCloud();
     }
 
@@ -884,6 +1004,7 @@
       } else if (tab === 'request') {
         reqSec.classList.remove('hidden');
         btnR.className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap";
+        toggleRoomServiceMenu();
         renderClientTracker();
       }
     }
