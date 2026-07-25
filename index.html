@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Remal Hotel & Villas - Guest Hub</title>
+  <title>Remal Hotel & Villas - Guest Hub & Admin</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -41,6 +41,10 @@
           <button onclick="setLang('ar')" id="btn-ar" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">العربية</button>
           <button onclick="setLang('hi')" id="btn-hi" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">हिन्दी</button>
         </div>
+        <!-- BOUTON ACCÈS STAFF SÉCURISÉ -->
+        <button onclick="handleAdminAccess()" id="viewToggleBtn" class="hidden bg-stone-900 text-white px-3 py-1.5 rounded-full text-xs font-semibold shadow relative">
+          ⚙️ Staff Panel
+        </button>
       </div>
     </div>
   </header>
@@ -50,7 +54,7 @@
     <span id="announcementText">📢 Special Announcement</span>
   </div>
 
-  <!-- GUEST VIEW -->
+  <!-- 1. GUEST VIEW (CLIENT) -->
   <div id="clientView" class="max-w-md mx-auto px-4 py-6 space-y-6">
     <div class="relative rounded-3xl overflow-hidden shadow-xl p-6 text-white space-y-6 bg-cover bg-center bg-no-repeat bg-stone-900" style="background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.65)), url('Remal_exterior_view2.jpg');">
       <div class="text-center space-y-1">
@@ -156,18 +160,204 @@
     </a>
   </div>
 
+  <!-- MODAL AUTH ADMIN -->
+  <div id="authModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-5 border border-stone-100">
+      <div class="text-center space-y-1">
+        <h3 class="text-lg font-serif-luxury font-bold text-stone-900">Admin Authentication</h3>
+        <p class="text-xs text-stone-500">Enter staff credentials to manage Guest Hub</p>
+      </div>
+      <form id="loginForm" onsubmit="loginAdmin(event)" class="space-y-4">
+        <div>
+          <label class="block text-[11px] font-bold text-stone-600 uppercase mb-1">Email Address</label>
+          <input type="email" id="loginEmail" placeholder="admin@remalhotel.com" class="w-full border border-stone-200 rounded-xl p-3 text-xs bg-stone-50 outline-none" required>
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-stone-600 uppercase mb-1">Password</label>
+          <input type="password" id="loginPassword" placeholder="••••••••" class="w-full border border-stone-200 rounded-xl p-3 text-xs bg-stone-50 outline-none" required>
+        </div>
+        <p id="authErrorMsg" class="text-rose-600 text-[11px] font-semibold text-center hidden"></p>
+        <button type="submit" id="btnLoginSubmit" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-bold py-3 rounded-xl text-xs transition shadow-md">🔐 Unlock Staff Panel</button>
+      </form>
+      <button onclick="closeAuthModal()" class="w-full text-stone-400 hover:text-stone-600 text-xs text-center font-medium">Cancel and Return</button>
+    </div>
+  </div>
+
+  <!-- 2. ADMIN VIEW SÉCURISÉE (ÉTAPE 2) -->
+  <div id="adminView" class="hidden max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+    <div class="flex justify-between items-center bg-stone-200/80 p-1.5 rounded-2xl text-xs font-bold">
+      <div class="flex space-x-2 w-full md:w-auto">
+        <button onclick="switchAdminTab('offers')" id="admTabOffers" class="flex-1 md:flex-none px-6 py-2.5 rounded-xl bg-stone-900 text-white">🏷️ Content & Menu</button>
+        <button onclick="switchAdminTab('requests')" id="admTabRequests" class="flex-1 md:flex-none px-6 py-2.5 rounded-xl text-stone-600 relative">
+          🔔 Requests
+          <span id="requestBadge" class="hidden absolute -top-1 -right-1 bg-rose-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full pulse-notification">0</span>
+        </button>
+        <button onclick="switchAdminTab('banner')" id="admTabBanner" class="flex-1 md:flex-none px-6 py-2.5 rounded-xl text-stone-600">📢 Announcement</button>
+      </div>
+      <div class="flex items-center space-x-2">
+        <button onclick="logoutAdmin()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 px-3 py-1.5 rounded-xl text-xs font-bold border border-rose-200 transition">🚪 Logout</button>
+      </div>
+    </div>
+
+    <!-- ADMIN OFFRES ET MENU -->
+    <div id="adminOffersPanel" class="space-y-6">
+      <div class="flex space-x-2 border-b border-stone-200 pb-2 text-xs font-bold">
+        <button onclick="switchAdminSubTab('offersList')" id="btnSubOffers" class="px-4 py-2 rounded-xl bg-stone-900 text-white">Promotions & Events</button>
+        <button onclick="switchAdminSubTab('menuList')" id="btnSubMenu" class="px-4 py-2 rounded-xl bg-stone-100 text-stone-700">🍔 Room Service Menu Editor</button>
+      </div>
+
+      <!-- EDITEUR OFFRES -->
+      <div id="adminOffersSubSection" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-5 bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4 h-fit">
+          <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-2">New Cloud Offer</h2>
+          <form id="adminForm" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Category</label>
+              <select id="adm_category" class="w-full border border-stone-200 rounded-xl p-3 bg-stone-50 text-sm outline-none">
+                <option value="Falaj Restaurant">Falaj Restaurant</option>
+                <option value="Sarab">Sarab Bar & Lounge</option>
+                <option value="Al Waha Pool">Al Waha Pool</option>
+                <option value="The Spa">The Spa</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Price / Rate (e.g., AED 75)</label>
+              <input type="text" id="adm_price" placeholder="AED 75" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50 outline-none" required>
+            </div>
+            <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-2">
+              <input type="text" id="adm_title_en" placeholder="Title (English)" class="w-full border border-stone-200 rounded-lg p-2 text-sm outline-none" required>
+              <input type="text" id="adm_title_ar" placeholder="العنوان (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-lg p-2 text-sm outline-none" required>
+              <input type="text" id="adm_title_hi" placeholder="शीर्षक (हिंदी)" class="w-full border border-stone-200 rounded-lg p-2 text-sm outline-none" required>
+            </div>
+            <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-2">
+              <input type="text" id="adm_timing_en" placeholder="Timings (English)" class="w-full border border-stone-200 rounded-lg p-2 text-sm outline-none" required>
+              <input type="text" id="adm_timing_ar" placeholder="الأوقات (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-lg p-2 text-sm outline-none" required>
+              <input type="text" id="adm_timing_hi" placeholder="समय (हिंदी)" class="w-full border border-stone-200 rounded-lg p-2 text-sm outline-none" required>
+            </div>
+            <div>
+              <input type="file" id="imageFileInput" accept="image/*" class="w-full text-xs text-stone-500 mb-2" />
+              <input type="hidden" id="adm_image" />
+            </div>
+            <button type="button" onclick="saveAdminData()" class="w-full bg-remal-sand text-white font-bold py-3.5 rounded-xl shadow-md transition text-sm">Publish Offer</button>
+          </form>
+        </div>
+        <div class="lg:col-span-7 bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
+          <h3 class="text-xs font-bold text-stone-500 uppercase tracking-widest border-b border-stone-100 pb-2">Active Offers</h3>
+          <div id="adminListContainer" class="grid grid-cols-1 gap-3"></div>
+        </div>
+      </div>
+
+      <!-- EDITEUR MENU ROOM SERVICE -->
+      <div id="adminMenuSubSection" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-5 bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4 h-fit">
+          <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-2">Add New Menu Dish</h2>
+          <form id="foodMenuForm" onsubmit="addMenuItem(event)" class="space-y-4">
+            <input type="text" id="food_name" placeholder="Item Name" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50 outline-none" required>
+            <input type="number" id="food_price" placeholder="Price (AED)" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50 outline-none" required>
+            <select id="food_category" class="w-full border border-stone-200 rounded-xl p-3 bg-stone-50 text-sm outline-none">
+              <option value="Breakfast">Breakfast</option>
+              <option value="Mains">Mains / Sandwiches</option>
+              <option value="Beverages">Beverages & Coffee</option>
+              <option value="Desserts">Desserts</option>
+            </select>
+            <button type="submit" class="w-full bg-stone-900 text-white font-bold py-3.5 rounded-xl text-sm">➕ Add Dish</button>
+          </form>
+        </div>
+        <div class="lg:col-span-7 bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
+          <h3 class="text-xs font-bold text-stone-500 uppercase tracking-widest border-b border-stone-100 pb-2">Live Menu Items</h3>
+          <div id="adminMenuListContainer" class="space-y-2"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN DEMANDES & BOUTON D'ACTIVATION SONORE EXPLICITE -->
+    <div id="adminRequestsPanel" class="hidden space-y-4">
+      <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
+        <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+          <div>
+            <h2 class="text-base font-serif-luxury font-bold text-stone-900">Live Service Requests</h2>
+            <p class="text-[10px] text-stone-500">Real-time room service and guest requests</p>
+          </div>
+          <div class="flex items-center space-x-2">
+            <!-- BOUTON D'ACTIVATION SONORE EXPLICITE -->
+            <button onclick="enableAudioAlerts()" id="btnAudioEnable" class="text-xs bg-amber-50 text-amber-800 hover:bg-amber-100 px-3 py-2 rounded-xl font-bold border border-amber-200 shadow-sm transition">
+              🔔 Enable Sound Alerts
+            </button>
+            <button onclick="fetchRequestsFromCloud()" class="text-xs bg-stone-100 text-stone-700 px-3 py-2 rounded-xl font-semibold border border-stone-200">🔄 Refresh</button>
+          </div>
+        </div>
+        <div id="adminRequestsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      </div>
+    </div>
+
+    <!-- ADMIN BANNIÈRE -->
+    <div id="adminBannerPanel" class="hidden space-y-4 max-w-2xl mx-auto">
+      <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
+        <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-2">Banner Management</h2>
+        <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-2">
+          <input type="text" id="ann_en" placeholder="Announcement (English)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm outline-none">
+          <input type="text" id="ann_ar" placeholder="الإعلان (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm outline-none">
+          <input type="text" id="ann_hi" placeholder="घोषणा (हिंदी)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm outline-none">
+        </div>
+        <div class="flex space-x-3">
+          <button onclick="saveAnnouncement(true)" class="flex-1 bg-remal-sand text-white font-bold py-3 rounded-xl text-xs">📢 Publish</button>
+          <button onclick="saveAnnouncement(false)" class="flex-1 bg-stone-100 text-stone-700 font-bold py-3 rounded-xl text-xs">🚫 Hide</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     const SUPABASE_URL = 'https://tbsroleffqhyzbbfmtvp.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRic3JvbGVmZnFoeXpiYmZtdHZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MzUyMzMsImV4cCI6MjEwMDQxMTIzM30.oNKhoPJ7v__YJQW7flC9UsP2cIDHLMuxjqmf6_NvYW4';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    let audioContext = null;
+    let audioEnabled = false;
+    let previousPendingCount = 0;
+    let currentUserSession = null;
     let roomServiceMenu = [];
     let cartState = {};
+
     let currentLang = 'en';
+    let currentView = 'client';
     let currentCategory = 'All';
     let cachedOffers = [];
     let cachedRequests = [];
     let activeAnnouncement = null;
+
+    /* DÉCLENCHEUR SONORE EXPLICITE */
+    function enableAudioAlerts() {
+      try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        audioContext.resume().then(() => {
+          audioEnabled = true;
+          playNotificationSound();
+          const btn = document.getElementById('btnAudioEnable');
+          if (btn) {
+            btn.className = "text-xs bg-emerald-100 text-emerald-800 px-3 py-2 rounded-xl font-bold border border-emerald-300 shadow-sm";
+            btn.innerText = "🔊 Sound Alerts Active";
+          }
+        });
+      } catch (e) { console.error("Audio Error:", e); }
+    }
+
+    function playNotificationSound() {
+      if (!audioEnabled || !audioContext) return;
+      try {
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, audioContext.currentTime);
+        osc.frequency.setValueAtTime(880, audioContext.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.start();
+        osc.stop(audioContext.currentTime + 0.5);
+      } catch (e) { console.error(e); }
+    }
 
     const i18n = {
       en: {
@@ -208,7 +398,7 @@
         whatsappBtn: "व्हाट्सएप रिसेप्शन", successMsg: "आपका अनुरोध सफलतापूर्वक भेजा गया!", chatWhatsapp: "💬 व्हाट्सएप पर चैट करें",
         trackHeader: "📡 सक्रिय अनुरोध ट्रैकिंग", liveStatus: "लाइव स्थिति", trackEmpty: "वास्तविक समय में अनुरोध ट्रैक करने के लिए ऊपर कमरा नंबर दर्ज करें।",
         trackNoReq: "कमरा नंबर के लिए कोई अनुरोध नहीं मिला ", loadingOffers: "ऑफ़र लोड हो रहे हैं...", noOffers: "इस श्रेणी में कोई ऑफ़र उपलब्ध नहीं है।",
-        swipePhotos: "👈 अधिक फ़ोटो के लिए स्वाइप करें 👉", bookInquiry: "बुक / पूछताछ →", statusPending: "🟡 लंबित", statusInProgress: "🔵 प्रगति पर है", statusCompleted: "🟢 पूरा हुआ",
+        swipePhotos: "👈 अधिक फ़ोटो के लिए स्वाइप करें 👉", bookInquiry: "बुक / पूछताछ →", statusPending: "🟡 लंबित", statusInProgress: "🔵 प्रगति पर है", statusCompleted: "पूरा हुआ",
         services: [
           { val: "Front Desk Inquiry", text: "फ्रंट डेस्क पूछताछ" }, { val: "Luggage Assistance", text: "सामान सहायता" },
           { val: "Room Service / Dining", text: "रूम सर्विस / खाना ऑर्डर करें" }, { val: "Maintenance / Technical Support", text: "रखरखाव / तकनीकी सहायता" },
@@ -231,9 +421,20 @@
     async function init() {
       const urlParams = new URLSearchParams(window.location.search);
       const room = urlParams.get('room');
+      const adminParam = urlParams.get('admin');
+
       if (room) {
         document.getElementById('roomIndicator').innerText = `Room/Villa: ${room} • Remal Hotel`;
         document.getElementById('req_room').value = room;
+      }
+
+      if (adminParam === 'true') {
+        document.getElementById('viewToggleBtn').classList.remove('hidden');
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        currentUserSession = session;
+      } else {
+        document.getElementById('viewToggleBtn').classList.add('hidden');
+        currentUserSession = null;
       }
 
       setLang('en');
@@ -245,10 +446,91 @@
       setInterval(fetchRequestsFromCloud, 5000);
     }
 
+    function handleAdminAccess() {
+      if (currentUserSession) toggleAdminView();
+      else document.getElementById('authModal').classList.remove('hidden');
+    }
+
+    function closeAuthModal() { document.getElementById('authModal').classList.add('hidden'); }
+
+    async function loginAdmin(event) {
+      event.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        document.getElementById('authErrorMsg').innerText = "❌ Invalid email or password.";
+        document.getElementById('authErrorMsg').classList.remove('hidden');
+      } else {
+        currentUserSession = data.session;
+        closeAuthModal();
+        toggleAdminView();
+      }
+    }
+
+    async function logoutAdmin() {
+      await supabaseClient.auth.signOut();
+      currentUserSession = null;
+      window.location.href = window.location.pathname;
+    }
+
+    function toggleAdminView() {
+      const clientV = document.getElementById('clientView');
+      const adminV = document.getElementById('adminView');
+      const btn = document.getElementById('viewToggleBtn');
+
+      if (currentView === 'client') {
+        currentView = 'admin';
+        clientV.classList.add('hidden');
+        adminV.classList.remove('hidden');
+        btn.innerText = "📱 Client View";
+        renderAdminList();
+        renderAdminMenuList();
+      } else {
+        currentView = 'client';
+        adminV.classList.add('hidden');
+        clientV.classList.remove('hidden');
+        btn.innerText = "⚙️ Staff Panel";
+        renderClientCards();
+      }
+    }
+
     async function fetchMenuItemsFromCloud() {
       const { data } = await supabaseClient.from('menu_items').select('*').order('id', { ascending: true });
       roomServiceMenu = data || [];
       renderRoomServiceMenu();
+      if (currentView === 'admin') renderAdminMenuList();
+    }
+
+    async function addMenuItem(event) {
+      event.preventDefault();
+      const name = document.getElementById('food_name').value;
+      const price = parseFloat(document.getElementById('food_price').value);
+      const category = document.getElementById('food_category').value;
+
+      await supabaseClient.from('menu_items').insert([{ name, price, category }]);
+      alert('Dish added!');
+      document.getElementById('foodMenuForm').reset();
+      await fetchMenuItemsFromCloud();
+    }
+
+    async function deleteMenuItem(id) {
+      if (confirm('Delete dish?')) {
+        await supabaseClient.from('menu_items').delete().eq('id', id);
+        await fetchMenuItemsFromCloud();
+      }
+    }
+
+    function renderAdminMenuList() {
+      const container = document.getElementById('adminMenuListContainer');
+      if (roomServiceMenu.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400">No dishes.</p>`; return; }
+      container.innerHTML = roomServiceMenu.map(item => `
+        <div class="flex items-center justify-between p-3 bg-stone-50 rounded-2xl border border-stone-200 text-xs">
+          <div><p class="font-bold text-stone-800">${item.name}</p><p class="text-[10px] text-remal-sand font-semibold">${item.category} • AED ${item.price}</p></div>
+          <button onclick="deleteMenuItem(${item.id})" class="text-rose-600 font-bold p-1">🗑️ Delete</button>
+        </div>
+      `).join('');
     }
 
     function toggleRoomServiceMenu() {
@@ -318,16 +600,36 @@
       } else banner.classList.add('hidden');
     }
 
+    async function saveAnnouncement(isActive) {
+      const newAnn = { message: { en: document.getElementById('ann_en').value, ar: document.getElementById('ann_ar').value, hi: document.getElementById('ann_hi').value }, is_active: isActive };
+      await supabaseClient.from('announcements').insert([newAnn]);
+      alert("Announcement updated!");
+      await fetchAnnouncementFromCloud();
+    }
+
     async function fetchOffersFromCloud() {
       const { data } = await supabaseClient.from('offers').select('*').order('id', { ascending: false });
       cachedOffers = data || [];
       renderClientCards();
+      if (currentView === 'admin') renderAdminList();
     }
 
     async function fetchRequestsFromCloud() {
       const { data, error } = await supabaseClient.from('requests').select('*').order('id', { ascending: false });
       if (error) return;
       cachedRequests = data || [];
+      const pendingRequests = cachedRequests.filter(r => r.status === 'Pending' || !r.status);
+      
+      if (pendingRequests.length > previousPendingCount) {
+        playNotificationSound();
+      }
+      previousPendingCount = pendingRequests.length;
+
+      const badge = document.getElementById('requestBadge');
+      if (pendingRequests.length > 0) { badge.innerText = pendingRequests.length; badge.classList.remove('hidden'); }
+      else badge.classList.add('hidden');
+
+      if (currentView === 'admin') renderAdminRequests();
       renderClientTracker();
     }
 
@@ -375,6 +677,44 @@
       });
     }
 
+    function renderAdminList() {
+      const container = document.getElementById('adminListContainer');
+      if (cachedOffers.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400">No active offers.</p>`; return; }
+      container.innerHTML = cachedOffers.map(item => `
+        <div class="flex items-center justify-between p-3 bg-stone-50 rounded-2xl border text-xs">
+          <div class="flex items-center space-x-3"><img src="${item.image}" class="w-12 h-12 object-cover rounded-xl"><div><p class="font-bold">${item.title.en}</p><p class="text-remal-sand">${item.category} • ${item.price}</p></div></div>
+          <button onclick="deleteOffer(${item.id})" class="text-rose-600 font-bold p-2">🗑️</button>
+        </div>
+      `).join('');
+    }
+
+    function renderAdminRequests() {
+      const container = document.getElementById('adminRequestsContainer');
+      if (cachedRequests.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400 text-center py-4 col-span-2">No active requests.</p>`; return; }
+      container.innerHTML = cachedRequests.map(req => `
+        <div class="p-4 bg-stone-50 rounded-2xl border text-xs space-y-3 flex flex-col justify-between">
+          <div class="space-y-2">
+            <div class="flex justify-between items-start"><div><span class="font-bold text-stone-900 text-sm">Room: ${req.room || 'N/A'}</span><p class="text-remal-sand font-semibold">${req.service}</p></div><span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full ${req.status === 'Completed' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${req.status || 'Pending'}</span></div>
+            <p class="text-stone-700 bg-white p-3 rounded-xl border">${req.details}</p>
+          </div>
+          <div class="flex justify-between items-center pt-2 border-t text-[11px]">
+            <div class="space-x-1"><button onclick="updateRequestStatus(${req.id}, 'Pending')" class="px-2 py-1 bg-amber-100 text-amber-800 rounded font-semibold">Pending</button><button onclick="updateRequestStatus(${req.id}, 'In Progress')" class="px-2 py-1 bg-blue-100 text-blue-800 rounded font-semibold">In Progress</button><button onclick="updateRequestStatus(${req.id}, 'Completed')" class="px-2 py-1 bg-emerald-100 text-emerald-800 rounded font-semibold">Completed</button></div>
+            <button onclick="deleteRequest(${req.id})" class="text-rose-600 font-bold p-1">🗑️</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function saveAdminData() {
+      const imageUrl = document.getElementById('adm_image').value;
+      if (!imageUrl) { alert("Select an image."); return; }
+      const newItem = { category: document.getElementById('adm_category').value, price: document.getElementById('adm_price').value, image: imageUrl, title: { en: document.getElementById('adm_title_en').value, ar: document.getElementById('adm_title_ar').value, hi: document.getElementById('adm_title_hi').value }, timing: { en: document.getElementById('adm_timing_en').value, ar: document.getElementById('adm_timing_ar').value, hi: document.getElementById('adm_timing_hi').value } };
+      await supabaseClient.from('offers').insert([newItem]);
+      alert('Offer published!');
+      document.getElementById('adminForm').reset();
+      await fetchOffersFromCloud();
+    }
+
     async function submitGuestRequest() {
       const room = document.getElementById('req_room').value;
       const service = document.getElementById('req_service').value;
@@ -400,6 +740,10 @@
       await fetchRequestsFromCloud();
     }
 
+    async function updateRequestStatus(id, newStatus) { await supabaseClient.from('requests').update({ status: newStatus }).eq('id', id); await fetchRequestsFromCloud(); }
+    async function deleteRequest(id) { if (confirm('Delete?')) { await supabaseClient.from('requests').delete().eq('id', id); await fetchRequestsFromCloud(); } }
+    async function deleteOffer(id) { if (confirm('Delete?')) { await supabaseClient.from('offers').delete().eq('id', id); await fetchOffersFromCloud(); } }
+
     function switchGuestTab(tab) {
       ['guestOffersSection', 'guestFacilitiesSection', 'guestRequestSection'].forEach(s => document.getElementById(s).classList.add('hidden'));
       ['tabOffersBtn', 'tabFacilitiesBtn', 'tabRequestBtn'].forEach(b => document.getElementById(b).className = "flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap");
@@ -407,6 +751,21 @@
       if (tab === 'offers') { document.getElementById('guestOffersSection').classList.remove('hidden'); document.getElementById('tabOffersBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; }
       else if (tab === 'facilities') { document.getElementById('guestFacilitiesSection').classList.remove('hidden'); document.getElementById('tabFacilitiesBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; }
       else if (tab === 'request') { document.getElementById('guestRequestSection').classList.remove('hidden'); document.getElementById('tabRequestBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; toggleRoomServiceMenu(); renderClientTracker(); }
+    }
+
+    function switchAdminTab(tab) {
+      ['adminOffersPanel', 'adminRequestsPanel', 'adminBannerPanel'].forEach(p => document.getElementById(p).classList.add('hidden'));
+      if (tab === 'offers') document.getElementById('adminOffersPanel').classList.remove('hidden');
+      else if (tab === 'requests') { 
+        document.getElementById('adminRequestsPanel').classList.remove('hidden'); 
+        fetchRequestsFromCloud(); 
+      }
+      else if (tab === 'banner') document.getElementById('adminBannerPanel').classList.remove('hidden');
+    }
+
+    function switchAdminSubTab(subTab) {
+      if (subTab === 'offersList') { document.getElementById('adminOffersSubSection').classList.remove('hidden'); document.getElementById('adminMenuSubSection').classList.add('hidden'); }
+      else { document.getElementById('adminMenuSubSection').classList.remove('hidden'); document.getElementById('adminOffersSubSection').classList.add('hidden'); renderAdminMenuList(); }
     }
 
     function setLang(lang) {
