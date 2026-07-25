@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" id="htmlRoot" dir="ltr">
+<html lang="en" id="htmlRoot" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FAFAFA; color: #222222; }
         .font-serif-luxury { font-family: 'Playfair Display', serif; }
@@ -14,7 +15,7 @@
         .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
         .bg-remal-sand { background-color: #E2B383; }
         .text-remal-sand { color: #DCA773; }
-        .remal-card { background: #FFFFFF; border: 1px solid #EAEAEA; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); }
+        .remal-card { background: #FFFFFF; border: 1px solid #EAEAEA; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08); }
     </style>
 </head>
 <body class="min-h-screen pb-20">
@@ -29,33 +30,55 @@
                     <p class="text-[8px] text-stone-500 uppercase tracking-wider">Hotel & Villas</p>
                 </div>
             </div>
-            <span class="text-xs font-bold bg-stone-900 text-white px-3 py-1.5 rounded-full shadow">🧺 Laundry Plant</span>
+            
+            <div class="flex items-center space-x-3">
+                <div class="flex bg-stone-100 p-1 rounded-full border border-stone-200 text-[11px] font-semibold">
+                    <button onclick="setLang('en')" id="btn-lang-en" class="px-2.5 py-1 rounded-full bg-remal-sand text-white shadow-sm">EN</button>
+                    <button onclick="setLang('ar')" id="btn-lang-ar" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">العربية</button>
+                    <button onclick="setLang('hi')" id="btn-lang-hi" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">हिन्दी</button>
+                </div>
+                <span class="text-xs font-bold bg-stone-900 text-white px-3 py-1.5 rounded-full shadow hidden sm:inline">🧺 Laundry Plant</span>
+            </div>
         </div>
     </header>
 
-    <div class="max-w-2xl mx-auto px-4 py-6 space-y-6">
+    <div class="max-w-2xl mx-auto px-4 py-4 space-y-4">
 
-        <!-- BOUTONS DE NAVIGATION SUPÉRIEURE (NEW RECORD VS PDF LIST) -->
-        <div class="flex bg-stone-200/80 p-1.5 rounded-2xl text-xs font-bold gap-2">
-            <button onclick="switchMainSection('newRecord')" id="navBtnNewRecord" class="flex-1 py-3 rounded-xl bg-stone-900 text-white shadow-md transition">➕ Nouveau Record (New Record)</button>
-            <button onclick="switchMainSection('pdfList')" id="navBtnPdfList" class="flex-1 py-3 rounded-xl text-stone-700 hover:text-stone-900 transition">📋 Liste PDF & Archives (PDF List)</button>
+        <!-- BOUTONS DE NAVIGATION DU HAUT -->
+        <div class="flex items-center gap-3 pt-1">
+            <button onclick="switchMainSection('newRecord')" id="navBtnNewRecord" class="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-remal-sand text-white font-bold text-xs shadow-md transition">
+                <span class="text-sm">＋</span> <span id="txtBtnNewRecord">New Record</span>
+            </button>
+            <button onclick="switchMainSection('pdfList')" id="navBtnPdfList" class="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 font-bold text-xs hover:bg-stone-200 transition">
+                <span class="text-sm">📄</span> <span id="txtBtnPdfList">PDF List</span>
+            </button>
         </div>
 
-        <!-- SECTION 1: NOUVEAU RECORD (FORMULAIRE FLOTTANT) -->
-        <div id="sectionNewRecord" class="space-y-6">
-            <div class="remal-card p-6 rounded-3xl space-y-5 shadow-xl border border-stone-100">
+        <!-- SECTION 1: FORMULAIRE FLOTTANT -->
+        <div id="sectionNewRecord" class="space-y-4">
+            <div class="remal-card p-6 rounded-3xl space-y-5 relative">
                 
-                <h2 class="text-lg font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-3">Saisie de Bordereau</h2>
-
-                <!-- NUMÉRO DE CHAMBRE -->
-                <div>
-                    <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide">Numéro de Chambre / Room Number</label>
-                    <input type="text" id="roomNumber" placeholder="Ex: 104 ou Villa 02" class="w-full border border-stone-200 rounded-xl p-3 text-sm font-bold bg-stone-50 outline-none focus:border-stone-400">
+                <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+                    <h2 class="text-lg font-serif-luxury font-bold text-stone-900" id="lblFormTitle">New Record</h2>
+                    <button onclick="switchMainSection('pdfList')" class="text-stone-400 hover:text-stone-700 font-bold text-xl px-2">✕</button>
                 </div>
 
-                <!-- TYPE DE COMPTE (HOTEL COUNT PAR DÉFAUT) -->
+                <input type="hidden" id="editingRecordId" value="">
+
+                <!-- NUMÉRO DE CHAMBRE AVEC VALIDATION EN TEMPS RÉEL -->
+                <div>
+                    <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblRoomNum">Room Number</label>
+                    <input type="number" id="roomNumber" oninput="validateRoomNumber()" placeholder="e.g., 104, 223, 305..." class="w-full border border-stone-200 rounded-xl p-3 text-sm font-bold bg-stone-50 outline-none transition focus:border-stone-400">
+                    
+                    <!-- MESSAGE D'ERREUR ROUGE -->
+                    <p id="roomErrorMsg" class="hidden text-rose-600 text-xs font-bold mt-1.5 flex items-center gap-1">
+                        ⚠️ <span id="lblRoomError">Invalid room number! Allowed ranges: 103-144, 201-246, 301-348, 401-448, 501-520, 601-608.</span>
+                    </p>
+                </div>
+
+                <!-- TYPE DE COMPTE -->
                 <div class="flex bg-stone-100 p-1.5 rounded-2xl border border-stone-200 text-xs font-bold gap-2">
-                    <button onclick="selectCountType('hotel')" id="btn-count-hotel" class="flex-1 py-2.5 rounded-xl bg-remal-sand text-white shadow-md">🏨 Hotel Count (Gratuit)</button>
+                    <button onclick="selectCountType('hotel')" id="btn-count-hotel" class="flex-1 py-2.5 rounded-xl bg-remal-sand text-white shadow-md">🏨 Hotel Count (Free)</button>
                     <button onclick="selectCountType('guest')" id="btn-count-guest" class="flex-1 py-2.5 rounded-xl text-stone-600">💳 Guest Count</button>
                 </div>
 
@@ -66,105 +89,129 @@
                     <button onclick="switchService('pressing')" id="tab-service-pressing" class="flex-1 py-2.5 rounded-xl bg-stone-100 text-stone-700">PRESSING</button>
                 </div>
 
-                <!-- NOUVELLES OPTIONS EXCLUSIVES : F, H/F, S -->
+                <!-- OPTIONS DE CONDITIONNEMENT (F, H/F, S) -->
                 <div class="grid grid-cols-3 gap-2 p-2 bg-stone-50 rounded-2xl border border-stone-200 text-xs font-bold text-center">
-                    <label class="flex items-center justify-center gap-1.5 p-2 bg-white rounded-xl border border-stone-200 cursor-pointer">
-                        <input type="radio" name="foldingOption" value="Folding (F)" checked class="accent-stone-900"> Folding (F)
+                    <label class="flex items-center justify-center gap-1.5 p-2.5 bg-white rounded-xl border border-stone-200 cursor-pointer">
+                        <input type="radio" name="foldingOption" value="F — Folding" checked class="accent-stone-900"> F — Folding
                     </label>
-                    <label class="flex items-center justify-center gap-1.5 p-2 bg-white rounded-xl border border-stone-200 cursor-pointer">
-                        <input type="radio" name="foldingOption" value="Hanger/Folding (H/F)" class="accent-stone-900"> Hanger/Folding (H/F)
+                    <label class="flex items-center justify-center gap-1.5 p-2.5 bg-white rounded-xl border border-stone-200 cursor-pointer">
+                        <input type="radio" name="foldingOption" value="H/F — Hanger/Folding" class="accent-stone-900"> H/F — Hanger
                     </label>
-                    <label class="flex items-center justify-center gap-1.5 p-2 bg-white rounded-xl border border-stone-200 cursor-pointer">
-                        <input type="radio" name="foldingOption" value="Single (S)" class="accent-stone-900"> Single (S)
+                    <label class="flex items-center justify-center gap-1.5 p-2.5 bg-white rounded-xl border border-stone-200 cursor-pointer">
+                        <input type="radio" name="foldingOption" value="S — Single" class="accent-stone-900"> S — Single
                     </label>
                 </div>
 
-                <!-- COMPTEUR DE PIÈCES DYNAMIQUE -->
+                <!-- COMPTEUR DE VÊTEMENTS -->
                 <div id="itemsContainer" class="space-y-3 max-h-80 overflow-y-auto pr-1 scrollbar-none"></div>
 
-                <!-- RECAPITULATIF NOMBRE DE PIECES -->
+                <!-- RECAPITULATIF PIECES -->
                 <div class="bg-amber-50 border border-amber-200 text-amber-900 p-3.5 rounded-2xl flex justify-between items-center font-bold text-xs">
-                    <span>🧺 Vêtements Sélectionnés :</span>
-                    <span id="currentBordereauCount" class="bg-remal-sand text-white px-3 py-1 rounded-full text-xs">0 pièce(s)</span>
+                    <span id="lblSelectedGarments">Total Garments:</span>
+                    <span id="currentBordereauCount" class="bg-remal-sand text-white px-3 py-1 rounded-full text-xs">0 pieces</span>
                 </div>
 
                 <!-- CALCULS ET TOTAUX -->
                 <div class="bg-stone-50 border border-stone-200 p-4 rounded-2xl text-xs space-y-1.5 font-medium text-stone-800">
-                    <div class="flex justify-between"><span>Sous-total:</span><span id="subTotal">0.00 AED</span></div>
-                    <div class="flex justify-between"><span>TVA / VAT (5%):</span><span id="vatAmount">0.00 AED</span></div>
-                    <div class="flex justify-between font-bold text-sm text-stone-900 border-t border-stone-200 pt-2 mt-1"><span>TOTAL GENERAL:</span><span id="grandTotal" class="text-remal-sand font-serif-luxury text-base">0.00 AED</span></div>
+                    <div class="flex justify-between"><span id="lblSubTotal">Subtotal:</span><span id="subTotal">0.00 AED</span></div>
+                    <div class="flex justify-between"><span id="lblVat">VAT (5%):</span><span id="vatAmount">0.00 AED</span></div>
+                    <div class="flex justify-between font-bold text-sm text-stone-900 border-t border-stone-200 pt-2 mt-1"><span id="lblGrandTotal">Grand Total:</span><span id="grandTotal" class="text-remal-sand font-serif-luxury text-base">0.00 AED</span></div>
                 </div>
 
                 <!-- CAPTURE PHOTO PREUVE -->
-                <button onclick="document.getElementById('photoInput').click()" class="w-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold p-3.5 rounded-xl text-xs border border-dashed border-stone-300 transition">📷 Photo de preuve (Optionnel)</button>
+                <button onclick="document.getElementById('photoInput').click()" class="w-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold p-3.5 rounded-xl text-xs border border-dashed border-stone-300 transition" id="btnPhotoProof">📷 Proof Photo (Optional)</button>
                 <input type="file" id="photoInput" class="hidden" accept="image/*" capture="environment" onchange="previewImage(event)">
                 <img id="imagePreview" class="hidden w-full max-h-48 object-cover rounded-2xl mt-2 border border-stone-200" alt="Preuve">
 
-                <button onclick="sauvegarderBordereauToCloud()" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-bold py-3.5 rounded-xl text-sm shadow-lg transition tracking-wider">💾 Enregistrer le Bordereau</button>
+                <button onclick="sauvegarderBordereauToCloud()" id="btnSaveRecord" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-bold py-3.5 rounded-xl text-sm shadow-lg transition tracking-wider">💾 Save Record</button>
             </div>
         </div>
 
-        <!-- SECTION 2: PDF LIST & RECHERCHE AVANCÉE (ORDRE CROISSANT CHAMBRE) -->
-        <div id="sectionPdfList" class="hidden space-y-6">
+        <!-- SECTION 2: LISTE PDF & ARCHIVES -->
+        <div id="sectionPdfList" class="hidden space-y-4">
             <div class="remal-card p-6 rounded-3xl space-y-4">
                 <div class="flex justify-between items-center border-b border-stone-100 pb-3">
-                    <h3 class="text-sm font-serif-luxury font-bold text-stone-900">Enregistrements du Jour (Ordre Croissant)</h3>
-                    <span class="text-[10px] bg-stone-100 text-stone-600 font-bold px-2.5 py-1 rounded-full">Archive Auto à 00h00</span>
+                    <h3 class="text-sm font-serif-luxury font-bold text-stone-900" id="lblArchiveTitle">Today Records (Ascending Order)</h3>
+                    <span class="text-[10px] bg-stone-100 text-stone-600 font-bold px-2.5 py-1 rounded-full" id="lblAutoArchive">Auto-Archive at 00:00</span>
                 </div>
 
-                <!-- BARRE DE RECHERCHE PAR CHAMBRE ET DATE -->
+                <!-- RECHERCHE CHAMBRE ET DATE -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-stone-50 p-3 rounded-2xl border border-stone-200">
                     <div>
-                        <label class="block text-[10px] font-bold text-stone-500 uppercase mb-1">Recherche par Chambre</label>
-                        <input type="text" id="searchRoom" onkeyup="filtrerListeCloud()" placeholder="N° de chambre..." class="w-full border border-stone-200 rounded-xl p-2 text-xs bg-white outline-none">
+                        <label class="block text-[10px] font-bold text-stone-500 uppercase mb-1" id="lblSearchRoom">Search Room</label>
+                        <input type="text" id="searchRoom" onkeyup="filtrerListeCloud()" placeholder="Room number..." class="w-full border border-stone-200 rounded-xl p-2 text-xs bg-white outline-none">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold text-stone-500 uppercase mb-1">Recherche par Date</label>
+                        <label class="block text-[10px] font-bold text-stone-500 uppercase mb-1" id="lblSearchDate">Search Date</label>
                         <input type="date" id="searchDate" onchange="filtrerListeCloud()" class="w-full border border-stone-200 rounded-xl p-2 text-xs bg-white outline-none">
                     </div>
                 </div>
 
-                <div id="laundryList" class="space-y-2 pt-2"><p class="text-xs text-stone-400 text-center py-4">Chargement des bordereaux...</p></div>
+                <div id="laundryList" class="space-y-2 pt-2"><p class="text-xs text-stone-400 text-center py-4" id="lblLoadingRecords">Loading records...</p></div>
             </div>
         </div>
 
     </div>
 
-    <!-- MODAL DÉTAILS BORDEREAU -->
+    <!-- MODAL REÇU FLOTTANT -->
     <div id="detailModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto border border-stone-100">
-            <div class="flex justify-between items-start border-b border-stone-100 pb-3">
-                <div>
-                    <h3 id="modalRoomTitle" class="text-lg font-serif-luxury font-bold text-stone-900">Chambre --</h3>
-                    <p id="modalDate" class="text-[10px] text-stone-400"></p>
+        <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto border border-stone-100 relative">
+            
+            <div id="pdfExportArea" class="p-2 space-y-4">
+                <div class="text-center border-b border-stone-100 pb-3 relative">
+                    <button onclick="fermerModal()" class="absolute right-0 top-0 text-stone-400 text-xl font-bold hover:text-stone-700">✕</button>
+                    <h2 class="text-lg font-serif-luxury font-bold text-stone-900 tracking-wider">REMAL HOTEL</h2>
+                    <p class="text-[9px] text-stone-500 uppercase tracking-widest">Al Ruwais City, Abu Dhabi – UAE</p>
+                    <p class="text-xs font-bold text-remal-sand mt-1 uppercase tracking-wide">LAUNDRY SERVICE</p>
                 </div>
-                <button onclick="fermerModal()" class="text-stone-400 text-2xl font-bold hover:text-stone-600">×</button>
+
+                <div class="bg-stone-50 p-3.5 rounded-2xl border border-stone-200 flex justify-between items-center">
+                    <div>
+                        <span class="text-xs text-stone-500 font-semibold">Room:</span>
+                        <span id="modalRoomNumDisplay" class="text-xl font-serif-luxury font-bold text-stone-900 ml-1">223</span>
+                    </div>
+                    <div class="text-right">
+                        <p id="modalDate" class="text-[10px] text-stone-500 font-bold"></p>
+                        <span id="modalTypeBadgeInline" class="text-[9px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">Hotel Count (Free)</span>
+                    </div>
+                </div>
+
+                <div class="bg-stone-50 p-3 rounded-2xl border border-stone-200 text-xs font-bold text-stone-800 flex justify-between">
+                    <span>Packaging:</span>
+                    <span id="modalPackagingStyle" class="text-remal-sand">F — Folding</span>
+                </div>
+
+                <table class="w-full text-xs text-left border-collapse">
+                    <thead>
+                        <tr class="bg-remal-sand text-white font-bold text-[11px]">
+                            <th class="p-2.5 rounded-l-xl">Item</th>
+                            <th class="p-2.5 text-center">Qty</th>
+                            <th class="p-2.5 text-right rounded-r-xl">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalTableBody" class="divide-y divide-stone-100"></tbody>
+                </table>
+
+                <div class="bg-stone-50 p-3.5 rounded-2xl text-xs space-y-1.5 font-medium text-stone-800 border border-stone-200">
+                    <div class="flex justify-between font-bold text-stone-900 border-b border-stone-200 pb-1.5"><span>Total Clothes:</span><span id="modalClothesCount">3 pieces</span></div>
+                    <div class="flex justify-between"><span>Subtotal:</span><span id="modalSubTotal">0.00 AED</span></div>
+                    <div class="flex justify-between"><span>VAT (5%):</span><span id="modalVat">0.00 AED</span></div>
+                    <div class="flex justify-between font-bold text-sm text-stone-900 border-t border-stone-200 pt-1.5 mt-1"><span>Grand Total:</span><span id="modalTotal" class="text-remal-sand font-serif-luxury text-base">0.00 AED</span></div>
+                </div>
+
+                <div id="modalPhotoContainer"></div>
             </div>
 
-            <div id="modalTypeBadge"></div>
-            <p id="modalOptionsList" class="text-xs font-bold text-stone-800 bg-stone-50 p-3 rounded-2xl border border-stone-200"></p>
-
-            <table class="w-full text-xs text-left border-collapse">
-                <thead>
-                    <tr class="border-b border-stone-200 text-stone-500 font-bold">
-                        <th class="py-2">Article</th>
-                        <th class="py-2">Service</th>
-                        <th class="py-2">Qté</th>
-                        <th class="py-2">Prix Total</th>
-                    </tr>
-                </thead>
-                <tbody id="modalTableBody" class="divide-y divide-stone-100"></tbody>
-            </table>
-
-            <div class="bg-stone-50 p-4 rounded-2xl text-xs space-y-1 font-semibold text-stone-800 border border-stone-200">
-                <div class="flex justify-between"><span>Vêtements:</span><span id="modalClothesCount">0</span></div>
-                <div class="flex justify-between"><span>Sous-total:</span><span id="modalSubTotal">0.00 AED</span></div>
-                <div class="flex justify-between"><span>TVA (5%):</span><span id="modalVat">0.00 AED</span></div>
-                <div class="flex justify-between font-bold text-sm text-stone-900 border-t border-stone-200 pt-1.5 mt-1"><span>TOTAL GENERAL:</span><span id="modalTotal" class="text-remal-sand font-serif-luxury">0.00 AED</span></div>
+            <div class="space-y-2 pt-2">
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="genererPDF()" class="bg-remal-sand hover:bg-amber-600 text-white font-bold py-3 rounded-xl text-xs shadow flex items-center justify-center gap-1.5">📥 Download PDF</button>
+                    <a id="btnWhatsappShare" href="#" target="_blank" class="bg-stone-800 hover:bg-stone-900 text-white font-bold py-3 rounded-xl text-xs shadow flex items-center justify-center gap-1.5">💬 Share WhatsApp</a>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="editerBordereauActuel()" class="bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold py-3 rounded-xl text-xs border border-stone-300 flex items-center justify-center gap-1">✏️ Edit Record</button>
+                    <button onclick="supprimerBordereauActuel()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-xl text-xs shadow flex items-center justify-center gap-1">🗑️ Delete Record</button>
+                </div>
             </div>
-
-            <div id="modalPhotoContainer"></div>
-            <button onclick="supprimerBordereauActuel()" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-xl text-xs shadow-md transition">🗑️ Supprimer ce bordereau</button>
         </div>
     </div>
 
@@ -172,6 +219,42 @@
         const SUPABASE_URL = 'https://tbsroleffqhyzbbfmtvp.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRic3JvbGVmZnFoeXpiYmZtdHZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MzUyMzMsImV4cCI6MjEwMDQxMTIzM30.oNKhoPJ7v__YJQW7flC9UsP2cIDHLMuxjqmf6_NvYW4';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentLang = 'en';
+
+        // TRADUCTIONS DE L'INTERFACE
+        const i18n = {
+            en: {
+                txtBtnNewRecord: "New Record", txtBtnPdfList: "PDF List",
+                lblFormTitle: "New Record", lblRoomNum: "Room Number",
+                lblSelectedGarments: "Total Garments:", lblSubTotal: "Subtotal:",
+                lblVat: "VAT (5%):", lblGrandTotal: "Grand Total:", btnPhotoProof: "📷 Proof Photo (Optional)",
+                btnSaveRecord: "💾 Save Record", lblArchiveTitle: "Today Records (Ascending Order)",
+                lblAutoArchive: "Auto-Archive at 00:00", lblSearchRoom: "Search Room", lblSearchDate: "Search Date",
+                lblLoadingRecords: "Loading records...", noRecords: "No laundry records found.",
+                lblRoomError: "Invalid room number! Allowed ranges: 103-144, 201-246, 301-348, 401-448, 501-520, 601-608."
+            },
+            ar: {
+                txtBtnNewRecord: "سجل جديد", txtBtnPdfList: "قائمة PDF",
+                lblFormTitle: "سجل جديد", lblRoomNum: "رقم الغرفة",
+                lblSelectedGarments: "مجموع الملابس:", lblSubTotal: "المجموع الفرعي:",
+                lblVat: "ضريبة القيمة المضافة (٥٪):", lblGrandTotal: "المجموع الإجمالي:", btnPhotoProof: "📷 صورة إثبات (اختياري)",
+                btnSaveRecord: "💾 حفظ السجل", lblArchiveTitle: "سجلات اليوم (ترتيب تصاعدي)",
+                lblAutoArchive: "أرشفة تلقائية ٠٠:٠٠", lblSearchRoom: "بحث برقم الغرفة", lblSearchDate: "بحث بالتاريخ",
+                lblLoadingRecords: "جاري تحميل السجلات...", noRecords: "لا توجد سجلات.",
+                lblRoomError: "رقم الغرفة غير صحيح! النطاقات المسموحة: 103-144، 201-246، 301-348، 401-448، 501-520، 601-608."
+            },
+            hi: {
+                txtBtnNewRecord: "नया रिकॉर्ड", txtBtnPdfList: "पीडीएफ सूची",
+                lblFormTitle: "नया रिकॉर्ड", lblRoomNum: "कमरा नंबर",
+                lblSelectedGarments: "कुल कपड़े:", lblSubTotal: "उप-कुल:",
+                lblVat: "जीएसटी/वैट (5%):", lblGrandTotal: "कुल योग:", btnPhotoProof: "📷 प्रमाण फोटो (वैकल्पिक)",
+                btnSaveRecord: "💾 रिकॉर्ड सुरक्षित करें", lblArchiveTitle: "आज के रिकॉर्ड (बढ़ते क्रम में)",
+                lblAutoArchive: "00:00 बजे ऑटो-संग्रह", lblSearchRoom: "कमरा खोजें", lblSearchDate: "तारीख खोजें",
+                lblLoadingRecords: "रिकॉर्ड लोड हो रहे हैं...", noRecords: "कोई रिकॉर्ड नहीं मिला।",
+                lblRoomError: "अमान्य कमरा नंबर! केवल ये नंबर मान्य हैं: 103-144, 201-246, 301-348, 401-448, 501-520, 601-608."
+            }
+        };
 
         const database = {
             laundry: {
@@ -226,29 +309,104 @@
         };
 
         let currentService = 'laundry';
-        let currentCountType = 'hotel'; // HOTEL COUNT PAR DÉFAUT
+        let currentCountType = 'hotel';
         let cart = {};
         let currentImageData = null;
         let cachedSlips = [];
         let selectedIdForModal = null;
 
         document.addEventListener('DOMContentLoaded', () => {
+            setLang('en');
             selectCountType('hotel');
             renderItems();
             afficherListeBordereauxFromCloud();
         });
 
+        /* FONCTION DE VALIDATION STRICTE DU NUMÉRO DE CHAMBRE */
+        function isRoomNumberValid(val) {
+            const room = parseInt(val, 10);
+            if (isNaN(room)) return false;
+
+            return (
+                (room >= 103 && room <= 144) ||
+                (room >= 201 && room <= 246) ||
+                (room >= 301 && room <= 348) ||
+                (room >= 401 && room <= 448) ||
+                (room >= 501 && room <= 520) ||
+                (room >= 601 && room <= 608)
+            );
+        }
+
+        function validateRoomNumber() {
+            const input = document.getElementById('roomNumber');
+            const errorMsg = document.getElementById('roomErrorMsg');
+            const saveBtn = document.getElementById('btnSaveRecord');
+            const val = input.value.trim();
+
+            if (val === '') {
+                input.className = "w-full border border-stone-200 rounded-xl p-3 text-sm font-bold bg-stone-50 outline-none transition focus:border-stone-400";
+                errorMsg.classList.add('hidden');
+                saveBtn.disabled = false;
+                saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                return true;
+            }
+
+            if (isRoomNumberValid(val)) {
+                input.className = "w-full border-2 border-emerald-500 rounded-xl p-3 text-sm font-bold bg-emerald-50/30 text-stone-900 outline-none transition";
+                errorMsg.classList.add('hidden');
+                saveBtn.disabled = false;
+                saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                return true;
+            } else {
+                input.className = "w-full border-2 border-rose-500 rounded-xl p-3 text-sm font-bold bg-rose-50/50 text-rose-900 outline-none transition";
+                errorMsg.classList.remove('hidden');
+                saveBtn.disabled = true;
+                saveBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                return false;
+            }
+        }
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = i18n[lang] || i18n.en;
+            document.getElementById('htmlRoot').setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+            
+            ['en', 'ar', 'hi'].forEach(l => {
+                const btn = document.getElementById(`btn-lang-${l}`);
+                if (l === lang) btn.className = "px-2.5 py-1 rounded-full bg-remal-sand text-white shadow-sm font-bold";
+                else btn.className = "px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900";
+            });
+
+            document.getElementById('txtBtnNewRecord').innerText = t.txtBtnNewRecord;
+            document.getElementById('txtBtnPdfList').innerText = t.txtBtnPdfList;
+            document.getElementById('lblFormTitle').innerText = t.lblFormTitle;
+            document.getElementById('lblRoomNum').innerText = t.lblRoomNum;
+            document.getElementById('lblSelectedGarments').innerText = t.lblSelectedGarments;
+            document.getElementById('lblSubTotal').innerText = t.lblSubTotal;
+            document.getElementById('lblVat').innerText = t.lblVat;
+            document.getElementById('lblGrandTotal').innerText = t.lblGrandTotal;
+            document.getElementById('btnPhotoProof').innerText = t.btnPhotoProof;
+            document.getElementById('btnSaveRecord').innerText = t.btnSaveRecord;
+            document.getElementById('lblArchiveTitle').innerText = t.lblArchiveTitle;
+            document.getElementById('lblAutoArchive').innerText = t.lblAutoArchive;
+            document.getElementById('lblSearchRoom').innerText = t.lblSearchRoom;
+            document.getElementById('lblSearchDate').innerText = t.lblSearchDate;
+            document.getElementById('lblRoomError').innerText = t.lblRoomError;
+
+            renderItems();
+        }
+
         function switchMainSection(section) {
             if (section === 'newRecord') {
                 document.getElementById('sectionNewRecord').classList.remove('hidden');
                 document.getElementById('sectionPdfList').classList.add('hidden');
-                document.getElementById('navBtnNewRecord').className = "flex-1 py-3 rounded-xl bg-stone-900 text-white shadow-md font-bold";
-                document.getElementById('navBtnPdfList').className = "flex-1 py-3 rounded-xl text-stone-700 hover:text-stone-900 font-bold";
+                document.getElementById('navBtnNewRecord').className = "flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-remal-sand text-white font-bold text-xs shadow-md transition";
+                document.getElementById('navBtnPdfList').className = "flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 font-bold text-xs hover:bg-stone-200 transition";
             } else {
                 document.getElementById('sectionPdfList').classList.remove('hidden');
                 document.getElementById('sectionNewRecord').classList.add('hidden');
-                document.getElementById('navBtnPdfList').className = "flex-1 py-3 rounded-xl bg-stone-900 text-white shadow-md font-bold";
-                document.getElementById('navBtnNewRecord').className = "flex-1 py-3 rounded-xl text-stone-700 hover:text-stone-900 font-bold";
+                document.getElementById('navBtnPdfList').className = "flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-remal-sand text-white font-bold text-xs shadow-md transition";
+                document.getElementById('navBtnNewRecord').className = "flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 font-bold text-xs hover:bg-stone-200 transition";
                 afficherListeBordereauxFromCloud();
             }
         }
@@ -280,13 +438,13 @@
                 items.forEach(item => {
                     const key = `${currentService}_${item.name}`;
                     const qty = cart[key] ? cart[key].qty : 0;
-                    const priceDisplay = currentCountType === 'hotel' ? '0.00 AED (Gratuit)' : `${item.price.toFixed(2)} AED`;
+                    const priceDisplay = currentCountType === 'hotel' ? '0.00 AED' : `${item.price.toFixed(2)} AED`;
 
                     const row = document.createElement('div');
                     row.className = 'flex justify-between items-center py-2 border-b border-stone-100 text-xs';
                     row.innerHTML = `
                         <div>
-                            <p class="font-bold text-stone-900">${item.name} <span class="text-stone-400 font-normal text-[10px]">${item.ar}</span></p>
+                            <p class="font-bold text-stone-900">${currentLang === 'ar' ? item.ar : item.name}</p>
                             <p class="text-[10px] ${currentCountType === 'hotel' ? 'text-emerald-600 font-bold' : 'text-remal-sand font-semibold'}">${priceDisplay}</p>
                         </div>
                         <div class="flex items-center space-x-2 bg-stone-100 p-1 rounded-xl">
@@ -311,7 +469,7 @@
             let totalClothes = 0; let subtotal = 0;
             Object.values(cart).forEach(item => { totalClothes += item.qty; if (currentCountType === 'guest') subtotal += item.price * item.qty; });
             const vat = subtotal * 0.05; const grandTotal = subtotal + vat;
-            document.getElementById('currentBordereauCount').innerText = `${totalClothes} pièce(s)`;
+            document.getElementById('currentBordereauCount').innerText = `${totalClothes} pieces`;
             document.getElementById('subTotal').innerText = `${subtotal.toFixed(2)} AED`;
             document.getElementById('vatAmount').innerText = `${vat.toFixed(2)} AED`;
             document.getElementById('grandTotal').innerText = `${grandTotal.toFixed(2)} AED`;
@@ -327,14 +485,24 @@
         }
 
         async function sauvegarderBordereauToCloud() {
-            const roomNum = document.getElementById('roomNumber').value;
-            if (!roomNum) { alert('Veuillez renseigner le numéro de chambre.'); return; }
-            if (Object.keys(cart).length === 0 && !currentImageData) { alert('Veuillez sélectionner au moins un article ou ajouter une photo.'); return; }
+            const roomInput = document.getElementById('roomNumber');
+            const roomNum = roomInput.value.trim();
+            const editingId = document.getElementById('editingRecordId').value;
+
+            if (!validateRoomNumber() || !roomNum) {
+                alert(i18n[currentLang].lblRoomError);
+                return;
+            }
+
+            if (Object.keys(cart).length === 0 && !currentImageData) {
+                alert('Please select at least one garment.');
+                return;
+            }
 
             let totalClothes = 0; Object.values(cart).forEach(item => totalClothes += item.qty);
             let subtotal = 0; if (currentCountType === 'guest') Object.values(cart).forEach(item => subtotal += item.price * item.qty);
 
-            const selectedOption = document.querySelector('input[name="foldingOption"]:checked')?.value || 'Folding (F)';
+            const selectedOption = document.querySelector('input[name="foldingOption"]:checked')?.value || 'F — Folding';
             const vat = subtotal * 0.05; const grandTotal = subtotal + vat;
 
             const payload = {
@@ -349,14 +517,23 @@
                 photo: currentImageData
             };
 
-            await supabaseClient.from('laundry_slips').insert([payload]);
-            alert(`Bordereau de la Chambre ${roomNum} (${selectedOption}) sauvegardé !`);
+            if (editingId) {
+                await supabaseClient.from('laundry_slips').update(payload).eq('id', editingId);
+                alert(`Record for Room ${roomNum} updated successfully!`);
+            } else {
+                await supabaseClient.from('laundry_slips').insert([payload]);
+                alert(`Record for Room ${roomNum} saved!`);
+            }
+
             reinitialiserFormulaire();
             switchMainSection('pdfList');
         }
 
         function reinitialiserFormulaire() {
-            document.getElementById('roomNumber').value = ''; cart = {}; currentImageData = null;
+            document.getElementById('roomNumber').value = ''; 
+            document.getElementById('editingRecordId').value = '';
+            validateRoomNumber();
+            cart = {}; currentImageData = null;
             document.getElementById('imagePreview').classList.add('hidden'); document.getElementById('photoInput').value = '';
             selectCountType('hotel'); renderItems(); calculateGlobalTotals();
         }
@@ -366,14 +543,7 @@
             const { data } = await supabaseClient.from('laundry_slips').select('*');
             
             cachedSlips = data || [];
-
-            // TRI STRICT PAR ORDRE CROISSANT DES NUMÉROS DE CHAMBRE
-            cachedSlips.sort((a, b) => {
-                const roomA = parseInt(a.room) || 0;
-                const roomB = parseInt(b.room) || 0;
-                return roomA - roomB;
-            });
-
+            cachedSlips.sort((a, b) => (parseInt(a.room) || 0) - (parseInt(b.room) || 0));
             filtrerListeCloud();
         }
 
@@ -393,7 +563,7 @@
             });
 
             if (filtered.length === 0) { 
-                container.innerHTML = `<p style="text-align:center; color:#94a3b8; font-size:0.75rem;" class="py-4">Aucun bordereau trouvé.</p>`; 
+                container.innerHTML = `<p style="text-align:center; color:#94a3b8; font-size:0.75rem;" class="py-4">${i18n[currentLang].noRecords}</p>`; 
                 return; 
             }
 
@@ -403,13 +573,13 @@
                 itemDiv.className = 'p-3.5 bg-stone-50 rounded-2xl border border-stone-200 text-xs flex justify-between items-center cursor-pointer hover:bg-stone-100 transition'; 
                 itemDiv.onclick = () => ouvrirModalDetails(entry.id);
                 const isHotel = entry.count_type === 'hotel';
-                const styleOpt = entry.options?.service_style || 'F';
+                const styleOpt = entry.options?.service_style || 'F — Folding';
 
                 itemDiv.innerHTML = `
                     <div>
-                        <span class="font-serif-luxury font-bold text-stone-900 text-sm">Chambre ${entry.room}</span>
+                        <span class="font-serif-luxury font-bold text-stone-900 text-sm">Room ${entry.room}</span>
                         <span class="ml-2 text-[10px] font-bold px-2 py-0.5 rounded-full ${isHotel ? 'bg-amber-100 text-amber-800' : 'bg-stone-200 text-stone-800'}">${isHotel ? 'Hotel Count' : 'Guest Count'}</span>
-                        <div class="text-[10px] text-stone-500 font-semibold mt-0.5">Option: ${styleOpt}</div>
+                        <div class="text-[10px] text-stone-500 font-semibold mt-0.5">Style: ${styleOpt}</div>
                     </div>
                     <div class="text-right font-bold text-stone-900">
                         <small class="text-stone-400 font-normal">(${entry.total_clothes} pcs)</small> <span class="text-remal-sand font-serif-luxury text-sm">${entry.total.toFixed(2)} AED</span> ${entry.photo ? '📸' : ''}
@@ -425,35 +595,71 @@
             if (!entry) return;
 
             const isHotel = entry.count_type === 'hotel';
-            document.getElementById('modalRoomTitle').innerText = `Chambre ${entry.room}`;
-            document.getElementById('modalDate').innerText = `Date : ${new Date(entry.created_at).toLocaleString('fr-FR')}`;
-            document.getElementById('modalTypeBadge').innerHTML = `<span class="text-[10px] font-bold px-3 py-1 rounded-full ${isHotel ? 'bg-amber-100 text-amber-800' : 'bg-stone-200 text-stone-800'}">${isHotel ? 'HOTEL COUNT (Gratuit)' : 'GUEST COUNT (Facturé)'}</span>`;
-            document.getElementById('modalOptionsList').innerText = `Option choisie : ${entry.options?.service_style || 'Folding (F)'}`;
+            document.getElementById('modalRoomNumDisplay').innerText = entry.room;
+            document.getElementById('modalDate').innerText = `Date: ${new Date(entry.created_at).toLocaleDateString('fr-FR')}`;
+            document.getElementById('modalTypeBadgeInline').innerText = isHotel ? 'Hotel Count (Free)' : 'Guest Count';
+            document.getElementById('modalPackagingStyle').innerText = entry.options?.service_style || 'F — Folding';
 
             const tbody = document.getElementById('modalTableBody'); tbody.innerHTML = '';
             Object.values(entry.items || {}).forEach(item => {
                 const tr = document.createElement('tr');
                 tr.className = "py-1 border-b border-stone-100";
-                tr.innerHTML = `<td class="font-bold py-1.5">${item.name}</td><td class="uppercase text-[10px] text-stone-500">${item.service}</td><td>${item.qty}</td><td class="font-bold">${isHotel ? '0.00 AED' : (item.qty * item.price).toFixed(2) + ' AED'}</td>`;
+                tr.innerHTML = `<td class="font-bold py-2 p-2.5">${item.name}</td><td class="text-center font-bold p-2.5">${item.qty}</td><td class="text-right font-bold p-2.5">${isHotel ? '0.00' : (item.qty * item.price).toFixed(2)}</td>`;
                 tbody.appendChild(tr);
             });
 
-            document.getElementById('modalClothesCount').innerText = `${entry.total_clothes} pièce(s)`;
+            document.getElementById('modalClothesCount').innerText = `${entry.total_clothes} pieces`;
             document.getElementById('modalSubTotal').innerText = `${entry.subtotal.toFixed(2)} AED`;
             document.getElementById('modalVat').innerText = `${entry.vat.toFixed(2)} AED`;
             document.getElementById('modalTotal').innerText = `${entry.total.toFixed(2)} AED`;
 
             const pContainer = document.getElementById('modalPhotoContainer');
-            pContainer.innerHTML = entry.photo ? `<p class="font-bold text-xs mt-2">Preuve Photo :</p><img src="${entry.photo}" class="w-full rounded-2xl border border-stone-200 mt-1">` : '';
+            pContainer.innerHTML = entry.photo ? `<p class="font-bold text-xs mt-2">Proof Photo:</p><img src="${entry.photo}" class="w-full rounded-2xl border border-stone-200 mt-1">` : '';
+
+            const whatsappMsg = encodeURIComponent(`*REMAL HOTEL - LAUNDRY SLIP*\n*Room:* ${entry.room}\n*Style:* ${entry.options?.service_style}\n*Total Garments:* ${entry.total_clothes} pcs\n*Grand Total:* ${entry.total.toFixed(2)} AED`);
+            document.getElementById('btnWhatsappShare').href = `https://wa.me/?text=${whatsappMsg}`;
 
             document.getElementById('detailModal').classList.remove('hidden');
+        }
+
+        function editerBordereauActuel() {
+            if (!selectedIdForModal) return;
+            const entry = cachedSlips.find(e => e.id === selectedIdForModal);
+            if (!entry) return;
+
+            document.getElementById('editingRecordId').value = entry.id;
+            document.getElementById('roomNumber').value = entry.room;
+            validateRoomNumber();
+            cart = entry.items || {};
+            selectCountType(entry.count_type || 'hotel');
+            
+            if (entry.options?.service_style) {
+                const radio = document.querySelector(`input[name="foldingOption"][value="${entry.options.service_style}"]`);
+                if (radio) radio.checked = true;
+            }
+
+            fermerModal();
+            switchMainSection('newRecord');
+        }
+
+        function genererPDF() {
+            const element = document.getElementById('pdfExportArea');
+            const roomVal = document.getElementById('modalRoomNumDisplay').innerText;
+            const opt = {
+                margin:       8,
+                filename:     `Laundry_Slip_Room_${roomVal}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
         }
 
         function fermerModal() { document.getElementById('detailModal').classList.add('hidden'); selectedIdForModal = null; }
 
         async function supprimerBordereauActuel() {
             if (!selectedIdForModal) return;
-            if (confirm(`Supprimer ce bordereau ?`)) {
+            if (confirm(`Delete this record?`)) {
                 await supabaseClient.from('laundry_slips').delete().eq('id', selectedIdForModal);
                 fermerModal();
                 await afficherListeBordereauxFromCloud();
