@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Remal Hotel & Villas - Laundry Plant Digital Cloud</title>
+    <title>Remal Hotel & Villas - Front Desk & Laundry Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FAFAFA; color: #222222; }
         .font-serif-luxury { font-family: 'Playfair Display', serif; }
@@ -48,7 +49,7 @@
                     <button onclick="setLang('ar')" id="btn-lang-ar" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">العربية</button>
                     <button onclick="setLang('hi')" id="btn-lang-hi" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">हिन्दी</button>
                 </div>
-                <span class="text-xs font-bold bg-stone-900 text-white px-3 py-1.5 rounded-full shadow hidden sm:inline">🧺 Laundry Plant</span>
+                <span class="text-xs font-bold bg-stone-900 text-white px-3 py-1.5 rounded-full shadow hidden sm:inline">🛎️ Reception & Maid</span>
             </div>
         </div>
     </header>
@@ -67,16 +68,19 @@
 
     <div class="max-w-2xl mx-auto px-4 py-4 space-y-4">
 
-        <!-- 3 SECTIONS DE NAVIGATION EN HAUT -->
-        <div class="grid grid-cols-3 gap-2 pt-1 text-xs font-bold">
-            <button onclick="switchMainSection('newRecord')" id="navBtnNewRecord" class="py-3 rounded-2xl bg-remal-sand text-white shadow-md transition flex items-center justify-center gap-1">
-                <span>➕</span> <span id="txtBtnNewRecord">New Record</span>
+        <!-- 4 SECTIONS DE NAVIGATION EN HAUT -->
+        <div class="grid grid-cols-4 gap-1.5 pt-1 text-[11px] font-bold">
+            <button onclick="switchMainSection('newRecord')" id="navBtnNewRecord" class="py-2.5 px-1 rounded-2xl bg-remal-sand text-white shadow-md transition flex flex-col items-center justify-center gap-0.5">
+                <span>➕</span> <span id="txtBtnNewRecord">New</span>
             </button>
-            <button onclick="switchMainSection('liveRecord')" id="navBtnLiveRecord" class="py-3 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 transition flex items-center justify-center gap-1">
-                <span>🔴</span> <span id="txtBtnLiveRecord">Live Orders</span>
+            <button onclick="switchMainSection('liveRecord')" id="navBtnLiveRecord" class="py-2.5 px-1 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 transition flex flex-col items-center justify-center gap-0.5">
+                <span>🔴</span> <span id="txtBtnLiveRecord">Live</span>
             </button>
-            <button onclick="switchMainSection('pdfList')" id="navBtnPdfList" class="py-3 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 transition flex items-center justify-center gap-1">
-                <span>📋</span> <span id="txtBtnPdfList">PDF List</span>
+            <button onclick="switchMainSection('pdfList')" id="navBtnPdfList" class="py-2.5 px-1 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 transition flex flex-col items-center justify-center gap-0.5">
+                <span>📋</span> <span id="txtBtnPdfList">PDF</span>
+            </button>
+            <button onclick="switchMainSection('dashboard')" id="navBtnDashboard" class="py-2.5 px-1 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 transition flex flex-col items-center justify-center gap-0.5">
+                <span>📈</span> <span id="txtBtnDashboard">Chart</span>
             </button>
         </div>
 
@@ -148,7 +152,7 @@
             <div class="remal-card p-6 rounded-3xl space-y-4">
                 <div class="flex justify-between items-center border-b border-stone-100 pb-3">
                     <h3 class="text-sm font-serif-luxury font-bold text-stone-900">🔴 Live Laundry Orders</h3>
-                    <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2.5 py-1 rounded-full">Real-time Tracking</span>
+                    <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2.5 py-1 rounded-full">Reception & Maid View</span>
                 </div>
                 <div id="liveOrdersList" class="space-y-3 pt-2"><p class="text-xs text-stone-400 text-center py-4">Loading live orders...</p></div>
             </div>
@@ -174,6 +178,48 @@
                 </div>
 
                 <div id="laundryList" class="space-y-3 pt-2"><p class="text-xs text-stone-400 text-center py-4" id="lblLoadingRecords">Loading records...</p></div>
+            </div>
+        </div>
+
+        <!-- SECTION 4: MANAGEMENT BUSINESS CHART & ANALYTICS -->
+        <div id="sectionDashboard" class="hidden space-y-4">
+            <div class="remal-card p-6 rounded-3xl space-y-5">
+                <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+                    <h3 class="text-sm font-serif-luxury font-bold text-stone-900">📈 Reception & Management Analytics</h3>
+                    <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2.5 py-1 rounded-full">Executive Overview</span>
+                </div>
+
+                <!-- KPI CARDS -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    <div class="bg-stone-50 p-3.5 rounded-2xl border border-stone-200 text-center">
+                        <p class="text-[10px] font-bold text-stone-400 uppercase">Total Revenue</p>
+                        <p id="kpiRevenue" class="text-base font-serif-luxury font-bold text-remal-sand mt-0.5">0.00 AED</p>
+                    </div>
+                    <div class="bg-stone-50 p-3.5 rounded-2xl border border-stone-200 text-center">
+                        <p class="text-[10px] font-bold text-stone-400 uppercase">Total Orders</p>
+                        <p id="kpiOrders" class="text-base font-serif-luxury font-bold text-stone-900 mt-0.5">0</p>
+                    </div>
+                    <div class="bg-stone-50 p-3.5 rounded-2xl border border-stone-200 text-center col-span-2 sm:col-span-1">
+                        <p class="text-[10px] font-bold text-stone-400 uppercase">Garments Processed</p>
+                        <p id="kpiGarments" class="text-base font-serif-luxury font-bold text-stone-900 mt-0.5">0 pcs</p>
+                    </div>
+                </div>
+
+                <!-- GRAPHIQUES -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    <div class="bg-stone-50 p-4 rounded-2xl border border-stone-200 space-y-2">
+                        <p class="text-xs font-bold text-stone-700 text-center">Orders Status Distribution</p>
+                        <div class="relative h-48 flex items-center justify-center">
+                            <canvas id="statusDoughnutChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-stone-50 p-4 rounded-2xl border border-stone-200 space-y-2">
+                        <p class="text-xs font-bold text-stone-700 text-center">Business Evolution (Revenue by Date)</p>
+                        <div class="relative h-48 flex items-center justify-center">
+                            <canvas id="revenueBarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -249,10 +295,13 @@
         let currentLang = 'en';
         let latestRequestId = null;
         let isAlarmActive = false;
+        let cachedSlips = [];
+        let doughnutChartInstance = null;
+        let barChartInstance = null;
 
         const i18n = {
             en: {
-                txtBtnNewRecord: "New Record", txtBtnLiveRecord: "Live Orders", txtBtnPdfList: "PDF List",
+                txtBtnNewRecord: "New", txtBtnLiveRecord: "Live", txtBtnPdfList: "PDF", txtBtnDashboard: "Chart",
                 lblFormTitle: "New Record", lblRoomNum: "Room Number",
                 lblSelectedGarments: "Total Garments:", lblSubTotal: "Subtotal:",
                 lblVat: "VAT (5%):", lblGrandTotal: "Grand Total:", btnPhotoProof: "📷 Proof Photo (Optional)",
@@ -262,7 +311,7 @@
                 lblRoomError: "Invalid room number! Allowed ranges: 103-144, 201-246, 301-348, 401-448, 501-520, 601-608."
             },
             ar: {
-                txtBtnNewRecord: "سجل جديد", txtBtnLiveRecord: "الطلبات الحية", txtBtnPdfList: "قائمة PDF",
+                txtBtnNewRecord: "سجل", txtBtnLiveRecord: "الحي", txtBtnPdfList: "PDF", txtBtnDashboard: "رسم بياني",
                 lblFormTitle: "سجل جديد", lblRoomNum: "رقم الغرفة",
                 lblSelectedGarments: "مجموع الملابس:", lblSubTotal: "المجموع الفرعي:",
                 lblVat: "ضريبة القيمة المضافة (٥٪):", lblGrandTotal: "المجموع الإجمالي:", btnPhotoProof: "📷 صورة إثبات (اختياري)",
@@ -272,7 +321,7 @@
                 lblRoomError: "رقم الغرفة غير صحيح! النطاقات المسموحة: 103-144، 201-246، 301-348، 401-448، 501-520، 601-608."
             },
             hi: {
-                txtBtnNewRecord: "नया रिकॉर्ड", txtBtnLiveRecord: "लाइव ऑर्डर", txtBtnPdfList: "पीडीएफ सूची",
+                txtBtnNewRecord: "नया", txtBtnLiveRecord: "लाइव", txtBtnPdfList: "पीडीएफ", txtBtnDashboard: "चार्ट",
                 lblFormTitle: "नया रिकॉर्ड", lblRoomNum: "कमरा नंबर",
                 lblSelectedGarments: "कुल कपड़े:", lblSubTotal: "उप-कुल:",
                 lblVat: "जीएसटी/वैट (5%):", lblGrandTotal: "कुल योग:", btnPhotoProof: "📷 प्रमाण फोटो (वैकल्पिक)",
@@ -339,18 +388,22 @@
         let currentCountType = 'hotel';
         let cart = {};
         let currentImageData = null;
-        let cachedSlips = [];
         let selectedIdForModal = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             setLang('en');
             selectCountType('hotel');
             renderItems();
-            afficherListeBordereauxFromCloud();
+            fetchInitialData();
             
             checkIncomingLaundryRequests();
             setInterval(checkIncomingLaundryRequests, 5000);
         });
+
+        async function fetchInitialData() {
+            const { data } = await supabaseClient.from('laundry_slips').select('*');
+            cachedSlips = data || [];
+        }
 
         function playAlarm() {
             const sound = document.getElementById('hotelAlarmSound');
@@ -369,13 +422,10 @@
             }
             document.getElementById('laundryPlantAlert').classList.add('hidden');
 
-            // Transfère et met à jour directement la demande en 'Collected' pour Live Orders
             if (latestRequestId) {
                 try {
-                    // Met à jour la table requests du client pour stopper l'attente et basculer en Collected
                     await supabaseClient.from('requests').update({ status: 'Collected' }).eq('id', latestRequestId);
                     
-                    // Vérifie si un slip existe déjà, sinon en crée un de base pour cette chambre
                     const { data: existingSlip } = await supabaseClient.from('laundry_slips').select('*').eq('room', latestRoomNum).single();
                     if (!existingSlip) {
                         await supabaseClient.from('laundry_slips').insert([{
@@ -489,6 +539,7 @@
             document.getElementById('txtBtnNewRecord').innerText = t.txtBtnNewRecord;
             document.getElementById('txtBtnLiveRecord').innerText = t.txtBtnLiveRecord;
             document.getElementById('txtBtnPdfList').innerText = t.txtBtnPdfList;
+            document.getElementById('txtBtnDashboard').innerText = t.txtBtnDashboard;
             document.getElementById('lblFormTitle').innerText = t.lblFormTitle;
             document.getElementById('lblRoomNum').innerText = t.lblRoomNum;
             document.getElementById('lblSelectedGarments').innerText = t.lblSelectedGarments;
@@ -507,20 +558,22 @@
         }
 
         function switchMainSection(section) {
-            ['newRecord', 'liveRecord', 'pdfList'].forEach(sec => {
+            ['newRecord', 'liveRecord', 'pdfList', 'dashboard'].forEach(sec => {
                 document.getElementById(`section${sec.charAt(0).toUpperCase() + sec.slice(1)}`).classList.add('hidden');
             });
-            ['newRecord', 'liveRecord', 'pdfList'].forEach(sec => {
-                document.getElementById(`navBtn${sec.charAt(0).toUpperCase() + sec.slice(1)}`).className = "py-3 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 transition flex items-center justify-center gap-1 font-bold";
+            ['newRecord', 'liveRecord', 'pdfList', 'dashboard'].forEach(sec => {
+                document.getElementById(`navBtn${sec.charAt(0).toUpperCase() + sec.slice(1)}`).className = "py-2.5 px-1 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 transition flex flex-col items-center justify-center gap-0.5 font-bold";
             });
 
             document.getElementById(`section${section.charAt(0).toUpperCase() + section.slice(1)}`).classList.remove('hidden');
-            document.getElementById(`navBtn${section.charAt(0).toUpperCase() + section.slice(1)}`).className = "py-3 rounded-2xl bg-remal-sand text-white shadow-md transition flex items-center justify-center gap-1 font-bold";
+            document.getElementById(`navBtn${section.charAt(0).toUpperCase() + section.slice(1)}`).className = "py-2.5 px-1 rounded-2xl bg-remal-sand text-white shadow-md transition flex flex-col items-center justify-center gap-0.5 font-bold";
 
             if (section === 'liveRecord') {
                 chargerLiveOrders();
             } else if (section === 'pdfList') {
                 afficherListeBordereauxFromCloud();
+            } else if (section === 'dashboard') {
+                renderManagementDashboard();
             }
         }
 
@@ -688,7 +741,6 @@
                         </div>
                     </div>
 
-                    <!-- BOUTONS DE PROGRESSION EXCLUSIFS LAUNDRY PLANT -->
                     <div class="flex items-center justify-between gap-1 pt-2 border-t border-stone-200">
                         <span class="text-[10px] font-bold px-2 py-1 rounded-lg ${statusBg}">📍 ${status}</span>
                         <div class="flex gap-1">
@@ -762,6 +814,83 @@
                     </div>
                 `;
                 container.appendChild(itemDiv);
+            });
+        }
+
+        async function renderManagementDashboard() {
+            const { data } = await supabaseClient.from('laundry_slips').select('*');
+            cachedSlips = data || [];
+
+            let totalRevenue = 0;
+            let totalGarments = 0;
+            let statusCounts = { Collected: 0, Washing: 0, Ready: 0, Delivered: 0 };
+            let revenueByDate = {};
+
+            cachedSlips.forEach(slip => {
+                totalRevenue += (slip.total || 0);
+                totalGarments += (slip.total_clothes || 0);
+                
+                let st = slip.status || 'Collected';
+                if (statusCounts[st] !== undefined) statusCounts[st]++;
+
+                if (slip.created_at) {
+                    let dStr = slip.created_at.split('T')[0];
+                    revenueByDate[dStr] = (revenueByDate[dStr] || 0) + (slip.total || 0);
+                }
+            });
+
+            document.getElementById('kpiRevenue').innerText = `${totalRevenue.toFixed(2)} AED`;
+            document.getElementById('kpiOrders').innerText = cachedSlips.length;
+            document.getElementById('kpiGarments').innerText = `${totalGarments} pcs`;
+
+            const ctxDoughnut = document.getElementById('statusDoughnutChart').getContext('2d');
+            if (doughnutChartInstance) doughnutChartInstance.destroy();
+
+            doughnutChartInstance = new Chart(ctxDoughnut, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Collected', 'Washing', 'Ready', 'Delivered'],
+                    datasets: [{
+                        data: [statusCounts.Collected, statusCounts.Washing, statusCounts.Ready, statusCounts.Delivered],
+                        backgroundColor: ['#78716c', '#2563eb', '#9333ea', '#059669'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { size: 10 } } }
+                    }
+                }
+            });
+
+            const dates = Object.keys(revenueByDate).sort();
+            const revenues = dates.map(d => revenueByDate[d]);
+
+            const ctxBar = document.getElementById('revenueBarChart').getContext('2d');
+            if (barChartInstance) barChartInstance.destroy();
+
+            barChartInstance = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: dates.length > 0 ? dates : ['No Data'],
+                    datasets: [{
+                        label: 'Revenue (AED)',
+                        data: revenues.length > 0 ? revenues : [0],
+                        backgroundColor: '#E2B383',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { ticks: { font: { size: 10 } } },
+                        x: { ticks: { font: { size: 10 } } }
+                    }
+                }
             });
         }
 
