@@ -25,7 +25,7 @@
 </head>
 <body class="min-h-screen pb-20">
 
-  <!-- HEADER BLANC & ÉLÉGANT -->
+  <!-- HEADER -->
   <header class="bg-white sticky top-0 z-50 border-b border-stone-200 shadow-sm">
     <div class="max-w-6xl mx-auto px-5 py-3 flex justify-between items-center">
       <div class="flex items-center space-x-2">
@@ -41,7 +41,6 @@
           <button onclick="setLang('ar')" id="btn-ar" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">العربية</button>
           <button onclick="setLang('hi')" id="btn-hi" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">हिन्दी</button>
         </div>
-        <!-- BOUTON ACCÈS STAFF SÉCURISÉ -->
         <button onclick="handleAdminAccess()" id="viewToggleBtn" class="hidden bg-stone-900 text-white px-3 py-1.5 rounded-full text-xs font-semibold shadow relative">
           ⚙️ Staff Panel
         </button>
@@ -49,12 +48,12 @@
     </div>
   </header>
 
-  <!-- BANNIÈRE D'ANNONCE DYNAMIQUE -->
+  <!-- BANNIÈRE -->
   <div id="announcementBanner" class="hidden bg-remal-sand text-white px-4 py-2.5 text-center text-xs font-medium tracking-wide shadow-sm">
     <span id="announcementText">📢 Special Announcement</span>
   </div>
 
-  <!-- 1. GUEST VIEW (CLIENT) -->
+  <!-- 1. GUEST VIEW -->
   <div id="clientView" class="max-w-md mx-auto px-4 py-6 space-y-6">
     <div class="relative rounded-3xl overflow-hidden shadow-xl p-6 text-white space-y-6 bg-cover bg-center bg-no-repeat bg-stone-900" style="background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.65)), url('Remal_exterior_view2.jpg');">
       <div class="text-center space-y-1">
@@ -69,7 +68,7 @@
       </div>
     </div>
 
-    <!-- SECTION 1: OFFRES -->
+    <!-- SECTION OFFRES -->
     <div id="guestOffersSection" class="space-y-5">
       <div id="categoryFilters" class="flex space-x-2 overflow-x-auto pb-1 text-xs font-semibold scrollbar-none"></div>
       <div id="cardsContainer" class="space-y-5">
@@ -77,7 +76,7 @@
       </div>
     </div>
 
-    <!-- SECTION 2: FACILITIES -->
+    <!-- SECTION FACILITIES -->
     <div id="guestFacilitiesSection" class="hidden space-y-5">
       <div class="text-center border-b border-stone-200 pb-3">
         <h3 class="text-lg font-serif-luxury font-bold text-stone-900" id="facHeader">Hotel Facilities & Amenities</h3>
@@ -86,7 +85,7 @@
       <div id="facilitiesContainer" class="space-y-6"></div>
     </div>
 
-    <!-- SECTION 3: DEMANDES & ROOM SERVICE -->
+    <!-- SECTION DEMANDES & ROOM SERVICE -->
     <div id="guestRequestSection" class="hidden space-y-6">
       <div class="remal-card p-6 rounded-3xl space-y-5">
         <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-3" id="reqHeader">Request Guest Service</h2>
@@ -100,7 +99,7 @@
             <select id="req_service" onchange="toggleRoomServiceMenu()" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 outline-none"></select>
           </div>
 
-          <!-- MODULE ROOM SERVICE (PANIER) -->
+          <!-- MODULE ROOM SERVICE -->
           <div id="roomServiceMenuBlock" class="hidden space-y-4 bg-stone-50 p-4 rounded-2xl border border-stone-200">
             <div class="flex justify-between items-center border-b border-stone-200 pb-2">
               <span class="text-xs font-bold text-stone-800">🍽️ Select Menu Items</span>
@@ -153,7 +152,7 @@
     </div>
   </div>
 
-  <!-- BOUTON WHATSAPP FLOTTANT -->
+  <!-- BOUTON WHATSAPP -->
   <div id="whatsappContainer" class="fixed bottom-5 right-5 z-50">
     <a href="https://wa.me/971526966865?text=Hello%2C%20I%20am%20contacting%20from%20Remal%20Hotel%20Guest%20Hub." target="_blank" class="flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 rounded-full shadow-2xl transition transform hover:scale-105 border border-emerald-500 font-semibold text-xs">
       <span class="text-lg">💬</span><span id="whatsappText">WhatsApp Reception</span>
@@ -183,7 +182,7 @@
     </div>
   </div>
 
-  <!-- 2. ADMIN VIEW SÉCURISÉE (ÉTAPE 2) -->
+  <!-- 2. ADMIN VIEW -->
   <div id="adminView" class="hidden max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-6">
     <div class="flex justify-between items-center bg-stone-200/80 p-1.5 rounded-2xl text-xs font-bold">
       <div class="flex space-x-2 w-full md:w-auto">
@@ -206,7 +205,6 @@
         <button onclick="switchAdminSubTab('menuList')" id="btnSubMenu" class="px-4 py-2 rounded-xl bg-stone-100 text-stone-700">🍔 Room Service Menu Editor</button>
       </div>
 
-      <!-- EDITEUR OFFRES -->
       <div id="adminOffersSubSection" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div class="lg:col-span-5 bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4 h-fit">
           <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-2">New Cloud Offer</h2>
@@ -247,7 +245,6 @@
         </div>
       </div>
 
-      <!-- EDITEUR MENU ROOM SERVICE -->
       <div id="adminMenuSubSection" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div class="lg:col-span-5 bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4 h-fit">
           <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-2">Add New Menu Dish</h2>
@@ -270,7 +267,7 @@
       </div>
     </div>
 
-    <!-- ADMIN DEMANDES & BOUTON D'ACTIVATION SONORE EXPLICITE -->
+    <!-- ADMIN DEMANDES -->
     <div id="adminRequestsPanel" class="hidden space-y-4">
       <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
         <div class="flex justify-between items-center border-b border-stone-100 pb-3">
@@ -279,7 +276,6 @@
             <p class="text-[10px] text-stone-500">Real-time room service and guest requests</p>
           </div>
           <div class="flex items-center space-x-2">
-            <!-- BOUTON D'ACTIVATION SONORE EXPLICITE -->
             <button onclick="enableAudioAlerts()" id="btnAudioEnable" class="text-xs bg-amber-50 text-amber-800 hover:bg-amber-100 px-3 py-2 rounded-xl font-bold border border-amber-200 shadow-sm transition">
               🔔 Enable Sound Alerts
             </button>
@@ -326,7 +322,6 @@
     let cachedRequests = [];
     let activeAnnouncement = null;
 
-    /* DÉCLENCHEUR SONORE EXPLICITE */
     function enableAudioAlerts() {
       try {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -398,7 +393,7 @@
         whatsappBtn: "व्हाट्सएप रिसेप्शन", successMsg: "आपका अनुरोध सफलतापूर्वक भेजा गया!", chatWhatsapp: "💬 व्हाट्सएप पर चैट करें",
         trackHeader: "📡 सक्रिय अनुरोध ट्रैकिंग", liveStatus: "लाइव स्थिति", trackEmpty: "वास्तविक समय में अनुरोध ट्रैक करने के लिए ऊपर कमरा नंबर दर्ज करें।",
         trackNoReq: "कमरा नंबर के लिए कोई अनुरोध नहीं मिला ", loadingOffers: "ऑफ़र लोड हो रहे हैं...", noOffers: "इस श्रेणी में कोई ऑफ़र उपलब्ध नहीं है।",
-        swipePhotos: "👈 अधिक फ़ोटो के लिए स्वाइप करें 👉", bookInquiry: "बुक / पूछताछ →", statusPending: "🟡 लंबित", statusInProgress: "🔵 प्रगति पर है", statusCompleted: "पूरा हुआ",
+        swipePhotos: "👈 अधिक फ़ोटो के लिए स्वाइप करें 👉", bookInquiry: "बुक / पूछताछ →", statusPending: "🟡 लंबित", statusInProgress: "🔵 प्रगति पर है", statusCompleted: "🟢 पूरा हुआ",
         services: [
           { val: "Front Desk Inquiry", text: "फ्रंट डेस्क पूछताछ" }, { val: "Luggage Assistance", text: "सामान सहायता" },
           { val: "Room Service / Dining", text: "रूम सर्विस / खाना ऑर्डर करें" }, { val: "Maintenance / Technical Support", text: "रखरखाव / तकनीकी सहायता" },
@@ -407,9 +402,71 @@
       }
     };
 
+    /* LISTE COMPLÈTE DES 9 FACILITIES DE L'HÔTEL */
     const facilitiesData = [
-      { id: 'exterior', images: ['Remal_exterior_view1.jpg', 'Remal_exterior_view2.jpg'], title: { en: 'Hotel Exterior & Grounds', ar: 'المظهر الخارجي والمحيط', hi: 'होटल का बाहरी दृश्य' }, desc: { en: 'Experience pristine architecture at Remal Hotel & Villas.', ar: 'استمتع بالتصميم المعماري الفريد.', hi: 'रेमल होटल के शानदार दृश्य का अनुभव करें।' } },
-      { id: 'pool', images: ['Pool.jpg'], title: { en: 'Al Waha Swimming Pool', ar: 'مسبح الواحة', hi: 'अल वाहा स्विमिंग पूल' }, desc: { en: 'Relax by our outdoor swimming pool.', ar: 'استرخِ بجانب المسبح الخارجي.', hi: 'हमारे स्विमिंग पूल में आराम करें।' } }
+      {
+        id: 'exterior',
+        images: ['Remal_exterior_view1.jpg', 'Remal_exterior_view2.jpg', 'Remal_exterior_view3.jpg', 'Remal_exterior_view4.jpg'],
+        title: { en: 'Hotel Exterior & Grounds', ar: 'المظهر الخارجي والمحيط', hi: 'होटल का बाहरी दृश्य' },
+        desc: { en: 'Experience our pristine architecture and welcoming surroundings at Remal Hotel & Villas.', ar: 'استمتع بالتصميم المعماري الفريد والمحيط الهادئ في فندق وڤلل رمال.', hi: 'रेमल होटल एंड विला के शानदार वास्तुشिल्پ का अनुभव करें।' },
+        timing: { en: '24/7 Welcome', ar: 'ترحيب على مدار الساعة', hi: '24 घंटे स्वागत' }
+      },
+      {
+        id: 'pool',
+        images: ['Pool.jpg'],
+        title: { en: 'Al Waha Swimming Pool', ar: 'مسبح الواحة', hi: 'अल वाहा स्विमिंग पूल' },
+        desc: { en: 'Relax by our outdoor swimming pool with comfortable loungers and refreshing drinks.', ar: 'استرخِ بجانب المسبح الخارجي الجميل مع المشروبات المنعشة.', hi: 'हमारे बाहरी स्विमिंग पूल के पास आराम करें।' },
+        timing: { en: '07:00 AM - 08:00 PM', ar: '٠٧:٠٠ صباحاً - ٠٨:٠٠ مساءً', hi: 'सुबह 07:00 - रात 08:00' }
+      },
+      {
+        id: 'gym',
+        images: ['Gym.jpg'],
+        title: { en: 'Recreation & Fitness Gym', ar: 'مركز اللياقة والصالة الرياضية', hi: 'फिटनेस और जिम' },
+        desc: { en: 'Stay active with modern fitness equipment designed for your daily workouts.', ar: 'حافظ على نشاطك وصحتك مع أحدث معدات اللياقة البدنية.', hi: 'हमारे आधुनिक जिम उपकरणों के साथ फिट रहें।' },
+        timing: { en: '06:00 AM - 10:00 PM', ar: '٠٦:٠٠ صباحاً - ١٠:٠٠ مساءً', hi: 'सुबह 06:00 - रात 10:00' }
+      },
+      {
+        id: 'kids',
+        images: ['Kid_club.jpg'],
+        title: { en: 'Kids Club & Play Area', ar: 'نادي الأطفال ومطقة الألعاب', hi: 'किड्स क्लब और प्ले एरिया' },
+        desc: { en: 'A safe, fun, and engaging play area for our young guests.', ar: 'منطقة ألعاب آمنة وممتعة ومخصصة لأطفالنا الأعزاء.', hi: 'हमारे छोटे मेहमानों के लिए एक सुरक्षित और मज़ेदार खेल क्षेत्र।' },
+        timing: { en: '09:00 AM - 07:00 PM', ar: '٠٩:٠٠ صباحاً - ٠٧:٠٠ مساءً', hi: 'सुबह 09:00 - शाम 07:00' }
+      },
+      {
+        id: 'lobby',
+        images: ['Lobby_1.jpg', 'Lobby_2.jpg', 'Lobby_3.jpg', 'Lobby_4.jpg'],
+        title: { en: 'Grand Lobby & Reception', ar: 'البهو الرئيسي والاستقبال', hi: 'भव्य लॉबी और रिसेप्शन' },
+        desc: { en: 'An elegant welcoming ambiance with 24/7 concierge assistance.', ar: 'أجواء ترحيبية راقية مع خدمة الكونسيرج الممتازة على مدار الساعة.', hi: '24/7 द्वारपाल सहायता के साथ एक सुरुचिपूर्ण स्वागत योग्य माहौल।' },
+        timing: { en: '24 Hours Open', ar: 'مفتوح ٢٤ ساعة', hi: '24 घंटे खुला है' }
+      },
+      {
+        id: 'restaurant',
+        images: ['Restaurant-1.jpg', 'Restaurant-2.jpg', 'Restaurant-3.jpg', 'Restaurant-4.jpg'],
+        title: { en: 'Falaj Restaurant & Dining', ar: 'مطعم الفلج والوجبات', hi: 'फलज रेस्टोरेंट और भोजन' },
+        desc: { en: 'International buffet breakfast & fine dining options serving delicious global cuisines.', ar: 'بوفيه إفطار عالمي وتجربة طعام فاخرة تقدم أشهى المأكولات العالمية.', hi: 'अंतर्राष्ट्रीय बफ़े नाश्ता और स्वादिष्ट वैश्विक व्यंजन।' },
+        timing: { en: '06:30 AM - 11:00 PM', ar: '٠٦:٣٠ صباحاً - ١١:٠٠ مساءً', hi: 'सुबह 06:30 - रात 11:00' }
+      },
+      {
+        id: 'rooms',
+        images: ['Room1.jpg', 'Room2.jpg', 'Room3.jpg', 'Room4.jpg', 'Room5.jpg', 'Room6.jpg', 'Room7.jpg', 'Room8.jpg'],
+        title: { en: 'Luxury Guest Rooms', ar: 'غرف النزلاء الفاخرة', hi: 'लक्जरी अतिथि कमरे' },
+        desc: { en: 'Spacious, modernly equipped rooms designed for maximum comfort and relaxation.', ar: 'غرف واسعة ومجهزة بأحدث وسائل الراحة المصممة لضمان أقصى درجات الاسترخاء.', hi: 'अधिकतम आराम और विश्राम के लिए डिज़ाइन किए गए विशाल कमरे।' },
+        timing: { en: 'Daily Housekeeping', ar: 'تنظيف يومي للغرف', hi: 'दैनिक सफाई' }
+      },
+      {
+        id: 'villas',
+        images: ['Villa1.jpg', 'Villa2.jpg', 'Villa3.jpg', 'Villa4.jpg', 'Villa5.jpg'],
+        title: { en: 'VIP Private Villas', ar: 'الفيلات الملكية الخاصة VIP', hi: 'वीआईपी निजी विला' },
+        desc: { en: 'Fully furnished private luxury villas for a premium private stay experience.', ar: 'فيلات فاخرة مفروشة بالكامل لإقامة خاصة وفخمة لا تُنسى.', hi: 'प्रीमियम निजी प्रवास के अनुभव के लिए पूरी तरह से सुसज्जित निजी विला।' },
+        timing: { en: 'VIP Concierge Service', ar: 'خدمة كونسيرج خاصة', hi: 'वीआईपी सेवा' }
+      },
+      {
+        id: 'meeting',
+        images: ['Meeting_room1.jpg', 'Meeting_room2.jpg', 'Meeting_room3.jpg', 'Meeting_room4.jpg'],
+        title: { en: 'Meeting & Event Halls', ar: 'قاعات الاجتماعات والفعاليات', hi: 'मीटिंग और इवेंट हॉल' },
+        desc: { en: 'First-class venues featuring contemporary furnishings for conferences and business events.', ar: 'قاعات ممتازة مجهزة بأحدث التقنيات لعقد المؤتمرات والاجتماعات.', hi: 'सम्मेलनों और व्यावसायिक आयोजनों के लिए प्रथम श्रेणी के स्थान।' },
+        timing: { en: 'By Reservation', ar: 'حسب الحجز', hi: 'आरक्षण द्वारा' }
+      }
     ];
 
     const categoriesTranslations = {
@@ -575,10 +632,19 @@
       const t = i18n[currentLang] || i18n.en;
       container.innerHTML = facilitiesData.map(item => `
         <div class="remal-card rounded-3xl overflow-hidden shadow-sm">
-          <img src="${item.images[0]}" class="w-full h-48 object-cover">
+          <div class="flex overflow-x-auto snap-x snap-mandatory scrollbar-none h-52 bg-stone-100">
+            ${item.images.map(img => `
+              <img src="${img}" class="w-full h-full object-cover flex-shrink-0 snap-center" loading="lazy">
+            `).join('')}
+          </div>
+          ${item.images.length > 1 ? `<p class="text-[9px] text-stone-400 text-center pt-1 font-semibold">${t.swipePhotos}</p>` : ''}
           <div class="p-5 space-y-2">
             <h4 class="text-base font-serif-luxury font-bold text-stone-900">${item.title[currentLang] || item.title['en']}</h4>
             <p class="text-xs text-stone-600 leading-relaxed">${item.desc[currentLang] || item.desc['en']}</p>
+            <div class="pt-2 border-t border-stone-100 flex justify-between items-center text-[11px] font-semibold text-stone-500">
+              <span>🕒 ${item.timing[currentLang] || item.timing['en']}</span>
+              <button onclick="switchGuestTab('request')" class="text-remal-sand hover:underline font-bold">${t.bookInquiry}</button>
+            </div>
           </div>
         </div>
       `).join('');
