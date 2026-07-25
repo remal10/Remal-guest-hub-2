@@ -1,6 +1,976 @@
 <!DOCTYPE html>
 <html lang="en" id="htmlRoot" dir="ltr">
+<head><!DOCTYPE html>
+<html lang="en" id="htmlRoot" dir="ltr">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Remal Hotel & Villas - Guest Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FAFAFA; color: #222222; }
+    .font-serif-luxury { font-family: 'Playfair Display', serif; }
+    .scrollbar-none::-webkit-scrollbar { display: none; }
+    .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+    .bg-remal-sand { background-color: #E2B383; }
+    .text-remal-sand { color: #DCA773; }
+    .remal-card { background: #FFFFFF; border: 1px solid #EAEAEA; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); }
+    
+    @keyframes pulse-red {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.05); }
+    }
+    .pulse-notification { animation: pulse-red 1.5s infinite; }
+  </style>
+</head>
+<body class="min-h-screen pb-20">
+
+  <!-- HEADER BLANC & ÉLÉGANT -->
+  <header class="bg-white sticky top-0 z-50 border-b border-stone-200 shadow-sm">
+    <div class="max-w-6xl mx-auto px-5 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <img src="logo.png" alt="Remal Hotel & Villas" class="h-10 sm:h-12 object-contain" onerror="this.style.display='none'; document.getElementById('textLogo').classList.remove('hidden');">
+        <div id="textLogo" class="hidden">
+          <h1 class="text-sm font-serif-luxury text-stone-900 font-bold tracking-widest">REMAL</h1>
+          <p class="text-[8px] text-stone-500 uppercase tracking-wider">Hotel & Villas</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        <div id="langSelector" class="flex bg-stone-100 p-1 rounded-full border border-stone-200 text-[11px] font-semibold">
+          <button onclick="setLang('en')" id="btn-en" class="px-2.5 py-1 rounded-full bg-remal-sand text-white shadow-sm">EN</button>
+          <button onclick="setLang('ar')" id="btn-ar" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">العربية</button>
+          <button onclick="setLang('hi')" id="btn-hi" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">हिन्दी</button>
+        </div>
+        <button onclick="handleAdminAccess()" id="viewToggleBtn" class="bg-stone-900 text-white px-3 py-1.5 rounded-full text-xs font-semibold shadow relative">
+          ⚙️ Admin Panel
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- BANNIÈRE D'ANNONCE DYNAMIQUE -->
+  <div id="announcementBanner" class="hidden bg-remal-sand text-white px-4 py-2.5 text-center text-xs font-medium tracking-wide shadow-sm">
+    <span id="announcementText">📢 Special Announcement</span>
+  </div>
+
+  <!-- 1. GUEST VIEW -->
+  <div id="clientView" class="max-w-md mx-auto px-4 py-6 space-y-6">
+    
+    <!-- CARTE D'ACCUEIL AVEC Remal_exterior_view2.jpg EN BACKGROUND -->
+    <div class="relative rounded-3xl overflow-hidden shadow-xl p-6 text-white space-y-6 bg-cover bg-center bg-no-repeat bg-stone-900" style="background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.65)), url('Remal_exterior_view2.jpg');">
+      <div class="text-center space-y-1">
+        <h2 class="text-2xl font-serif-luxury text-white font-normal tracking-wide drop-shadow-md" id="welcomeMsg">Welcome to Remal Hotel & Villas</h2>
+        <p class="text-[10px] text-stone-200 uppercase tracking-widest font-semibold drop-shadow" id="roomIndicator">Al Dhannah City • Guest Hub</p>
+      </div>
+
+      <!-- Navigation Onglets Client -->
+      <div class="flex bg-black/40 backdrop-blur-md p-1.5 rounded-2xl text-[11px] font-medium border border-white/25 overflow-x-auto scrollbar-none">
+        <button onclick="switchGuestTab('offers')" id="tabOffersBtn" class="flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap">🏷️ <span id="lblTabOffers">Offers</span></button>
+        <button onclick="switchGuestTab('facilities')" id="tabFacilitiesBtn" class="flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap">🏛️ <span id="lblTabFacilities">Facilities</span></button>
+        <button onclick="switchGuestTab('request')" id="tabRequestBtn" class="flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap">🔔 <span id="lblTabRequest">Service</span></button>
+      </div>
+    </div>
+
+    <!-- SECTION 1: OFFRES -->
+    <div id="guestOffersSection" class="space-y-5">
+      <div id="categoryFilters" class="flex space-x-2 overflow-x-auto pb-1 text-xs font-semibold scrollbar-none"></div>
+      <div id="cardsContainer" class="space-y-5">
+        <p class="text-center text-xs text-stone-400 py-8" id="lblLoadingOffers">Loading live offers...</p>
+      </div>
+    </div>
+
+    <!-- SECTION 2: FACILITIES & GALLERY -->
+    <div id="guestFacilitiesSection" class="hidden space-y-5">
+      <div class="text-center border-b border-stone-200 pb-3">
+        <h3 class="text-lg font-serif-luxury font-bold text-stone-900" id="facHeader">Hotel Facilities & Amenities</h3>
+        <p class="text-xs text-stone-500" id="facSub">Explore our premium venues and spaces</p>
+      </div>
+      <div id="facilitiesContainer" class="space-y-6"></div>
+    </div>
+
+    <!-- SECTION 3: DEMANDE DE SERVICE + SUIVI INTEGRÉ -->
+    <div id="guestRequestSection" class="hidden space-y-6">
+      <div class="remal-card p-6 rounded-3xl space-y-5">
+        <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-3" id="reqHeader">Request Guest Service</h2>
+        <form id="guestRequestForm" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblRoom">Room / Villa Number</label>
+            <input type="text" id="req_room" placeholder="e.g., 104 or Villa 02" onkeyup="renderClientTracker()" onchange="renderClientTracker()" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/55 outline-none" required>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblService">Service Type</label>
+            <select id="req_service" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 outline-none"></select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblDetails">Additional Notes / Request Details</label>
+            <textarea id="req_details" rows="3" placeholder="Specify your request here..." class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 outline-none" required></textarea>
+          </div>
+          <button type="button" onclick="submitGuestRequest()" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-bold py-3.5 rounded-xl shadow-lg transition text-sm tracking-wider">
+            <span id="btnSubmitReq">Send Request to Reception</span>
+          </button>
+        </form>
+
+        <div id="whatsappConfirmation" class="hidden bg-emerald-50 border border-emerald-200 p-4 rounded-2xl space-y-3">
+          <div class="flex items-center space-x-2 text-emerald-900 font-bold text-xs">
+            <span>✅</span>
+            <span id="lblSuccessMsg">Request submitted successfully!</span>
+          </div>
+          <p class="text-[11px] text-emerald-700" id="lblWhatsappSub">Would you like to follow up directly on WhatsApp?</p>
+          <a id="btnWhatsappDirect" href="#" target="_blank" class="flex items-center justify-center space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 px-4 rounded-xl font-bold text-xs shadow-md transition">
+            <span id="lblChatWhatsapp">💬 Chat on WhatsApp</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="remal-card p-6 rounded-3xl space-y-4">
+        <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+          <h3 class="text-sm font-serif-luxury font-bold text-stone-900" id="lblTrackHeader">📡 Track Active Requests</h3>
+          <span class="text-[10px] bg-stone-100 text-stone-600 font-semibold px-2.5 py-1 rounded-full" id="lblLiveStatus">Live Status</span>
+        </div>
+        <div id="clientTrackerContainer" class="space-y-3">
+          <p class="text-center text-xs text-stone-400 py-3" id="lblTrackEmpty">Enter your room number above to track active requests in real time.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOUTON WHATSAPP FLOTTANT -->
+  <div id="whatsappContainer" class="fixed bottom-5 right-5 z-50">
+    <a href="https://wa.me/971526966865?text=Hello%2C%20I%20am%20contacting%20from%20Remal%20Hotel%20Guest%20Hub." target="_blank" class="flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 rounded-full shadow-2xl transition transform hover:scale-105 border border-emerald-500 font-semibold text-xs">
+      <span class="text-lg">💬</span>
+      <span id="whatsappText">WhatsApp Reception</span>
+    </a>
+  </div>
+
+  <!-- MODAL DE CONNEXION SÉCURISÉE (ADMIN AUTH) -->
+  <div id="authModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-5 border border-stone-100">
+      <div class="text-center space-y-1">
+        <h3 class="text-lg font-serif-luxury font-bold text-stone-900">Admin Authentication</h3>
+        <p class="text-xs text-stone-500">Enter staff credentials to manage Guest Hub</p>
+      </div>
+      <form id="loginForm" onsubmit="loginAdmin(event)" class="space-y-4">
+        <div>
+          <label class="block text-[11px] font-bold text-stone-600 uppercase mb-1">Email Address</label>
+          <input type="email" id="loginEmail" placeholder="admin@remalhotel.com" class="w-full border border-stone-200 rounded-xl p-3 text-xs bg-stone-50 outline-none" required>
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-stone-600 uppercase mb-1">Password</label>
+          <input type="password" id="loginPassword" placeholder="••••••••" class="w-full border border-stone-200 rounded-xl p-3 text-xs bg-stone-50 outline-none" required>
+        </div>
+        <p id="authErrorMsg" class="text-rose-600 text-[11px] font-semibold text-center hidden"></p>
+        <button type="submit" id="btnLoginSubmit" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-bold py-3 rounded-xl text-xs transition shadow-md">
+          🔐 Unlock Staff Panel
+        </button>
+      </form>
+      <button onclick="closeAuthModal()" class="w-full text-stone-400 hover:text-stone-600 text-xs text-center font-medium">Cancel and Return</button>
+    </div>
+  </div>
+
+  <!-- 2. ADMIN VIEW SÉCURISÉE -->
+  <div id="adminView" class="hidden max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+    <div class="flex justify-between items-center bg-stone-200/80 p-1.5 rounded-2xl text-xs font-bold">
+      <div class="flex space-x-2 w-full md:w-auto">
+        <button onclick="switchAdminTab('offers')" id="admTabOffers" class="flex-1 md:flex-none px-6 py-2.5 rounded-xl bg-stone-900 text-white">🏷️ Offers</button>
+        <button onclick="switchAdminTab('requests')" id="admTabRequests" class="flex-1 md:flex-none px-6 py-2.5 rounded-xl text-stone-600 relative">
+          🔔 Requests
+          <span id="requestBadge" class="hidden absolute -top-1 -right-1 bg-rose-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full pulse-notification">0</span>
+        </button>
+        <button onclick="switchAdminTab('banner')" id="admTabBanner" class="flex-1 md:flex-none px-6 py-2.5 rounded-xl text-stone-600">📢 Announcement</button>
+      </div>
+      <div class="hidden md:flex items-center space-x-3">
+        <button onclick="logoutAdmin()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 px-3 py-1.5 rounded-xl text-xs font-bold border border-rose-200 transition">
+          🚪 Logout
+        </button>
+      </div>
+    </div>
+
+    <!-- ADMIN: OFFRES -->
+    <div id="adminOffersPanel" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div class="lg:col-span-5 bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4 h-fit">
+        <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+          <h2 class="text-base font-serif-luxury font-bold text-stone-900">New Cloud Offer</h2>
+          <span class="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold px-3 py-1 rounded-full">Supabase Live</span>
+        </div>
+        <form id="adminForm" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Category</label>
+            <select id="adm_category" class="w-full border border-stone-200 rounded-xl p-3 bg-stone-50 text-sm outline-none">
+              <option value="Falaj Restaurant">Falaj Restaurant</option>
+              <option value="Sarab">Sarab Bar & Lounge</option>
+              <option value="Al Waha Pool">Al Waha Pool</option>
+              <option value="The Spa">The Spa</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Price / Rate (e.g., AED 75)</label>
+            <input type="text" id="adm_price" placeholder="AED 75" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50 outline-none" required>
+          </div>
+          <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-2">
+            <p class="text-xs font-bold text-stone-700">Offer Titles</p>
+            <input type="text" id="adm_title_en" placeholder="Title (English)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none" required>
+            <input type="text" id="adm_title_ar" placeholder="العنوان (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none" required>
+            <input type="text" id="adm_title_hi" placeholder="शीर्षक (हिंदी)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none" required>
+          </div>
+          <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-2">
+            <p class="text-xs font-bold text-stone-700">Timings / Operating Days</p>
+            <input type="text" id="adm_timing_en" placeholder="Timings (English)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none" required>
+            <input type="text" id="adm_timing_ar" placeholder="الأوقات (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none" required>
+            <input type="text" id="adm_timing_hi" placeholder="समय (हिंदी)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none" required>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Offer Photo</label>
+            <input type="file" id="imageFileInput" accept="image/*" class="w-full text-xs text-stone-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-stone-900 file:text-white hover:file:bg-stone-800 cursor-pointer mb-2" />
+            <p id="uploadStatus" class="text-[10px] text-stone-500 mb-2"></p>
+            <input type="hidden" id="adm_image" />
+          </div>
+          <button type="button" onclick="saveAdminData()" class="w-full bg-remal-sand hover:opacity-90 text-white font-bold py-3.5 rounded-xl shadow-md transition text-sm">Publish Offer to Cloud</button>
+        </form>
+      </div>
+
+      <div class="lg:col-span-7 bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
+        <h3 class="text-xs font-bold text-stone-500 uppercase tracking-widest border-b border-stone-100 pb-2">Active Offers</h3>
+        <div id="adminListContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3"></div>
+      </div>
+    </div>
+
+    <!-- ADMIN: DEMANDES -->
+    <div id="adminRequestsPanel" class="hidden space-y-4">
+      <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
+        <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+          <h2 class="text-base font-serif-luxury font-bold text-stone-900">Live Service Requests</h2>
+          <button onclick="fetchRequestsFromCloud()" class="text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 px-4 py-2 rounded-xl font-semibold border border-stone-200">🔄 Refresh</button>
+        </div>
+        <div id="adminRequestsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <p class="text-xs text-stone-400">Loading requests...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN: BANNIÈRE -->
+    <div id="adminBannerPanel" class="hidden space-y-4 max-w-2xl mx-auto">
+      <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
+        <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-2">Banner Management</h2>
+        <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-2">
+          <input type="text" id="ann_en" placeholder="Announcement (English)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none">
+          <input type="text" id="ann_ar" placeholder="الإعلان (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none">
+          <input type="text" id="ann_hi" placeholder="घोषणा (हिंदी)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none">
+        </div>
+        <div class="flex space-x-3">
+          <button onclick="saveAnnouncement(true)" class="flex-1 bg-remal-sand text-white font-bold py-3 rounded-xl text-xs">📢 Publish & Activate</button>
+          <button onclick="saveAnnouncement(false)" class="flex-1 bg-stone-100 text-stone-700 font-bold py-3 rounded-xl text-xs">🚫 Hide</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://tbsroleffqhyzbbfmtvp.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRic3JvbGVmZnFoeXpiYmZtdHZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MzUyMzMsImV4cCI6MjEwMDQxMTIzM30.oNKhoPJ7v__YJQW7flC9UsP2cIDHLMuxjqmf6_NvYW4';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let audioContext = null;
+    let audioEnabled = false;
+    let previousPendingCount = 0;
+    let currentUserSession = null;
+
+    function enableAudioAlerts() {
+      try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        audioEnabled = true;
+        playNotificationSound();
+      } catch (e) { console.error("Audio Error:", e); }
+    }
+
+    function playNotificationSound() {
+      if (!audioEnabled || !audioContext) return;
+      try {
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, audioContext.currentTime);
+        osc.frequency.setValueAtTime(880, audioContext.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.start();
+        osc.stop(audioContext.currentTime + 0.5);
+      } catch (e) { console.error(e); }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const fileInput = document.getElementById('imageFileInput');
+      if (fileInput) {
+        fileInput.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          const statusEl = document.getElementById('uploadStatus');
+          if (!file) return;
+          statusEl.innerText = "⏳ Processing image...";
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            document.getElementById('adm_image').value = event.target.result;
+            statusEl.innerText = "✅ Image ready to publish!";
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+    });
+
+    let currentLang = 'en';
+    let currentView = 'client';
+    let currentCategory = 'All';
+    let cachedOffers = [];
+    let cachedRequests = [];
+    let activeAnnouncement = null;
+
+    const i18n = {
+      en: {
+        welcome: "Welcome to Remal Hotel & Villas",
+        lblOffers: "Offers",
+        lblFacilities: "Facilities",
+        lblService: "Service",
+        facHeader: "Hotel Facilities & Amenities",
+        facSub: "Explore our premium venues and spaces",
+        reqHeader: "Request Guest Service",
+        lblRoom: "Room / Villa Number",
+        placeholderRoom: "e.g., 104 or Villa 02",
+        lblServiceType: "Service Type",
+        lblDetails: "Additional Notes / Request Details",
+        placeholderDetails: "Specify your request here...",
+        btnSubmit: "Send Request to Reception",
+        whatsappBtn: "WhatsApp Reception",
+        successMsg: "Request submitted successfully!",
+        whatsappSub: "Would you like to follow up directly on WhatsApp?",
+        chatWhatsapp: "💬 Chat on WhatsApp",
+        trackHeader: "📡 Track Active Requests",
+        liveStatus: "Live Status",
+        trackEmpty: "Enter your room number above to track active requests in real time.",
+        trackNoReq: "No active requests found for room ",
+        loadingOffers: "Loading live offers...",
+        noOffers: "No offers available in this category.",
+        swipePhotos: "👈 Swipe for more photos 👉",
+        bookInquiry: "Book / Inquiry →",
+        statusPending: "🟡 Pending",
+        statusInProgress: "🔵 In Progress",
+        statusCompleted: "🟢 Completed",
+        services: [
+          { val: "Front Desk Inquiry", text: "Front Desk Inquiry" },
+          { val: "Luggage Assistance", text: "Luggage Assistance" },
+          { val: "Room Service / Dining", text: "Room Service / Order Food" },
+          { val: "Maintenance / Technical Support", text: "Maintenance / Technical Support" },
+          { val: "Laundry", text: "Laundry" }
+        ]
+      },
+      ar: {
+        welcome: "مرحباً بكم في فندق وڤلل رمال",
+        lblOffers: "العروض",
+        lblFacilities: "المرافق والخدمات",
+        lblService: "طلب خدمة",
+        facHeader: "مرافق الفندق والخدمات",
+        facSub: "استكشف أرقى مرافقنا وخدماتنا المميزة",
+        reqHeader: "طلب خدمة النزلاء",
+        lblRoom: "رقم الغرفة / الفيلا",
+        placeholderRoom: "مثال: 104 أو فيلا 02",
+        lblServiceType: "نوع الخدمة",
+        lblDetails: "ملاحظات إضافية / تفاصيل الطلب",
+        placeholderDetails: "اكتب تفاصيل طلبك هنا...",
+        btnSubmit: "إرسال الطلب إلى الاستقبال",
+        whatsappBtn: "واتساب الاستقبال",
+        successMsg: "تم إرسال طلبك بنجاح!",
+        whatsappSub: "هل ترغب في المتابعة مباشرة عبر واتساب؟",
+        chatWhatsapp: "💬 التحدث عبر واتساب",
+        trackHeader: "📡 متابعة الطلبات الحالية",
+        liveStatus: "حالة مباشرة",
+        trackEmpty: "أدخل رقم الغرفة أعلاه لمتابعة طلباتك في الوقت الفعلي.",
+        trackNoReq: "لا توجد طلبات مسجلة للغرفة ",
+        loadingOffers: "جاري تحميل العروض المباشرة...",
+        noOffers: "لا توجد عروض متاحة في هذه الفئة.",
+        swipePhotos: "👈 اسحب لرؤية المزيد من الصور 👉",
+        bookInquiry: "حجز / استفسار ←",
+        statusPending: "🟡 قيد الانتظار",
+        statusInProgress: "🔵 قيد التنفيذ",
+        statusCompleted: "🟢 تم الإنجاز",
+        services: [
+          { val: "Front Desk Inquiry", text: "استفسار الاستقبال" },
+          { val: "Luggage Assistance", text: "مساعدة في الأمتعة" },
+          { val: "Room Service / Dining", text: "خدمة الغرف / طلب طعام" },
+          { val: "Maintenance / Technical Support", text: "الصيانة / الدعم الفني" },
+          { val: "Laundry", text: "خدمة الغسيل (Laundry)" }
+        ]
+      },
+      hi: {
+        welcome: "रेमल होटल एंड विला में आपका स्वागत है",
+        lblOffers: "विशेष ऑफ़र",
+        lblFacilities: "सुविधाएं",
+        lblService: "सेवा अनुरोध",
+        facHeader: "होटल सुविधाएं",
+        facSub: "हमारे प्रीमियम स्थानों और सेवाओं का अन्वेषण करें",
+        reqHeader: "अतिथि सेवा का अनुरोध करें",
+        lblRoom: "कमरा / विلا संख्या",
+        placeholderRoom: "उदा., 104 या विला 02",
+        lblServiceType: "सेवा का प्रकार",
+        lblDetails: "अतिरिक्त विवरण / अनुरोध",
+        placeholderDetails: "अपना अनुरोध यहां दर्ज करें...",
+        btnSubmit: "रिसेप्शन को अनुरोध भेजें",
+        whatsappBtn: "व्हाट्सएप रिसेप्शन",
+        successMsg: "आपका अनुरोध सफलतापूर्वक भेजा गया!",
+        whatsappSub: "क्या आप व्हाट्सएप पर सीधे बात करना चाहते हैं?",
+        chatWhatsapp: "💬 व्हाट्सएप पर चैट करें",
+        trackHeader: "📡 सक्रिय अनुरोध ट्रैकिंग",
+        liveStatus: "लाइव स्थिति",
+        trackEmpty: "वास्तविक समय में अनुरोध ट्रैक करने के लिए ऊपर कमरा नंबर दर्ज करें।",
+        trackNoReq: "कमरा नंबर के लिए कोई अनुरोध नहीं मिला ",
+        loadingOffers: "ऑफ़र लोड हो रहे हैं...",
+        noOffers: "इस श्रेणी में कोई ऑफ़र उपलब्ध नहीं है।",
+        swipePhotos: "👈 अधिक फ़ोटो के लिए स्वाइप करें 👉",
+        bookInquiry: "बुक / पूछताछ →",
+        statusPending: "🟡 लंबित",
+        statusInProgress: "🔵 प्रगति पर है",
+        statusCompleted: "🟢 पूरा हुआ",
+        services: [
+          { val: "Front Desk Inquiry", text: "फ्रंट डेस्क पूछताछ" },
+          { val: "Luggage Assistance", text: "सामान सहायता" },
+          { val: "Room Service / Dining", text: "रूम सर्विस / खाना ऑर्डर करें" },
+          { val: "Maintenance / Technical Support", text: "रखरखाव / तकनीकी सहायता" },
+          { val: "Laundry", text: "लॉन्ड्ररी (कपड़े धोने की सेवा)" }
+        ]
+      }
+    };
+
+    const facilitiesData = [
+      {
+        id: 'exterior',
+        images: ['Remal_exterior_view1.jpg', 'Remal_exterior_view2.jpg', 'Remal_exterior_view3.jpg', 'Remal_exterior_view4.jpg'],
+        title: { en: 'Hotel Exterior & Grounds', ar: 'المظهر الخارجي والمحيط', hi: 'होटल का बाहरी दृश्य' },
+        desc: { en: 'Experience our pristine architecture and welcoming surroundings at Remal Hotel & Villas.', ar: 'استمتع بالتصميم المعماري الفريد والمحيط الهادئ في فندق وڤلل رمال.', hi: 'रेमल होटल एंड विلا के शानदार वास्तुशिल्प का अनुभव करें।' },
+        timing: { en: '24/7 Welcome', ar: 'ترحيب على مدار الساعة', hi: '24 घंटे स्वागत' }
+      },
+      {
+        id: 'pool',
+        images: ['Pool.jpg'],
+        title: { en: 'Al Waha Swimming Pool', ar: 'مسبح الواحة', hi: 'अल वाहा स्विमिंग पूल' },
+        desc: { en: 'Relax by our outdoor swimming pool with comfortable loungers and refreshing drinks.', ar: 'استرخِ بجانب المسبح الخارجي الجميل مع المشروبات المنعشة.', hi: 'हमारे बाहरी स्विमिंग पूल के पास आराम करें।' },
+        timing: { en: '07:00 AM - 08:00 PM', ar: '٠٧:٠٠ صباحاً - ٠٨:٠٠ مساءً', hi: 'सुबह 07:00 - रात 08:00' }
+      },
+      {
+        id: 'gym',
+        images: ['Gym.jpg'],
+        title: { en: 'Recreation & Fitness Gym', ar: 'مركز اللياقة والصالة الرياضية', hi: 'फिटनेस और जिम' },
+        desc: { en: 'Stay active with modern fitness equipment designed for your daily workouts.', ar: 'حافظ على نشاطك وصحتك مع أحدث معدات اللياقة البدنية.', hi: 'हमारे आधुनिक जिम उपकरणों के साथ फिट रहें।' },
+        timing: { en: '06:00 AM - 10:00 PM', ar: '٠٦:٠0 صباحاً - ١٠:٠٠ مساءً', hi: 'सुबह 06:00 - रात 10:00' }
+      },
+      {
+        id: 'kids',
+        images: ['Kid_club.jpg'],
+        title: { en: 'Kids Club & Play Area', ar: 'نادي الأطفال ومجهزة الألعاب', hi: 'किड्स क्लब और प्ले एरिया' },
+        desc: { en: 'A safe, fun, and engaging play area for our young guests.', ar: 'منطقة ألعاب آمنة وممتعة ومخصصة لأطفالنا الأعزاء.', hi: 'हमारे छोटे मेहमानों के लिए एक सुरक्षित और मज़ेदार खेल क्षेत्र।' },
+        timing: { en: '09:00 AM - 07:00 PM', ar: '٠٩:٠٠ صباحاً - ٠٧:٠٠ مساءً', hi: 'सुबह 09:00 - शाम 07:00' }
+      },
+      {
+        id: 'lobby',
+        images: ['Lobby_1.jpg', 'Lobby_2.jpg', 'Lobby_3.jpg', 'Lobby_4.jpg'],
+        title: { en: 'Grand Lobby & Reception', ar: 'البهو الرئيسي والاستقبال', hi: 'भव्य लॉबी और रिसेप्शन' },
+        desc: { en: 'An elegant welcoming ambiance with 24/7 concierge assistance.', ar: 'أجواء ترحيبية راقية مع خدمة الكونسيرج الممتازة على مدار الساعة.', hi: '24/7 द्वारपाल सहायता के साथ एक सुरुचिपूर्ण स्वागत योग्य माहौल।' },
+        timing: { en: '24 Hours Open', ar: 'مفتوح ٢٤ ساعة', hi: '24 घंटे खुला है' }
+      },
+      {
+        id: 'restaurant',
+        images: ['Restaurant-1.jpg', 'Restaurant-2.jpg', 'Restaurant-3.jpg', 'Restaurant-4.jpg'],
+        title: { en: 'Falaj Restaurant & Dining', ar: 'مطعم الفلج والوجبات', hi: 'फलज रेस्टोरेंट और भोजन' },
+        desc: { en: 'International buffet breakfast & fine dining options serving delicious global cuisines.', ar: 'بوفيه إفطار عالمي وتجربة طعام فاخرة تقدم أشهى المأكولات العالمية.', hi: 'अंतर्राष्ट्रीय بफ़े नाश्ता और स्वादिष्ट वैश्विक व्यंजन।' },
+        timing: { en: '06:30 AM - 11:00 PM', ar: '٠٦:٣٠ صباحاً - ١١:٠٠ مساءً', hi: 'सुबह 06:30 - रात 11:00' }
+      },
+      {
+        id: 'rooms',
+        images: ['Room1.jpg', 'Room2.jpg', 'Room3.jpg', 'Room4.jpg', 'Room5.jpg', 'Room6.jpg', 'Room7.jpg', 'Room8.jpg'],
+        title: { en: 'Luxury Guest Rooms', ar: 'غرف النزلاء الفاخرة', hi: 'लक्जरी अतिथि कमरे' },
+        desc: { en: 'Spacious, modernly equipped rooms designed for maximum comfort and relaxation.', ar: 'غرف واسعة ومجهزة بأحدث وسائل الراحة المصممة لضمان أقصى درجات الاسترخاء.', hi: 'अधिकतम आराम और विश्राम के लिए डिज़ाइन किए गए विशाल कमरे।' },
+        timing: { en: 'Daily Housekeeping', ar: 'تنظيف يومي للغرف', hi: 'دैनिक सफाई' }
+      },
+      {
+        id: 'villas',
+        images: ['Villa1.jpg', 'Villa2.jpg', 'Villa3.jpg', 'Villa4.jpg', 'Villa5.jpg'],
+        title: { en: 'VIP Private Villas', ar: 'الفيلات الملكية الخاصة VIP', hi: 'वीआईपी निजी विلا' },
+        desc: { en: 'Fully furnished private luxury villas for a premium private stay experience.', ar: 'فيلات فاخرة مفروشة بالكامل لإقامة خاصة وفخمة لا تُنسى.', hi: 'प्रीमियम निजी प्रवास के अनुभव के लिए पूरी तरह से सुसज्जित निजी विला।' },
+        timing: { en: 'VIP Concierge Service', ar: 'خدمة كونسيرج خاصة', hi: 'वीआईपी सेवा' }
+      },
+      {
+        id: 'meeting',
+        images: ['Meeting_room1.jpg', 'Meeting_room2.jpg', 'Meeting_room3.jpg', 'Meeting_room4.jpg'],
+        title: { en: 'Meeting & Event Halls', ar: 'قاعات الاجتماعات والفعاليات', hi: 'मीटिंग और इवेंट हॉल' },
+        desc: { en: 'First-class venues featuring contemporary furnishings for conferences and business events.', ar: 'قاعات ممتازة مجهزة بأحدث التقنيات لعقد المؤتمرات والاجتماعات.', hi: 'सम्मेलनों और व्यावसायिक आयोजनों के लिए प्रथम श्रेणी के स्थान।' },
+        timing: { en: 'By Reservation', ar: 'حسب الحجز', hi: 'आरक्षण द्वारा' }
+      }
+    ];
+
+    const categoriesTranslations = {
+      en: { 'All': 'All Services', 'Falaj Restaurant': 'Falaj Restaurant', 'Sarab': 'Sarab Bar', 'Al Waha Pool': 'Al Waha Pool', 'The Spa': 'The Spa' },
+      ar: { 'All': 'جميع الخدمات', 'Falaj Restaurant': 'مطعم الفلج', 'Sarab': 'بار سراب', 'Al Waha Pool': 'مسبح الواحة', 'The Spa': 'السبا' },
+      hi: { 'All': 'सभी सेवाएं', 'Falaj Restaurant': 'फलज रेस्टोरेंट', 'Sarab': 'सराब बार', 'Al Waha Pool': 'अल वाहा पूल', 'The Spa': 'द स्पा' }
+    };
+
+    async function init() {
+      // Vérifier la session active Supabase
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      currentUserSession = session;
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const room = urlParams.get('room');
+
+      if (room) {
+        document.getElementById('roomIndicator').innerText = `Room/Villa: ${room} • Remal Hotel`;
+        document.getElementById('req_room').value = room;
+      }
+
+      setLang('en');
+      renderFacilities();
+      await fetchOffersFromCloud();
+      await fetchAnnouncementFromCloud();
+      await fetchRequestsFromCloud();
+
+      setInterval(fetchRequestsFromCloud, 5000);
+    }
+
+    /* AUTHENTIFICATION & SÉCURITÉ */
+    function handleAdminAccess() {
+      if (currentUserSession) {
+        toggleAdminView();
+      } else {
+        document.getElementById('authModal').classList.remove('hidden');
+      }
+    }
+
+    function closeAuthModal() {
+      document.getElementById('authModal').classList.add('hidden');
+      document.getElementById('authErrorMsg').classList.add('hidden');
+    }
+
+    async function loginAdmin(event) {
+      event.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      const errEl = document.getElementById('authErrorMsg');
+      const btnSubmit = document.getElementById('btnLoginSubmit');
+
+      errEl.classList.add('hidden');
+      btnSubmit.innerText = "⏳ Verifying...";
+
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        errEl.innerText = "❌ Invalid email or password.";
+        errEl.classList.remove('hidden');
+        btnSubmit.innerText = "🔐 Unlock Staff Panel";
+      } else {
+        currentUserSession = data.session;
+        closeAuthModal();
+        toggleAdminView();
+        btnSubmit.innerText = "🔐 Unlock Staff Panel";
+      }
+    }
+
+    async function logoutAdmin() {
+      await supabaseClient.auth.signOut();
+      currentUserSession = null;
+      toggleAdminView();
+    }
+
+    function toggleAdminView() {
+      const clientV = document.getElementById('clientView');
+      const adminV = document.getElementById('adminView');
+      const btn = document.getElementById('viewToggleBtn');
+      const waBtn = document.getElementById('whatsappContainer');
+
+      if (currentView === 'client') {
+        currentView = 'admin';
+        clientV.classList.add('hidden');
+        adminV.classList.remove('hidden');
+        waBtn.classList.add('hidden');
+        btn.innerText = "📱 Client View";
+        renderAdminList();
+      } else {
+        currentView = 'client';
+        adminV.classList.add('hidden');
+        clientV.classList.remove('hidden');
+        waBtn.classList.remove('hidden');
+        btn.innerText = "⚙️ Admin Panel";
+        renderClientCards();
+      }
+    }
+
+    function renderFacilities() {
+      const container = document.getElementById('facilitiesContainer');
+      const t = i18n[currentLang] || i18n.en;
+      container.innerHTML = facilitiesData.map(item => `
+        <div class="remal-card rounded-3xl overflow-hidden shadow-sm">
+          <div class="flex overflow-x-auto snap-x snap-mandatory scrollbar-none h-52 bg-stone-100">
+            ${item.images.map(img => `
+              <img src="${img}" class="w-full h-full object-cover flex-shrink-0 snap-center" loading="lazy">
+            `).join('')}
+          </div>
+          ${item.images.length > 1 ? `<p class="text-[9px] text-stone-400 text-center pt-1 font-semibold">${t.swipePhotos}</p>` : ''}
+          <div class="p-5 space-y-2">
+            <h4 class="text-base font-serif-luxury font-bold text-stone-900">${item.title[currentLang] || item.title['en']}</h4>
+            <p class="text-xs text-stone-600 leading-relaxed">${item.desc[currentLang] || item.desc['en']}</p>
+            <div class="pt-2 border-t border-stone-100 flex justify-between items-center text-[11px] font-semibold text-stone-500">
+              <span>🕒 ${item.timing[currentLang] || item.timing['en']}</span>
+              <button onclick="switchGuestTab('request')" class="text-remal-sand hover:underline font-bold">${t.bookInquiry}</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function fetchAnnouncementFromCloud() {
+      const { data } = await supabaseClient.from('announcements').select('*').order('id', { ascending: false }).limit(1);
+      if (!data || data.length === 0) return;
+      activeAnnouncement = data[0];
+      renderAnnouncement();
+    }
+
+    function renderAnnouncement() {
+      const banner = document.getElementById('announcementBanner');
+      const textEl = document.getElementById('announcementText');
+      if (activeAnnouncement && activeAnnouncement.is_active) {
+        textEl.innerText = `📢 ${activeAnnouncement.message[currentLang] || activeAnnouncement.message['en']}`;
+        banner.classList.remove('hidden');
+      } else {
+        banner.classList.add('hidden');
+      }
+    }
+
+    async function saveAnnouncement(isActive) {
+      const newAnn = {
+        message: { en: document.getElementById('ann_en').value, ar: document.getElementById('ann_ar').value, hi: document.getElementById('ann_hi').value },
+        is_active: isActive
+      };
+      await supabaseClient.from('announcements').insert([newAnn]);
+      alert("Announcement updated!");
+      await fetchAnnouncementFromCloud();
+    }
+
+    async function fetchOffersFromCloud() {
+      const { data } = await supabaseClient.from('offers').select('*').order('id', { ascending: false });
+      cachedOffers = data || [];
+      renderClientCards();
+      if (currentView === 'admin') renderAdminList();
+    }
+
+    async function fetchRequestsFromCloud() {
+      const { data, error } = await supabaseClient.from('requests').select('*').order('id', { ascending: false });
+      if (error) return;
+
+      cachedRequests = data || [];
+      const pendingRequests = cachedRequests.filter(r => r.status === 'Pending' || !r.status);
+      const pendingCount = pendingRequests.length;
+
+      if (pendingCount > previousPendingCount) {
+        playNotificationSound();
+      }
+      previousPendingCount = pendingCount;
+
+      const badge = document.getElementById('requestBadge');
+      if (pendingCount > 0) {
+        badge.innerText = pendingCount;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+
+      if (currentView === 'admin') renderAdminRequests();
+      renderClientTracker();
+    }
+
+    function renderClientTracker() {
+      const roomNum = document.getElementById('req_room')?.value?.trim();
+      const container = document.getElementById('clientTrackerContainer');
+      if (!container) return;
+
+      const t = i18n[currentLang] || i18n.en;
+
+      if (!roomNum) {
+        container.innerHTML = `<p class="text-center text-xs text-stone-400 py-3">${t.trackEmpty}</p>`;
+        return;
+      }
+
+      const myRequests = cachedRequests.filter(r => String(r.room).trim().toLowerCase() === roomNum.toLowerCase());
+
+      if (myRequests.length === 0) {
+        container.innerHTML = `<p class="text-center text-xs text-stone-400 py-3">${t.trackNoReq} ${roomNum}.</p>`;
+        return;
+      }
+
+      container.innerHTML = myRequests.map(req => {
+        let statusBadge = `<span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-1 rounded-full pulse-notification">${t.statusPending}</span>`;
+        if (req.status === 'In Progress') {
+          statusBadge = `<span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2.5 py-1 rounded-full">${t.statusInProgress}</span>`;
+        } else if (req.status === 'Completed') {
+          statusBadge = `<span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2.5 py-1 rounded-full">${t.statusCompleted}</span>`;
+        }
+
+        return `
+          <div class="p-3.5 bg-stone-50 rounded-2xl border border-stone-200 text-xs space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-stone-900">${req.service}</span>
+              ${statusBadge}
+            </div>
+            <p class="text-stone-600 bg-white p-2.5 rounded-xl border border-stone-100">${req.details}</p>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderCategoryFilters() {
+      const container = document.getElementById('categoryFilters');
+      const cats = ['All', 'Falaj Restaurant', 'Sarab', 'Al Waha Pool', 'The Spa'];
+      container.innerHTML = cats.map(cat => `
+        <button onclick="filterCategory('${cat}')" class="px-4 py-2 rounded-full whitespace-nowrap transition text-xs font-semibold ${currentCategory === cat ? 'bg-remal-sand text-white shadow-sm' : 'bg-white text-stone-600 border border-stone-200'}">
+          ${categoriesTranslations[currentLang][cat] || cat}
+        </button>
+      `).join('');
+    }
+
+    function renderClientCards() {
+      const container = document.getElementById('cardsContainer');
+      container.innerHTML = '';
+      const t = i18n[currentLang] || i18n.en;
+      const filtered = currentCategory === 'All' ? cachedOffers : cachedOffers.filter(item => item.category === currentCategory);
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<p class="text-center text-xs text-stone-400 py-8">${t.noOffers}</p>`;
+        return;
+      }
+
+      filtered.forEach(item => {
+        const title = item.title[currentLang] || item.title['en'];
+        const timing = item.timing[currentLang] || item.timing['en'];
+        container.innerHTML += `
+          <div class="remal-card rounded-3xl overflow-hidden">
+            <div class="relative">
+              <img src="${item.image}" class="w-full h-48 object-cover" loading="lazy">
+              <span class="absolute top-3 left-3 text-[9px] font-bold uppercase tracking-widest text-stone-800 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full shadow-sm">${item.category}</span>
+            </div>
+            <div class="p-5 space-y-3">
+              <h3 class="text-lg font-serif-luxury font-bold text-stone-900">${title}</h3>
+              <div class="flex justify-between items-center pt-3 border-t border-stone-100 text-xs font-medium">
+                <span class="text-stone-500">🕒 ${timing}</span>
+                <span class="text-remal-sand font-bold text-base font-serif-luxury">${item.price}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function renderAdminList() {
+      const container = document.getElementById('adminListContainer');
+      if (cachedOffers.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400">No active offers.</p>`; return; }
+      container.innerHTML = cachedOffers.map(item => `
+        <div class="flex items-center justify-between p-3 bg-stone-50 rounded-2xl border border-stone-200 text-xs">
+          <div class="flex items-center space-x-3">
+            <img src="${item.image}" class="w-12 h-12 object-cover rounded-xl">
+            <div>
+              <p class="font-bold text-stone-800">${item.title.en}</p>
+              <p class="text-[10px] text-remal-sand font-semibold">${item.category} • ${item.price}</p>
+            </div>
+          </div>
+          <button onclick="deleteOffer(${item.id})" class="text-rose-600 font-bold p-2">🗑️</button>
+        </div>
+      `).join('');
+    }
+
+    function renderAdminRequests() {
+      const container = document.getElementById('adminRequestsContainer');
+      if (cachedRequests.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400 text-center py-4 col-span-2">No active requests.</p>`; return; }
+      container.innerHTML = cachedRequests.map(req => `
+        <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 text-xs space-y-3 flex flex-col justify-between">
+          <div class="space-y-2">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="font-bold text-stone-900 text-sm">Room: ${req.room || 'N/A'}</span>
+                <p class="text-remal-sand font-semibold">${req.service}</p>
+              </div>
+              <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full ${req.status === 'Completed' ? 'bg-emerald-100 text-emerald-800' : req.status === 'In Progress' ? 'bg-blue-100 text-blue-800' : 'bg-rose-100 text-rose-800 pulse-notification'}">${req.status || 'Pending'}</span>
+            </div>
+            <p class="text-stone-700 bg-white p-3 rounded-xl border border-stone-100">${req.details}</p>
+          </div>
+          <div class="flex justify-between items-center pt-2 border-t border-stone-200 text-[11px]">
+            <div class="space-x-1">
+              <button onclick="updateRequestStatus(${req.id}, 'Pending')" class="px-2 py-1 bg-amber-100 text-amber-800 rounded font-semibold">Pending</button>
+              <button onclick="updateRequestStatus(${req.id}, 'In Progress')" class="px-2 py-1 bg-blue-100 text-blue-800 rounded font-semibold">In Progress</button>
+              <button onclick="updateRequestStatus(${req.id}, 'Completed')" class="px-2 py-1 bg-emerald-100 text-emerald-800 rounded font-semibold">Completed</button>
+            </div>
+            <button onclick="deleteRequest(${req.id})" class="text-rose-600 font-bold p-1 hover:bg-rose-50 rounded">🗑️</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function saveAdminData() {
+      const imageUrl = document.getElementById('adm_image').value;
+      if (!imageUrl) { alert("Please select an image."); return; }
+      const newItem = {
+        category: document.getElementById('adm_category').value,
+        price: document.getElementById('adm_price').value,
+        image: imageUrl,
+        title: { en: document.getElementById('adm_title_en').value, ar: document.getElementById('adm_title_ar').value, hi: document.getElementById('adm_title_hi').value },
+        timing: { en: document.getElementById('adm_timing_en').value, ar: document.getElementById('adm_timing_ar').value, hi: document.getElementById('adm_timing_hi').value }
+      };
+      await supabaseClient.from('offers').insert([newItem]);
+      alert('Offer published!');
+      document.getElementById('adminForm').reset();
+      await fetchOffersFromCloud();
+    }
+
+    async function submitGuestRequest() {
+      const room = document.getElementById('req_room').value;
+      const service = document.getElementById('req_service').value;
+      const details = document.getElementById('req_details').value;
+      if (!room || !details) { alert("Please fill in room and request details."); return; }
+      
+      await supabaseClient.from('requests').insert([{ room, service, details, status: 'Pending' }]);
+
+      const textMessage = encodeURIComponent(`Hello Remal Reception,\nI submitted a request for Room/Villa ${room}.\n\n*Service:* ${service}\n*Details:* ${details}`);
+      const whatsappUrl = `https://wa.me/971526966865?text=${textMessage}`;
+
+      const btnWa = document.getElementById('btnWhatsappDirect');
+      const boxWa = document.getElementById('whatsappConfirmation');
+      if (btnWa && boxWa) {
+        btnWa.href = whatsappUrl;
+        boxWa.classList.remove('hidden');
+      }
+
+      document.getElementById('req_details').value = '';
+      await fetchRequestsFromCloud();
+    }
+
+    async function updateRequestStatus(id, newStatus) {
+      await supabaseClient.from('requests').update({ status: newStatus }).eq('id', id);
+      await fetchRequestsFromCloud();
+    }
+
+    async function deleteRequest(id) {
+      if (confirm('Delete request?')) { await supabaseClient.from('requests').delete().eq('id', id); await fetchRequestsFromCloud(); }
+    }
+
+    async function deleteOffer(id) {
+      if (confirm('Delete offer?')) { await supabaseClient.from('offers').delete().eq('id', id); await fetchOffersFromCloud(); }
+    }
+
+    function switchGuestTab(tab) {
+      const offersSec = document.getElementById('guestOffersSection');
+      const facSec = document.getElementById('guestFacilitiesSection');
+      const reqSec = document.getElementById('guestRequestSection');
+      
+      const btnO = document.getElementById('tabOffersBtn');
+      const btnF = document.getElementById('tabFacilitiesBtn');
+      const btnR = document.getElementById('tabRequestBtn');
+
+      offersSec.classList.add('hidden');
+      facSec.classList.add('hidden');
+      reqSec.classList.add('hidden');
+
+      btnO.className = "flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap";
+      btnF.className = "flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap";
+      btnR.className = "flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap";
+
+      if (tab === 'offers') {
+        offersSec.classList.remove('hidden');
+        btnO.className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap";
+      } else if (tab === 'facilities') {
+        facSec.classList.remove('hidden');
+        btnF.className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap";
+      } else if (tab === 'request') {
+        reqSec.classList.remove('hidden');
+        btnR.className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap";
+        renderClientTracker();
+      }
+    }
+
+    function switchAdminTab(tab) {
+      ['adminOffersPanel', 'adminRequestsPanel', 'adminBannerPanel'].forEach(p => document.getElementById(p).classList.add('hidden'));
+      ['admTabOffers', 'admTabRequests', 'admTabBanner'].forEach(b => document.getElementById(b).className = "flex-1 md:flex-none px-6 py-2.5 rounded-xl text-stone-600 font-bold relative");
+
+      if (tab === 'offers') {
+        document.getElementById('adminOffersPanel').classList.remove('hidden');
+        document.getElementById('admTabOffers').className = "flex-1 md:flex-none px-6 py-2.5 rounded-xl bg-stone-900 text-white font-bold relative";
+      } else if (tab === 'requests') {
+        document.getElementById('adminRequestsPanel').classList.remove('hidden');
+        document.getElementById('admTabRequests').className = "flex-1 md:flex-none px-6 py-2.5 rounded-xl bg-stone-900 text-white font-bold relative";
+        fetchRequestsFromCloud();
+      } else if (tab === 'banner') {
+        document.getElementById('adminBannerPanel').classList.remove('hidden');
+        document.getElementById('admTabBanner').className = "flex-1 md:flex-none px-6 py-2.5 rounded-xl bg-stone-900 text-white font-bold relative";
+      }
+    }
+
+    function setLang(lang) {
+      currentLang = lang;
+      const root = document.getElementById('htmlRoot');
+      const t = i18n[lang] || i18n.en;
+
+      if (lang === 'ar') {
+        root.setAttribute('dir', 'rtl');
+      } else {
+        root.setAttribute('dir', 'ltr');
+      }
+
+      ['en', 'ar', 'hi'].forEach(l => {
+        const btn = document.getElementById(`btn-${l}`);
+        if (btn) {
+          if (l === lang) {
+            btn.className = "px-2.5 py-1 rounded-full bg-remal-sand text-white shadow-sm font-bold";
+          } else {
+            btn.className = "px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900 font-normal";
+          }
+        }
+      });
+
+      document.getElementById('welcomeMsg').innerText = t.welcome;
+      document.getElementById('lblTabOffers').innerText = t.lblOffers;
+      document.getElementById('lblTabFacilities').innerText = t.lblFacilities;
+      document.getElementById('lblTabRequest').innerText = t.lblService;
+      document.getElementById('facHeader').innerText = t.facHeader;
+      document.getElementById('facSub').innerText = t.facSub;
+      document.getElementById('reqHeader').innerText = t.reqHeader;
+      document.getElementById('lblRoom').innerText = t.lblRoom;
+      document.getElementById('req_room').placeholder = t.placeholderRoom;
+      document.getElementById('lblService').innerText = t.lblServiceType;
+      document.getElementById('lblDetails').innerText = t.lblDetails;
+      document.getElementById('req_details').placeholder = t.placeholderDetails;
+      document.getElementById('btnSubmitReq').innerText = t.btnSubmit;
+      document.getElementById('whatsappText').innerText = t.whatsappBtn;
+
+      document.getElementById('lblSuccessMsg').innerText = t.successMsg;
+      document.getElementById('lblWhatsappSub').innerText = t.whatsappSub;
+      document.getElementById('lblChatWhatsapp').innerText = t.chatWhatsapp;
+      document.getElementById('lblTrackHeader').innerText = t.trackHeader;
+      document.getElementById('lblLiveStatus').innerText = t.liveStatus;
+
+      const selectService = document.getElementById('req_service');
+      selectService.innerHTML = t.services.map(s => `<option value="${s.val}">${s.text}</option>`).join('');
+
+      renderCategoryFilters();
+      renderClientCards();
+      renderFacilities();
+      renderAnnouncement();
+      renderClientTracker();
+    }
+
+    function filterCategory(cat) {
+      currentCategory = cat;
+      renderCategoryFilters();
+      renderClientCards();
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Remal Hotel & Villas - Guest Hub</title>
