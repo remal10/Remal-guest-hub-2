@@ -19,12 +19,18 @@
         
         @keyframes pulse-red {
             0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.8; transform: scale(1.03); }
+            50% { opacity: 0.85; transform: scale(1.02); }
         }
-        .pulse-notification { animation: pulse-red 1.5s infinite; }
+        .pulse-notification { animation: pulse-red 1s infinite; }
     </style>
 </head>
 <body class="min-h-screen pb-20">
+
+    <!-- AUDIO ALARME CLASSIQUE HÔTEL -->
+    <audio id="hotelAlarmSound" loop preload="auto">
+        <source src="https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg" type="audio/ogg">
+        <source src="https://actions.google.com/sounds/v1/household/front_door_bell.ogg" type="audio/ogg">
+    </audio>
 
     <!-- HEADER REMAL HOTEL -->
     <header class="bg-white sticky top-0 z-50 border-b border-stone-200 shadow-sm">
@@ -53,11 +59,11 @@
         <div class="flex items-center gap-2 text-left">
             <span>🚨</span>
             <div>
-                <p id="alertTitleText">New Laundry Request Received!</p>
-                <p id="alertClientNote" class="text-[11px] font-normal italic opacity-95 text-amber-100"></p>
+                <p id="alertTitleText" class="font-bold">New Laundry Request Received!</p>
+                <p id="alertClientNote" class="text-[11px] font-normal italic opacity-95 text-amber-100 mt-0.5"></p>
             </div>
         </div>
-        <button onclick="stopAlarm()" class="bg-white text-rose-700 hover:bg-rose-50 px-3 py-1.5 rounded-xl font-bold text-xs shadow transition whitespace-nowrap cursor-pointer">🔕 Stop Alarm</button>
+        <button onclick="stopAlarm()" class="bg-white text-rose-700 hover:bg-rose-50 px-3.5 py-2 rounded-xl font-bold text-xs shadow-lg transition whitespace-nowrap cursor-pointer">🔕 Stop Alarm</button>
     </div>
 
     <div class="max-w-2xl mx-auto px-4 py-4 space-y-4">
@@ -228,9 +234,8 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let currentLang = 'en';
-        let audioCtx = null;
-        let alarmInterval = null;
         let previousPendingCount = 0;
+        let isAlarmActive = false;
 
         const i18n = {
             en: {
@@ -330,62 +335,24 @@
             renderItems();
             afficherListeBordereauxFromCloud();
             
-            // Activation audio au premier clic sur la page (requis par les navigateurs)
-            document.body.addEventListener('click', () => {
-                if (!audioCtx) {
-                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                }
-                if (audioCtx.state === 'suspended') {
-                    audioCtx.resume();
-                }
-            }, { once: true });
-
             checkIncomingLaundryRequests();
             setInterval(checkIncomingLaundryRequests, 5000);
         });
 
-        function playHotelBellSound() {
-            try {
-                if (!audioCtx) {
-                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                }
-                if (audioCtx.state === 'suspended') {
-                    audioCtx.resume();
-                }
-
-                const playTone = () => {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-                    osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.6);
-                    
-                    gain.gain.setValueAtTime(0.8, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8);
-                    
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 0.8);
-                };
-
-                playTone();
-                setTimeout(playTone, 300);
-            } catch (e) {
-                console.error("Audio error:", e);
+        function playAlarm() {
+            const sound = document.getElementById('hotelAlarmSound');
+            if (sound && isAlarmActive) {
+                sound.currentTime = 0;
+                sound.play().catch(e => console.log("Audio autoplay blocked:", e));
             }
         }
 
-        function startAlarmLoop() {
-            if (alarmInterval) return;
-            playHotelBellSound();
-            alarmInterval = setInterval(playHotelBellSound, 3000);
-        }
-
         function stopAlarm() {
-            if (alarmInterval) {
-                clearInterval(alarmInterval);
-                alarmInterval = null;
+            isAlarmActive = false;
+            const sound = document.getElementById('hotelAlarmSound');
+            if (sound) {
+                sound.pause();
+                sound.currentTime = 0;
             }
             document.getElementById('laundryPlantAlert').classList.add('hidden');
         }
@@ -395,26 +362,29 @@
                 const { data } = await supabaseClient
                     .from('requests')
                     .select('*')
-                    .eq('service', 'Laundry')
+                    .ilike('service', '%laundry%')
                     .eq('status', 'Pending');
                 
                 const alertBanner = document.getElementById('laundryPlantAlert');
                 if (data && data.length > 0) {
                     const latestReq = data[data.length - 1];
-                    const roomNum = latestReq.room || '---';
-                    const clientNote = latestReq.notes ? `Note: "${latestReq.notes}"` : 'No specific notes from guest.';
+                    const roomNum = latestReq.room || latestReq.room_number || '---';
+                    const clientNote = latestReq.notes || latestreq.note || latestReq.details || 'No specific notes from guest.';
                     
                     document.getElementById('alertTitleText').innerText = `🚨 New Laundry Request from Room ${roomNum}!`;
-                    document.getElementById('alertClientNote').innerText = clientNote;
+                    document.getElementById('alertClientNote').innerText = `Note: "${clientNote}"`;
                     
                     alertBanner.classList.remove('hidden');
 
                     if (previousPendingCount === 0 || data.length > previousPendingCount) {
-                        startAlarmLoop();
+                        isAlarmActive = true;
+                        playAlarm();
                     }
                     previousPendingCount = data.length;
                 } else {
-                    alertBanner.classList.add('hidden');
+                    if (!isAlarmActive) {
+                        alertBanner.classList.add('hidden');
+                    }
                     previousPendingCount = 0;
                 }
             } catch (e) {
@@ -646,7 +616,6 @@
             filtrerListeCloud();
         }
 
-        // MISE À JOUR DU STATUT EN TEMPS RÉEL (COLLECTED, WASHING, READY, DELIVERED)
         async function updateOrderStatus(id, newStatus, event) {
             event.stopPropagation();
             const { error } = await supabaseClient.from('laundry_slips').update({ status: newStatus }).eq('id', id);
@@ -702,6 +671,7 @@
                         </div>
                     </div>
 
+                    <!-- BOUTONS DE PROGRESSION EXCLUSIVEMENT DANS LE LAUNDRY PLANT -->
                     <div class="flex items-center justify-between gap-1 pt-2 border-t border-stone-200">
                         <span class="text-[10px] font-bold px-2 py-1 rounded-lg ${statusBg}">📍 ${status}</span>
                         <div class="flex gap-1" onclick="event.stopPropagation()">
