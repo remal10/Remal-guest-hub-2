@@ -28,8 +28,7 @@
 
     <!-- AUDIO ALARME CLASSIQUE HÔTEL -->
     <audio id="hotelAlarmSound" loop preload="auto">
-        <source src="https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg" type="audio/ogg">
-        <source src="https://actions.google.com/sounds/v1/household/front_door_bell.ogg" type="audio/ogg">
+        <source src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg" type="audio/ogg">
     </audio>
 
     <!-- HEADER REMAL HOTEL -->
@@ -63,7 +62,7 @@
                 <p id="alertClientNote" class="text-[11px] font-normal italic opacity-95 text-amber-100 mt-0.5"></p>
             </div>
         </div>
-        <button onclick="stopAlarm()" class="bg-white text-rose-700 hover:bg-rose-50 px-3.5 py-2 rounded-xl font-bold text-xs shadow-lg transition whitespace-nowrap cursor-pointer">🔕 Stop Alarm</button>
+        <button onclick="stopAlarmAndTransfer()" class="bg-white text-rose-700 hover:bg-rose-50 px-3.5 py-2 rounded-xl font-bold text-xs shadow-lg transition whitespace-nowrap cursor-pointer">🔕 Stop Alarm</button>
     </div>
 
     <div class="max-w-2xl mx-auto px-4 py-4 space-y-4">
@@ -144,7 +143,7 @@
             </div>
         </div>
 
-        <!-- SECTION 2: LIVE ORDERS (AVEC SUIVI PROCESSUS LAUNDRY) -->
+        <!-- SECTION 2: LIVE ORDERS -->
         <div id="sectionLiveRecord" class="hidden space-y-4">
             <div class="remal-card p-6 rounded-3xl space-y-4">
                 <div class="flex justify-between items-center border-b border-stone-100 pb-3">
@@ -248,7 +247,7 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let currentLang = 'en';
-        let previousPendingCount = 0;
+        let latestRequestId = null;
         let isAlarmActive = false;
 
         const i18n = {
@@ -357,11 +356,11 @@
             const sound = document.getElementById('hotelAlarmSound');
             if (sound && isAlarmActive) {
                 sound.currentTime = 0;
-                sound.play().catch(e => console.log("Audio autoplay blocked:", e));
+                sound.play().catch(e => console.log("Audio autoplay blocked by browser:", e));
             }
         }
 
-        function stopAlarm() {
+        async function stopAlarmAndTransfer() {
             isAlarmActive = false;
             const sound = document.getElementById('hotelAlarmSound');
             if (sound) {
@@ -369,36 +368,65 @@
                 sound.currentTime = 0;
             }
             document.getElementById('laundryPlantAlert').classList.add('hidden');
+
+            // Transfère et met à jour directement la demande en 'Collected' pour Live Orders
+            if (latestRequestId) {
+                try {
+                    // Met à jour la table requests du client pour stopper l'attente et basculer en Collected
+                    await supabaseClient.from('requests').update({ status: 'Collected' }).eq('id', latestRequestId);
+                    
+                    // Vérifie si un slip existe déjà, sinon en crée un de base pour cette chambre
+                    const { data: existingSlip } = await supabaseClient.from('laundry_slips').select('*').eq('room', latestRoomNum).single();
+                    if (!existingSlip) {
+                        await supabaseClient.from('laundry_slips').insert([{
+                            room: latestRoomNum || '000',
+                            count_type: 'hotel',
+                            options: { service_style: 'F — Folding' },
+                            items: {},
+                            total_clothes: 0,
+                            subtotal: 0,
+                            vat: 0,
+                            total: 0,
+                            status: 'Collected'
+                        }]);
+                    }
+                } catch (e) {
+                    console.error("Transfer error:", e);
+                }
+            }
+
+            switchMainSection('liveRecord');
         }
+
+        let latestRoomNum = '';
 
         async function checkIncomingLaundryRequests() {
             try {
                 const { data } = await supabaseClient
                     .from('requests')
                     .select('*')
-                    .ilike('service', '%laundry%');
+                    .ilike('service', '%laundry%')
+                    .eq('status', 'Pending');
                 
                 const alertBanner = document.getElementById('laundryPlantAlert');
                 if (data && data.length > 0) {
                     const latestReq = data[data.length - 1];
-                    const roomNum = latestReq.room || latestReq.room_number || '---';
+                    latestRequestId = latestReq.id;
+                    latestRoomNum = latestReq.room || latestReq.room_number || '---';
                     const clientNote = latestReq.notes || latestReq.note || latestReq.details || latestReq.description || 'No specific notes from guest.';
                     
-                    document.getElementById('alertTitleText').innerText = `🚨 New Laundry Request from Room ${roomNum}!`;
+                    document.getElementById('alertTitleText').innerText = `🚨 New Laundry Request from Room ${latestRoomNum}!`;
                     document.getElementById('alertClientNote').innerText = `Note: "${clientNote}"`;
                     
-                    alertBanner.classList.remove('hidden');
-
-                    if (previousPendingCount === 0 || data.length > previousPendingCount) {
+                    if (!isAlarmActive) {
                         isAlarmActive = true;
+                        alertBanner.classList.remove('hidden');
                         playAlarm();
                     }
-                    previousPendingCount = data.length;
                 } else {
                     if (!isAlarmActive) {
                         alertBanner.classList.add('hidden');
                     }
-                    previousPendingCount = 0;
                 }
             } catch (e) {
                 console.error("Sync error:", e);
@@ -676,7 +704,6 @@
         }
 
         async function updateOrderStatus(id, newStatus) {
-            // Mise à jour simultanée dans laundry_slips ET requests pour que le client voie le statut changer
             await supabaseClient.from('laundry_slips').update({ status: newStatus }).eq('id', id);
             
             const slip = cachedSlips.find(s => s.id === id);
