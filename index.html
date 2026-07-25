@@ -110,7 +110,9 @@
               <span class="text-[10px] bg-remal-sand text-white font-bold px-2 py-0.5 rounded-full">In-Room Dining</span>
             </div>
             
-            <div id="foodItemsContainer" class="space-y-3"></div>
+            <div id="foodItemsContainer" class="space-y-3">
+              <p class="text-center text-xs text-stone-400">Loading menu...</p>
+            </div>
 
             <div class="pt-2 border-t border-stone-200 space-y-2">
               <div class="flex justify-between text-xs font-bold text-stone-900">
@@ -200,7 +202,7 @@
   <div id="adminView" class="hidden max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-6">
     <div class="flex justify-between items-center bg-stone-200/80 p-1.5 rounded-2xl text-xs font-bold">
       <div class="flex space-x-2 w-full md:w-auto">
-        <button onclick="switchAdminTab('offers')" id="admTabOffers" class="flex-1 md:flex-none px-6 py-2.5 rounded-xl bg-stone-900 text-white">🏷️ Offers</button>
+        <button onclick="switchAdminTab('offers')" id="admTabOffers" class="flex-1 md:flex-none px-6 py-2.5 rounded-xl bg-stone-900 text-white">🏷️ Content & Menu</button>
         <button onclick="switchAdminTab('requests')" id="admTabRequests" class="flex-1 md:flex-none px-6 py-2.5 rounded-xl text-stone-600 relative">
           🔔 Requests
           <span id="requestBadge" class="hidden absolute -top-1 -right-1 bg-rose-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full pulse-notification">0</span>
@@ -214,61 +216,111 @@
       </div>
     </div>
 
-    <!-- ADMIN: OFFRES -->
-    <div id="adminOffersPanel" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-      <div class="lg:col-span-5 bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4 h-fit">
-        <div class="flex justify-between items-center border-b border-stone-100 pb-3">
-          <h2 class="text-base font-serif-luxury font-bold text-stone-900">New Cloud Offer</h2>
-          <span class="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold px-3 py-1 rounded-full">Supabase Live</span>
-        </div>
-        <form id="adminForm" class="space-y-4">
-          <div>
-            <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Category</label>
-            <select id="adm_category" class="w-full border border-stone-200 rounded-xl p-3 bg-stone-50 text-sm outline-none">
-              <option value="Falaj Restaurant">Falaj Restaurant</option>
-              <option value="Sarab">Sarab Bar & Lounge</option>
-              <option value="Al Waha Pool">Al Waha Pool</option>
-              <option value="The Spa">The Spa</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Price / Rate (e.g., AED 75)</label>
-            <input type="text" id="adm_price" placeholder="AED 75" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50 outline-none" required>
-          </div>
-          <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-2">
-            <p class="text-xs font-bold text-stone-700">Offer Titles</p>
-            <input type="text" id="adm_title_en" placeholder="Title (English)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none" required>
-            <input type="text" id="adm_title_ar" placeholder="العنوان (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none" required>
-            <input type="text" id="adm_title_hi" placeholder="शीर्षक (हिंदी)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none" required>
-          </div>
-          <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-2">
-            <p class="text-xs font-bold text-stone-700">Timings / Operating Days</p>
-            <input type="text" id="adm_timing_en" placeholder="Timings (English)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none" required>
-            <input type="text" id="adm_timing_ar" placeholder="الأوقات (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none" required>
-            <input type="text" id="adm_timing_hi" placeholder="समय (हिंदी)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none" required>
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Offer Photo</label>
-            <input type="file" id="imageFileInput" accept="image/*" class="w-full text-xs text-stone-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-stone-900 file:text-white hover:file:bg-stone-800 cursor-pointer mb-2" />
-            <p id="uploadStatus" class="text-[10px] text-stone-500 mb-2"></p>
-            <input type="hidden" id="adm_image" />
-          </div>
-          <button type="button" onclick="saveAdminData()" class="w-full bg-remal-sand hover:opacity-90 text-white font-bold py-3.5 rounded-xl shadow-md transition text-sm">Publish Offer to Cloud</button>
-        </form>
+    <!-- ADMIN: OFFRES ET GESTION MENU F&B -->
+    <div id="adminOffersPanel" class="space-y-6">
+      
+      <!-- SUB-NAVIGATION ADMIN MENU vs OFFERS -->
+      <div class="flex space-x-2 border-b border-stone-200 pb-2 text-xs font-bold">
+        <button onclick="switchAdminSubTab('offersList')" id="btnSubOffers" class="px-4 py-2 rounded-xl bg-stone-900 text-white">Promotions & Events</button>
+        <button onclick="switchAdminSubTab('menuList')" id="btnSubMenu" class="px-4 py-2 rounded-xl bg-stone-100 text-stone-700">🍔 Room Service Menu Editor</button>
       </div>
 
-      <div class="lg:col-span-7 bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
-        <h3 class="text-xs font-bold text-stone-500 uppercase tracking-widest border-b border-stone-100 pb-2">Active Offers</h3>
-        <div id="adminListContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3"></div>
+      <!-- SOUS-PANNEAU 1: OFFRES PROMOTIONS -->
+      <div id="adminOffersSubSection" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-5 bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4 h-fit">
+          <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-2">New Cloud Offer</h2>
+          <form id="adminForm" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Category</label>
+              <select id="adm_category" class="w-full border border-stone-200 rounded-xl p-3 bg-stone-50 text-sm outline-none">
+                <option value="Falaj Restaurant">Falaj Restaurant</option>
+                <option value="Sarab">Sarab Bar & Lounge</option>
+                <option value="Al Waha Pool">Al Waha Pool</option>
+                <option value="The Spa">The Spa</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Price / Rate (e.g., AED 75)</label>
+              <input type="text" id="adm_price" placeholder="AED 75" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50 outline-none" required>
+            </div>
+            <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-2">
+              <p class="text-xs font-bold text-stone-700">Offer Titles</p>
+              <input type="text" id="adm_title_en" placeholder="Title (English)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none" required>
+              <input type="text" id="adm_title_ar" placeholder="العنوان (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none" required>
+              <input type="text" id="adm_title_hi" placeholder="शीर्षक (हिंदी)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none" required>
+            </div>
+            <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-2">
+              <p class="text-xs font-bold text-stone-700">Timings / Operating Days</p>
+              <input type="text" id="adm_timing_en" placeholder="Timings (English)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none" required>
+              <input type="text" id="adm_timing_ar" placeholder="الأوقات (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none" required>
+              <input type="text" id="adm_timing_hi" placeholder="समय (हिंदी)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm bg-white outline-none" required>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Offer Photo</label>
+              <input type="file" id="imageFileInput" accept="image/*" class="w-full text-xs text-stone-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-stone-900 file:text-white hover:file:bg-stone-800 cursor-pointer mb-2" />
+              <p id="uploadStatus" class="text-[10px] text-stone-500 mb-2"></p>
+              <input type="hidden" id="adm_image" />
+            </div>
+            <button type="button" onclick="saveAdminData()" class="w-full bg-remal-sand hover:opacity-90 text-white font-bold py-3.5 rounded-xl shadow-md transition text-sm">Publish Offer to Cloud</button>
+          </form>
+        </div>
+
+        <div class="lg:col-span-7 bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
+          <h3 class="text-xs font-bold text-stone-500 uppercase tracking-widest border-b border-stone-100 pb-2">Active Offers</h3>
+          <div id="adminListContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3"></div>
+        </div>
       </div>
+
+      <!-- SOUS-PANNEAU 2: GESTION DU MENU ROOM SERVICE (EN DIRECT) -->
+      <div id="adminMenuSubSection" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-5 bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4 h-fit">
+          <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-2">Add New Menu Dish</h2>
+          <form id="foodMenuForm" onsubmit="addMenuItem(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Dish Name (e.g. Club Sandwich)</label>
+              <input type="text" id="food_name" placeholder="Item Name" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50 outline-none" required>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Price (AED)</label>
+              <input type="number" id="food_price" placeholder="e.g. 55" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50 outline-none" required>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Category</label>
+              <select id="food_category" class="w-full border border-stone-200 rounded-xl p-3 bg-stone-50 text-sm outline-none">
+                <option value="Breakfast">Breakfast</option>
+                <option value="Mains">Mains / Sandwiches</option>
+                <option value="Beverages">Beverages & Coffee</option>
+                <option value="Desserts">Desserts</option>
+              </select>
+            </div>
+            <button type="submit" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-bold py-3.5 rounded-xl shadow-md transition text-sm">➕ Add Dish to Digital Menu</button>
+          </form>
+        </div>
+
+        <div class="lg:col-span-7 bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
+          <h3 class="text-xs font-bold text-stone-500 uppercase tracking-widest border-b border-stone-100 pb-2">Live Room Service Menu Items</h3>
+          <div id="adminMenuListContainer" class="space-y-2">
+            <p class="text-xs text-stone-400">Loading dishes...</p>
+          </div>
+        </div>
+      </div>
+
     </div>
 
-    <!-- ADMIN: DEMANDES -->
+    <!-- ADMIN: DEMANDES & ALERTES SONORES -->
     <div id="adminRequestsPanel" class="hidden space-y-4">
       <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
         <div class="flex justify-between items-center border-b border-stone-100 pb-3">
-          <h2 class="text-base font-serif-luxury font-bold text-stone-900">Live Service Requests</h2>
-          <button onclick="fetchRequestsFromCloud()" class="text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 px-4 py-2 rounded-xl font-semibold border border-stone-200">🔄 Refresh</button>
+          <div>
+            <h2 class="text-base font-serif-luxury font-bold text-stone-900">Live Service Requests</h2>
+            <p class="text-[10px] text-stone-500">Real-time room service and guest requests</p>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button onclick="enableAudioAlerts()" id="btnAudioEnable" class="text-xs bg-amber-50 hover:bg-amber-100 text-amber-800 px-3 py-2 rounded-xl font-bold border border-amber-200 shadow-sm">
+              🔔 Enable Sound Alerts
+            </button>
+            <button onclick="fetchRequestsFromCloud()" class="text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 px-3 py-2 rounded-xl font-semibold border border-stone-200">🔄 Refresh</button>
+          </div>
         </div>
         <div id="adminRequestsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <p class="text-xs text-stone-400">Loading requests...</p>
@@ -303,23 +355,21 @@
     let previousPendingCount = 0;
     let currentUserSession = null;
 
-    const roomServiceMenu = [
-      { id: 1, name: 'Continental Breakfast Set', price: 65 },
-      { id: 2, name: 'Angus Beef Burger & Fries', price: 75 },
-      { id: 3, name: 'Club Sandwich', price: 55 },
-      { id: 4, name: 'Penne Arrabbiata Pasta', price: 60 },
-      { id: 5, name: 'Fresh Fruit Platter', price: 35 },
-      { id: 6, name: 'Fresh Orange Juice / Smoothies', price: 25 },
-      { id: 7, name: 'Espresso / Cappuccino Coffee', price: 20 }
-    ];
-
+    let roomServiceMenu = [];
     let cartState = {};
 
     function enableAudioAlerts() {
       try {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        audioEnabled = true;
-        playNotificationSound();
+        audioContext.resume().then(() => {
+          audioEnabled = true;
+          playNotificationSound();
+          const btn = document.getElementById('btnAudioEnable');
+          if (btn) {
+            btn.className = "text-xs bg-emerald-100 text-emerald-800 px-3 py-2 rounded-xl font-bold border border-emerald-300";
+            btn.innerText = "🔊 Sound Alerts Active";
+          }
+        });
       } catch (e) { console.error("Audio Error:", e); }
     }
 
@@ -548,7 +598,7 @@
     const categoriesTranslations = {
       en: { 'All': 'All Services', 'Falaj Restaurant': 'Falaj Restaurant', 'Sarab': 'Sarab Bar', 'Al Waha Pool': 'Al Waha Pool', 'The Spa': 'The Spa' },
       ar: { 'All': 'جميع الخدمات', 'Falaj Restaurant': 'مطعم الفلج', 'Sarab': 'بار سراب', 'Al Waha Pool': 'مسبح الواحة', 'The Spa': 'السبا' },
-      hi: { 'All': 'सभी सेवाएं', 'Falaj Restaurant': 'फलج रेस्टोरेंट', 'Sarab': 'सराब बार', 'Al Waha Pool': 'अल वाहा पूल', 'The Spa': 'द स्पा' }
+      hi: { 'All': 'सभी सेवाएं', 'Falaj Restaurant': 'फलज रेस्टोरेंट', 'Sarab': 'सराब बार', 'Al Waha Pool': 'अल वाहा पूल', 'The Spa': 'द स्पा' }
     };
 
     async function init() {
@@ -561,8 +611,6 @@
         document.getElementById('req_room').value = room;
       }
 
-      // VÉRIFICATION STRICTE DE L'URL :
-      // Le bouton Admin est affiché UNIQUEMENT si ?admin=true est présent dans la barre d'adresse
       if (adminParam === 'true') {
         document.getElementById('viewToggleBtn').classList.remove('hidden');
         const { data: { session } } = await supabaseClient.auth.getSession();
@@ -574,7 +622,7 @@
 
       setLang('en');
       renderFacilities();
-      renderRoomServiceMenu();
+      await fetchMenuItemsFromCloud();
       await fetchOffersFromCloud();
       await fetchAnnouncementFromCloud();
       await fetchRequestsFromCloud();
@@ -623,7 +671,7 @@
     async function logoutAdmin() {
       await supabaseClient.auth.signOut();
       currentUserSession = null;
-      window.location.href = window.location.pathname; // Redirection propre vers la vue client
+      window.location.href = window.location.pathname;
     }
 
     function toggleAdminView() {
@@ -639,6 +687,7 @@
         waBtn.classList.add('hidden');
         btn.innerText = "📱 Client View";
         renderAdminList();
+        renderAdminMenuList();
       } else {
         currentView = 'client';
         adminV.classList.add('hidden');
@@ -647,6 +696,49 @@
         btn.innerText = "⚙️ Admin Panel";
         renderClientCards();
       }
+    }
+
+    /* GESTION DU MENU F&B CLOUD (DEPUIS L'ADMIN) */
+    async function fetchMenuItemsFromCloud() {
+      const { data } = await supabaseClient.from('menu_items').select('*').order('id', { ascending: true });
+      roomServiceMenu = data || [];
+      renderRoomServiceMenu();
+      if (currentView === 'admin') renderAdminMenuList();
+    }
+
+    async function addMenuItem(event) {
+      event.preventDefault();
+      const name = document.getElementById('food_name').value;
+      const price = parseFloat(document.getElementById('food_price').value);
+      const category = document.getElementById('food_category').value;
+
+      if (!name || isNaN(price)) return;
+
+      await supabaseClient.from('menu_items').insert([{ name, price, category }]);
+      alert('Dish added to menu!');
+      document.getElementById('foodMenuForm').reset();
+      await fetchMenuItemsFromCloud();
+    }
+
+    async function deleteMenuItem(id) {
+      if (confirm('Delete this dish from the menu?')) {
+        await supabaseClient.from('menu_items').delete().eq('id', id);
+        await fetchMenuItemsFromCloud();
+      }
+    }
+
+    function renderAdminMenuList() {
+      const container = document.getElementById('adminMenuListContainer');
+      if (roomServiceMenu.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400">No dishes in menu.</p>`; return; }
+      container.innerHTML = roomServiceMenu.map(item => `
+        <div class="flex items-center justify-between p-3 bg-stone-50 rounded-2xl border border-stone-200 text-xs">
+          <div>
+            <p class="font-bold text-stone-800">${item.name}</p>
+            <p class="text-[10px] text-remal-sand font-semibold">${item.category || 'General'} • AED ${item.price}</p>
+          </div>
+          <button onclick="deleteMenuItem(${item.id})" class="text-rose-600 font-bold p-1 hover:bg-rose-50 rounded">🗑️ Delete</button>
+        </div>
+      `).join('');
     }
 
     /* ROOM SERVICE LOGIC */
@@ -662,6 +754,10 @@
 
     function renderRoomServiceMenu() {
       const container = document.getElementById('foodItemsContainer');
+      if (roomServiceMenu.length === 0) {
+        container.innerHTML = `<p class="text-xs text-stone-400 text-center py-2">No menu items available currently.</p>`;
+        return;
+      }
       container.innerHTML = roomServiceMenu.map(item => `
         <div class="flex justify-between items-center bg-white p-2.5 rounded-xl border border-stone-200 text-xs">
           <div>
@@ -1025,10 +1121,31 @@
       } else if (tab === 'requests') {
         document.getElementById('adminRequestsPanel').classList.remove('hidden');
         document.getElementById('admTabRequests').className = "flex-1 md:flex-none px-6 py-2.5 rounded-xl bg-stone-900 text-white font-bold relative";
+        enableAudioAlerts();
         fetchRequestsFromCloud();
       } else if (tab === 'banner') {
         document.getElementById('adminBannerPanel').classList.remove('hidden');
         document.getElementById('admTabBanner').className = "flex-1 md:flex-none px-6 py-2.5 rounded-xl bg-stone-900 text-white font-bold relative";
+      }
+    }
+
+    function switchAdminSubTab(subTab) {
+      const offersSec = document.getElementById('adminOffersSubSection');
+      const menuSec = document.getElementById('adminMenuSubSection');
+      const btnO = document.getElementById('btnSubOffers');
+      const btnM = document.getElementById('btnSubMenu');
+
+      if (subTab === 'offersList') {
+        offersSec.classList.remove('hidden');
+        menuSec.classList.add('hidden');
+        btnO.className = "px-4 py-2 rounded-xl bg-stone-900 text-white";
+        btnM.className = "px-4 py-2 rounded-xl bg-stone-100 text-stone-700";
+      } else {
+        menuSec.classList.remove('hidden');
+        offersSec.classList.add('hidden');
+        btnM.className = "px-4 py-2 rounded-xl bg-stone-900 text-white";
+        btnO.className = "px-4 py-2 rounded-xl bg-stone-100 text-stone-700";
+        renderAdminMenuList();
       }
     }
 
