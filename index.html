@@ -41,7 +41,7 @@
           <button onclick="setLang('ar')" id="btn-ar" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">العربية</button>
           <button onclick="setLang('hi')" id="btn-hi" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">हिन्दी</button>
         </div>
-        <!-- BOUTON ADMIN CACHÉ PAR DÉFAUT POUR LES CLIENTS -->
+        <!-- BOUTON ADMIN STRICTEMENT MASQUÉ PAR DÉFAUT -->
         <button onclick="handleAdminAccess()" id="viewToggleBtn" class="hidden bg-stone-900 text-white px-3 py-1.5 rounded-full text-xs font-semibold shadow relative">
           ⚙️ Admin Panel
         </button>
@@ -518,7 +518,7 @@
       {
         id: 'restaurant',
         images: ['Restaurant-1.jpg', 'Restaurant-2.jpg', 'Restaurant-3.jpg', 'Restaurant-4.jpg'],
-        title: { en: 'Falaj Restaurant & Dining', ar: 'مطعم الفلج والوجبات', hi: 'फलج रेस्टोरेंट और भोजन' },
+        title: { en: 'Falaj Restaurant & Dining', ar: 'مطعم الفلج والوجبات', hi: 'फलज रेस्टोरेंट और भोजन' },
         desc: { en: 'International buffet breakfast & fine dining options serving delicious global cuisines.', ar: 'بوفيه إفطار عالمي وتجربة طعام فاخرة تقدم أشهى المأكولات العالمية.', hi: 'अंतर्राष्ट्रीय بफ़े नाश्ता और स्वादिष्ट वैश्विक व्यंजन।' },
         timing: { en: '06:30 AM - 11:00 PM', ar: '٠٦:٣٠ صباحاً - ١١:٠٠ مساءً', hi: 'सुबह 06:30 - रात 11:00' }
       },
@@ -527,7 +527,7 @@
         images: ['Room1.jpg', 'Room2.jpg', 'Room3.jpg', 'Room4.jpg', 'Room5.jpg', 'Room6.jpg', 'Room7.jpg', 'Room8.jpg'],
         title: { en: 'Luxury Guest Rooms', ar: 'غرف النزلاء الفاخرة', hi: 'लक्जरी अतिथि कमरे' },
         desc: { en: 'Spacious, modernly equipped rooms designed for maximum comfort and relaxation.', ar: 'غرف واسعة ومجهزة بأحدث وسائل الراحة المصممة لضمان أقصى درجات الاسترخاء.', hi: 'अधिकतम आराम और विश्राम के लिए डिज़ाइन किए गए विशाल कमरे।' },
-        timing: { en: 'Daily Housekeeping', ar: 'تنظيف يومي للغرف', hi: 'दैनिक सफाई' }
+        timing: { en: 'Daily Housekeeping', ar: 'تنظيف يومي للغرف', hi: 'دैनिक सफाई' }
       },
       {
         id: 'villas',
@@ -548,13 +548,10 @@
     const categoriesTranslations = {
       en: { 'All': 'All Services', 'Falaj Restaurant': 'Falaj Restaurant', 'Sarab': 'Sarab Bar', 'Al Waha Pool': 'Al Waha Pool', 'The Spa': 'The Spa' },
       ar: { 'All': 'جميع الخدمات', 'Falaj Restaurant': 'مطعم الفلج', 'Sarab': 'بار سراب', 'Al Waha Pool': 'مسبح الواحة', 'The Spa': 'السبا' },
-      hi: { 'All': 'सभी सेवाएं', 'Falaj Restaurant': 'फलज रेस्टोरेंट', 'Sarab': 'सराब बार', 'Al Waha Pool': 'अल वाहा पूल', 'The Spa': 'द स्पा' }
+      hi: { 'All': 'सभी सेवाएं', 'Falaj Restaurant': 'फलج रेस्टोरेंट', 'Sarab': 'सराब बार', 'Al Waha Pool': 'अल वाहा पूल', 'The Spa': 'द स्पा' }
     };
 
     async function init() {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      currentUserSession = session;
-
       const urlParams = new URLSearchParams(window.location.search);
       const room = urlParams.get('room');
       const adminParam = urlParams.get('admin');
@@ -564,9 +561,15 @@
         document.getElementById('req_room').value = room;
       }
 
-      // SI L'URL CONTIENT ?admin=true, ON AFFICHE LE BOUTON ADMIN POUR LE STAFF
-      if (adminParam === 'true' || currentUserSession) {
+      // VÉRIFICATION STRICTE DE L'URL :
+      // Le bouton Admin est affiché UNIQUEMENT si ?admin=true est présent dans la barre d'adresse
+      if (adminParam === 'true') {
         document.getElementById('viewToggleBtn').classList.remove('hidden');
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        currentUserSession = session;
+      } else {
+        document.getElementById('viewToggleBtn').classList.add('hidden');
+        currentUserSession = null;
       }
 
       setLang('en');
@@ -620,7 +623,7 @@
     async function logoutAdmin() {
       await supabaseClient.auth.signOut();
       currentUserSession = null;
-      toggleAdminView();
+      window.location.href = window.location.pathname; // Redirection propre vers la vue client
     }
 
     function toggleAdminView() {
