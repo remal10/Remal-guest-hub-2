@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Remal Hotel & Villas - Guest Hub & Digital Laundry</title>
+  <title>Remal Hotel & Villas - Guest Hub</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -41,6 +41,7 @@
           <button onclick="setLang('ar')" id="btn-ar" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">العربية</button>
           <button onclick="setLang('hi')" id="btn-hi" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">हिन्दी</button>
         </div>
+        <!-- BOUTON ACCÈS STAFF SÉCURISÉ -->
         <button onclick="handleAdminAccess()" id="viewToggleBtn" class="hidden bg-stone-900 text-white px-3 py-1.5 rounded-full text-xs font-semibold shadow relative">
           ⚙️ Staff Panel
         </button>
@@ -68,7 +69,7 @@
       </div>
     </div>
 
-    <!-- SECTION 1: OFFRES -->
+    <!-- SECTION OFFRES -->
     <div id="guestOffersSection" class="space-y-5">
       <div id="categoryFilters" class="flex space-x-2 overflow-x-auto pb-1 text-xs font-semibold scrollbar-none"></div>
       <div id="cardsContainer" class="space-y-5">
@@ -76,7 +77,7 @@
       </div>
     </div>
 
-    <!-- SECTION 2: FACILITIES -->
+    <!-- SECTION FACILITIES -->
     <div id="guestFacilitiesSection" class="hidden space-y-5">
       <div class="text-center border-b border-stone-200 pb-3">
         <h3 class="text-lg font-serif-luxury font-bold text-stone-900" id="facHeader">Hotel Facilities & Amenities</h3>
@@ -85,7 +86,7 @@
       <div id="facilitiesContainer" class="space-y-6"></div>
     </div>
 
-    <!-- SECTION 3: DEMANDES -->
+    <!-- SECTION DEMANDES & ROOM SERVICE -->
     <div id="guestRequestSection" class="hidden space-y-6">
       <div class="remal-card p-6 rounded-3xl space-y-5">
         <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-3" id="reqHeader">Request Guest Service</h2>
@@ -152,111 +153,11 @@
     </div>
   </div>
 
-  <!-- 2. LAUNDRY PLANT INTERFACE (TABLETTE INTERFACE ?laundry=true) -->
-  <div id="laundryPlantView" class="hidden max-w-2xl mx-auto px-4 py-6 space-y-6">
-    <div class="bg-blue-900 text-white p-5 rounded-3xl shadow-lg text-center space-y-1">
-      <h2 class="text-xl font-bold tracking-wide">🧺 LAUNDRY PLANT DIGITAL HUB</h2>
-      <p class="text-xs text-blue-200">Remal Hotel & Villas - Digital Cloud Slip Management</p>
-    </div>
-
-    <!-- SAISIE ET BORDEREAU LAUNDRY -->
-    <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-5">
-      <div class="flex gap-3">
-        <input type="text" id="laundryRoom" placeholder="Room / Villa N°" class="flex-1 border border-stone-200 rounded-xl p-3 text-sm font-bold bg-stone-50 outline-none">
-        <button onclick="simulerScanQR()" class="bg-sky-600 text-white font-bold px-4 rounded-xl text-xs">📷 QR Code</button>
-      </div>
-
-      <!-- TYPE DE COMPTE -->
-      <div class="flex bg-stone-100 p-1.5 rounded-xl border border-stone-200 text-xs font-bold gap-2">
-        <button onclick="selectCountType('guest')" id="btn-count-guest" class="flex-1 py-2.5 rounded-lg bg-blue-900 text-white shadow-sm">💳 Guest Count</button>
-        <button onclick="selectCountType('hotel')" id="btn-count-hotel" class="flex-1 py-2.5 rounded-lg text-stone-600">🏨 Hotel Count (Gratuit)</button>
-      </div>
-
-      <!-- TABS SERVICES -->
-      <div class="flex gap-2 text-xs font-bold">
-        <button onclick="switchLaundryService('laundry')" id="tab-service-laundry" class="flex-1 py-2 rounded-xl bg-blue-900 text-white">LAUNDRY</button>
-        <button onclick="switchLaundryService('dry')" id="tab-service-dry" class="flex-1 py-2 rounded-xl bg-stone-100 text-stone-700">DRY CLEANING</button>
-        <button onclick="switchLaundryService('pressing')" id="tab-service-pressing" class="flex-1 py-2 rounded-xl bg-stone-100 text-stone-700">PRESSING</button>
-      </div>
-
-      <!-- OPTIONS BORDEREAU -->
-      <div class="flex overflow-x-auto gap-4 p-3 bg-stone-50 rounded-xl border border-stone-200 text-xs font-semibold whitespace-nowrap scrollbar-none">
-        <label class="flex items-center gap-1.5"><input type="checkbox" id="optToday" class="accent-blue-900"> TODAY <span class="text-stone-400">اليوم</span></label>
-        <label class="flex items-center gap-1.5"><input type="checkbox" id="optTomorrow" class="accent-blue-900"> TOMORROW <span class="text-stone-400">غدا</span></label>
-        <label class="flex items-center gap-1.5"><input type="checkbox" id="optStarch" class="accent-blue-900"> SHIRTS STARCH <span class="text-stone-400">قميص منشاة</span></label>
-        <label class="flex items-center gap-1.5"><input type="checkbox" id="optHanger" class="accent-blue-900"> SHIRTS ON HANGER <span class="text-stone-400">القميص معلق</span></label>
-        <label class="flex items-center gap-1.5"><input type="checkbox" id="optFold" class="accent-blue-900"> FOLD <span class="text-stone-400">يطوى</span></label>
-      </div>
-
-      <!-- CONTENEUR DYNAMIQUE DE VÊTEMENTS -->
-      <div id="laundryItemsContainer" class="space-y-4 max-h-96 overflow-y-auto pr-1"></div>
-
-      <!-- TOTAL DE VÊTEMENTS -->
-      <div class="bg-sky-50 border border-sky-200 text-blue-900 p-3 rounded-xl flex justify-between items-center font-bold text-xs">
-        <span>🧺 Clothes Selected:</span>
-        <span id="currentBordereauCount" class="bg-blue-900 text-white px-3 py-1 rounded-full">0 pcs</span>
-      </div>
-
-      <!-- RESUMÉ & TOTAUX -->
-      <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-xs space-y-1.5 font-medium text-emerald-950">
-        <div class="flex justify-between"><span>Subtotal:</span><span id="subTotal">0.00 AED</span></div>
-        <div class="flex justify-between"><span>VAT (5%):</span><span id="vatAmount">0.00 AED</span></div>
-        <div class="flex justify-between font-bold text-sm text-emerald-700 border-t border-emerald-200 pt-1.5 mt-1"><span>GRAND TOTAL:</span><span id="grandTotal">0.00 AED</span></div>
-      </div>
-
-      <!-- PHOTO PREUVE -->
-      <div>
-        <button onclick="document.getElementById('photoInput').click()" class="w-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold p-3 rounded-xl text-xs border border-dashed border-stone-300">📷 Add Proof Photo (Optional)</button>
-        <input type="file" id="photoInput" class="hidden" accept="image/*" capture="environment" onchange="previewImage(event)">
-        <img id="imagePreview" class="hidden w-full max-h-48 object-cover rounded-xl mt-2 border border-stone-200" alt="Proof">
-      </div>
-
-      <button onclick="saveLaundrySlipToCloud()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl text-sm shadow-md transition">💾 Save Slip to Cloud Database</button>
-    </div>
-
-    <!-- BORDEREAUX ENREGISTRÉS CLOUD -->
-    <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
-      <h3 class="text-sm font-bold text-blue-900 border-b border-stone-100 pb-2">Stored Laundry Cloud Slips</h3>
-      <div id="laundryCloudList" class="space-y-2"><p class="text-xs text-stone-400 text-center py-4">Loading slips...</p></div>
-    </div>
-  </div>
-
-  <!-- MODAL BORDEREAU LAUNDRY -->
-  <div id="laundryModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-      <div class="flex justify-between items-start border-b border-stone-100 pb-3">
-        <div>
-          <h3 id="modalRoomTitle" class="text-lg font-bold text-blue-900">Room --</h3>
-          <p id="modalDate" class="text-[10px] text-stone-400"></p>
-        </div>
-        <button onclick="closeLaundryModal()" class="text-stone-400 text-2xl font-bold">×</button>
-      </div>
-
-      <div id="modalTypeBadge"></div>
-      <p id="modalOptionsList" class="text-xs font-bold text-blue-900 bg-stone-50 p-2.5 rounded-xl border border-stone-200"></p>
-
-      <table class="w-full text-xs text-left border-collapse">
-        <thead>
-          <tr class="border-b border-stone-200 text-stone-500 font-bold">
-            <th class="py-2">Item</th>
-            <th class="py-2">Service</th>
-            <th class="py-2">Qty</th>
-            <th class="py-2">Total</th>
-          </tr>
-        </thead>
-        <tbody id="modalTableBody" class="divide-y divide-stone-100"></tbody>
-      </table>
-
-      <div class="bg-emerald-50 p-3 rounded-xl text-xs space-y-1 font-semibold text-emerald-900 border border-emerald-200">
-        <div class="flex justify-between"><span>Clothes:</span><span id="modalClothesCount">0</span></div>
-        <div class="flex justify-between"><span>Subtotal:</span><span id="modalSubTotal">0.00 AED</span></div>
-        <div class="flex justify-between"><span>VAT (5%):</span><span id="modalVat">0.00 AED</span></div>
-        <div class="flex justify-between font-bold text-sm text-emerald-700 border-t border-emerald-200 pt-1"><span>TOTAL:</span><span id="modalTotal">0.00 AED</span></div>
-      </div>
-
-      <div id="modalPhotoContainer"></div>
-      <button onclick="deleteCurrentLaundrySlip()" class="w-full bg-rose-600 text-white font-bold py-3 rounded-xl text-xs">🗑️ Delete Slip</button>
-    </div>
+  <!-- BOUTON WHATSAPP FLOTTANT -->
+  <div id="whatsappContainer" class="fixed bottom-5 right-5 z-50">
+    <a href="https://wa.me/971526966865?text=Hello%2C%20I%20am%20contacting%20from%20Remal%20Hotel%20Guest%20Hub." target="_blank" class="flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 rounded-full shadow-2xl transition transform hover:scale-105 border border-emerald-500 font-semibold text-xs">
+      <span class="text-lg">💬</span><span id="whatsappText">WhatsApp Reception</span>
+    </a>
   </div>
 
   <!-- MODAL AUTH ADMIN -->
@@ -282,7 +183,7 @@
     </div>
   </div>
 
-  <!-- 3. ADMIN VIEW SÉCURISÉE -->
+  <!-- 2. ADMIN VIEW SÉCURISÉE -->
   <div id="adminView" class="hidden max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-6">
     <div class="flex justify-between items-center bg-stone-200/80 p-1.5 rounded-2xl text-xs font-bold">
       <div class="flex space-x-2 w-full md:w-auto">
@@ -293,12 +194,14 @@
         </button>
         <button onclick="switchAdminTab('banner')" id="admTabBanner" class="flex-1 md:flex-none px-6 py-2.5 rounded-xl text-stone-600">📢 Announcement</button>
       </div>
-      <div class="hidden md:flex items-center space-x-3">
+      <div class="flex items-center space-x-2">
+        <!-- LINK DIRECT VERS LAUNDRY -->
+        <a href="laundry.html" target="_blank" class="bg-blue-900 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm">🧺 Laundry App →</a>
         <button onclick="logoutAdmin()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 px-3 py-1.5 rounded-xl text-xs font-bold border border-rose-200 transition">🚪 Logout</button>
       </div>
     </div>
 
-    <!-- ADMIN: OFFRES ET MENU -->
+    <!-- ADMIN OFFRES ET MENU -->
     <div id="adminOffersPanel" class="space-y-6">
       <div class="flex space-x-2 border-b border-stone-200 pb-2 text-xs font-bold">
         <button onclick="switchAdminSubTab('offersList')" id="btnSubOffers" class="px-4 py-2 rounded-xl bg-stone-900 text-white">Promotions & Events</button>
@@ -367,7 +270,7 @@
       </div>
     </div>
 
-    <!-- ADMIN: DEMANDES & ALERTES SONORES -->
+    <!-- ADMIN DEMANDES -->
     <div id="adminRequestsPanel" class="hidden space-y-4">
       <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
         <div class="flex justify-between items-center border-b border-stone-100 pb-3">
@@ -384,7 +287,7 @@
       </div>
     </div>
 
-    <!-- ADMIN: BANNIÈRE -->
+    <!-- ADMIN BANNIÈRE -->
     <div id="adminBannerPanel" class="hidden space-y-4 max-w-2xl mx-auto">
       <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
         <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-2">Banner Management</h2>
@@ -405,66 +308,6 @@
     const SUPABASE_URL = 'https://tbsroleffqhyzbbfmtvp.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRic3JvbGVmZnFoeXpiYmZtdHZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MzUyMzMsImV4cCI6MjEwMDQxMTIzM30.oNKhoPJ7v__YJQW7flC9UsP2cIDHLMuxjqmf6_NvYW4';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    /* LAUNDRY DATABASE STRICTEMENT CONSERVÉE */
-    const laundryDB = {
-      laundry: {
-        "GENTLEMEN": [
-          { name: "Shirt", ar: "قميص", price: 22 }, { name: "T-Shirt", ar: "فانيلة", price: 15 }, { name: "Trousers", ar: "بنطلون", price: 24 },
-          { name: "Under Shirt", ar: "قميص داخلي", price: 10 }, { name: "Under Pants", ar: "سروال داخلي", price: 12 }, { name: "Pajama Slack", ar: "بيجامة سلاك", price: 11 },
-          { name: "Pajamas (2 Pcs)", ar: "بيجامة قطعتين", price: 22 }, { name: "Socks", ar: "جوارب", price: 6 }, { name: "Jacket", ar: "جاكيت", price: 34 },
-          { name: "Dishdash", ar: "دشداشة", price: 30 }, { name: "Gutra", ar: "غترة", price: 10 }, { name: "Khafia", ar: "كوفية", price: 10 },
-          { name: "Lungi", ar: "وزار", price: 15 }, { name: "Shorts", ar: "سروال قصير", price: 18 }, { name: "Track Suit", ar: "بدلة رياضة", price: 30 },
-          { name: "Overall", ar: "افرول", price: 36 }, { name: "Gloves", ar: "قفازات", price: 6 }, { name: "Knee Pad", ar: "واقي الركبة", price: 6 }, { name: "Bandages", ar: "مشد رباط", price: 6 }
-        ],
-        "LADIES": [
-          { name: "Dress", ar: "فستان", price: 42 }, { name: "Blouse", ar: "بلوزة", price: 24 }, { name: "Skirt", ar: "تنورة", price: 24 },
-          { name: "Jacket", ar: "سترة/جاكيت", price: 30 }, { name: "Petticoat", ar: "كومبليزون", price: 10 }, { name: "Brassiere", ar: "صدرية/سوتيان", price: 12 },
-          { name: "Trousers", ar: "بنطلون", price: 18 }, { name: "Night Gown", ar: "قميص نوم", price: 30 }, { name: "Dressing Gown", ar: "عباية", price: 30 },
-          { name: "Panties", ar: "سروال داخلي", price: 12 }, { name: "Handkerchief", ar: "منديل", price: 6 }, { name: "Scarf", ar: "حجاب/شيلة", price: 15 }, { name: "Saree", ar: "ساري", price: 36 }
-        ],
-        "CHILDREN": [
-          { name: "Child - Shorts", ar: "شورت", price: 7 }, { name: "Child - Trouser", ar: "بنطلون", price: 12 }, { name: "Child - Shirt", ar: "قميص", price: 7 },
-          { name: "Child - T-Shirt", ar: "قميص خفيف", price: 12 }, { name: "Child - Dishdasha", ar: "دشداشة", price: 7 }, { name: "Child - Dress", ar: "فستان", price: 22 }
-        ]
-      },
-      dry: {
-        "GENTLEMEN": [
-          { name: "Suit (2 pcs.)", ar: "بدلة قطعتين", price: 54 }, { name: "Trousers", ar: "بنطلون", price: 36 }, { name: "Jacket", ar: "جاكيت", price: 30 },
-          { name: "Necktie", ar: "ربطة عنق", price: 18 }, { name: "Sweater", ar: "كنزة", price: 22 }, { name: "Shirt (Silk)", ar: "قميص حرير", price: 24 },
-          { name: "Dishdash", ar: "دشداشة", price: 36 }, { name: "Gutra", ar: "غترة", price: 12 }, { name: "T-Shirt", ar: "قميص خفيف", price: 27 },
-          { name: "Waist Coat", ar: "سترة", price: 22 }, { name: "Overall", ar: "افرول", price: 42 }, { name: "Cap / Hat", ar: "قبعة", price: 12 }
-        ],
-        "LADIES": [
-          { name: "Dress", ar: "فستان", price: 48 }, { name: "Evening Dress", ar: "فستان سهرة", price: 54 }, { name: "Blouse", ar: "بلوزة", price: 36 },
-          { name: "Skirt", ar: "تنورة", price: 27 }, { name: "Slacks / Trousers", ar: "بنطلون", price: 24 }, { name: "Jacket", ar: "جاكيت", price: 30 },
-          { name: "Saree", ar: "ساري", price: 42 }, { name: "Abbaya", ar: "عباية", price: 36 }, { name: "T-Shirt", ar: "قميص خفيف", price: 27 },
-          { name: "Scarf", ar: "حجاب/شيلة", price: 18 }, { name: "Pajama", ar: "بيجامة", price: 30 }, { name: "Child - Dress", ar: "فستان", price: 24 },
-          { name: "Child - T-Shirt", ar: "قميص الأطفال", price: 12 }, { name: "Shawl", ar: "شال", price: 12 }
-        ]
-      },
-      pressing: {
-        "GENTLEMEN": [
-          { name: "Suit (2 pcs.)", ar: "بدلة قطعتين", price: 30 }, { name: "Trousers", ar: "بنطلون", price: 12 }, { name: "Jacket", ar: "جاكيت", price: 18 },
-          { name: "Shirt", ar: "قميص", price: 12 }, { name: "Necktie", ar: "ربطة عنق", price: 12 }, { name: "Dishdash", ar: "دشداشة", price: 18 },
-          { name: "Lungi", ar: "وزار", price: 12 }, { name: "T-Shirt", ar: "قميص خفيف", price: 10 }, { name: "Overall", ar: "افرول", price: 24 },
-          { name: "Pajama Slack", ar: "بيجامة سلاك", price: 15 }, { name: "Gutra", ar: "غترة", price: 6 }, { name: "Shorts", ar: "سروال قصير / شورت", price: 10 }, { name: "Abbaya", ar: "عباية", price: 18 }
-        ],
-        "LADIES": [
-          { name: "Blouse", ar: "بلوزة", price: 12 }, { name: "Dress", ar: "فستان", price: 30 }, { name: "Evening Dress", ar: "فستان سهرة", price: 42 },
-          { name: "Skirt", ar: "تنورة", price: 15 }, { name: "Slacks / Trousers", ar: "بنطلون", price: 12 }, { name: "Jacket", ar: "جاكيت", price: 24 },
-          { name: "Saree", ar: "ساري", price: 24 }, { name: "Abbaya", ar: "عباية", price: 21 }, { name: "Night Gown", ar: "قميص نوم", price: 18 },
-          { name: "Scarf", ar: "حجاب/شيلة", price: 10 }, { name: "Shawl", ar: "شال", price: 10 }
-        ]
-      }
-    };
-
-    let currentLaundryService = 'laundry';
-    let currentLaundryCountType = 'guest';
-    let laundryCart = {};
-    let currentLaundryImage = null;
-    let cachedLaundrySlips = [];
-    let selectedSlipIdForModal = null;
 
     let audioContext = null;
     let audioEnabled = false;
@@ -514,7 +357,7 @@
       hi: {
         welcome: "रेमल होटल एंड विला में आपका स्वागत है", lblOffers: "विशेष ऑफ़र", lblFacilities: "सुविधाएं", lblService: "सेवा अनुरोध",
         facHeader: "होटल सुविधाएं", facSub: "हमारे प्रीमियम स्थानों और सेवाओं का अन्वेषण करें", reqHeader: "अतिथि सेवा का अनुरोध करें",
-        lblRoom: "कमरा / विلا संख्या", placeholderRoom: "उदा., 104 या विला 02", lblServiceType: "सेवा का प्रकार",
+        lblRoom: "कमरा / विला संख्या", placeholderRoom: "उदा., 104 या विला 02", lblServiceType: "सेवा का प्रकार",
         lblDetails: "अतिरिक्त विवरण / अनुरोध", placeholderDetails: "अपना अनुरोध यहां दर्ज करें...", btnSubmit: "रिसेप्शन को अनुरोध भेजें",
         whatsappBtn: "व्हाट्सएप रिसेप्शन", successMsg: "आपका अनुरोध सफलतापूर्वक भेजा गया!", chatWhatsapp: "💬 व्हाट्सएप पर चैट करें",
         trackHeader: "📡 सक्रिय अनुरोध ट्रैकिंग", liveStatus: "लाइव स्थिति", trackEmpty: "वास्तविक समय में अनुरोध ट्रैक करने के लिए ऊपर कमरा नंबर दर्ज करें।",
@@ -537,21 +380,10 @@
       const urlParams = new URLSearchParams(window.location.search);
       const room = urlParams.get('room');
       const adminParam = urlParams.get('admin');
-      const laundryParam = urlParams.get('laundry');
 
       if (room) {
         document.getElementById('roomIndicator').innerText = `Room/Villa: ${room} • Remal Hotel`;
         document.getElementById('req_room').value = room;
-      }
-
-      // SI L'URL ?laundry=true EST OUVERTE (TABLETTE LAUNDRY PLANT)
-      if (laundryParam === 'true') {
-        document.getElementById('clientView').classList.add('hidden');
-        document.getElementById('adminView').classList.add('hidden');
-        document.getElementById('laundryPlantView').classList.remove('hidden');
-        renderLaundryItems();
-        await fetchLaundrySlipsFromCloud();
-        return;
       }
 
       if (adminParam === 'true') {
@@ -573,237 +405,6 @@
       setInterval(fetchRequestsFromCloud, 5000);
     }
 
-    /* LOGIQUE BORDEREAU LAUNDRY CLOUD */
-    function selectCountType(type) {
-      currentLaundryCountType = type;
-      const btnG = document.getElementById('btn-count-guest');
-      const btnH = document.getElementById('btn-count-hotel');
-      if (type === 'guest') {
-        btnG.className = "flex-1 py-2.5 rounded-lg bg-blue-900 text-white shadow-sm font-bold";
-        btnH.className = "flex-1 py-2.5 rounded-lg text-stone-600 font-bold";
-      } else {
-        btnH.className = "flex-1 py-2.5 rounded-lg bg-amber-600 text-white shadow-sm font-bold";
-        btnG.className = "flex-1 py-2.5 rounded-lg text-stone-600 font-bold";
-      }
-      renderLaundryItems();
-      calculateLaundryGlobalTotals();
-    }
-
-    function switchLaundryService(service) {
-      currentLaundryService = service;
-      ['laundry', 'dry', 'pressing'].forEach(s => {
-        document.getElementById(`tab-service-${s}`).className = s === service ? "flex-1 py-2 rounded-xl bg-blue-900 text-white font-bold" : "flex-1 py-2 rounded-xl bg-stone-100 text-stone-700 font-bold";
-      });
-      renderLaundryItems();
-    }
-
-    function renderLaundryItems() {
-      const container = document.getElementById('laundryItemsContainer');
-      if (!container) return;
-      container.innerHTML = '';
-
-      const serviceData = laundryDB[currentLaundryService];
-      for (const [catName, items] of Object.entries(serviceData)) {
-        const catHeader = document.createElement('div');
-        catHeader.className = 'bg-stone-200 text-blue-900 px-3 py-1 rounded-lg font-bold text-xs uppercase tracking-wider';
-        catHeader.innerText = catName;
-        container.appendChild(catHeader);
-
-        items.forEach(item => {
-          const key = `${currentLaundryService}_${item.name}`;
-          const qty = laundryCart[key] ? laundryCart[key].qty : 0;
-          const priceDisplay = currentLaundryCountType === 'hotel' ? '0.00 AED (Gratuit)' : `${item.price.toFixed(2)} AED`;
-
-          const row = document.createElement('div');
-          row.className = 'flex justify-between items-center py-1.5 border-b border-stone-100 text-xs';
-          row.innerHTML = `
-            <div>
-              <p class="font-bold text-stone-800">${item.name} <span class="text-stone-400 font-normal">${item.ar}</span></p>
-              <p class="text-[10px] ${currentLaundryCountType === 'hotel' ? 'text-emerald-600 font-bold' : 'text-amber-600 font-semibold'}">${priceDisplay}</p>
-            </div>
-            <div class="flex items-center space-x-2 bg-stone-100 p-1 rounded-lg">
-              <button onclick="updateLaundryQty('${key}', '${item.name}', ${item.price}, -1)" class="w-6 h-6 bg-white rounded font-bold shadow-sm text-stone-800">-</button>
-              <span class="font-bold px-1">${qty}</span>
-              <button onclick="updateLaundryQty('${key}', '${item.name}', ${item.price}, 1)" class="w-6 h-6 bg-blue-900 text-white rounded font-bold shadow-sm">+</button>
-            </div>
-          `;
-          container.appendChild(row);
-        });
-      }
-    }
-
-    function updateLaundryQty(key, name, price, delta) {
-      if (!laundryCart[key]) laundryCart[key] = { qty: 0, price: price, name: name, service: currentLaundryService };
-      laundryCart[key].qty += delta;
-      if (laundryCart[key].qty <= 0) delete laundryCart[key];
-      renderLaundryItems();
-      calculateLaundryGlobalTotals();
-    }
-
-    function calculateLaundryGlobalTotals() {
-      let totalClothes = 0;
-      let subtotal = 0;
-
-      Object.values(laundryCart).forEach(item => {
-        totalClothes += item.qty;
-        if (currentLaundryCountType === 'guest') subtotal += item.price * item.qty;
-      });
-
-      const vat = subtotal * 0.05;
-      const grandTotal = subtotal + vat;
-
-      document.getElementById('currentBordereauCount').innerText = `${totalClothes} pcs`;
-      document.getElementById('subTotal').innerText = `${subtotal.toFixed(2)} AED`;
-      document.getElementById('vatAmount').innerText = `${vat.toFixed(2)} AED`;
-      document.getElementById('grandTotal').innerText = `${grandTotal.toFixed(2)} AED`;
-    }
-
-    function previewImage(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          currentLaundryImage = e.target.result;
-          const img = document.getElementById('imagePreview');
-          img.src = currentLaundryImage;
-          img.classList.remove('hidden');
-        }
-        reader.readAsDataURL(file);
-      }
-    }
-
-    function simulerScanQR() {
-      const randomRoom = Math.floor(Math.random() * 100) + 101;
-      document.getElementById('laundryRoom').value = randomRoom;
-      alert(`QR Code Scanned: Room ${randomRoom}`);
-    }
-
-    async function saveLaundrySlipToCloud() {
-      const roomNum = document.getElementById('laundryRoom').value;
-      if (!roomNum) { alert('Please enter Room / Villa number.'); return; }
-      if (Object.keys(laundryCart).length === 0 && !currentLaundryImage) { alert('Select at least one item or add photo proof.'); return; }
-
-      let totalClothes = 0;
-      Object.values(laundryCart).forEach(item => totalClothes += item.qty);
-
-      let subtotal = 0;
-      if (currentLaundryCountType === 'guest') {
-        Object.values(laundryCart).forEach(item => subtotal += item.price * item.qty);
-      }
-
-      const optionsSelected = {
-        today: document.getElementById('optToday').checked,
-        tomorrow: document.getElementById('optTomorrow').checked,
-        starch: document.getElementById('optStarch').checked,
-        hanger: document.getElementById('optHanger').checked,
-        fold: document.getElementById('optFold').checked
-      };
-
-      const vat = subtotal * 0.05;
-      const grandTotal = subtotal + vat;
-
-      const newSlip = {
-        room: roomNum,
-        count_type: currentLaundryCountType,
-        options: optionsSelected,
-        items: laundryCart,
-        total_clothes: totalClothes,
-        subtotal: subtotal,
-        vat: vat,
-        total: grandTotal,
-        photo: currentLaundryImage
-      };
-
-      await supabaseClient.from('laundry_slips').insert([newSlip]);
-      alert(`Laundry Cloud Slip saved for Room ${roomNum}!`);
-      
-      laundryCart = {};
-      currentLaundryImage = null;
-      document.getElementById('laundryRoom').value = '';
-      document.getElementById('imagePreview').classList.add('hidden');
-      renderLaundryItems();
-      calculateLaundryGlobalTotals();
-      await fetchLaundrySlipsFromCloud();
-    }
-
-    async function fetchLaundrySlipsFromCloud() {
-      const { data } = await supabaseClient.from('laundry_slips').select('*').order('id', { ascending: false });
-      cachedLaundrySlips = data || [];
-      renderLaundryCloudList();
-    }
-
-    function renderLaundryCloudList() {
-      const container = document.getElementById('laundryCloudList');
-      if (cachedLaundrySlips.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400 text-center py-4">No slips recorded yet.</p>`; return; }
-
-      container.innerHTML = cachedLaundrySlips.map(entry => `
-        <div onclick="openLaundryModal(${entry.id})" class="p-3 bg-stone-50 rounded-2xl border border-stone-200 text-xs flex justify-between items-center cursor-pointer hover:bg-stone-100">
-          <div>
-            <span class="font-bold text-blue-900 text-sm">Room ${entry.room}</span>
-            <span class="ml-2 text-[10px] font-bold px-2 py-0.5 rounded-full ${entry.count_type === 'hotel' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'}">${entry.count_type === 'hotel' ? 'Hotel Count' : 'Guest Count'}</span>
-          </div>
-          <div class="text-right font-bold text-emerald-700">
-            <span class="text-[10px] text-stone-400 font-normal">(${entry.total_clothes} pcs)</span> ${entry.total.toFixed(2)} AED ${entry.photo ? '📸' : ''}
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function openLaundryModal(id) {
-      selectedSlipIdForModal = id;
-      const entry = cachedLaundrySlips.find(e => e.id === id);
-      if (!entry) return;
-
-      document.getElementById('modalRoomTitle').innerText = `Room ${entry.room}`;
-      document.getElementById('modalDate').innerText = `Recorded: ${new Date(entry.created_at).toLocaleString()}`;
-      document.getElementById('modalTypeBadge').innerHTML = `<span class="text-[10px] font-bold px-3 py-1 rounded-full ${entry.count_type === 'hotel' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'}">${entry.count_type === 'hotel' ? 'HOTEL COUNT (Gratuit)' : 'GUEST COUNT (Facturé)'}</span>`;
-
-      let optsArr = [];
-      if (entry.options?.today) optsArr.push('Today');
-      if (entry.options?.tomorrow) optsArr.push('Tomorrow');
-      if (entry.options?.starch) optsArr.push('Starch');
-      if (entry.options?.hanger) optsArr.push('On Hanger');
-      if (entry.options?.fold) optsArr.push('Fold');
-      document.getElementById('modalOptionsList').innerText = optsArr.length > 0 ? `Options: ${optsArr.join(' | ')}` : 'Options: None';
-
-      const tbody = document.getElementById('modalTableBody');
-      tbody.innerHTML = '';
-      Object.values(entry.items || {}).forEach(item => {
-        tbody.innerHTML += `
-          <tr class="py-1">
-            <td class="font-bold">${item.name}</td>
-            <td class="uppercase text-[10px]">${item.service}</td>
-            <td>${item.qty}</td>
-            <td class="font-bold">${entry.count_type === 'hotel' ? '0.00 AED' : (item.qty * item.price).toFixed(2) + ' AED'}</td>
-          </tr>
-        `;
-      });
-
-      document.getElementById('modalClothesCount').innerText = `${entry.total_clothes} pcs`;
-      document.getElementById('modalSubTotal').innerText = `${entry.subtotal.toFixed(2)} AED`;
-      document.getElementById('modalVat').innerText = `${entry.vat.toFixed(2)} AED`;
-      document.getElementById('modalTotal').innerText = `${entry.total.toFixed(2)} AED`;
-
-      const pCont = document.getElementById('modalPhotoContainer');
-      pCont.innerHTML = entry.photo ? `<p class="font-bold text-xs mt-2">Proof Photo:</p><img src="${entry.photo}" class="w-full rounded-xl border mt-1">` : '';
-
-      document.getElementById('laundryModal').classList.remove('hidden');
-    }
-
-    function closeLaundryModal() {
-      document.getElementById('laundryModal').classList.add('hidden');
-    }
-
-    async function deleteCurrentLaundrySlip() {
-      if (!selectedSlipIdForModal) return;
-      if (confirm('Delete this laundry slip?')) {
-        await supabaseClient.from('laundry_slips').delete().eq('id', selectedSlipIdForModal);
-        closeLaundryModal();
-        await fetchLaundrySlipsFromCloud();
-      }
-    }
-
-    /* CODE STANDARD SUPABASE ET AUTHENTIFICATION ACCÈS STAFF */
     function enableAudioAlerts() {
       try {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
