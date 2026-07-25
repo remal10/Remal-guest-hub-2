@@ -232,10 +232,14 @@
               <input type="text" id="adm_timing_ar" placeholder="الأوقات (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-lg p-2 text-sm outline-none" required>
               <input type="text" id="adm_timing_hi" placeholder="समय (हिंदी)" class="w-full border border-stone-200 rounded-lg p-2 text-sm outline-none" required>
             </div>
+            
+            <!-- SECTION IMAGE MODIFIÉE EN BASE64 -->
             <div>
-              <input type="file" id="imageFileInput" accept="image/*" class="w-full text-xs text-stone-500 mb-2" />
-              <input type="hidden" id="adm_image" />
+              <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Offer Image</label>
+              <input type="file" id="imageFileInput" accept="image/*" onchange="previewPromoImage(event)" class="w-full text-xs text-stone-500 mb-2" />
+              <img id="promoImagePreview" class="hidden w-full h-32 object-cover rounded-xl mt-2 border border-stone-200" alt="Preview">
             </div>
+
             <button type="button" onclick="saveAdminData()" class="w-full bg-remal-sand text-white font-bold py-3.5 rounded-xl shadow-md transition text-sm">Publish Offer</button>
           </form>
         </div>
@@ -321,6 +325,9 @@
     let cachedOffers = [];
     let cachedRequests = [];
     let activeAnnouncement = null;
+    
+    // NOUVELLE VARIABLE POUR L'IMAGE BASE64
+    let currentPromoImageData = null;
 
     function enableAudioAlerts() {
       try {
@@ -402,7 +409,6 @@
       }
     };
 
-    /* LISTE COMPLÈTE DES 9 FACILITIES DE L'HÔTEL */
     const facilitiesData = [
       {
         id: 'exterior',
@@ -771,13 +777,52 @@
       `).join('');
     }
 
+    // FONCTION POUR PRÉVISUALISER ET CONVERTIR L'IMAGE EN BASE64
+    function previewPromoImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          currentPromoImageData = e.target.result;
+          const img = document.getElementById('promoImagePreview');
+          img.src = currentPromoImageData;
+          img.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    // FONCTION MODIFIÉE POUR PUBLIER L'OFFRE AVEC L'IMAGE EN BASE64
     async function saveAdminData() {
-      const imageUrl = document.getElementById('adm_image').value;
-      if (!imageUrl) { alert("Select an image."); return; }
-      const newItem = { category: document.getElementById('adm_category').value, price: document.getElementById('adm_price').value, image: imageUrl, title: { en: document.getElementById('adm_title_en').value, ar: document.getElementById('adm_title_ar').value, hi: document.getElementById('adm_title_hi').value }, timing: { en: document.getElementById('adm_timing_en').value, ar: document.getElementById('adm_timing_ar').value, hi: document.getElementById('adm_timing_hi').value } };
+      if (!currentPromoImageData) { 
+        alert("Please select an image."); 
+        return; 
+      }
+
+      const newItem = { 
+        category: document.getElementById('adm_category').value, 
+        price: document.getElementById('adm_price').value, 
+        image: currentPromoImageData, 
+        title: { 
+          en: document.getElementById('adm_title_en').value, 
+          ar: document.getElementById('adm_title_ar').value, 
+          hi: document.getElementById('adm_title_hi').value 
+        }, 
+        timing: { 
+          en: document.getElementById('adm_timing_en').value, 
+          ar: document.getElementById('adm_timing_ar').value, 
+          hi: document.getElementById('adm_timing_hi').value 
+        } 
+      };
+
       await supabaseClient.from('offers').insert([newItem]);
       alert('Offer published!');
+      
+      // Réinitialiser le formulaire
       document.getElementById('adminForm').reset();
+      currentPromoImageData = null;
+      document.getElementById('promoImagePreview').classList.add('hidden');
+      
       await fetchOffersFromCloud();
     }
 
