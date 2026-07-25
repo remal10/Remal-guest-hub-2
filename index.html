@@ -105,7 +105,7 @@
               <span class="text-xs font-bold text-stone-800">🍽️ Select Menu Items</span>
               <span class="text-[10px] bg-remal-sand text-white font-bold px-2 py-0.5 rounded-full">In-Room Dining</span>
             </div>
-            <div id="foodItemsContainer" class="space-y-3"><p class="text-center text-xs text-stone-400">Loading menu...</p></div>
+            <div id="foodItemsContainer" class="space-y-3 max-h-96 overflow-y-auto pr-1"><p class="text-center text-xs text-stone-400">Loading menu...</p></div>
             <div class="pt-2 border-t border-stone-200 space-y-2">
               <div class="flex justify-between text-xs font-bold text-stone-900">
                 <span>Total Amount:</span>
@@ -232,14 +232,11 @@
               <input type="text" id="adm_timing_ar" placeholder="الأوقات (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-lg p-2 text-sm outline-none" required>
               <input type="text" id="adm_timing_hi" placeholder="समय (हिंदी)" class="w-full border border-stone-200 rounded-lg p-2 text-sm outline-none" required>
             </div>
-            
-            <!-- SECTION IMAGE MODIFIÉE EN BASE64 -->
             <div>
               <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Offer Image</label>
               <input type="file" id="imageFileInput" accept="image/*" onchange="previewPromoImage(event)" class="w-full text-xs text-stone-500 mb-2" />
               <img id="promoImagePreview" class="hidden w-full h-32 object-cover rounded-xl mt-2 border border-stone-200" alt="Preview">
             </div>
-
             <button type="button" onclick="saveAdminData()" class="w-full bg-remal-sand text-white font-bold py-3.5 rounded-xl shadow-md transition text-sm">Publish Offer</button>
           </form>
         </div>
@@ -253,20 +250,27 @@
         <div class="lg:col-span-5 bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4 h-fit">
           <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-2">Add New Menu Dish</h2>
           <form id="foodMenuForm" onsubmit="addMenuItem(event)" class="space-y-4">
-            <input type="text" id="food_name" placeholder="Item Name" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50 outline-none" required>
+            <input type="text" id="food_name" placeholder="Item Name (e.g., Burger | برجر)" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50 outline-none" required>
             <input type="number" id="food_price" placeholder="Price (AED)" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50 outline-none" required>
             <select id="food_category" class="w-full border border-stone-200 rounded-xl p-3 bg-stone-50 text-sm outline-none">
-              <option value="Breakfast">Breakfast</option>
-              <option value="Mains">Mains / Sandwiches</option>
-              <option value="Beverages">Beverages & Coffee</option>
-              <option value="Desserts">Desserts</option>
+              <option value="Breakfast">Breakfast | وجبة الإفطار</option>
+              <option value="Soup">Soup | الشوربة</option>
+              <option value="Salads and Mezzeh">Salads and Mezzeh | السلطات والمقبلات</option>
+              <option value="Sandwich and Burger">Sandwich and Burger | الساندويش والبرجر</option>
+              <option value="Pizza">Pizza | البيتزا</option>
+              <option value="Pasta">Pasta | الباستا</option>
+              <option value="Main Course">Main Course | الأطباق الرئيسية</option>
+              <option value="Hot Beverage">Hot Beverage | القهوة/ الشاي</option>
+              <option value="Milkshake">Milkshake | ميلك شيك</option>
+              <option value="Mocktail">Mocktail | الموكتيل</option>
+              <option value="Alcoholic Beverages">Alcoholic Beverages</option>
             </select>
-            <button type="submit" class="w-full bg-stone-900 text-white font-bold py-3.5 rounded-xl text-sm">➕ Add Dish</button>
+            <button type="submit" class="w-full bg-stone-900 text-white font-bold py-3.5 rounded-xl text-sm">➕ Add Dish to Database</button>
           </form>
         </div>
         <div class="lg:col-span-7 bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
           <h3 class="text-xs font-bold text-stone-500 uppercase tracking-widest border-b border-stone-100 pb-2">Live Menu Items</h3>
-          <div id="adminMenuListContainer" class="space-y-2"></div>
+          <div id="adminMenuListContainer" class="space-y-4 max-h-[600px] overflow-y-auto pr-2"></div>
         </div>
       </div>
     </div>
@@ -325,9 +329,137 @@
     let cachedOffers = [];
     let cachedRequests = [];
     let activeAnnouncement = null;
-    
-    // NOUVELLE VARIABLE POUR L'IMAGE BASE64
     let currentPromoImageData = null;
+
+    /* ========== MENU HARDCODÉ À PARTIR DU PDF ========== */
+    const HARDCODED_MENU = [
+      { id: 'hm_bf1', category: 'Breakfast | وجبة الإفطار', name: 'Continental | كونتيننتال', price: 49 },
+      { id: 'hm_bf2', category: 'Breakfast | وجبة الإفطار', name: 'Emirati Flavors | الفطور بالطعم الإماراتي', price: 59 },
+      { id: 'hm_bf3', category: 'Breakfast | وجبة الإفطار', name: 'Arabic Breakfast | فطور عربي', price: 59 },
+      { id: 'hm_bf4', category: 'Breakfast | وجبة الإفطار', name: 'International | العالمي', price: 61 },
+      { id: 'hm_bf5', category: 'Breakfast | وجبة الإفطار', name: 'Choice of Eggs | اختيارات من البيض', price: 25 },
+      { id: 'hm_bf6', category: 'Breakfast | وجبة الإفطار', name: 'Shakshuka | شكشوكة', price: 30 },
+      { id: 'hm_bf7', category: 'Breakfast | وجبة الإفطار', name: 'Eggs Benedict with Turkey Ham | بيض بندكت مع ديك رومي', price: 30 },
+      { id: 'hm_bf8', category: 'Breakfast | وجبة الإفطار', name: 'Eggs Benedict with Smoked Salmon | بيض بندكت مع سلمون مدخن', price: 35 },
+
+      { id: 'hm_sp1', category: 'Soup | الشوربة', name: 'Traditional Lentil Soup | شوربة العدس', price: 25 },
+      { id: 'hm_sp2', category: 'Soup | الشوربة', name: 'Minestrone Soup | شوربة المينستروني', price: 25 },
+      { id: 'hm_sp3', category: 'Soup | الشوربة', name: 'Harira Soup | شوربة الحريرة', price: 25 },
+      { id: 'hm_sp4', category: 'Soup | الشوربة', name: 'Soup of the Day | شوربة اليوم', price: 25 },
+
+      { id: 'hm_sl1', category: 'Salads and Mezzeh | السلطات والمقبلات', name: 'Classic Caesar Salad | سلطة سيزر الكلاسيكية', price: 45 },
+      { id: 'hm_sl2', category: 'Salads and Mezzeh | السلطات والمقبلات', name: 'Chicken Caesar Salad | سلطة سيزر مع الدجاج', price: 49 },
+      { id: 'hm_sl3', category: 'Salads and Mezzeh | السلطات والمقبلات', name: 'Shrimps Caesar Salad | سلطة سيزر بالروبيان', price: 59 },
+      { id: 'hm_sl4', category: 'Salads and Mezzeh | السلطات والمقبلات', name: 'Quinoa Salad | سلطة الكينوا', price: 40 },
+      { id: 'hm_sl5', category: 'Salads and Mezzeh | السلطات والمقبلات', name: 'Fattoush | فتوش', price: 40 },
+      { id: 'hm_sl6', category: 'Salads and Mezzeh | السلطات والمقبلات', name: '(Warak Enab) Vine Leaves | ورق عنب', price: 40 },
+
+      { id: 'hm_sw1', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Beef Burger | برجر لحم بقري', price: 60 },
+      { id: 'hm_sw2', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Mac Beef Burger | برجر لحم بقري ماك', price: 65 },
+      { id: 'hm_sw3', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Grilled Chicken Burger | برجر الدجاج المشوي', price: 55 },
+      { id: 'hm_sw4', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Club Sandwich | كلوب ساندويتش', price: 60 },
+      { id: 'hm_sw5', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Fish and Chips | سمك مقلي مع بطاطس مقلية', price: 69 },
+      { id: 'hm_sw6', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Chicken Quesadilla | كاساديا الدجاج', price: 60 },
+      { id: 'hm_sw7', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Smoked Salmon Sandwich | ساندويتش سلمون مدخن', price: 55 },
+      { id: 'hm_sw8', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Cheese Sandwich | ساندويتش الجبن', price: 45 },
+      { id: 'hm_sw9', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Chicken Steak Sandwich | ساندويتش ستيك الدجاج', price: 60 },
+      { id: 'hm_sw10', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Beef Steak Sandwich | ساندويتش ستيك اللحم البقري', price: 65 },
+
+      { id: 'hm_pz1', category: 'Pizza | البيتزا', name: 'Margherita | مارغريتا', price: 49 },
+      { id: 'hm_pz2', category: 'Pizza | البيتزا', name: 'Vadodara | فادودارا', price: 59 },
+      { id: 'hm_pz3', category: 'Pizza | البيتزا', name: 'Cajun Spiced Chicken | دجاج متبل بالكاجون', price: 65 },
+      { id: 'hm_pz4', category: 'Pizza | البيتزا', name: 'Polo | بولو', price: 60 },
+      { id: 'hm_pz5', category: 'Pizza | البيتزا', name: 'Pepperoni | بيبروني', price: 65 },
+      { id: 'hm_pz6', category: 'Pizza | البيتزا', name: 'Gorgonzola | غورغونزولا', price: 69 },
+
+      { id: 'hm_pt1', category: 'Pasta | الباستا', name: 'Spaghetti Bolognese | سباغيتي بولونيز', price: 56 },
+      { id: 'hm_pt2', category: 'Pasta | الباستا', name: 'Ravioli Pasta with Spinach & Ricotta | رافيولي بالسبانخ والريكوتا', price: 69 },
+      { id: 'hm_pt3', category: 'Pasta | الباستا', name: 'Fettuccine Alfredo with Grilled Chicken | فيتوتشيني ألفريدو مع دجاج مشوي', price: 60 },
+      { id: 'hm_pt4', category: 'Pasta | الباستا', name: 'Tagliatelle with Shrimp & Spring Onion Sauce | تالياتيلي بالروبيان وصلصة البصل الأخضر', price: 60 },
+
+      { id: 'hm_mc1', category: 'Main Course | الأطباق الرئيسية', name: 'Lamb Machboos | مجبوس لحم', price: 75 },
+      { id: 'hm_mc2', category: 'Main Course | الأطباق الرئيسية', name: 'Chicken Machboos | مجبوس دجاج', price: 65 },
+      { id: 'hm_mc3', category: 'Main Course | الأطباق الرئيسية', name: 'Chicken Kabsa | كبسة دجاج', price: 70 },
+      { id: 'hm_mc4', category: 'Main Course | الأطباق الرئيسية', name: 'Chicken Tikka Biryani | برياني دجاج تيكا', price: 65 },
+      { id: 'hm_mc5', category: 'Main Course | الأطباق الرئيسية', name: 'Lamb Biryani | برياني لحم', price: 80 },
+      { id: 'hm_mc6', category: 'Main Course | الأطباق الرئيسية', name: 'Vegetable Biryani | برياني خضار', price: 53 },
+      { id: 'hm_mc7', category: 'Main Course | الأطباق الرئيسية', name: 'Hammour Fish Curry | كاري سمك الهامور', price: 70 },
+      { id: 'hm_mc8', category: 'Main Course | الأطباق الرئيسية', name: 'Paneer Butter Masala | بانير بتر ماسالا', price: 60 },
+      { id: 'hm_mc9', category: 'Main Course | الأطباق الرئيسية', name: 'Gobi Masala | قرنبيط ماسالا', price: 60 },
+      { id: 'hm_mc10', category: 'Main Course | الأطباق الرئيسية', name: 'Vegetable Kurma | كورما خضار', price: 60 },
+      { id: 'hm_mc11', category: 'Main Course | الأطباق الرئيسية', name: 'Butter Chicken Masala | دجاج بتر ماسالا', price: 65 },
+      { id: 'hm_mc12', category: 'Main Course | الأطباق الرئيسية', name: 'Kadai Paneer | كاداي بانير', price: 60 },
+      { id: 'hm_mc13', category: 'Main Course | الأطباق الرئيسية', name: 'Gobi Manchurian | قرنبيط مانتشوريان', price: 60 },
+      { id: 'hm_mc14', category: 'Main Course | الأطباق الرئيسية', name: 'Grilled Salmon (200g) | سلمون مشوي', price: 90 },
+      { id: 'hm_mc15', category: 'Main Course | الأطباق الرئيسية', name: 'Lamb Chops | ريش لحم غنم', price: 85 },
+      { id: 'hm_mc16', category: 'Main Course | الأطباق الرئيسية', name: 'Grilled Chicken Breast (200g) | صدر دجاج مشوي', price: 70 },
+      { id: 'hm_mc17', category: 'Main Course | الأطباق الرئيسية', name: 'Fried Shrimp | روبيان مقلي', price: 75 },
+      { id: 'hm_mc18', category: 'Main Course | الأطباق الرئيسية', name: 'Grilled Beef Tenderloin (200g) | فيليه لحم بقري مشوي', price: 85 },
+      { id: 'hm_mc19', category: 'Main Course | الأطباق الرئيسية', name: 'Nasi Goreng | ناسي جورينغ', price: 65 },
+      { id: 'hm_mc20', category: 'Main Course | الأطباق الرئيسية', name: 'Plain Fried Rice | أرز مقلي عادي', price: 35 },
+
+      { id: 'hm_hb1', category: 'Hot Beverage | القهوة/ الشاي', name: 'Espresso | إسبريسو', price: 16 },
+      { id: 'hm_hb2', category: 'Hot Beverage | القهوة/ الشاي', name: 'Double Espresso | دبل إسبريسو', price: 22 },
+      { id: 'hm_hb3', category: 'Hot Beverage | القهوة/ الشاي', name: 'Turkish Coffee | قهوة تركية', price: 22 },
+      { id: 'hm_hb4', category: 'Hot Beverage | القهوة/ الشاي', name: 'Cappuccino | كابتشينو', price: 27 },
+      { id: 'hm_hb5', category: 'Hot Beverage | القهوة/ الشاي', name: 'Caffè Latte | لاتيه', price: 27 },
+      { id: 'hm_hb6', category: 'Hot Beverage | القهوة/ الشاي', name: 'Hot Chocolate | شوكولاتة ساخنة', price: 30 },
+      { id: 'hm_hb7', category: 'Hot Beverage | القهوة/ الشاي', name: 'Americano | أمريكانو', price: 20 },
+      { id: 'hm_hb8', category: 'Hot Beverage | القهوة/ الشاي', name: 'Iced Coffee | قهوة مثلجة', price: 22 },
+      { id: 'hm_hb9', category: 'Hot Beverage | القهوة/ الشاي', name: 'Tea | شاي', price: 16 },
+
+      { id: 'hm_ms1', category: 'Milkshake | ميلك شيك', name: 'Chocolate | شوكولاتة', price: 33 },
+      { id: 'hm_ms2', category: 'Milkshake | ميلك شيك', name: 'Vanilla | فانيليا', price: 33 },
+      { id: 'hm_ms3', category: 'Milkshake | ميلك شيك', name: 'Strawberry | فراولة', price: 33 },
+
+      { id: 'hm_mk1', category: 'Mocktail | الموكتيل', name: 'Fruity | فروتي', price: 33 },
+      { id: 'hm_mk2', category: 'Mocktail | الموكتيل', name: 'Piña Colada | بينا كولادا', price: 33 },
+      { id: 'hm_mk3', category: 'Mocktail | الموكتيل', name: 'Strawberry Margarita | مارغريتا الفراولة', price: 33 },
+      { id: 'hm_mk4', category: 'Mocktail | الموكتيل', name: 'Mojito | موهيتو', price: 33 },
+      { id: 'hm_mk5', category: 'Mocktail | الموكتيل', name: 'Mai Tai | ماي تاي', price: 33 },
+      { id: 'hm_mk6', category: 'Mocktail | الموكتيل', name: 'Nutella Hot Chocolate | شوكولاتة ساخنة مع نوتيلا', price: 33 },
+      { id: 'hm_mk7', category: 'Mocktail | الموكتيل', name: 'Banana Milk Coffee | قهوة مع حليب الموز', price: 33 },
+
+      { id: 'hm_b1', category: 'Alcoholic Beverages', name: 'Corona', price: 40 },
+      { id: 'hm_b2', category: 'Alcoholic Beverages', name: 'Stella', price: 40 },
+      { id: 'hm_b3', category: 'Alcoholic Beverages', name: 'Heineken', price: 40 },
+      { id: 'hm_b4', category: 'Alcoholic Beverages', name: 'Budweiser', price: 40 },
+      { id: 'hm_b5', category: 'Alcoholic Beverages', name: 'Hoegaarden', price: 40 },
+      { id: 'hm_b6', category: 'Alcoholic Beverages', name: 'Guinness Stout', price: 44 },
+      { id: 'hm_b7', category: 'Alcoholic Beverages', name: 'Bacardi Breezers', price: 35 },
+      { id: 'hm_b8', category: 'Alcoholic Beverages', name: 'Strongbow Cider', price: 44 },
+      { id: 'hm_b9', category: 'Alcoholic Beverages', name: 'Soju', price: 55 },
+
+      { id: 'hm_ck1', category: 'Alcoholic Beverages', name: 'Bloody Mary', price: 44 },
+      { id: 'hm_ck2', category: 'Alcoholic Beverages', name: 'Cosmopolitan', price: 44 },
+      { id: 'hm_ck3', category: 'Alcoholic Beverages', name: 'Margarita', price: 44 },
+      { id: 'hm_ck4', category: 'Alcoholic Beverages', name: 'Piña Colada', price: 44 },
+      { id: 'hm_ck5', category: 'Alcoholic Beverages', name: 'Negroni', price: 44 },
+      { id: 'hm_ck6', category: 'Alcoholic Beverages', name: 'Martini', price: 44 },
+      { id: 'hm_ck7', category: 'Alcoholic Beverages', name: 'Bull Frog', price: 65 },
+      { id: 'hm_ck8', category: 'Alcoholic Beverages', name: 'Long Island Tea', price: 65 },
+      { id: 'hm_ck9', category: 'Alcoholic Beverages', name: 'Aperol Spritz', price: 65 },
+
+      { id: 'hm_wh1_g', category: 'Alcoholic Beverages', name: 'Jim Beam (Bourbon) - Glass', price: 44 },
+      { id: 'hm_wh1_b', category: 'Alcoholic Beverages', name: 'Jim Beam (Bourbon) - Bottle', price: 470 },
+      { id: 'hm_wh2_g', category: 'Alcoholic Beverages', name: 'Jack Daniel\'s - Glass', price: 44 },
+      { id: 'hm_wh2_b', category: 'Alcoholic Beverages', name: 'Jack Daniel\'s - Bottle', price: 470 },
+      { id: 'hm_wh3_g', category: 'Alcoholic Beverages', name: 'Jameson (Irish) - Glass', price: 44 },
+      { id: 'hm_wh3_b', category: 'Alcoholic Beverages', name: 'Jameson (Irish) - Bottle', price: 470 },
+      { id: 'hm_wh10_g', category: 'Alcoholic Beverages', name: 'Glenfiddich 12 Years - Glass', price: 55 },
+      { id: 'hm_wh10_b', category: 'Alcoholic Beverages', name: 'Glenfiddich 12 Years - Bottle', price: 795 },
+      
+      { id: 'hm_cg1_g', category: 'Alcoholic Beverages', name: 'Hennessy VSOP - Glass', price: 55 },
+      { id: 'hm_cg1_b', category: 'Alcoholic Beverages', name: 'Hennessy VSOP - Bottle', price: 520 },
+      { id: 'hm_cg3_g', category: 'Alcoholic Beverages', name: 'Hennessy XO - Glass', price: 100 },
+      { id: 'hm_cg3_b', category: 'Alcoholic Beverages', name: 'Hennessy XO - Bottle', price: 1600 },
+
+      { id: 'hm_ch1_g', category: 'Alcoholic Beverages', name: 'Champagne - Glass', price: 80 },
+      { id: 'hm_ch1_b', category: 'Alcoholic Beverages', name: 'Champagne - Bottle', price: 735 },
+
+      { id: 'hm_wn1_g', category: 'Alcoholic Beverages', name: 'House Wine (Red/White/Rosé) - Glass', price: 38 },
+      { id: 'hm_wn1_b', category: 'Alcoholic Beverages', name: 'House Wine (Red/White/Rosé) - Bottle', price: 190 }
+    ];
 
     function enableAudioAlerts() {
       try {
@@ -411,65 +543,48 @@
 
     const facilitiesData = [
       {
-        id: 'exterior',
-        images: ['Remal_exterior_view1.jpg', 'Remal_exterior_view2.jpg', 'Remal_exterior_view3.jpg', 'Remal_exterior_view4.jpg'],
+        id: 'exterior', images: ['Remal_exterior_view1.jpg', 'Remal_exterior_view2.jpg', 'Remal_exterior_view3.jpg', 'Remal_exterior_view4.jpg'],
         title: { en: 'Hotel Exterior & Grounds', ar: 'المظهر الخارجي والمحيط', hi: 'होटल का बाहरी दृश्य' },
         desc: { en: 'Experience our pristine architecture and welcoming surroundings at Remal Hotel & Villas.', ar: 'استمتع بالتصميم المعماري الفريد والمحيط الهادئ في فندق وڤلل رمال.', hi: 'रेमल होटल एंड विला के शानदार वास्तुشिल्پ का अनुभव करें।' },
         timing: { en: '24/7 Welcome', ar: 'ترحيب على مدار الساعة', hi: '24 घंटे स्वागत' }
       },
       {
-        id: 'pool',
-        images: ['Pool.jpg'],
-        title: { en: 'Al Waha Swimming Pool', ar: 'مسبح الواحة', hi: 'अल वाहा स्विमिंग पूल' },
+        id: 'pool', images: ['Pool.jpg'], title: { en: 'Al Waha Swimming Pool', ar: 'مسبح الواحة', hi: 'अल वाहा स्विमिंग पूल' },
         desc: { en: 'Relax by our outdoor swimming pool with comfortable loungers and refreshing drinks.', ar: 'استرخِ بجانب المسبح الخارجي الجميل مع المشروبات المنعشة.', hi: 'हमारे बाहरी स्विमिंग पूल के पास आराम करें।' },
         timing: { en: '07:00 AM - 08:00 PM', ar: '٠٧:٠٠ صباحاً - ٠٨:٠٠ مساءً', hi: 'सुबह 07:00 - रात 08:00' }
       },
       {
-        id: 'gym',
-        images: ['Gym.jpg'],
-        title: { en: 'Recreation & Fitness Gym', ar: 'مركز اللياقة والصالة الرياضية', hi: 'फिटनेस और जिम' },
+        id: 'gym', images: ['Gym.jpg'], title: { en: 'Recreation & Fitness Gym', ar: 'مركز اللياقة والصالة الرياضية', hi: 'फिटनेस और जिम' },
         desc: { en: 'Stay active with modern fitness equipment designed for your daily workouts.', ar: 'حافظ على نشاطك وصحتك مع أحدث معدات اللياقة البدنية.', hi: 'हमारे आधुनिक जिम उपकरणों के साथ फिट रहें।' },
         timing: { en: '06:00 AM - 10:00 PM', ar: '٠٦:٠٠ صباحاً - ١٠:٠٠ مساءً', hi: 'सुबह 06:00 - रात 10:00' }
       },
       {
-        id: 'kids',
-        images: ['Kid_club.jpg'],
-        title: { en: 'Kids Club & Play Area', ar: 'نادي الأطفال ومطقة الألعاب', hi: 'किड्स क्लब और प्ले एरिया' },
+        id: 'kids', images: ['Kid_club.jpg'], title: { en: 'Kids Club & Play Area', ar: 'نادي الأطفال ومطقة الألعاب', hi: 'किड्स क्लब और प्ले एरिया' },
         desc: { en: 'A safe, fun, and engaging play area for our young guests.', ar: 'منطقة ألعاب آمنة وممتعة ومخصصة لأطفالنا الأعزاء.', hi: 'हमारे छोटे मेहमानों के लिए एक सुरक्षित और मज़ेदार खेल क्षेत्र।' },
         timing: { en: '09:00 AM - 07:00 PM', ar: '٠٩:٠٠ صباحاً - ٠٧:٠٠ مساءً', hi: 'सुबह 09:00 - शाम 07:00' }
       },
       {
-        id: 'lobby',
-        images: ['Lobby_1.jpg', 'Lobby_2.jpg', 'Lobby_3.jpg', 'Lobby_4.jpg'],
-        title: { en: 'Grand Lobby & Reception', ar: 'البهو الرئيسي والاستقبال', hi: 'भव्य लॉबी और रिसेप्शन' },
+        id: 'lobby', images: ['Lobby_1.jpg', 'Lobby_2.jpg', 'Lobby_3.jpg', 'Lobby_4.jpg'], title: { en: 'Grand Lobby & Reception', ar: 'البهو الرئيسي والاستقبال', hi: 'भव्य लॉबी और रिसेप्शन' },
         desc: { en: 'An elegant welcoming ambiance with 24/7 concierge assistance.', ar: 'أجواء ترحيبية راقية مع خدمة الكونسيرج الممتازة على مدار الساعة.', hi: '24/7 द्वारपाल सहायता के साथ एक सुरुचिपूर्ण स्वागत योग्य माहौल।' },
         timing: { en: '24 Hours Open', ar: 'مفتوح ٢٤ ساعة', hi: '24 घंटे खुला है' }
       },
       {
-        id: 'restaurant',
-        images: ['Restaurant-1.jpg', 'Restaurant-2.jpg', 'Restaurant-3.jpg', 'Restaurant-4.jpg'],
-        title: { en: 'Falaj Restaurant & Dining', ar: 'مطعم الفلج والوجبات', hi: 'फलज रेस्टोरेंट और भोजन' },
+        id: 'restaurant', images: ['Restaurant-1.jpg', 'Restaurant-2.jpg', 'Restaurant-3.jpg', 'Restaurant-4.jpg'], title: { en: 'Falaj Restaurant & Dining', ar: 'مطعم الفلج والوجبات', hi: 'फलज रेस्टोरेंट और भोजन' },
         desc: { en: 'International buffet breakfast & fine dining options serving delicious global cuisines.', ar: 'بوفيه إفطار عالمي وتجربة طعام فاخرة تقدم أشهى المأكولات العالمية.', hi: 'अंतर्राष्ट्रीय बफ़े नाश्ता और स्वादिष्ट वैश्विक व्यंजन।' },
         timing: { en: '06:30 AM - 11:00 PM', ar: '٠٦:٣٠ صباحاً - ١١:٠٠ مساءً', hi: 'सुबह 06:30 - रात 11:00' }
       },
       {
-        id: 'rooms',
-        images: ['Room1.jpg', 'Room2.jpg', 'Room3.jpg', 'Room4.jpg', 'Room5.jpg', 'Room6.jpg', 'Room7.jpg', 'Room8.jpg'],
-        title: { en: 'Luxury Guest Rooms', ar: 'غرف النزلاء الفاخرة', hi: 'लक्जरी अतिथि कमरे' },
+        id: 'rooms', images: ['Room1.jpg', 'Room2.jpg', 'Room3.jpg', 'Room4.jpg', 'Room5.jpg', 'Room6.jpg', 'Room7.jpg', 'Room8.jpg'], title: { en: 'Luxury Guest Rooms', ar: 'غرف النزلاء الفاخرة', hi: 'लक्जरी अतिथि कमरे' },
         desc: { en: 'Spacious, modernly equipped rooms designed for maximum comfort and relaxation.', ar: 'غرف واسعة ومجهزة بأحدث وسائل الراحة المصممة لضمان أقصى درجات الاسترخاء.', hi: 'अधिकतम आराम और विश्राम के लिए डिज़ाइन किए गए विशाल कमरे।' },
         timing: { en: 'Daily Housekeeping', ar: 'تنظيف يومي للغرف', hi: 'दैनिक सफाई' }
       },
       {
-        id: 'villas',
-        images: ['Villa1.jpg', 'Villa2.jpg', 'Villa3.jpg', 'Villa4.jpg', 'Villa5.jpg'],
-        title: { en: 'VIP Private Villas', ar: 'الفيلات الملكية الخاصة VIP', hi: 'वीआईपी निजी विला' },
+        id: 'villas', images: ['Villa1.jpg', 'Villa2.jpg', 'Villa3.jpg', 'Villa4.jpg', 'Villa5.jpg'], title: { en: 'VIP Private Villas', ar: 'الفيلات الملكية الخاصة VIP', hi: 'वीआईपी निजी विला' },
         desc: { en: 'Fully furnished private luxury villas for a premium private stay experience.', ar: 'فيلات فاخرة مفروشة بالكامل لإقامة خاصة وفخمة لا تُنسى.', hi: 'प्रीमियम निजी प्रवास के अनुभव के लिए पूरी तरह से सुसज्जित निजी विला।' },
         timing: { en: 'VIP Concierge Service', ar: 'خدمة كونسيرج خاصة', hi: 'वीआईपी सेवा' }
       },
       {
-        id: 'meeting',
-        images: ['Meeting_room1.jpg', 'Meeting_room2.jpg', 'Meeting_room3.jpg', 'Meeting_room4.jpg'],
-        title: { en: 'Meeting & Event Halls', ar: 'قاعات الاجتماعات والفعاليات', hi: 'मीटिंग और इवेंट हॉल' },
+        id: 'meeting', images: ['Meeting_room1.jpg', 'Meeting_room2.jpg', 'Meeting_room3.jpg', 'Meeting_room4.jpg'], title: { en: 'Meeting & Event Halls', ar: 'قاعات الاجتماعات والفعاليات', hi: 'मीटिंग और इवेंट हॉल' },
         desc: { en: 'First-class venues featuring contemporary furnishings for conferences and business events.', ar: 'قاعات ممتازة مجهزة بأحدث التقنيات لعقد المؤتمرات والاجتماعات.', hi: 'सम्मेलनों और व्यावसायिक आयोजनों के लिए प्रथम श्रेणी के स्थान।' },
         timing: { en: 'By Reservation', ar: 'حسب الحجز', hi: 'आरक्षण द्वारा' }
       }
@@ -561,7 +676,8 @@
 
     async function fetchMenuItemsFromCloud() {
       const { data } = await supabaseClient.from('menu_items').select('*').order('id', { ascending: true });
-      roomServiceMenu = data || [];
+      // Fusionne le menu statique (PDF) avec les plats ajoutés via Supabase
+      roomServiceMenu = [...HARDCODED_MENU, ...(data || [])];
       renderRoomServiceMenu();
       if (currentView === 'admin') renderAdminMenuList();
     }
@@ -573,13 +689,17 @@
       const category = document.getElementById('food_category').value;
 
       await supabaseClient.from('menu_items').insert([{ name, price, category }]);
-      alert('Dish added!');
+      alert('Dish added to database!');
       document.getElementById('foodMenuForm').reset();
       await fetchMenuItemsFromCloud();
     }
 
     async function deleteMenuItem(id) {
-      if (confirm('Delete dish?')) {
+      if (String(id).startsWith('hm')) {
+        alert("This item is part of the core PDF menu and cannot be deleted here.");
+        return;
+      }
+      if (confirm('Delete dish from database?')) {
         await supabaseClient.from('menu_items').delete().eq('id', id);
         await fetchMenuItemsFromCloud();
       }
@@ -588,12 +708,30 @@
     function renderAdminMenuList() {
       const container = document.getElementById('adminMenuListContainer');
       if (roomServiceMenu.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400">No dishes.</p>`; return; }
-      container.innerHTML = roomServiceMenu.map(item => `
-        <div class="flex items-center justify-between p-3 bg-stone-50 rounded-2xl border border-stone-200 text-xs">
-          <div><p class="font-bold text-stone-800">${item.name}</p><p class="text-[10px] text-remal-sand font-semibold">${item.category} • AED ${item.price}</p></div>
-          <button onclick="deleteMenuItem(${item.id})" class="text-rose-600 font-bold p-1">🗑️ Delete</button>
-        </div>
-      `).join('');
+      
+      const grouped = {};
+      roomServiceMenu.forEach(item => {
+        if (!grouped[item.category]) grouped[item.category] = [];
+        grouped[item.category].push(item);
+      });
+
+      let html = '';
+      for (const [category, items] of Object.entries(grouped)) {
+        html += `<h4 class="text-xs font-bold text-stone-500 uppercase mt-4 mb-2 border-b border-stone-200 pb-1">${category}</h4>`;
+        html += items.map(item => {
+          const isHardcoded = String(item.id).startsWith('hm');
+          const deleteBtn = isHardcoded 
+            ? `<span class="text-[9px] bg-stone-200 text-stone-500 px-2 py-1 rounded font-bold">Fixed</span>`
+            : `<button onclick="deleteMenuItem(${item.id})" class="text-rose-600 font-bold p-1">🗑️ Delete</button>`;
+          
+          return `
+          <div class="flex items-center justify-between p-2 mb-1 bg-stone-50 rounded-xl border border-stone-200 text-xs">
+            <div><p class="font-bold text-stone-800">${item.name}</p><p class="text-[10px] text-remal-sand font-semibold">AED ${item.price}</p></div>
+            ${deleteBtn}
+          </div>
+        `}).join('');
+      }
+      container.innerHTML = html;
     }
 
     function toggleRoomServiceMenu() {
@@ -607,16 +745,32 @@
       const container = document.getElementById('foodItemsContainer');
       if (!container) return;
       if (roomServiceMenu.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400 text-center py-2">No menu items currently.</p>`; return; }
-      container.innerHTML = roomServiceMenu.map(item => `
-        <div class="flex justify-between items-center bg-white p-2.5 rounded-xl border border-stone-200 text-xs">
-          <div><p class="font-bold text-stone-900">${item.name}</p><p class="text-remal-sand font-semibold">AED ${item.price}</p></div>
-          <div class="flex items-center space-x-2 bg-stone-100 rounded-lg p-1">
-            <button type="button" onclick="updateCart(${item.id}, -1)" class="w-6 h-6 bg-white rounded font-bold text-stone-700 shadow-sm">-</button>
-            <span id="qty-item-${item.id}" class="font-bold px-1.5 text-stone-900">0</span>
-            <button type="button" onclick="updateCart(${item.id}, 1)" class="w-6 h-6 bg-stone-900 text-white rounded font-bold shadow-sm">+</button>
+      
+      // Grouper les plats par catégorie
+      const grouped = {};
+      roomServiceMenu.forEach(item => {
+        if (!grouped[item.category]) grouped[item.category] = [];
+        grouped[item.category].push(item);
+      });
+
+      let html = '';
+      for (const [category, items] of Object.entries(grouped)) {
+        // Affichage des Catégories avec le titre souligné
+        html += `<h4 class="text-sm font-bold text-stone-900 border-b-2 border-remal-sand pb-1 mt-4 mb-2 uppercase">${category}</h4>`;
+        
+        // Affichage des plats de la catégorie
+        html += items.map(item => `
+          <div class="flex justify-between items-center bg-white p-2.5 mb-2 rounded-xl border border-stone-200 text-xs shadow-sm">
+            <div class="pr-2"><p class="font-bold text-stone-900 leading-tight">${item.name}</p><p class="text-remal-sand font-bold text-sm mt-0.5">AED ${item.price}</p></div>
+            <div class="flex items-center space-x-2 bg-stone-100 rounded-lg p-1 shrink-0">
+              <button type="button" onclick="updateCart('${item.id}', -1)" class="w-6 h-6 bg-white rounded font-bold text-stone-700 shadow-sm">-</button>
+              <span id="qty-item-${item.id}" class="font-bold px-1.5 text-stone-900 w-4 text-center">0</span>
+              <button type="button" onclick="updateCart('${item.id}', 1)" class="w-6 h-6 bg-stone-900 text-white rounded font-bold shadow-sm">+</button>
+            </div>
           </div>
-        </div>
-      `).join('');
+        `).join('');
+      }
+      container.innerHTML = html;
     }
 
     function updateCart(itemId, change) {
@@ -777,7 +931,6 @@
       `).join('');
     }
 
-    // FONCTION POUR PRÉVISUALISER ET CONVERTIR L'IMAGE EN BASE64
     function previewPromoImage(event) {
       const file = event.target.files[0];
       if (file) {
@@ -792,13 +945,11 @@
       }
     }
 
-    // FONCTION MODIFIÉE POUR PUBLIER L'OFFRE AVEC L'IMAGE EN BASE64
     async function saveAdminData() {
       if (!currentPromoImageData) { 
         alert("Please select an image."); 
         return; 
       }
-
       const newItem = { 
         category: document.getElementById('adm_category').value, 
         price: document.getElementById('adm_price').value, 
@@ -814,15 +965,11 @@
           hi: document.getElementById('adm_timing_hi').value 
         } 
       };
-
       await supabaseClient.from('offers').insert([newItem]);
       alert('Offer published!');
-      
-      // Réinitialiser le formulaire
       document.getElementById('adminForm').reset();
       currentPromoImageData = null;
       document.getElementById('promoImagePreview').classList.add('hidden');
-      
       await fetchOffersFromCloud();
     }
 
@@ -845,9 +992,12 @@
       document.getElementById('btnWhatsappDirect').href = `https://wa.me/971526966865?text=${textMessage}`;
       document.getElementById('whatsappConfirmation').classList.remove('hidden');
       document.getElementById('req_details').value = '';
+      
+      // Remise à zero du panier
       cartState = {};
       renderRoomServiceMenu();
       calculateCartTotal();
+      
       await fetchRequestsFromCloud();
     }
 
