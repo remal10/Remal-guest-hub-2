@@ -57,7 +57,7 @@
                 <p id="alertClientNote" class="text-[11px] font-normal italic opacity-95 text-amber-100"></p>
             </div>
         </div>
-        <button onclick="stopAlarm()" class="bg-white text-rose-700 hover:bg-rose-50 px-3 py-1.5 rounded-xl font-bold text-xs shadow transition whitespace-nowrap">🔕 Stop Alarm</button>
+        <button onclick="stopAlarm()" class="bg-white text-rose-700 hover:bg-rose-50 px-3 py-1.5 rounded-xl font-bold text-xs shadow transition whitespace-nowrap cursor-pointer">🔕 Stop Alarm</button>
     </div>
 
     <div class="max-w-2xl mx-auto px-4 py-4 space-y-4">
@@ -330,6 +330,16 @@
             renderItems();
             afficherListeBordereauxFromCloud();
             
+            // Activation audio au premier clic sur la page (requis par les navigateurs)
+            document.body.addEventListener('click', () => {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+            }, { once: true });
+
             checkIncomingLaundryRequests();
             setInterval(checkIncomingLaundryRequests, 5000);
         });
@@ -380,7 +390,6 @@
             document.getElementById('laundryPlantAlert').classList.add('hidden');
         }
 
-        // SURVEILLANCE DES REQUÊTES ENTRANTES (AVEC RÉCUPÉRATION DE LA NOTE DU CLIENT)
         async function checkIncomingLaundryRequests() {
             try {
                 const { data } = await supabaseClient
@@ -391,7 +400,6 @@
                 
                 const alertBanner = document.getElementById('laundryPlantAlert');
                 if (data && data.length > 0) {
-                    // On prend la dernière demande en attente
                     const latestReq = data[data.length - 1];
                     const roomNum = latestReq.room || '---';
                     const clientNote = latestReq.notes ? `Note: "${latestReq.notes}"` : 'No specific notes from guest.';
@@ -638,10 +646,15 @@
             filtrerListeCloud();
         }
 
+        // MISE À JOUR DU STATUT EN TEMPS RÉEL (COLLECTED, WASHING, READY, DELIVERED)
         async function updateOrderStatus(id, newStatus, event) {
             event.stopPropagation();
-            await supabaseClient.from('laundry_slips').update({ status: newStatus }).eq('id', id);
-            await afficherListeBordereauxFromCloud();
+            const { error } = await supabaseClient.from('laundry_slips').update({ status: newStatus }).eq('id', id);
+            if (error) {
+                alert("Error updating status: " + error.message);
+            } else {
+                await afficherListeBordereauxFromCloud();
+            }
         }
 
         function filtrerListeCloud() {
