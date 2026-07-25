@@ -1,858 +1,975 @@
 <!DOCTYPE html>
 <html lang="en" id="htmlRoot" dir="ltr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Remal Hotel & Villas - Guest Hub & Admin</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FAFAFA; color: #222222; }
-    .font-serif-luxury { font-family: 'Playfair Display', serif; }
-    .scrollbar-none::-webkit-scrollbar { display: none; }
-    .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
-    .bg-remal-sand { background-color: #E2B383; }
-    .text-remal-sand { color: #DCA773; }
-    .remal-card { background: #FFFFFF; border: 1px solid #EAEAEA; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); }
-    
-    @keyframes pulse-red {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.8; transform: scale(1.05); }
-    }
-    .pulse-notification { animation: pulse-red 1.5s infinite; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remal Hotel & Villas - Front Desk & Laundry Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FAFAFA; color: #222222; }
+        .font-serif-luxury { font-family: 'Playfair Display', serif; }
+        .scrollbar-none::-webkit-scrollbar { display: none; }
+        .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+        .bg-remal-sand { background-color: #E2B383; }
+        .text-remal-sand { color: #DCA773; }
+        .remal-card { background: #FFFFFF; border: 1px solid #EAEAEA; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08); }
+        
+        @keyframes pulse-red {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.85; transform: scale(1.02); }
+        }
+        .pulse-notification { animation: pulse-red 1s infinite; }
+    </style>
 </head>
 <body class="min-h-screen pb-20">
 
-  <!-- HEADER -->
-  <header class="bg-white sticky top-0 z-50 border-b border-stone-200 shadow-sm">
-    <div class="max-w-6xl mx-auto px-5 py-3 flex justify-between items-center">
-      <div class="flex items-center space-x-2">
-        <img src="logo.png" alt="Remal Hotel & Villas" class="h-10 sm:h-12 object-contain" onerror="this.style.display='none'; document.getElementById('textLogo').classList.remove('hidden');">
-        <div id="textLogo" class="hidden">
-          <h1 class="text-sm font-serif-luxury text-stone-900 font-bold tracking-widest">REMAL</h1>
-          <p class="text-[8px] text-stone-500 uppercase tracking-wider">Hotel & Villas</p>
-        </div>
-      </div>
-      <div class="flex items-center space-x-2">
-        <div id="langSelector" class="flex bg-stone-100 p-1 rounded-full border border-stone-200 text-[11px] font-semibold">
-          <button onclick="setLang('en')" id="btn-en" class="px-2.5 py-1 rounded-full bg-remal-sand text-white shadow-sm">EN</button>
-          <button onclick="setLang('ar')" id="btn-ar" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">العربية</button>
-          <button onclick="setLang('hi')" id="btn-hi" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">हिन्दी</button>
-        </div>
-        <button onclick="handleAdminAccess()" id="viewToggleBtn" class="hidden bg-stone-900 text-white px-3 py-1.5 rounded-full text-xs font-semibold shadow relative">
-          ⚙️ Staff Panel
-        </button>
-      </div>
-    </div>
-  </header>
+    <!-- AUDIO ALARME CLASSIQUE HÔTEL -->
+    <audio id="hotelAlarmSound" loop preload="auto">
+        <source src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg" type="audio/ogg">
+    </audio>
 
-  <!-- BANNIÈRE -->
-  <div id="announcementBanner" class="hidden bg-remal-sand text-white px-4 py-2.5 text-center text-xs font-medium tracking-wide shadow-sm">
-    <span id="announcementText">📢 Special Announcement</span>
-  </div>
-
-  <!-- 1. GUEST VIEW -->
-  <div id="clientView" class="max-w-md mx-auto px-4 py-6 space-y-6">
-    <div class="relative rounded-3xl overflow-hidden shadow-xl p-6 text-white space-y-6 bg-cover bg-center bg-no-repeat bg-stone-900" style="background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.65)), url('Remal_exterior_view2.jpg');">
-      <div class="text-center space-y-1">
-        <h2 class="text-2xl font-serif-luxury text-white font-normal tracking-wide drop-shadow-md" id="welcomeMsg">Welcome to Remal Hotel & Villas</h2>
-        <p class="text-[10px] text-stone-200 uppercase tracking-widest font-semibold drop-shadow" id="roomIndicator">Al Dhannah City • Guest Hub</p>
-      </div>
-
-      <div class="flex bg-black/40 backdrop-blur-md p-1.5 rounded-2xl text-[11px] font-medium border border-white/25 overflow-x-auto scrollbar-none">
-        <button onclick="switchGuestTab('offers')" id="tabOffersBtn" class="flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap">🏷️ <span id="lblTabOffers">Offers</span></button>
-        <button onclick="switchGuestTab('facilities')" id="tabFacilitiesBtn" class="flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap">🏛️ <span id="lblTabFacilities">Facilities</span></button>
-        <button onclick="switchGuestTab('request')" id="tabRequestBtn" class="flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap">🔔 <span id="lblTabRequest">Service</span></button>
-      </div>
-    </div>
-
-    <!-- SECTION OFFRES -->
-    <div id="guestOffersSection" class="space-y-5">
-      <div id="categoryFilters" class="flex space-x-2 overflow-x-auto pb-1 text-xs font-semibold scrollbar-none"></div>
-      <div id="cardsContainer" class="space-y-5">
-        <p class="text-center text-xs text-stone-400 py-8" id="lblLoadingOffers">Loading live offers...</p>
-      </div>
-    </div>
-
-    <!-- SECTION FACILITIES -->
-    <div id="guestFacilitiesSection" class="hidden space-y-5">
-      <div class="text-center border-b border-stone-200 pb-3">
-        <h3 class="text-lg font-serif-luxury font-bold text-stone-900" id="facHeader">Hotel Facilities & Amenities</h3>
-        <p class="text-xs text-stone-500" id="facSub">Explore our premium venues and spaces</p>
-      </div>
-      <div id="facilitiesContainer" class="space-y-6"></div>
-    </div>
-
-    <!-- SECTION DEMANDES & ROOM SERVICE -->
-    <div id="guestRequestSection" class="hidden space-y-6">
-      <div class="remal-card p-6 rounded-3xl space-y-5">
-        <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-3" id="reqHeader">Request Guest Service</h2>
-        <form id="guestRequestForm" class="space-y-4">
-          <div>
-            <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblRoom">Room Number</label>
-            <input type="text" id="req_room" placeholder="e.g., 104 or Villa 02" onkeyup="renderClientTracker()" onchange="renderClientTracker()" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/55 outline-none" required>
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblService">Service Type</label>
-            <select id="req_service" onchange="toggleRoomServiceMenu()" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 outline-none"></select>
-          </div>
-
-          <!-- MODULE ROOM SERVICE -->
-          <div id="roomServiceMenuBlock" class="hidden space-y-4 bg-stone-50 p-4 rounded-2xl border border-stone-200">
-            <div class="flex justify-between items-center border-b border-stone-200 pb-2">
-              <span class="text-xs font-bold text-stone-800">🍽️ Select Menu Items</span>
-              <span class="text-[10px] bg-remal-sand text-white font-bold px-2 py-0.5 rounded-full">In-Room Dining</span>
+    <!-- HEADER REMAL HOTEL -->
+    <header class="bg-white sticky top-0 z-50 border-b border-stone-200 shadow-sm">
+        <div class="max-w-3xl mx-auto px-5 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <img src="logo.png" alt="Remal Hotel & Villas" class="h-10 sm:h-12 object-contain" onerror="this.style.display='none'; document.getElementById('textLogo').classList.remove('hidden');">
+                <div id="textLogo" class="hidden">
+                    <h1 class="text-sm font-serif-luxury text-stone-900 font-bold tracking-widest">REMAL</h1>
+                    <p class="text-[8px] text-stone-500 uppercase tracking-wider">Hotel & Villas</p>
+                </div>
             </div>
-            <div id="foodItemsContainer" class="space-y-3"><p class="text-center text-xs text-stone-400">Loading menu...</p></div>
-            <div class="pt-2 border-t border-stone-200 space-y-2">
-              <div class="flex justify-between text-xs font-bold text-stone-900">
-                <span>Total Amount:</span>
-                <span id="cartTotalDisplay" class="text-remal-sand font-serif-luxury text-sm">AED 0</span>
-              </div>
-              <div>
-                <label class="block text-[11px] font-bold text-stone-600 mb-1">Preferred Delivery Time</label>
-                <select id="delivery_time" class="w-full border border-stone-200 rounded-xl p-2.5 text-xs bg-white outline-none">
-                  <option value="As soon as possible">⚡ As soon as possible (~30 min)</option>
-                  <option value="In 45 minutes">🕒 In 45 minutes</option>
-                  <option value="In 1 hour">🕒 In 1 hour</option>
-                  <option value="Scheduled Breakfast (07:00 AM - 08:00 AM)">🥐 Scheduled Breakfast (07:00 AM - 08:00 AM)</option>
-                </select>
-              </div>
+            
+            <div class="flex items-center space-x-3">
+                <div class="flex bg-stone-100 p-1 rounded-full border border-stone-200 text-[11px] font-semibold">
+                    <button onclick="setLang('en')" id="btn-lang-en" class="px-2.5 py-1 rounded-full bg-remal-sand text-white shadow-sm">EN</button>
+                    <button onclick="setLang('ar')" id="btn-lang-ar" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">العربية</button>
+                    <button onclick="setLang('hi')" id="btn-lang-hi" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">हिन्दी</button>
+                </div>
+                <span class="text-xs font-bold bg-stone-900 text-white px-3 py-1.5 rounded-full shadow hidden sm:inline">🛎️ Reception & Maid</span>
             </div>
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblDetails">Additional Notes / Request Details</label>
-            <textarea id="req_details" rows="3" placeholder="Specify request details..." class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 outline-none" required></textarea>
-          </div>
-          <button type="button" onclick="submitGuestRequest()" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-bold py-3.5 rounded-xl shadow-lg transition text-sm tracking-wider">
-            <span id="btnSubmitReq">Send Request to Reception</span>
-          </button>
-        </form>
-
-        <div id="whatsappConfirmation" class="hidden bg-emerald-50 border border-emerald-200 p-4 rounded-2xl space-y-3">
-          <div class="flex items-center space-x-2 text-emerald-900 font-bold text-xs">
-            <span>✅</span><span id="lblSuccessMsg">Request submitted successfully!</span>
-          </div>
-          <a id="btnWhatsappDirect" href="#" target="_blank" class="flex items-center justify-center space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 px-4 rounded-xl font-bold text-xs shadow-md transition">
-            <span id="lblChatWhatsapp">💬 Chat on WhatsApp</span>
-          </a>
         </div>
-      </div>
+    </header>
 
-      <div class="remal-card p-6 rounded-3xl space-y-4">
-        <div class="flex justify-between items-center border-b border-stone-100 pb-3">
-          <h3 class="text-sm font-serif-luxury font-bold text-stone-900" id="lblTrackHeader">📡 Track Active Requests</h3>
-          <span class="text-[10px] bg-stone-100 text-stone-600 font-semibold px-2.5 py-1 rounded-full" id="lblLiveStatus">Live Status</span>
-        </div>
-        <div id="clientTrackerContainer" class="space-y-3"><p class="text-center text-xs text-stone-400 py-3" id="lblTrackEmpty">Enter your room number above to track active requests in real time.</p></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- BOUTON WHATSAPP -->
-  <div id="whatsappContainer" class="fixed bottom-5 right-5 z-50">
-    <a href="https://wa.me/971526966865?text=Hello%2C%20I%20am%20contacting%20from%20Remal%20Hotel%20Guest%20Hub." target="_blank" class="flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 rounded-full shadow-2xl transition transform hover:scale-105 border border-emerald-500 font-semibold text-xs">
-      <span class="text-lg">💬</span><span id="whatsappText">WhatsApp Reception</span>
-    </a>
-  </div>
-
-  <!-- MODAL AUTH ADMIN -->
-  <div id="authModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-5 border border-stone-100">
-      <div class="text-center space-y-1">
-        <h3 class="text-lg font-serif-luxury font-bold text-stone-900">Admin Authentication</h3>
-        <p class="text-xs text-stone-500">Enter staff credentials to manage Guest Hub</p>
-      </div>
-      <form id="loginForm" onsubmit="loginAdmin(event)" class="space-y-4">
-        <div>
-          <label class="block text-[11px] font-bold text-stone-600 uppercase mb-1">Email Address</label>
-          <input type="email" id="loginEmail" placeholder="admin@remalhotel.com" class="w-full border border-stone-200 rounded-xl p-3 text-xs bg-stone-50 outline-none" required>
-        </div>
-        <div>
-          <label class="block text-[11px] font-bold text-stone-600 uppercase mb-1">Password</label>
-          <input type="password" id="loginPassword" placeholder="••••••••" class="w-full border border-stone-200 rounded-xl p-3 text-xs bg-stone-50 outline-none" required>
-        </div>
-        <p id="authErrorMsg" class="text-rose-600 text-[11px] font-semibold text-center hidden"></p>
-        <button type="submit" id="btnLoginSubmit" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-bold py-3 rounded-xl text-xs transition shadow-md">🔐 Unlock Staff Panel</button>
-      </form>
-      <button onclick="closeAuthModal()" class="w-full text-stone-400 hover:text-stone-600 text-xs text-center font-medium">Cancel and Return</button>
-    </div>
-  </div>
-
-  <!-- 2. ADMIN VIEW -->
-  <div id="adminView" class="hidden max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-    <div class="flex justify-between items-center bg-stone-200/80 p-1.5 rounded-2xl text-xs font-bold">
-      <div class="flex space-x-2 w-full md:w-auto">
-        <button onclick="switchAdminTab('offers')" id="admTabOffers" class="flex-1 md:flex-none px-6 py-2.5 rounded-xl bg-stone-900 text-white">🏷️ Content & Menu</button>
-        <button onclick="switchAdminTab('requests')" id="admTabRequests" class="flex-1 md:flex-none px-6 py-2.5 rounded-xl text-stone-600 relative">
-          🔔 Requests
-          <span id="requestBadge" class="hidden absolute -top-1 -right-1 bg-rose-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full pulse-notification">0</span>
-        </button>
-        <button onclick="switchAdminTab('banner')" id="admTabBanner" class="flex-1 md:flex-none px-6 py-2.5 rounded-xl text-stone-600">📢 Announcement</button>
-      </div>
-      <div class="flex items-center space-x-2">
-        <button onclick="logoutAdmin()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 px-3 py-1.5 rounded-xl text-xs font-bold border border-rose-200 transition">🚪 Logout</button>
-      </div>
-    </div>
-
-    <!-- ADMIN OFFRES ET MENU -->
-    <div id="adminOffersPanel" class="space-y-6">
-      <div class="flex space-x-2 border-b border-stone-200 pb-2 text-xs font-bold">
-        <button onclick="switchAdminSubTab('offersList')" id="btnSubOffers" class="px-4 py-2 rounded-xl bg-stone-900 text-white">Promotions & Events</button>
-        <button onclick="switchAdminSubTab('menuList')" id="btnSubMenu" class="px-4 py-2 rounded-xl bg-stone-100 text-stone-700">🍔 Room Service Menu Editor</button>
-      </div>
-
-      <div id="adminOffersSubSection" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div class="lg:col-span-5 bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4 h-fit">
-          <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-2">New Cloud Offer</h2>
-          <form id="adminForm" class="space-y-4">
+    <!-- BANNIÈRE ROUGE D'ALERTE AVEC NOTE DU CLIENT -->
+    <div id="laundryPlantAlert" class="hidden bg-rose-600 text-white px-4 py-3 text-center text-xs font-bold tracking-wide shadow-md pulse-notification flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2 text-left">
+            <span>🚨</span>
             <div>
-              <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Category</label>
-              <select id="adm_category" class="w-full border border-stone-200 rounded-xl p-3 bg-stone-50 text-sm outline-none">
-                <option value="Falaj Restaurant">Falaj Restaurant</option>
-                <option value="Sarab">Sarab Bar & Lounge</option>
-                <option value="Al Waha Pool">Al Waha Pool</option>
-                <option value="The Spa">The Spa</option>
-              </select>
+                <p id="alertTitleText" class="font-bold">New Laundry Request Received!</p>
+                <p id="alertClientNote" class="text-[11px] font-normal italic opacity-95 text-amber-100 mt-0.5"></p>
             </div>
-            <div>
-              <label class="block text-xs font-bold text-stone-600 uppercase mb-1">Price / Rate (e.g., AED 75)</label>
-              <input type="text" id="adm_price" placeholder="AED 75" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50 outline-none" required>
-            </div>
-            <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-2">
-              <input type="text" id="adm_title_en" placeholder="Title (English)" class="w-full border border-stone-200 rounded-lg p-2 text-sm outline-none" required>
-              <input type="text" id="adm_title_ar" placeholder="العنوان (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-lg p-2 text-sm outline-none" required>
-              <input type="text" id="adm_title_hi" placeholder="शीर्षक (हिंदी)" class="w-full border border-stone-200 rounded-lg p-2 text-sm outline-none" required>
-            </div>
-            <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-2">
-              <input type="text" id="adm_timing_en" placeholder="Timings (English)" class="w-full border border-stone-200 rounded-lg p-2 text-sm outline-none" required>
-              <input type="text" id="adm_timing_ar" placeholder="الأوقات (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-lg p-2 text-sm outline-none" required>
-              <input type="text" id="adm_timing_hi" placeholder="समय (हिंदी)" class="w-full border border-stone-200 rounded-lg p-2 text-sm outline-none" required>
-            </div>
-            <div>
-              <input type="file" id="imageFileInput" accept="image/*" class="w-full text-xs text-stone-500 mb-2" />
-              <input type="hidden" id="adm_image" />
-            </div>
-            <button type="button" onclick="saveAdminData()" class="w-full bg-remal-sand text-white font-bold py-3.5 rounded-xl shadow-md transition text-sm">Publish Offer</button>
-          </form>
         </div>
-        <div class="lg:col-span-7 bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
-          <h3 class="text-xs font-bold text-stone-500 uppercase tracking-widest border-b border-stone-100 pb-2">Active Offers</h3>
-          <div id="adminListContainer" class="grid grid-cols-1 gap-3"></div>
-        </div>
-      </div>
-
-      <div id="adminMenuSubSection" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div class="lg:col-span-5 bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4 h-fit">
-          <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-2">Add New Menu Dish</h2>
-          <form id="foodMenuForm" onsubmit="addMenuItem(event)" class="space-y-4">
-            <input type="text" id="food_name" placeholder="Item Name" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50 outline-none" required>
-            <input type="number" id="food_price" placeholder="Price (AED)" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50 outline-none" required>
-            <select id="food_category" class="w-full border border-stone-200 rounded-xl p-3 bg-stone-50 text-sm outline-none">
-              <option value="Breakfast">Breakfast</option>
-              <option value="Mains">Mains / Sandwiches</option>
-              <option value="Beverages">Beverages & Coffee</option>
-              <option value="Desserts">Desserts</option>
-            </select>
-            <button type="submit" class="w-full bg-stone-900 text-white font-bold py-3.5 rounded-xl text-sm">➕ Add Dish</button>
-          </form>
-        </div>
-        <div class="lg:col-span-7 bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
-          <h3 class="text-xs font-bold text-stone-500 uppercase tracking-widest border-b border-stone-100 pb-2">Live Menu Items</h3>
-          <div id="adminMenuListContainer" class="space-y-2"></div>
-        </div>
-      </div>
+        <button onclick="stopAlarmAndTransfer()" class="bg-white text-rose-700 hover:bg-rose-50 px-3.5 py-2 rounded-xl font-bold text-xs shadow-lg transition whitespace-nowrap cursor-pointer">🔕 Stop Alarm</button>
     </div>
 
-    <!-- ADMIN DEMANDES -->
-    <div id="adminRequestsPanel" class="hidden space-y-4">
-      <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
-        <div class="flex justify-between items-center border-b border-stone-100 pb-3">
-          <div>
-            <h2 class="text-base font-serif-luxury font-bold text-stone-900">Live Service Requests</h2>
-            <p class="text-[10px] text-stone-500">Real-time room service and guest requests</p>
-          </div>
-          <div class="flex items-center space-x-2">
-            <button onclick="enableAudioAlerts()" id="btnAudioEnable" class="text-xs bg-amber-50 text-amber-800 hover:bg-amber-100 px-3 py-2 rounded-xl font-bold border border-amber-200 shadow-sm transition">
-              🔔 Enable Sound Alerts
+    <div class="max-w-2xl mx-auto px-4 py-4 space-y-4">
+
+        <!-- 4 SECTIONS DE NAVIGATION EN HAUT -->
+        <div class="grid grid-cols-4 gap-1.5 pt-1 text-[11px] font-bold">
+            <button onclick="switchMainSection('newRecord')" id="navBtnNewRecord" class="py-2.5 px-1 rounded-2xl bg-remal-sand text-white shadow-md transition flex flex-col items-center justify-center gap-0.5">
+                <span>➕</span> <span id="txtBtnNewRecord">New</span>
             </button>
-            <button onclick="fetchRequestsFromCloud()" class="text-xs bg-stone-100 text-stone-700 px-3 py-2 rounded-xl font-semibold border border-stone-200">🔄 Refresh</button>
-          </div>
+            <button onclick="switchMainSection('liveRecord')" id="navBtnLiveRecord" class="py-2.5 px-1 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 transition flex flex-col items-center justify-center gap-0.5">
+                <span>🔴</span> <span id="txtBtnLiveRecord">Live</span>
+            </button>
+            <button onclick="switchMainSection('pdfList')" id="navBtnPdfList" class="py-2.5 px-1 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 transition flex flex-col items-center justify-center gap-0.5">
+                <span>📋</span> <span id="txtBtnPdfList">PDF</span>
+            </button>
+            <button onclick="switchMainSection('dashboard')" id="navBtnDashboard" class="py-2.5 px-1 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 transition flex flex-col items-center justify-center gap-0.5">
+                <span>📈</span> <span id="txtBtnDashboard">Chart</span>
+            </button>
         </div>
-        <div id="adminRequestsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-      </div>
+
+        <!-- SECTION 1: FORMULAIRE NEW RECORD -->
+        <div id="sectionNewRecord" class="space-y-4">
+            <div class="remal-card p-6 rounded-3xl space-y-5 relative">
+                
+                <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+                    <h2 class="text-lg font-serif-luxury font-bold text-stone-900" id="lblFormTitle">New Record</h2>
+                    <button onclick="switchMainSection('pdfList')" class="text-stone-400 hover:text-stone-700 font-bold text-xl px-2">✕</button>
+                </div>
+
+                <input type="hidden" id="editingRecordId" value="">
+
+                <div>
+                    <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblRoomNum">Room Number</label>
+                    <input type="number" id="roomNumber" oninput="validateRoomNumber()" placeholder="e.g., 104, 223, 305..." class="w-full border border-stone-200 rounded-xl p-3 text-sm font-bold bg-stone-50 outline-none transition focus:border-stone-400">
+                    <p id="roomErrorMsg" class="hidden text-rose-600 text-xs font-bold mt-1.5 flex items-center gap-1">
+                        ⚠️ <span id="lblRoomError">Invalid room number! Allowed ranges: 103-144, 201-246, 301-348, 401-448, 501-520, 601-608.</span>
+                    </p>
+                </div>
+
+                <div class="flex bg-stone-100 p-1.5 rounded-2xl border border-stone-200 text-xs font-bold gap-2">
+                    <button onclick="selectCountType('hotel')" id="btn-count-hotel" class="flex-1 py-2.5 rounded-xl bg-remal-sand text-white shadow-md">🏨 Hotel Count (Free)</button>
+                    <button onclick="selectCountType('guest')" id="btn-count-guest" class="flex-1 py-2.5 rounded-xl text-stone-600">💳 Guest Count</button>
+                </div>
+
+                <div class="flex gap-2 text-xs font-bold">
+                    <button onclick="switchService('laundry')" id="tab-service-laundry" class="flex-1 py-2.5 rounded-xl bg-stone-900 text-white shadow-sm">LAUNDRY</button>
+                    <button onclick="switchService('dry')" id="tab-service-dry" class="flex-1 py-2.5 rounded-xl bg-stone-100 text-stone-700">DRY CLEANING</button>
+                    <button onclick="switchService('pressing')" id="tab-service-pressing" class="flex-1 py-2.5 rounded-xl bg-stone-100 text-stone-700">PRESSING</button>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2 p-2 bg-stone-50 rounded-2xl border border-stone-200 text-xs font-bold text-center">
+                    <label class="flex items-center justify-center gap-1.5 p-2.5 bg-white rounded-xl border border-stone-200 cursor-pointer">
+                        <input type="radio" name="foldingOption" value="F — Folding" checked class="accent-stone-900"> F — Folding
+                    </label>
+                    <label class="flex items-center justify-center gap-1.5 p-2.5 bg-white rounded-xl border border-stone-200 cursor-pointer">
+                        <input type="radio" name="foldingOption" value="H/F — Hanger/Folding" class="accent-stone-900"> H/F — Hanger
+                    </label>
+                    <label class="flex items-center justify-center gap-1.5 p-2.5 bg-white rounded-xl border border-stone-200 cursor-pointer">
+                        <input type="radio" name="foldingOption" value="S — Single" class="accent-stone-900"> S — Single
+                    </label>
+                </div>
+
+                <div id="itemsContainer" class="space-y-3 max-h-80 overflow-y-auto pr-1 scrollbar-none"></div>
+
+                <div class="bg-amber-50 border border-amber-200 text-amber-900 p-3.5 rounded-2xl flex justify-between items-center font-bold text-xs">
+                    <span id="lblSelectedGarments">Total Garments:</span>
+                    <span id="currentBordereauCount" class="bg-remal-sand text-white px-3 py-1 rounded-full text-xs">0 pieces</span>
+                </div>
+
+                <div class="bg-stone-50 border border-stone-200 p-4 rounded-2xl text-xs space-y-1.5 font-medium text-stone-800">
+                    <div class="flex justify-between"><span id="lblSubTotal">Subtotal:</span><span id="subTotal">0.00 AED</span></div>
+                    <div class="flex justify-between"><span id="lblVat">VAT (5%):</span><span id="vatAmount">0.00 AED</span></div>
+                    <div class="flex justify-between font-bold text-sm text-stone-900 border-t border-stone-200 pt-2 mt-1"><span id="lblGrandTotal">Grand Total:</span><span id="grandTotal" class="text-remal-sand font-serif-luxury text-base">0.00 AED</span></div>
+                </div>
+
+                <button onclick="document.getElementById('photoInput').click()" class="w-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold p-3.5 rounded-xl text-xs border border-dashed border-stone-300 transition" id="btnPhotoProof">📷 Proof Photo (Optional)</button>
+                <input type="file" id="photoInput" class="hidden" accept="image/*" capture="environment" onchange="previewImage(event)">
+                <img id="imagePreview" class="hidden w-full max-h-48 object-cover rounded-2xl mt-2 border border-stone-200" alt="Preuve">
+
+                <button onclick="sauvegarderBordereauToCloud()" id="btnSaveRecord" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-bold py-3.5 rounded-xl text-sm shadow-lg transition tracking-wider">💾 Save Record</button>
+            </div>
+        </div>
+
+        <!-- SECTION 2: LIVE ORDERS -->
+        <div id="sectionLiveRecord" class="hidden space-y-4">
+            <div class="remal-card p-6 rounded-3xl space-y-4">
+                <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+                    <h3 class="text-sm font-serif-luxury font-bold text-stone-900">🔴 Live Laundry Orders</h3>
+                    <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2.5 py-1 rounded-full">Reception & Maid View</span>
+                </div>
+                <div id="liveOrdersList" class="space-y-3 pt-2"><p class="text-xs text-stone-400 text-center py-4">Loading live orders...</p></div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: PDF LIST & ARCHIVES -->
+        <div id="sectionPdfList" class="hidden space-y-4">
+            <div class="remal-card p-6 rounded-3xl space-y-4">
+                <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+                    <h3 class="text-sm font-serif-luxury font-bold text-stone-900" id="lblArchiveTitle">PDF List & Records</h3>
+                    <span class="text-[10px] bg-stone-100 text-stone-600 font-bold px-2.5 py-1 rounded-full" id="lblAutoArchive">Auto-Archive at 00:00</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-stone-50 p-3 rounded-2xl border border-stone-200">
+                    <div>
+                        <label class="block text-[10px] font-bold text-stone-500 uppercase mb-1" id="lblSearchRoom">Search Room</label>
+                        <input type="text" id="searchRoom" onkeyup="filtrerListeCloud()" placeholder="Room number..." class="w-full border border-stone-200 rounded-xl p-2 text-xs bg-white outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-stone-500 uppercase mb-1" id="lblSearchDate">Search Date</label>
+                        <input type="date" id="searchDate" onchange="filtrerListeCloud()" class="w-full border border-stone-200 rounded-xl p-2 text-xs bg-white outline-none">
+                    </div>
+                </div>
+
+                <div id="laundryList" class="space-y-3 pt-2"><p class="text-xs text-stone-400 text-center py-4" id="lblLoadingRecords">Loading records...</p></div>
+            </div>
+        </div>
+
+        <!-- SECTION 4: MANAGEMENT BUSINESS CHART & ANALYTICS -->
+        <div id="sectionDashboard" class="hidden space-y-4">
+            <div class="remal-card p-6 rounded-3xl space-y-5">
+                <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+                    <h3 class="text-sm font-serif-luxury font-bold text-stone-900">📈 Reception & Management Analytics</h3>
+                    <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2.5 py-1 rounded-full">Executive Overview</span>
+                </div>
+
+                <!-- KPI CARDS -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    <div class="bg-stone-50 p-3.5 rounded-2xl border border-stone-200 text-center">
+                        <p class="text-[10px] font-bold text-stone-400 uppercase">Total Revenue</p>
+                        <p id="kpiRevenue" class="text-base font-serif-luxury font-bold text-remal-sand mt-0.5">0.00 AED</p>
+                    </div>
+                    <div class="bg-stone-50 p-3.5 rounded-2xl border border-stone-200 text-center">
+                        <p class="text-[10px] font-bold text-stone-400 uppercase">Total Orders</p>
+                        <p id="kpiOrders" class="text-base font-serif-luxury font-bold text-stone-900 mt-0.5">0</p>
+                    </div>
+                    <div class="bg-stone-50 p-3.5 rounded-2xl border border-stone-200 text-center col-span-2 sm:col-span-1">
+                        <p class="text-[10px] font-bold text-stone-400 uppercase">Garments Processed</p>
+                        <p id="kpiGarments" class="text-base font-serif-luxury font-bold text-stone-900 mt-0.5">0 pcs</p>
+                    </div>
+                </div>
+
+                <!-- GRAPHIQUES -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    <div class="bg-stone-50 p-4 rounded-2xl border border-stone-200 space-y-2">
+                        <p class="text-xs font-bold text-stone-700 text-center">Orders Status Distribution</p>
+                        <div class="relative h-48 flex items-center justify-center">
+                            <canvas id="statusDoughnutChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-stone-50 p-4 rounded-2xl border border-stone-200 space-y-2">
+                        <p class="text-xs font-bold text-stone-700 text-center">Business Evolution (Revenue by Date)</p>
+                        <div class="relative h-48 flex items-center justify-center">
+                            <canvas id="revenueBarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <!-- ADMIN BANNIÈRE -->
-    <div id="adminBannerPanel" class="hidden space-y-4 max-w-2xl mx-auto">
-      <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
-        <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-2">Banner Management</h2>
-        <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-2">
-          <input type="text" id="ann_en" placeholder="Announcement (English)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm outline-none">
-          <input type="text" id="ann_ar" placeholder="الإعلان (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm outline-none">
-          <input type="text" id="ann_hi" placeholder="घोषणा (हिंदी)" class="w-full border border-stone-200 rounded-lg p-2.5 text-sm outline-none">
+    <!-- MODAL REÇU FLOTTANT -->
+    <div id="detailModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto border border-stone-100 relative">
+            
+            <div id="pdfExportArea" class="p-2 space-y-4">
+                <div class="text-center border-b border-stone-100 pb-3 relative">
+                    <button onclick="fermerModal()" class="absolute right-0 top-0 text-stone-400 text-xl font-bold hover:text-stone-700">✕</button>
+                    <h2 class="text-lg font-serif-luxury font-bold text-stone-900 tracking-wider">REMAL HOTEL</h2>
+                    <p class="text-[9px] text-stone-500 uppercase tracking-widest">Al Ruwais City, Abu Dhabi – UAE</p>
+                    <p class="text-xs font-bold text-remal-sand mt-1 uppercase tracking-wide">LAUNDRY SERVICE</p>
+                </div>
+
+                <div class="bg-stone-50 p-3.5 rounded-2xl border border-stone-200 flex justify-between items-center">
+                    <div>
+                        <span class="text-xs text-stone-500 font-semibold">Room:</span>
+                        <span id="modalRoomNumDisplay" class="text-xl font-serif-luxury font-bold text-stone-900 ml-1">223</span>
+                    </div>
+                    <div class="text-right">
+                        <p id="modalDate" class="text-[10px] text-stone-500 font-bold"></p>
+                        <span id="modalTypeBadgeInline" class="text-[9px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">Hotel Count (Free)</span>
+                    </div>
+                </div>
+
+                <div class="bg-stone-50 p-3 rounded-2xl border border-stone-200 text-xs font-bold text-stone-800 flex justify-between">
+                    <span>Packaging:</span>
+                    <span id="modalPackagingStyle" class="text-remal-sand">F — Folding</span>
+                </div>
+
+                <table class="w-full text-xs text-left border-collapse">
+                    <thead>
+                        <tr class="bg-remal-sand text-white font-bold text-[11px]">
+                            <th class="p-2.5 rounded-l-xl">Item</th>
+                            <th class="p-2.5 text-center">Qty</th>
+                            <th class="p-2.5 text-right rounded-r-xl">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalTableBody" class="divide-y divide-stone-100"></tbody>
+                </table>
+
+                <div class="bg-stone-50 p-3.5 rounded-2xl text-xs space-y-1.5 font-medium text-stone-800 border border-stone-200">
+                    <div class="flex justify-between font-bold text-stone-900 border-b border-stone-200 pb-1.5"><span>Total Clothes:</span><span id="modalClothesCount">3 pieces</span></div>
+                    <div class="flex justify-between"><span>Subtotal:</span><span id="modalSubTotal">0.00 AED</span></div>
+                    <div class="flex justify-between"><span>VAT (5%):</span><span id="modalVat">0.00 AED</span></div>
+                    <div class="flex justify-between font-bold text-sm text-stone-900 border-t border-stone-200 pt-2 mt-1"><span>Grand Total:</span><span id="modalTotal" class="text-remal-sand font-serif-luxury text-base">0.00 AED</span></div>
+                </div>
+
+                <div id="modalPhotoContainer"></div>
+            </div>
+
+            <div class="space-y-2 pt-2">
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="genererPDF()" class="bg-remal-sand hover:bg-amber-600 text-white font-bold py-3 rounded-xl text-xs shadow flex items-center justify-center gap-1.5">📥 Download PDF</button>
+                    <a id="btnWhatsappShare" href="#" target="_blank" class="bg-stone-800 hover:bg-stone-900 text-white font-bold py-3 rounded-xl text-xs shadow flex items-center justify-center gap-1.5">💬 Share WhatsApp</a>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="editerBordereauActuel()" class="bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold py-3 rounded-xl text-xs border border-stone-300 flex items-center justify-center gap-1">✏️ Edit Record</button>
+                    <button onclick="supprimerBordereauActuel()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-xl text-xs shadow flex items-center justify-center gap-1">🗑️ Delete Record</button>
+                </div>
+            </div>
         </div>
-        <div class="flex space-x-3">
-          <button onclick="saveAnnouncement(true)" class="flex-1 bg-remal-sand text-white font-bold py-3 rounded-xl text-xs">📢 Publish</button>
-          <button onclick="saveAnnouncement(false)" class="flex-1 bg-stone-100 text-stone-700 font-bold py-3 rounded-xl text-xs">🚫 Hide</button>
-        </div>
-      </div>
     </div>
-  </div>
 
-  <script>
-    const SUPABASE_URL = 'https://tbsroleffqhyzbbfmtvp.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRic3JvbGVmZnFoeXpiYmZtdHZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MzUyMzMsImV4cCI6MjEwMDQxMTIzM30.oNKhoPJ7v__YJQW7flC9UsP2cIDHLMuxjqmf6_NvYW4';
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    <script>
+        const SUPABASE_URL = 'https://tbsroleffqhyzbbfmtvp.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRic3JvbGVmZnFoeXpiYmZtdHZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MzUyMzMsImV4cCI6MjEwMDQxMTIzM30.oNKhoPJ7v__YJQW7flC9UsP2cIDHLMuxjqmf6_NvYW4';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    let audioContext = null;
-    let audioEnabled = false;
-    let previousPendingCount = 0;
-    let currentUserSession = null;
-    let roomServiceMenu = [];
-    let cartState = {};
+        let currentLang = 'en';
+        let latestRequestId = null;
+        let isAlarmActive = false;
+        let cachedSlips = [];
+        let doughnutChartInstance = null;
+        let barChartInstance = null;
 
-    let currentLang = 'en';
-    let currentView = 'client';
-    let currentCategory = 'All';
-    let cachedOffers = [];
-    let cachedRequests = [];
-    let activeAnnouncement = null;
+        const i18n = {
+            en: {
+                txtBtnNewRecord: "New", txtBtnLiveRecord: "Live", txtBtnPdfList: "PDF", txtBtnDashboard: "Chart",
+                lblFormTitle: "New Record", lblRoomNum: "Room Number",
+                lblSelectedGarments: "Total Garments:", lblSubTotal: "Subtotal:",
+                lblVat: "VAT (5%):", lblGrandTotal: "Grand Total:", btnPhotoProof: "📷 Proof Photo (Optional)",
+                btnSaveRecord: "💾 Save Record", lblArchiveTitle: "PDF List & Records",
+                lblAutoArchive: "Auto-Archive at 00:00", lblSearchRoom: "Search Room", lblSearchDate: "Search Date",
+                lblLoadingRecords: "Loading records...", noRecords: "No laundry records found.",
+                lblRoomError: "Invalid room number! Allowed ranges: 103-144, 201-246, 301-348, 401-448, 501-520, 601-608."
+            },
+            ar: {
+                txtBtnNewRecord: "سجل", txtBtnLiveRecord: "الحي", txtBtnPdfList: "PDF", txtBtnDashboard: "رسم بياني",
+                lblFormTitle: "سجل جديد", lblRoomNum: "رقم الغرفة",
+                lblSelectedGarments: "مجموع الملابس:", lblSubTotal: "المجموع الفرعي:",
+                lblVat: "ضريبة القيمة المضافة (٥٪):", lblGrandTotal: "المجموع الإجمالي:", btnPhotoProof: "📷 صورة إثبات (اختياري)",
+                btnSaveRecord: "💾 حفظ السجل", lblArchiveTitle: "قائمة PDF والسجلات",
+                lblAutoArchive: "أرشفة تلقائية ٠٠:٠٠", lblSearchRoom: "بحث برقم الغرفة", lblSearchDate: "بحث بالتاريخ",
+                lblLoadingRecords: "جاري تحميل السجلات...", noRecords: "لا توجد سجلات.",
+                lblRoomError: "رقم الغرفة غير صحيح! النطاقات المسموحة: 103-144، 201-246، 301-348، 401-448، 501-520، 601-608."
+            },
+            hi: {
+                txtBtnNewRecord: "नया", txtBtnLiveRecord: "लाइव", txtBtnPdfList: "पीडीएफ", txtBtnDashboard: "चार्ट",
+                lblFormTitle: "नया रिकॉर्ड", lblRoomNum: "कमरा नंबर",
+                lblSelectedGarments: "कुल कपड़े:", lblSubTotal: "उप-कुल:",
+                lblVat: "जीएसटी/वैट (5%):", lblGrandTotal: "कुल योग:", btnPhotoProof: "📷 प्रमाण फोटो (वैकल्पिक)",
+                btnSaveRecord: "💾 रिकॉर्ड सुरक्षित करें", lblArchiveTitle: "पीडीएफ सूची और रिकॉर्ड",
+                lblAutoArchive: "00:00 बजे ऑटो-संग्रह", lblSearchRoom: "कमरा खोजें", lblSearchDate: "तारीख खोजें",
+                lblLoadingRecords: "रिकॉर्ड लोड हो रहे हैं...", noRecords: "कोई रिकॉर्ड नहीं मिला।",
+                lblRoomError: "अमान्य कमरा नंबर! केवल ये नंबर मान्य हैं: 103-144, 201-246, 301-348, 401-448, 501-520, 601-608."
+            }
+        };
 
-    function enableAudioAlerts() {
-      try {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        audioContext.resume().then(() => {
-          audioEnabled = true;
-          playNotificationSound();
-          const btn = document.getElementById('btnAudioEnable');
-          if (btn) {
-            btn.className = "text-xs bg-emerald-100 text-emerald-800 px-3 py-2 rounded-xl font-bold border border-emerald-300 shadow-sm";
-            btn.innerText = "🔊 Sound Alerts Active";
-          }
+        const database = {
+            laundry: {
+                "GENTLEMEN": [
+                    { name: "Shirt", ar: "قميص", price: 22 }, { name: "T-Shirt", ar: "فانيلة", price: 15 }, { name: "Trousers", ar: "بنطلون", price: 24 },
+                    { name: "Under Shirt", ar: "قميص داخلي", price: 10 }, { name: "Under Pants", ar: "سروال داخلي", price: 12 }, { name: "Pajama Slack", ar: "بيجامة سلاك", price: 11 },
+                    { name: "Pajamas (2 Pcs)", ar: "بيجامة قطعتين", price: 22 }, { name: "Socks", ar: "جوارب", price: 6 }, { name: "Jacket", ar: "جاكيت", price: 34 },
+                    { name: "Dishdash", ar: "دشداشة", price: 30 }, { name: "Gutra", ar: "غترة", price: 10 }, { name: "Khafia", ar: "كوفية", price: 10 },
+                    { name: "Lungi", ar: "وزار", price: 15 }, { name: "Shorts", ar: "سروال قصير", price: 18 }, { name: "Track Suit", ar: "بدلة رياضة", price: 30 },
+                    { name: "Overall", ar: "افرول", price: 36 }, { name: "Gloves", ar: "قفازات", price: 6 }, { name: "Knee Pad", ar: "واقي الركبة", price: 6 }, { name: "Bandages", ar: "مشد رباط", price: 6 }
+                ],
+                "LADIES": [
+                    { name: "Dress", ar: "فستان", price: 42 }, { name: "Blouse", ar: "بلوزة", price: 24 }, { name: "Skirt", ar: "تنورة", price: 24 },
+                    { name: "Jacket", ar: "سترة/جاكيت", price: 30 }, { name: "Petticoat", ar: "كومبليزون", price: 10 }, { name: "Brassiere", ar: "صدرية/سوتيان", price: 12 },
+                    { name: "Trousers", ar: "بنطلون", price: 18 }, { name: "Night Gown", ar: "قميص نوم", price: 30 }, { name: "Dressing Gown", ar: "عباية", price: 30 },
+                    { name: "Panties", ar: "سروال داخلي", price: 12 }, { name: "Handkerchief", ar: "منديل", price: 6 }, { name: "Scarf", ar: "حجاب/شيلة", price: 15 }, { name: "Saree", ar: "ساري", price: 36 }
+                ],
+                "CHILDREN": [
+                    { name: "Child - Shorts", ar: "شورت", price: 7 }, { name: "Child - Trouser", ar: "بنطلون", price: 12 }, { name: "Child - Shirt", ar: "قميص", price: 7 },
+                    { name: "Child - T-Shirt", ar: "قميص خفيف", price: 12 }, { name: "Child - Dishdasha", ar: "دشداشة", price: 7 }, { name: "Child - Dress", ar: "فستان", price: 22 }
+                ]
+            },
+            dry: {
+                "GENTLEMEN": [
+                    { name: "Suit (2 pcs.)", ar: "بدلة قطعتين", price: 54 }, { name: "Trousers", ar: "بنطلون", price: 36 }, { name: "Jacket", ar: "جاكيت", price: 30 },
+                    { name: "Necktie", ar: "ربطة عنق", price: 18 }, { name: "Sweater", ar: "كنزة", price: 22 }, { name: "Shirt (Silk)", ar: "قميص حرير", price: 24 },
+                    { name: "Dishdash", ar: "دشداشة", price: 36 }, { name: "Gutra", ar: "غترة", price: 12 }, { name: "T-Shirt", ar: "قميص خفيف", price: 27 },
+                    { name: "Waist Coat", ar: "سترة", price: 22 }, { name: "Overall", ar: "افرول", price: 42 }, { name: "Cap / Hat", ar: "قبعة", price: 12 }
+                ],
+                "LADIES": [
+                    { name: "Dress", ar: "فستان", price: 48 }, { name: "Evening Dress", ar: "فستان سهرة", price: 54 }, { name: "Blouse", ar: "بلوزة", price: 36 },
+                    { name: "Skirt", ar: "تنورة", price: 27 }, { name: "Slacks / Trousers", ar: "بنطلون", price: 24 }, { name: "Jacket", ar: "جاكيت", price: 30 },
+                    { name: "Saree", ar: "ساري", price: 42 }, { name: "Abbaya", ar: "عباية", price: 36 }, { name: "T-Shirt", ar: "قميص خفيف", price: 27 },
+                    { name: "Scarf", ar: "حجاب/شيلة", price: 18 }, { name: "Pajama", ar: "بيجامة", price: 30 }, { name: "Child - Dress", ar: "فستان", price: 24 },
+                    { name: "Child - T-Shirt", ar: "قميص الأطفال", price: 12 }, { name: "Shawl", ar: "شال", price: 12 }
+                ]
+            },
+            pressing: {
+                "GENTLEMEN": [
+                    { name: "Suit (2 pcs.)", ar: "بدلة قطعتين", price: 30 }, { name: "Trousers", ar: "بنطلون", price: 12 }, { name: "Jacket", ar: "جاكيت", price: 18 },
+                    { name: "Shirt", ar: "قميص", price: 12 }, { name: "Necktie", ar: "ربطة عنق", price: 12 }, { name: "Dishdash", ar: "دشداشة", price: 18 },
+                    { name: "Lungi", ar: "وزار", price: 12 }, { name: "T-Shirt", ar: "قميص خفيف", price: 10 }, { name: "Overall", ar: "افرول", price: 24 },
+                    { name: "Pajama Slack", ar: "بيجامة سلاك", price: 15 }, { name: "Gutra", ar: "غترة", price: 6 }, { name: "Shorts", ar: "سروال قصير / شورت", price: 10 }, { name: "Abbaya", ar: "عباية", price: 18 }
+                ],
+                "LADIES": [
+                    { name: "Blouse", ar: "بلوزة", price: 12 }, { name: "Dress", ar: "فستان", price: 30 }, { name: "Evening Dress", ar: "فستان سهرة", price: 42 },
+                    { name: "Skirt", ar: "تنورة", price: 15 }, { name: "Slacks / Trousers", ar: "بنطلون", price: 12 }, { name: "Jacket", ar: "جاكيت", price: 24 },
+                    { name: "Saree", ar: "ساري", price: 24 }, { name: "Abbaya", ar: "عباية", price: 21 }, { name: "Night Gown", ar: "قميص نوم", price: 18 },
+                    { name: "Scarf", ar: "حجاب/شيلة", price: 10 }, { name: "Shawl", ar: "شال", price: 10 }
+                ]
+            }
+        };
+
+        let currentService = 'laundry';
+        let currentCountType = 'hotel';
+        let cart = {};
+        let currentImageData = null;
+        let selectedIdForModal = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setLang('en');
+            selectCountType('hotel');
+            renderItems();
+            fetchInitialData();
+            
+            checkIncomingLaundryRequests();
+            setInterval(checkIncomingLaundryRequests, 5000);
         });
-      } catch (e) { console.error("Audio Error:", e); }
-    }
 
-    function playNotificationSound() {
-      if (!audioEnabled || !audioContext) return;
-      try {
-        const osc = audioContext.createOscillator();
-        const gain = audioContext.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(587.33, audioContext.currentTime);
-        osc.frequency.setValueAtTime(880, audioContext.currentTime + 0.15);
-        gain.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-        osc.connect(gain);
-        gain.connect(audioContext.destination);
-        osc.start();
-        osc.stop(audioContext.currentTime + 0.5);
-      } catch (e) { console.error(e); }
-    }
+        async function fetchInitialData() {
+            const { data } = await supabaseClient.from('laundry_slips').select('*');
+            cachedSlips = data || [];
+        }
 
-    const i18n = {
-      en: {
-        welcome: "Welcome to Remal Hotel & Villas", lblOffers: "Offers", lblFacilities: "Facilities", lblService: "Service",
-        facHeader: "Hotel Facilities & Amenities", facSub: "Explore our premium venues and spaces", reqHeader: "Request Guest Service",
-        lblRoom: "Room Number", placeholderRoom: "e.g., 104 or Villa 02", lblServiceType: "Service Type",
-        lblDetails: "Additional Notes / Request Details", placeholderDetails: "Specify your request here...", btnSubmit: "Send Request to Reception",
-        whatsappBtn: "WhatsApp Reception", successMsg: "Request submitted successfully!", chatWhatsapp: "💬 Chat on WhatsApp",
-        trackHeader: "📡 Track Active Requests", liveStatus: "Live Status", trackEmpty: "Enter your room number above to track active requests in real time.",
-        trackNoReq: "No active requests found for room ", loadingOffers: "Loading live offers...", noOffers: "No offers available in this category.",
-        swipePhotos: "👈 Swipe for more photos 👉", bookInquiry: "Book / Inquiry →", statusPending: "🟡 Pending", statusInProgress: "🔵 In Progress", statusCompleted: "🟢 Completed",
-        services: [
-          { val: "Front Desk Inquiry", text: "Front Desk Inquiry" }, { val: "Luggage Assistance", text: "Luggage Assistance" },
-          { val: "Room Service / Dining", text: "Room Service / Order Food" }, { val: "Maintenance / Technical Support", text: "Maintenance / Technical Support" },
-          { val: "Laundry", text: "Laundry" }
-        ]
-      },
-      ar: {
-        welcome: "مرحباً بكم في فندق وڤلل رمال", lblOffers: "العروض", lblFacilities: "المرافق والخدمات", lblService: "طلب خدمة",
-        facHeader: "مرافق الفندق والخدمات", facSub: "استكشف أرقى مرافقنا وخدماتنا المميزة", reqHeader: "طلب خدمة النزلاء",
-        lblRoom: "رقم الغرفة", placeholderRoom: "مثال: 104 أو فيلا 02", lblServiceType: "نوع الخدمة",
-        lblDetails: "ملاحظات إضافية / تفاصيل الطلب", placeholderDetails: "اكتب تفاصيل طلبك هنا...", btnSubmit: "إرسال الطلب إلى الاستقبال",
-        whatsappBtn: "واتساب الاستقبال", successMsg: "تم إرسال طلبك بنجاح!", chatWhatsapp: "💬 التحدث عبر واتساب",
-        trackHeader: "📡 متابعة الطلبات الحالية", liveStatus: "حالة مباشرة", trackEmpty: "أدخل رقم الغرفة أعلاه لمتابعة طلباتك في الوقت الفعلي.",
-        trackNoReq: "لا توجد طلبات مسجلة للغرفة ", loadingOffers: "جاري تحميل العروض المباشرة...", noOffers: "لا توجد عروض متاحة في هذه الفئة.",
-        swipePhotos: "👈 اسحب لرؤية المزيد من الصور 👉", bookInquiry: "حجز / استفسار ←", statusPending: "🟡 قيد الانتظار", statusInProgress: "🔵 قيد التنفيذ", statusCompleted: "🟢 تم الإنجاز",
-        services: [
-          { val: "Front Desk Inquiry", text: "استفسار الاستقبال" }, { val: "Luggage Assistance", text: "مساعدة في الأمتعة" },
-          { val: "Room Service / Dining", text: "خدمة الغرف / طلب طعام" }, { val: "Maintenance / Technical Support", text: "الصيانة / الدعم الفني" },
-          { val: "Laundry", text: "خدمة الغسيل (Laundry)" }
-        ]
-      },
-      hi: {
-        welcome: "रेमल होटल एंड विला में आपका स्वागत है", lblOffers: "विशेष ऑफ़र", lblFacilities: "सुविधाएं", lblService: "सेवा अनुरोध",
-        facHeader: "होटल सुविधाएं", facSub: "हमारे प्रीमियम स्थानों और सेवाओं का अन्वेषण करें", reqHeader: "अतिथि सेवा का अनुरोध करें",
-        lblRoom: "कमरा संख्या", placeholderRoom: "उदा., 104 या विला 02", lblServiceType: "सेवा का प्रकार",
-        lblDetails: "अतिरिक्त विवरण / अनुरोध", placeholderDetails: "अपना अनुरोध यहां दर्ज करें...", btnSubmit: "रिसेप्शन को अनुरोध भेजें",
-        whatsappBtn: "व्हाट्सएप रिसेप्शन", successMsg: "आपका अनुरोध सफलतापूर्वक भेजा गया!", chatWhatsapp: "💬 व्हाट्सएप पर चैट करें",
-        trackHeader: "📡 सक्रिय अनुरोध ट्रैकिंग", liveStatus: "लाइव स्थिति", trackEmpty: "वास्तविक समय में अनुरोध ट्रैक करने के लिए ऊपर कमरा नंबर दर्ज करें।",
-        trackNoReq: "कमरा नंबर के लिए कोई अनुरोध नहीं मिला ", loadingOffers: "ऑफ़र लोड हो रहे हैं...", noOffers: "इस श्रेणी में कोई ऑफ़र उपलब्ध नहीं है।",
-        swipePhotos: "👈 अधिक फ़ोटो के लिए स्वाइप करें 👉", bookInquiry: "बुक / पूछताछ →", statusPending: "🟡 लंबित", statusInProgress: "🔵 प्रगति पर है", statusCompleted: "🟢 पूरा हुआ",
-        services: [
-          { val: "Front Desk Inquiry", text: "फ्रंट डेस्क पूछताछ" }, { val: "Luggage Assistance", text: "सामान सहायता" },
-          { val: "Room Service / Dining", text: "रूम सर्विस / खाना ऑर्डर करें" }, { val: "Maintenance / Technical Support", text: "रखरखाव / तकनीकी सहायता" },
-          { val: "Laundry", text: "लॉन्ड्ररी (कपड़े धोने की सेवा)" }
-        ]
-      }
-    };
+        function playAlarm() {
+            const sound = document.getElementById('hotelAlarmSound');
+            if (sound && isAlarmActive) {
+                sound.currentTime = 0;
+                sound.play().catch(e => console.log("Audio autoplay blocked by browser:", e));
+            }
+        }
 
-    /* LISTE COMPLÈTE DES 9 FACILITIES DE L'HÔTEL */
-    const facilitiesData = [
-      {
-        id: 'exterior',
-        images: ['Remal_exterior_view1.jpg', 'Remal_exterior_view2.jpg', 'Remal_exterior_view3.jpg', 'Remal_exterior_view4.jpg'],
-        title: { en: 'Hotel Exterior & Grounds', ar: 'المظهر الخارجي والمحيط', hi: 'होटल का बाहरी दृश्य' },
-        desc: { en: 'Experience our pristine architecture and welcoming surroundings at Remal Hotel & Villas.', ar: 'استمتع بالتصميم المعماري الفريد والمحيط الهادئ في فندق وڤلل رمال.', hi: 'रेमल होटल एंड विला के शानदार वास्तुشिल्پ का अनुभव करें।' },
-        timing: { en: '24/7 Welcome', ar: 'ترحيب على مدار الساعة', hi: '24 घंटे स्वागत' }
-      },
-      {
-        id: 'pool',
-        images: ['Pool.jpg'],
-        title: { en: 'Al Waha Swimming Pool', ar: 'مسبح الواحة', hi: 'अल वाहा स्विमिंग पूल' },
-        desc: { en: 'Relax by our outdoor swimming pool with comfortable loungers and refreshing drinks.', ar: 'استرخِ بجانب المسبح الخارجي الجميل مع المشروبات المنعشة.', hi: 'हमारे बाहरी स्विमिंग पूल के पास आराम करें।' },
-        timing: { en: '07:00 AM - 08:00 PM', ar: '٠٧:٠٠ صباحاً - ٠٨:٠٠ مساءً', hi: 'सुबह 07:00 - रात 08:00' }
-      },
-      {
-        id: 'gym',
-        images: ['Gym.jpg'],
-        title: { en: 'Recreation & Fitness Gym', ar: 'مركز اللياقة والصالة الرياضية', hi: 'फिटनेस और जिम' },
-        desc: { en: 'Stay active with modern fitness equipment designed for your daily workouts.', ar: 'حافظ على نشاطك وصحتك مع أحدث معدات اللياقة البدنية.', hi: 'हमारे आधुनिक जिम उपकरणों के साथ फिट रहें।' },
-        timing: { en: '06:00 AM - 10:00 PM', ar: '٠٦:٠٠ صباحاً - ١٠:٠٠ مساءً', hi: 'सुबह 06:00 - रात 10:00' }
-      },
-      {
-        id: 'kids',
-        images: ['Kid_club.jpg'],
-        title: { en: 'Kids Club & Play Area', ar: 'نادي الأطفال ومطقة الألعاب', hi: 'किड्स क्लब और प्ले एरिया' },
-        desc: { en: 'A safe, fun, and engaging play area for our young guests.', ar: 'منطقة ألعاب آمنة وممتعة ومخصصة لأطفالنا الأعزاء.', hi: 'हमारे छोटे मेहमानों के लिए एक सुरक्षित और मज़ेदार खेल क्षेत्र।' },
-        timing: { en: '09:00 AM - 07:00 PM', ar: '٠٩:٠٠ صباحاً - ٠٧:٠٠ مساءً', hi: 'सुबह 09:00 - शाम 07:00' }
-      },
-      {
-        id: 'lobby',
-        images: ['Lobby_1.jpg', 'Lobby_2.jpg', 'Lobby_3.jpg', 'Lobby_4.jpg'],
-        title: { en: 'Grand Lobby & Reception', ar: 'البهو الرئيسي والاستقبال', hi: 'भव्य लॉबी और रिसेप्शन' },
-        desc: { en: 'An elegant welcoming ambiance with 24/7 concierge assistance.', ar: 'أجواء ترحيبية راقية مع خدمة الكونسيرج الممتازة على مدار الساعة.', hi: '24/7 द्वारपाल सहायता के साथ एक सुरुचिपूर्ण स्वागत योग्य माहौल।' },
-        timing: { en: '24 Hours Open', ar: 'مفتوح ٢٤ ساعة', hi: '24 घंटे खुला है' }
-      },
-      {
-        id: 'restaurant',
-        images: ['Restaurant-1.jpg', 'Restaurant-2.jpg', 'Restaurant-3.jpg', 'Restaurant-4.jpg'],
-        title: { en: 'Falaj Restaurant & Dining', ar: 'مطعم الفلج والوجبات', hi: 'फलज रेस्टोरेंट और भोजन' },
-        desc: { en: 'International buffet breakfast & fine dining options serving delicious global cuisines.', ar: 'بوفيه إفطار عالمي وتجربة طعام فاخرة تقدم أشهى المأكولات العالمية.', hi: 'अंतर्राष्ट्रीय बफ़े नाश्ता और स्वादिष्ट वैश्विक व्यंजन।' },
-        timing: { en: '06:30 AM - 11:00 PM', ar: '٠٦:٣٠ صباحاً - ١١:٠٠ مساءً', hi: 'सुबह 06:30 - रात 11:00' }
-      },
-      {
-        id: 'rooms',
-        images: ['Room1.jpg', 'Room2.jpg', 'Room3.jpg', 'Room4.jpg', 'Room5.jpg', 'Room6.jpg', 'Room7.jpg', 'Room8.jpg'],
-        title: { en: 'Luxury Guest Rooms', ar: 'غرف النزلاء الفاخرة', hi: 'लक्जरी अतिथि कमरे' },
-        desc: { en: 'Spacious, modernly equipped rooms designed for maximum comfort and relaxation.', ar: 'غرف واسعة ومجهزة بأحدث وسائل الراحة المصممة لضمان أقصى درجات الاسترخاء.', hi: 'अधिकतम आराम और विश्राम के लिए डिज़ाइन किए गए विशाल कमरे।' },
-        timing: { en: 'Daily Housekeeping', ar: 'تنظيف يومي للغرف', hi: 'दैनिक सफाई' }
-      },
-      {
-        id: 'villas',
-        images: ['Villa1.jpg', 'Villa2.jpg', 'Villa3.jpg', 'Villa4.jpg', 'Villa5.jpg'],
-        title: { en: 'VIP Private Villas', ar: 'الفيلات الملكية الخاصة VIP', hi: 'वीआईपी निजी विला' },
-        desc: { en: 'Fully furnished private luxury villas for a premium private stay experience.', ar: 'فيلات فاخرة مفروشة بالكامل لإقامة خاصة وفخمة لا تُنسى.', hi: 'प्रीमियम निजी प्रवास के अनुभव के लिए पूरी तरह से सुसज्जित निजी विला।' },
-        timing: { en: 'VIP Concierge Service', ar: 'خدمة كونسيرج خاصة', hi: 'वीआईपी सेवा' }
-      },
-      {
-        id: 'meeting',
-        images: ['Meeting_room1.jpg', 'Meeting_room2.jpg', 'Meeting_room3.jpg', 'Meeting_room4.jpg'],
-        title: { en: 'Meeting & Event Halls', ar: 'قاعات الاجتماعات والفعاليات', hi: 'मीटिंग और इवेंट हॉल' },
-        desc: { en: 'First-class venues featuring contemporary furnishings for conferences and business events.', ar: 'قاعات ممتازة مجهزة بأحدث التقنيات لعقد المؤتمرات والاجتماعات.', hi: 'सम्मेलनों और व्यावसायिक आयोजनों के लिए प्रथम श्रेणी के स्थान।' },
-        timing: { en: 'By Reservation', ar: 'حسب الحجز', hi: 'आरक्षण द्वारा' }
-      }
-    ];
+        async function stopAlarmAndTransfer() {
+            isAlarmActive = false;
+            const sound = document.getElementById('hotelAlarmSound');
+            if (sound) {
+                sound.pause();
+                sound.currentTime = 0;
+            }
+            document.getElementById('laundryPlantAlert').classList.add('hidden');
 
-    const categoriesTranslations = {
-      en: { 'All': 'All Services', 'Falaj Restaurant': 'Falaj Restaurant', 'Sarab': 'Sarab Bar', 'Al Waha Pool': 'Al Waha Pool', 'The Spa': 'The Spa' },
-      ar: { 'All': 'جميع الخدمات', 'Falaj Restaurant': 'مطعم الفلج', 'Sarab': 'بار سراب', 'Al Waha Pool': 'مسبح الواحة', 'The Spa': 'السبا' },
-      hi: { 'All': 'सभी सेवाएं', 'Falaj Restaurant': 'फलج रेस्टोरेंट', 'Sarab': 'सराब बार', 'Al Waha Pool': 'अल वाहा पूल', 'The Spa': 'द स्पा' }
-    };
+            if (latestRequestId) {
+                try {
+                    await supabaseClient.from('requests').update({ status: 'Collected' }).eq('id', latestRequestId);
+                    
+                    const { data: existingSlip } = await supabaseClient.from('laundry_slips').select('*').eq('room', latestRoomNum).single();
+                    if (!existingSlip) {
+                        await supabaseClient.from('laundry_slips').insert([{
+                            room: latestRoomNum || '000',
+                            count_type: 'hotel',
+                            options: { service_style: 'F — Folding' },
+                            items: {},
+                            total_clothes: 0,
+                            subtotal: 0,
+                            vat: 0,
+                            total: 0,
+                            status: 'Collected'
+                        }]);
+                    }
+                } catch (e) {
+                    console.error("Transfer error:", e);
+                }
+            }
 
-    async function init() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const room = urlParams.get('room');
-      const adminParam = urlParams.get('admin');
+            switchMainSection('liveRecord');
+        }
 
-      if (room) {
-        document.getElementById('roomIndicator').innerText = `Room/Villa: ${room} • Remal Hotel`;
-        document.getElementById('req_room').value = room;
-      }
+        let latestRoomNum = '';
 
-      if (adminParam === 'true') {
-        document.getElementById('viewToggleBtn').classList.remove('hidden');
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        currentUserSession = session;
-      } else {
-        document.getElementById('viewToggleBtn').classList.add('hidden');
-        currentUserSession = null;
-      }
+        async function checkIncomingLaundryRequests() {
+            try {
+                const { data } = await supabaseClient
+                    .from('requests')
+                    .select('*')
+                    .ilike('service', '%laundry%')
+                    .eq('status', 'Pending');
+                
+                const alertBanner = document.getElementById('laundryPlantAlert');
+                if (data && data.length > 0) {
+                    const latestReq = data[data.length - 1];
+                    latestRequestId = latestReq.id;
+                    latestRoomNum = latestReq.room || latestReq.room_number || '---';
+                    const clientNote = latestReq.notes || latestReq.note || latestReq.details || latestReq.description || 'No specific notes from guest.';
+                    
+                    document.getElementById('alertTitleText').innerText = `🚨 New Laundry Request from Room ${latestRoomNum}!`;
+                    document.getElementById('alertClientNote').innerText = `Note: "${clientNote}"`;
+                    
+                    if (!isAlarmActive) {
+                        isAlarmActive = true;
+                        alertBanner.classList.remove('hidden');
+                        playAlarm();
+                    }
+                } else {
+                    if (!isAlarmActive) {
+                        alertBanner.classList.add('hidden');
+                    }
+                }
+            } catch (e) {
+                console.error("Sync error:", e);
+            }
+        }
 
-      setLang('en');
-      renderFacilities();
-      await fetchMenuItemsFromCloud();
-      await fetchOffersFromCloud();
-      await fetchAnnouncementFromCloud();
-      await fetchRequestsFromCloud();
-      setInterval(fetchRequestsFromCloud, 5000);
-    }
+        function isRoomNumberValid(val) {
+            const room = parseInt(val, 10);
+            if (isNaN(room)) return false;
+            return (
+                (room >= 103 && room <= 144) ||
+                (room >= 201 && room <= 246) ||
+                (room >= 301 && room <= 348) ||
+                (room >= 401 && room <= 448) ||
+                (room >= 501 && room <= 520) ||
+                (room >= 601 && room <= 608)
+            );
+        }
 
-    function handleAdminAccess() {
-      if (currentUserSession) toggleAdminView();
-      else document.getElementById('authModal').classList.remove('hidden');
-    }
+        function validateRoomNumber() {
+            const input = document.getElementById('roomNumber');
+            const errorMsg = document.getElementById('roomErrorMsg');
+            const saveBtn = document.getElementById('btnSaveRecord');
+            const val = input.value.trim();
 
-    function closeAuthModal() { document.getElementById('authModal').classList.add('hidden'); }
+            if (val === '') {
+                input.className = "w-full border border-stone-200 rounded-xl p-3 text-sm font-bold bg-stone-50 outline-none transition focus:border-stone-400";
+                errorMsg.classList.add('hidden');
+                saveBtn.disabled = false;
+                saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                return true;
+            }
 
-    async function loginAdmin(event) {
-      event.preventDefault();
-      const email = document.getElementById('loginEmail').value;
-      const password = document.getElementById('loginPassword').value;
-      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (isRoomNumberValid(val)) {
+                input.className = "w-full border-2 border-emerald-500 rounded-xl p-3 text-sm font-bold bg-emerald-50/30 text-stone-900 outline-none transition";
+                errorMsg.classList.add('hidden');
+                saveBtn.disabled = false;
+                saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                return true;
+            } else {
+                input.className = "w-full border-2 border-rose-500 rounded-xl p-3 text-sm font-bold bg-rose-50/50 text-rose-900 outline-none transition";
+                errorMsg.classList.remove('hidden');
+                saveBtn.disabled = true;
+                saveBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                return false;
+            }
+        }
 
-      if (error) {
-        document.getElementById('authErrorMsg').innerText = "❌ Invalid email or password.";
-        document.getElementById('authErrorMsg').classList.remove('hidden');
-      } else {
-        currentUserSession = data.session;
-        closeAuthModal();
-        toggleAdminView();
-      }
-    }
+        function setLang(lang) {
+            currentLang = lang;
+            const t = i18n[lang] || i18n.en;
+            document.getElementById('htmlRoot').setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+            
+            ['en', 'ar', 'hi'].forEach(l => {
+                const btn = document.getElementById(`btn-lang-${l}`);
+                if (l === lang) btn.className = "px-2.5 py-1 rounded-full bg-remal-sand text-white shadow-sm font-bold";
+                else btn.className = "px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900";
+            });
 
-    async function logoutAdmin() {
-      await supabaseClient.auth.signOut();
-      currentUserSession = null;
-      window.location.href = window.location.pathname;
-    }
+            document.getElementById('txtBtnNewRecord').innerText = t.txtBtnNewRecord;
+            document.getElementById('txtBtnLiveRecord').innerText = t.txtBtnLiveRecord;
+            document.getElementById('txtBtnPdfList').innerText = t.txtBtnPdfList;
+            document.getElementById('txtBtnDashboard').innerText = t.txtBtnDashboard;
+            document.getElementById('lblFormTitle').innerText = t.lblFormTitle;
+            document.getElementById('lblRoomNum').innerText = t.lblRoomNum;
+            document.getElementById('lblSelectedGarments').innerText = t.lblSelectedGarments;
+            document.getElementById('lblSubTotal').innerText = t.lblSubTotal;
+            document.getElementById('lblVat').innerText = t.lblVat;
+            document.getElementById('lblGrandTotal').innerText = t.lblGrandTotal;
+            document.getElementById('btnPhotoProof').innerText = t.btnPhotoProof;
+            document.getElementById('btnSaveRecord').innerText = t.btnSaveRecord;
+            document.getElementById('lblArchiveTitle').innerText = t.lblArchiveTitle;
+            document.getElementById('lblAutoArchive').innerText = t.lblAutoArchive;
+            document.getElementById('lblSearchRoom').innerText = t.lblSearchRoom;
+            document.getElementById('lblSearchDate').innerText = t.lblSearchDate;
+            document.getElementById('lblRoomError').innerText = t.lblRoomError;
 
-    function toggleAdminView() {
-      const clientV = document.getElementById('clientView');
-      const adminV = document.getElementById('adminView');
-      const btn = document.getElementById('viewToggleBtn');
+            renderItems();
+        }
 
-      if (currentView === 'client') {
-        currentView = 'admin';
-        clientV.classList.add('hidden');
-        adminV.classList.remove('hidden');
-        btn.innerText = "📱 Client View";
-        renderAdminList();
-        renderAdminMenuList();
-      } else {
-        currentView = 'client';
-        adminV.classList.add('hidden');
-        clientV.classList.remove('hidden');
-        btn.innerText = "⚙️ Staff Panel";
-        renderClientCards();
-      }
-    }
+        function switchMainSection(section) {
+            ['newRecord', 'liveRecord', 'pdfList', 'dashboard'].forEach(sec => {
+                document.getElementById(`section${sec.charAt(0).toUpperCase() + sec.slice(1)}`).classList.add('hidden');
+            });
+            ['newRecord', 'liveRecord', 'pdfList', 'dashboard'].forEach(sec => {
+                document.getElementById(`navBtn${sec.charAt(0).toUpperCase() + sec.slice(1)}`).className = "py-2.5 px-1 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 transition flex flex-col items-center justify-center gap-0.5 font-bold";
+            });
 
-    async function fetchMenuItemsFromCloud() {
-      const { data } = await supabaseClient.from('menu_items').select('*').order('id', { ascending: true });
-      roomServiceMenu = data || [];
-      renderRoomServiceMenu();
-      if (currentView === 'admin') renderAdminMenuList();
-    }
+            document.getElementById(`section${section.charAt(0).toUpperCase() + section.slice(1)}`).classList.remove('hidden');
+            document.getElementById(`navBtn${section.charAt(0).toUpperCase() + section.slice(1)}`).className = "py-2.5 px-1 rounded-2xl bg-remal-sand text-white shadow-md transition flex flex-col items-center justify-center gap-0.5 font-bold";
 
-    async function addMenuItem(event) {
-      event.preventDefault();
-      const name = document.getElementById('food_name').value;
-      const price = parseFloat(document.getElementById('food_price').value);
-      const category = document.getElementById('food_category').value;
+            if (section === 'liveRecord') {
+                chargerLiveOrders();
+            } else if (section === 'pdfList') {
+                afficherListeBordereauxFromCloud();
+            } else if (section === 'dashboard') {
+                renderManagementDashboard();
+            }
+        }
 
-      await supabaseClient.from('menu_items').insert([{ name, price, category }]);
-      alert('Dish added!');
-      document.getElementById('foodMenuForm').reset();
-      await fetchMenuItemsFromCloud();
-    }
+        function selectCountType(type) {
+            currentCountType = type;
+            document.getElementById('btn-count-hotel').className = type === 'hotel' ? 'flex-1 py-2.5 rounded-xl bg-remal-sand text-white shadow-md font-bold' : 'flex-1 py-2.5 rounded-xl text-stone-600';
+            document.getElementById('btn-count-guest').className = type === 'guest' ? 'flex-1 py-2.5 rounded-xl bg-stone-900 text-white shadow-md font-bold' : 'flex-1 py-2.5 rounded-xl text-stone-600';
+            renderItems(); calculateGlobalTotals();
+        }
 
-    async function deleteMenuItem(id) {
-      if (confirm('Delete dish?')) {
-        await supabaseClient.from('menu_items').delete().eq('id', id);
-        await fetchMenuItemsFromCloud();
-      }
-    }
+        function switchService(service) {
+            currentService = service;
+            ['laundry', 'dry', 'pressing'].forEach(s => {
+                document.getElementById(`tab-service-${s}`).className = s === service ? "flex-1 py-2.5 rounded-xl bg-stone-900 text-white shadow-sm font-bold" : "flex-1 py-2.5 rounded-xl bg-stone-100 text-stone-700 font-bold";
+            });
+            renderItems();
+        }
 
-    function renderAdminMenuList() {
-      const container = document.getElementById('adminMenuListContainer');
-      if (roomServiceMenu.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400">No dishes.</p>`; return; }
-      container.innerHTML = roomServiceMenu.map(item => `
-        <div class="flex items-center justify-between p-3 bg-stone-50 rounded-2xl border border-stone-200 text-xs">
-          <div><p class="font-bold text-stone-800">${item.name}</p><p class="text-[10px] text-remal-sand font-semibold">${item.category} • AED ${item.price}</p></div>
-          <button onclick="deleteMenuItem(${item.id})" class="text-rose-600 font-bold p-1">🗑️ Delete</button>
-        </div>
-      `).join('');
-    }
+        function renderItems() {
+            const container = document.getElementById('itemsContainer');
+            container.innerHTML = '';
+            const serviceData = database[currentService];
+            for (const [catName, items] of Object.entries(serviceData)) {
+                const catHeader = document.createElement('div');
+                catHeader.className = 'bg-stone-100 text-stone-800 px-3 py-1.5 rounded-xl font-bold text-xs uppercase tracking-wider mb-2 mt-2'; catHeader.innerText = catName;
+                container.appendChild(catHeader);
 
-    function toggleRoomServiceMenu() {
-      const selectedService = document.getElementById('req_service').value;
-      const block = document.getElementById('roomServiceMenuBlock');
-      if (selectedService === 'Room Service / Dining') block.classList.remove('hidden');
-      else block.classList.add('hidden');
-    }
+                items.forEach(item => {
+                    const key = `${currentService}_${item.name}`;
+                    const qty = cart[key] ? cart[key].qty : 0;
+                    const priceDisplay = currentCountType === 'hotel' ? '0.00 AED' : `${item.price.toFixed(2)} AED`;
 
-    function renderRoomServiceMenu() {
-      const container = document.getElementById('foodItemsContainer');
-      if (!container) return;
-      if (roomServiceMenu.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400 text-center py-2">No menu items currently.</p>`; return; }
-      container.innerHTML = roomServiceMenu.map(item => `
-        <div class="flex justify-between items-center bg-white p-2.5 rounded-xl border border-stone-200 text-xs">
-          <div><p class="font-bold text-stone-900">${item.name}</p><p class="text-remal-sand font-semibold">AED ${item.price}</p></div>
-          <div class="flex items-center space-x-2 bg-stone-100 rounded-lg p-1">
-            <button type="button" onclick="updateCart(${item.id}, -1)" class="w-6 h-6 bg-white rounded font-bold text-stone-700 shadow-sm">-</button>
-            <span id="qty-item-${item.id}" class="font-bold px-1.5 text-stone-900">0</span>
-            <button type="button" onclick="updateCart(${item.id}, 1)" class="w-6 h-6 bg-stone-900 text-white rounded font-bold shadow-sm">+</button>
-          </div>
-        </div>
-      `).join('');
-    }
+                    const row = document.createElement('div');
+                    row.className = 'flex justify-between items-center py-2 border-b border-stone-100 text-xs';
+                    row.innerHTML = `
+                        <div>
+                            <p class="font-bold text-stone-900">${currentLang === 'ar' ? item.ar : item.name}</p>
+                            <p class="text-[10px] ${currentCountType === 'hotel' ? 'text-emerald-600 font-bold' : 'text-remal-sand font-semibold'}">${priceDisplay}</p>
+                        </div>
+                        <div class="flex items-center space-x-2 bg-stone-100 p-1 rounded-xl">
+                            <button onclick="updateQty('${key}', '${item.name}', ${item.price}, -1)" class="w-6 h-6 bg-white text-stone-800 rounded font-bold shadow-sm">-</button>
+                            <span class="font-bold px-1 text-stone-900">${qty}</span>
+                            <button onclick="updateQty('${key}', '${item.name}', ${item.price}, 1)" class="w-6 h-6 bg-stone-900 text-white rounded font-bold shadow-sm">+</button>
+                        </div>
+                    `;
+                    container.appendChild(row);
+                });
+            }
+        }
 
-    function updateCart(itemId, change) {
-      if (!cartState[itemId]) cartState[itemId] = 0;
-      cartState[itemId] = Math.max(0, cartState[itemId] + change);
-      document.getElementById(`qty-item-${itemId}`).innerText = cartState[itemId];
-      calculateCartTotal();
-    }
+        function updateQty(key, name, price, delta) {
+            if (!cart[key]) cart[key] = { qty: 0, price: price, name: name, service: currentService };
+            cart[key].qty += delta;
+            if (cart[key].qty <= 0) delete cart[key];
+            renderItems(); calculateGlobalTotals();
+        }
 
-    function calculateCartTotal() {
-      let total = 0;
-      roomServiceMenu.forEach(item => { total += item.price * (cartState[item.id] || 0); });
-      document.getElementById('cartTotalDisplay').innerText = `AED ${total}`;
-      return total;
-    }
+        function calculateGlobalTotals() {
+            let totalClothes = 0; let subtotal = 0;
+            Object.values(cart).forEach(item => { totalClothes += item.qty; if (currentCountType === 'guest') subtotal += item.price * item.qty; });
+            const vat = subtotal * 0.05; const grandTotal = subtotal + vat;
+            document.getElementById('currentBordereauCount').innerText = `${totalClothes} pieces`;
+            document.getElementById('subTotal').innerText = `${subtotal.toFixed(2)} AED`;
+            document.getElementById('vatAmount').innerText = `${vat.toFixed(2)} AED`;
+            document.getElementById('grandTotal').innerText = `${grandTotal.toFixed(2)} AED`;
+        }
 
-    function renderFacilities() {
-      const container = document.getElementById('facilitiesContainer');
-      const t = i18n[currentLang] || i18n.en;
-      container.innerHTML = facilitiesData.map(item => `
-        <div class="remal-card rounded-3xl overflow-hidden shadow-sm">
-          <div class="flex overflow-x-auto snap-x snap-mandatory scrollbar-none h-52 bg-stone-100">
-            ${item.images.map(img => `
-              <img src="${img}" class="w-full h-full object-cover flex-shrink-0 snap-center" loading="lazy">
-            `).join('')}
-          </div>
-          ${item.images.length > 1 ? `<p class="text-[9px] text-stone-400 text-center pt-1 font-semibold">${t.swipePhotos}</p>` : ''}
-          <div class="p-5 space-y-2">
-            <h4 class="text-base font-serif-luxury font-bold text-stone-900">${item.title[currentLang] || item.title['en']}</h4>
-            <p class="text-xs text-stone-600 leading-relaxed">${item.desc[currentLang] || item.desc['en']}</p>
-            <div class="pt-2 border-t border-stone-100 flex justify-between items-center text-[11px] font-semibold text-stone-500">
-              <span>🕒 ${item.timing[currentLang] || item.timing['en']}</span>
-              <button onclick="switchGuestTab('request')" class="text-remal-sand hover:underline font-bold">${t.bookInquiry}</button>
-            </div>
-          </div>
-        </div>
-      `).join('');
-    }
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) { currentImageData = e.target.result; const img = document.getElementById('imagePreview'); img.src = currentImageData; img.classList.remove('hidden'); }
+                reader.readAsDataURL(file);
+            }
+        }
 
-    async function fetchAnnouncementFromCloud() {
-      const { data } = await supabaseClient.from('announcements').select('*').order('id', { ascending: false }).limit(1);
-      if (!data || data.length === 0) return;
-      activeAnnouncement = data[0];
-      renderAnnouncement();
-    }
+        async function sauvegarderBordereauToCloud() {
+            const roomInput = document.getElementById('roomNumber');
+            const roomNum = roomInput.value.trim();
+            const editingId = document.getElementById('editingRecordId').value;
 
-    function renderAnnouncement() {
-      const banner = document.getElementById('announcementBanner');
-      const textEl = document.getElementById('announcementText');
-      if (activeAnnouncement && activeAnnouncement.is_active) {
-        textEl.innerText = `📢 ${activeAnnouncement.message[currentLang] || activeAnnouncement.message['en']}`;
-        banner.classList.remove('hidden');
-      } else banner.classList.add('hidden');
-    }
+            if (!validateRoomNumber() || !roomNum) {
+                alert(i18n[currentLang].lblRoomError);
+                return;
+            }
 
-    async function saveAnnouncement(isActive) {
-      const newAnn = { message: { en: document.getElementById('ann_en').value, ar: document.getElementById('ann_ar').value, hi: document.getElementById('ann_hi').value }, is_active: isActive };
-      await supabaseClient.from('announcements').insert([newAnn]);
-      alert("Announcement updated!");
-      await fetchAnnouncementFromCloud();
-    }
+            if (Object.keys(cart).length === 0 && !currentImageData) {
+                alert('Please select at least one garment.');
+                return;
+            }
 
-    async function fetchOffersFromCloud() {
-      const { data } = await supabaseClient.from('offers').select('*').order('id', { ascending: false });
-      cachedOffers = data || [];
-      renderClientCards();
-      if (currentView === 'admin') renderAdminList();
-    }
+            let totalClothes = 0; Object.values(cart).forEach(item => totalClothes += item.qty);
+            let subtotal = 0; if (currentCountType === 'guest') Object.values(cart).forEach(item => subtotal += item.price * item.qty);
 
-    async function fetchRequestsFromCloud() {
-      const { data, error } = await supabaseClient.from('requests').select('*').order('id', { ascending: false });
-      if (error) return;
-      cachedRequests = data || [];
-      const pendingRequests = cachedRequests.filter(r => r.status === 'Pending' || !r.status);
-      
-      if (pendingRequests.length > previousPendingCount) {
-        playNotificationSound();
-      }
-      previousPendingCount = pendingRequests.length;
+            const selectedOption = document.querySelector('input[name="foldingOption"]:checked')?.value || 'F — Folding';
+            const vat = subtotal * 0.05; const grandTotal = subtotal + vat;
 
-      const badge = document.getElementById('requestBadge');
-      if (pendingRequests.length > 0) { badge.innerText = pendingRequests.length; badge.classList.remove('hidden'); }
-      else badge.classList.add('hidden');
+            const payload = {
+                room: roomNum, 
+                count_type: currentCountType, 
+                options: { service_style: selectedOption }, 
+                items: cart,
+                total_clothes: totalClothes, 
+                subtotal: subtotal, 
+                vat: vat, 
+                total: grandTotal, 
+                photo: currentImageData,
+                status: 'Collected'
+            };
 
-      if (currentView === 'admin') renderAdminRequests();
-      renderClientTracker();
-    }
+            if (editingId) {
+                await supabaseClient.from('laundry_slips').update(payload).eq('id', editingId);
+                alert(`Record for Room ${roomNum} updated successfully!`);
+            } else {
+                await supabaseClient.from('laundry_slips').insert([payload]);
+                alert(`Record for Room ${roomNum} saved!`);
+            }
 
-    function renderClientTracker() {
-      const roomNum = document.getElementById('req_room')?.value?.trim();
-      const container = document.getElementById('clientTrackerContainer');
-      if (!container) return;
-      const t = i18n[currentLang] || i18n.en;
+            reinitialiserFormulaire();
+            switchMainSection('liveRecord');
+        }
 
-      if (!roomNum) { container.innerHTML = `<p class="text-center text-xs text-stone-400 py-3">${t.trackEmpty}</p>`; return; }
-      const myRequests = cachedRequests.filter(r => String(r.room).trim().toLowerCase() === roomNum.toLowerCase());
-      if (myRequests.length === 0) { container.innerHTML = `<p class="text-center text-xs text-stone-400 py-3">${t.trackNoReq} ${roomNum}.</p>`; return; }
+        function reinitialiserFormulaire() {
+            document.getElementById('roomNumber').value = ''; 
+            document.getElementById('editingRecordId').value = '';
+            validateRoomNumber();
+            cart = {}; currentImageData = null;
+            document.getElementById('imagePreview').classList.add('hidden'); document.getElementById('photoInput').value = '';
+            selectCountType('hotel'); renderItems(); calculateGlobalTotals();
+        }
 
-      container.innerHTML = myRequests.map(req => `
-        <div class="p-3.5 bg-stone-50 rounded-2xl border border-stone-200 text-xs space-y-2">
-          <div class="flex justify-between items-center"><span class="font-bold text-stone-900">${req.service}</span><span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-1 rounded-full">${req.status || 'Pending'}</span></div>
-          <p class="text-stone-600 bg-white p-2.5 rounded-xl border border-stone-100">${req.details}</p>
-        </div>
-      `).join('');
-    }
+        async function chargerLiveOrders() {
+            const container = document.getElementById('liveOrdersList');
+            const { data } = await supabaseClient.from('laundry_slips').select('*');
+            
+            cachedSlips = data || [];
+            cachedSlips.sort((a, b) => (parseInt(a.room) || 0) - (parseInt(b.room) || 0));
 
-    function renderCategoryFilters() {
-      const container = document.getElementById('categoryFilters');
-      const cats = ['All', 'Falaj Restaurant', 'Sarab', 'Al Waha Pool', 'The Spa'];
-      container.innerHTML = cats.map(cat => `<button onclick="filterCategory('${cat}')" class="px-4 py-2 rounded-full whitespace-nowrap text-xs font-semibold ${currentCategory === cat ? 'bg-remal-sand text-white' : 'bg-white text-stone-600 border'}">${categoriesTranslations[currentLang][cat] || cat}</button>`).join('');
-    }
+            if (cachedSlips.length === 0) {
+                container.innerHTML = `<p class="text-xs text-stone-400 text-center py-4">No live laundry orders.</p>`;
+                return;
+            }
 
-    function renderClientCards() {
-      const container = document.getElementById('cardsContainer');
-      container.innerHTML = '';
-      const t = i18n[currentLang] || i18n.en;
-      const filtered = currentCategory === 'All' ? cachedOffers : cachedOffers.filter(item => item.category === currentCategory);
+            container.innerHTML = '';
+            cachedSlips.forEach(entry => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'p-4 bg-stone-50 rounded-2xl border border-stone-200 text-xs space-y-3';
+                
+                const isHotel = entry.count_type === 'hotel';
+                const status = entry.status || 'Collected';
 
-      if (filtered.length === 0) { container.innerHTML = `<p class="text-center text-xs text-stone-400 py-8">${t.noOffers}</p>`; return; }
-      filtered.forEach(item => {
-        container.innerHTML += `
-          <div class="remal-card rounded-3xl overflow-hidden">
-            <img src="${item.image}" class="w-full h-48 object-cover">
-            <div class="p-5 space-y-3">
-              <h3 class="text-lg font-serif-luxury font-bold text-stone-900">${item.title[currentLang] || item.title['en']}</h3>
-              <div class="flex justify-between items-center pt-3 border-t text-xs"><span class="text-stone-500">🕒 ${item.timing[currentLang] || item.timing['en']}</span><span class="text-remal-sand font-bold">${item.price}</span></div>
-            </div>
-          </div>
-        `;
-      });
-    }
+                let statusBg = 'bg-amber-100 text-amber-800';
+                if (status === 'Washing') statusBg = 'bg-blue-100 text-blue-800';
+                if (status === 'Ready') statusBg = 'bg-purple-100 text-purple-800';
+                if (status === 'Delivered') statusBg = 'bg-emerald-100 text-emerald-800';
 
-    function renderAdminList() {
-      const container = document.getElementById('adminListContainer');
-      if (cachedOffers.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400">No active offers.</p>`; return; }
-      container.innerHTML = cachedOffers.map(item => `
-        <div class="flex items-center justify-between p-3 bg-stone-50 rounded-2xl border text-xs">
-          <div class="flex items-center space-x-3"><img src="${item.image}" class="w-12 h-12 object-cover rounded-xl"><div><p class="font-bold">${item.title.en}</p><p class="text-remal-sand">${item.category} • ${item.price}</p></div></div>
-          <button onclick="deleteOffer(${item.id})" class="text-rose-600 font-bold p-2">🗑️</button>
-        </div>
-      `).join('');
-    }
+                itemDiv.innerHTML = `
+                    <div class="flex justify-between items-center cursor-pointer" onclick="ouvrirModalDetails(${entry.id})">
+                        <div>
+                            <span class="font-serif-luxury font-bold text-stone-900 text-sm">Room ${entry.room}</span>
+                            <span class="ml-2 text-[10px] font-bold px-2 py-0.5 rounded-full ${isHotel ? 'bg-amber-100 text-amber-800' : 'bg-stone-200 text-stone-800'}">${isHotel ? 'Hotel' : 'Guest'}</span>
+                        </div>
+                        <div class="text-right font-bold text-stone-900">
+                            <span class="text-remal-sand font-serif-luxury text-sm">${entry.total.toFixed(2)} AED</span>
+                        </div>
+                    </div>
 
-    function renderAdminRequests() {
-      const container = document.getElementById('adminRequestsContainer');
-      if (cachedRequests.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400 text-center py-4 col-span-2">No active requests.</p>`; return; }
-      container.innerHTML = cachedRequests.map(req => `
-        <div class="p-4 bg-stone-50 rounded-2xl border text-xs space-y-3 flex flex-col justify-between">
-          <div class="space-y-2">
-            <div class="flex justify-between items-start"><div><span class="font-bold text-stone-900 text-sm">Room: ${req.room || 'N/A'}</span><p class="text-remal-sand font-semibold">${req.service}</p></div><span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full ${req.status === 'Completed' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${req.status || 'Pending'}</span></div>
-            <p class="text-stone-700 bg-white p-3 rounded-xl border">${req.details}</p>
-          </div>
-          <div class="flex justify-between items-center pt-2 border-t text-[11px]">
-            <div class="space-x-1"><button onclick="updateRequestStatus(${req.id}, 'Pending')" class="px-2 py-1 bg-amber-100 text-amber-800 rounded font-semibold">Pending</button><button onclick="updateRequestStatus(${req.id}, 'In Progress')" class="px-2 py-1 bg-blue-100 text-blue-800 rounded font-semibold">In Progress</button><button onclick="updateRequestStatus(${req.id}, 'Completed')" class="px-2 py-1 bg-emerald-100 text-emerald-800 rounded font-semibold">Completed</button></div>
-            <button onclick="deleteRequest(${req.id})" class="text-rose-600 font-bold p-1">🗑️</button>
-          </div>
-        </div>
-      `).join('');
-    }
+                    <div class="flex items-center justify-between gap-1 pt-2 border-t border-stone-200">
+                        <span class="text-[10px] font-bold px-2 py-1 rounded-lg ${statusBg}">📍 ${status}</span>
+                        <div class="flex gap-1">
+                            <button onclick="updateOrderStatus(${entry.id}, 'Collected')" class="px-2 py-1 rounded text-[10px] font-bold ${status === 'Collected' ? 'bg-stone-900 text-white' : 'bg-stone-200 text-stone-700'}">Collected</button>
+                            <button onclick="updateOrderStatus(${entry.id}, 'Washing')" class="px-2 py-1 rounded text-[10px] font-bold ${status === 'Washing' ? 'bg-blue-600 text-white' : 'bg-stone-200 text-stone-700'}">Washing</button>
+                            <button onclick="updateOrderStatus(${entry.id}, 'Ready')" class="px-2 py-1 rounded text-[10px] font-bold ${status === 'Ready' ? 'bg-purple-600 text-white' : 'bg-stone-200 text-stone-700'}">Ready</button>
+                            <button onclick="updateOrderStatus(${entry.id}, 'Delivered')" class="px-2 py-1 rounded text-[10px] font-bold ${status === 'Delivered' ? 'bg-emerald-600 text-white' : 'bg-stone-200 text-stone-700'}">Delivered</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(itemDiv);
+            });
+        }
 
-    async function saveAdminData() {
-      const imageUrl = document.getElementById('adm_image').value;
-      if (!imageUrl) { alert("Select an image."); return; }
-      const newItem = { category: document.getElementById('adm_category').value, price: document.getElementById('adm_price').value, image: imageUrl, title: { en: document.getElementById('adm_title_en').value, ar: document.getElementById('adm_title_ar').value, hi: document.getElementById('adm_title_hi').value }, timing: { en: document.getElementById('adm_timing_en').value, ar: document.getElementById('adm_timing_ar').value, hi: document.getElementById('adm_timing_hi').value } };
-      await supabaseClient.from('offers').insert([newItem]);
-      alert('Offer published!');
-      document.getElementById('adminForm').reset();
-      await fetchOffersFromCloud();
-    }
+        async function updateOrderStatus(id, newStatus) {
+            await supabaseClient.from('laundry_slips').update({ status: newStatus }).eq('id', id);
+            
+            const slip = cachedSlips.find(s => s.id === id);
+            if (slip) {
+                await supabaseClient.from('requests').update({ status: newStatus }).eq('room', slip.room).ilike('service', '%laundry%');
+            }
 
-    async function submitGuestRequest() {
-      const room = document.getElementById('req_room').value;
-      const service = document.getElementById('req_service').value;
-      let details = document.getElementById('req_details').value;
+            await chargerLiveOrders();
+        }
 
-      if (!room) { alert("Please enter your Room number."); return; }
-      if (service === 'Room Service / Dining') {
-        const total = calculateCartTotal();
-        const deliveryTime = document.getElementById('delivery_time').value;
-        let orderSummary = [];
-        roomServiceMenu.forEach(item => { if (cartState[item.id] > 0) orderSummary.push(`${cartState[item.id]}x ${item.name}`); });
-        details = `🛒 ORDER: ${orderSummary.join(', ')}\n💰 Total: AED ${total}\n🕒 Time: ${deliveryTime}\n📝 Notes: ${details || 'None'}`;
-      }
+        async function afficherListeBordereauxFromCloud() {
+            const container = document.getElementById('laundryList');
+            const { data } = await supabaseClient.from('laundry_slips').select('*');
+            
+            cachedSlips = data || [];
+            cachedSlips.sort((a, b) => (parseInt(a.room) || 0) - (parseInt(b.room) || 0));
+            filtrerListeCloud();
+        }
 
-      await supabaseClient.from('requests').insert([{ room, service, details, status: 'Pending' }]);
-      const textMessage = encodeURIComponent(`Hello Remal Reception,\nI submitted a request for Room/Villa ${room}.\n\n*Service:* ${service}\n*Details:*\n${details}`);
-      document.getElementById('btnWhatsappDirect').href = `https://wa.me/971526966865?text=${textMessage}`;
-      document.getElementById('whatsappConfirmation').classList.remove('hidden');
-      document.getElementById('req_details').value = '';
-      cartState = {};
-      renderRoomServiceMenu();
-      calculateCartTotal();
-      await fetchRequestsFromCloud();
-    }
+        function filtrerListeCloud() {
+            const container = document.getElementById('laundryList');
+            const searchRoomVal = document.getElementById('searchRoom').value.toLowerCase().trim();
+            const searchDateVal = document.getElementById('searchDate').value;
 
-    async function updateRequestStatus(id, newStatus) { await supabaseClient.from('requests').update({ status: newStatus }).eq('id', id); await fetchRequestsFromCloud(); }
-    async function deleteRequest(id) { if (confirm('Delete?')) { await supabaseClient.from('requests').delete().eq('id', id); await fetchRequestsFromCloud(); } }
-    async function deleteOffer(id) { if (confirm('Delete?')) { await supabaseClient.from('offers').delete().eq('id', id); await fetchOffersFromCloud(); } }
+            let filtered = cachedSlips.filter(entry => {
+                const matchRoom = !searchRoomVal || String(entry.room).toLowerCase().includes(searchRoomVal);
+                let matchDate = true;
+                if (searchDateVal) {
+                    const entryDate = new Date(entry.created_at).toISOString().split('T')[0];
+                    matchDate = (entryDate === searchDateVal);
+                }
+                return matchRoom && matchDate;
+            });
 
-    function switchGuestTab(tab) {
-      ['guestOffersSection', 'guestFacilitiesSection', 'guestRequestSection'].forEach(s => document.getElementById(s).classList.add('hidden'));
-      ['tabOffersBtn', 'tabFacilitiesBtn', 'tabRequestBtn'].forEach(b => document.getElementById(b).className = "flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap");
+            if (filtered.length === 0) { 
+                container.innerHTML = `<p style="text-align:center; color:#94a3b8; font-size:0.75rem;" class="py-4">${i18n[currentLang].noRecords}</p>`; 
+                return; 
+            }
 
-      if (tab === 'offers') { document.getElementById('guestOffersSection').classList.remove('hidden'); document.getElementById('tabOffersBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; }
-      else if (tab === 'facilities') { document.getElementById('guestFacilitiesSection').classList.remove('hidden'); document.getElementById('tabFacilitiesBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; }
-      else if (tab === 'request') { document.getElementById('guestRequestSection').classList.remove('hidden'); document.getElementById('tabRequestBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; toggleRoomServiceMenu(); renderClientTracker(); }
-    }
+            container.innerHTML = '';
+            filtered.forEach(entry => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'p-3.5 bg-stone-50 rounded-2xl border border-stone-200 text-xs flex justify-between items-center cursor-pointer hover:bg-stone-100 transition'; 
+                itemDiv.onclick = () => ouvrirModalDetails(entry.id);
+                const isHotel = entry.count_type === 'hotel';
+                const styleOpt = entry.options?.service_style || 'F — Folding';
 
-    function switchAdminTab(tab) {
-      ['adminOffersPanel', 'adminRequestsPanel', 'adminBannerPanel'].forEach(p => document.getElementById(p).classList.add('hidden'));
-      if (tab === 'offers') document.getElementById('adminOffersPanel').classList.remove('hidden');
-      else if (tab === 'requests') { 
-        document.getElementById('adminRequestsPanel').classList.remove('hidden'); 
-        fetchRequestsFromCloud(); 
-      }
-      else if (tab === 'banner') document.getElementById('adminBannerPanel').classList.remove('hidden');
-    }
+                itemDiv.innerHTML = `
+                    <div>
+                        <span class="font-serif-luxury font-bold text-stone-900 text-sm">Room ${entry.room}</span>
+                        <span class="ml-2 text-[10px] font-bold px-2 py-0.5 rounded-full ${isHotel ? 'bg-amber-100 text-amber-800' : 'bg-stone-200 text-stone-800'}">${isHotel ? 'Hotel Count' : 'Guest Count'}</span>
+                        <div class="text-[10px] text-stone-500 font-semibold mt-0.5">Style: ${styleOpt} | Status: ${entry.status || 'Collected'}</div>
+                    </div>
+                    <div class="text-right font-bold text-stone-900">
+                        <small class="text-stone-400 font-normal">(${entry.total_clothes} pcs)</small> <span class="text-remal-sand font-serif-luxury text-sm">${entry.total.toFixed(2)} AED</span> ${entry.photo ? '📸' : ''}
+                    </div>
+                `;
+                container.appendChild(itemDiv);
+            });
+        }
 
-    function switchAdminSubTab(subTab) {
-      if (subTab === 'offersList') { document.getElementById('adminOffersSubSection').classList.remove('hidden'); document.getElementById('adminMenuSubSection').classList.add('hidden'); }
-      else { document.getElementById('adminMenuSubSection').classList.remove('hidden'); document.getElementById('adminOffersSubSection').classList.add('hidden'); renderAdminMenuList(); }
-    }
+        async function renderManagementDashboard() {
+            const { data } = await supabaseClient.from('laundry_slips').select('*');
+            cachedSlips = data || [];
 
-    function setLang(lang) {
-      currentLang = lang;
-      const t = i18n[lang] || i18n.en;
-      document.getElementById('htmlRoot').setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
-      document.getElementById('welcomeMsg').innerText = t.welcome;
-      document.getElementById('lblTabOffers').innerText = t.lblOffers;
-      document.getElementById('lblTabFacilities').innerText = t.lblFacilities;
-      document.getElementById('lblTabRequest').innerText = t.lblService;
-      document.getElementById('reqHeader').innerText = t.reqHeader;
-      document.getElementById('btnSubmitReq').innerText = t.btnSubmit;
+            let totalRevenue = 0;
+            let totalGarments = 0;
+            let statusCounts = { Collected: 0, Washing: 0, Ready: 0, Delivered: 0 };
+            let revenueByDate = {};
 
-      const selectService = document.getElementById('req_service');
-      selectService.innerHTML = t.services.map(s => `<option value="${s.val}">${s.text}</option>`).join('');
+            cachedSlips.forEach(slip => {
+                totalRevenue += (slip.total || 0);
+                totalGarments += (slip.total_clothes || 0);
+                
+                let st = slip.status || 'Collected';
+                if (statusCounts[st] !== undefined) statusCounts[st]++;
 
-      renderCategoryFilters(); renderClientCards(); renderFacilities(); renderAnnouncement(); renderClientTracker();
-    }
+                if (slip.created_at) {
+                    let dStr = slip.created_at.split('T')[0];
+                    revenueByDate[dStr] = (revenueByDate[dStr] || 0) + (slip.total || 0);
+                }
+            });
 
-    function filterCategory(cat) { currentCategory = cat; renderCategoryFilters(); renderClientCards(); }
-    window.onload = init;
-  </script>
+            document.getElementById('kpiRevenue').innerText = `${totalRevenue.toFixed(2)} AED`;
+            document.getElementById('kpiOrders').innerText = cachedSlips.length;
+            document.getElementById('kpiGarments').innerText = `${totalGarments} pcs`;
+
+            const ctxDoughnut = document.getElementById('statusDoughnutChart').getContext('2d');
+            if (doughnutChartInstance) doughnutChartInstance.destroy();
+
+            doughnutChartInstance = new Chart(ctxDoughnut, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Collected', 'Washing', 'Ready', 'Delivered'],
+                    datasets: [{
+                        data: [statusCounts.Collected, statusCounts.Washing, statusCounts.Ready, statusCounts.Delivered],
+                        backgroundColor: ['#78716c', '#2563eb', '#9333ea', '#059669'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { size: 10 } } }
+                    }
+                }
+            });
+
+            const dates = Object.keys(revenueByDate).sort();
+            const revenues = dates.map(d => revenueByDate[d]);
+
+            const ctxBar = document.getElementById('revenueBarChart').getContext('2d');
+            if (barChartInstance) barChartInstance.destroy();
+
+            barChartInstance = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: dates.length > 0 ? dates : ['No Data'],
+                    datasets: [{
+                        label: 'Revenue (AED)',
+                        data: revenues.length > 0 ? revenues : [0],
+                        backgroundColor: '#E2B383',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { ticks: { font: { size: 10 } } },
+                        x: { ticks: { font: { size: 10 } } }
+                    }
+                }
+            });
+        }
+
+        function ouvrirModalDetails(id) {
+            selectedIdForModal = id;
+            const entry = cachedSlips.find(e => e.id === id);
+            if (!entry) return;
+
+            const isHotel = entry.count_type === 'hotel';
+            document.getElementById('modalRoomNumDisplay').innerText = entry.room;
+            document.getElementById('modalDate').innerText = `Date: ${new Date(entry.created_at).toLocaleDateString('fr-FR')}`;
+            document.getElementById('modalTypeBadgeInline').innerText = isHotel ? 'Hotel Count (Free)' : 'Guest Count';
+            document.getElementById('modalPackagingStyle').innerText = entry.options?.service_style || 'F — Folding';
+
+            const tbody = document.getElementById('modalTableBody'); tbody.innerHTML = '';
+            Object.values(entry.items || {}).forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = "py-1 border-b border-stone-100";
+                tr.innerHTML = `<td class="font-bold py-2 p-2.5">${item.name}</td><td class="text-center font-bold p-2.5">${item.qty}</td><td class="text-right font-bold p-2.5">${isHotel ? '0.00' : (item.qty * item.price).toFixed(2)}</td>`;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('modalClothesCount').innerText = `${entry.total_clothes} pieces`;
+            document.getElementById('modalSubTotal').innerText = `${entry.subtotal.toFixed(2)} AED`;
+            document.getElementById('modalVat').innerText = `${entry.vat.toFixed(2)} AED`;
+            document.getElementById('modalTotal').innerText = `${entry.total.toFixed(2)} AED`;
+
+            const pContainer = document.getElementById('modalPhotoContainer');
+            pContainer.innerHTML = entry.photo ? `<p class="font-bold text-xs mt-2">Proof Photo:</p><img src="${entry.photo}" class="w-full rounded-2xl border border-stone-200 mt-1">` : '';
+
+            const whatsappMsg = encodeURIComponent(`*REMAL HOTEL - LAUNDRY SLIP*\n*Room:* ${entry.room}\n*Status:* ${entry.status || 'Collected'}\n*Total Garments:* ${entry.total_clothes} pcs\n*Grand Total:* ${entry.total.toFixed(2)} AED`);
+            document.getElementById('btnWhatsappShare').href = `https://wa.me/?text=${whatsappMsg}`;
+
+            document.getElementById('detailModal').classList.remove('hidden');
+        }
+
+        function editerBordereauActuel() {
+            if (!selectedIdForModal) return;
+            const entry = cachedSlips.find(e => e.id === selectedIdForModal);
+            if (!entry) return;
+
+            document.getElementById('editingRecordId').value = entry.id;
+            document.getElementById('roomNumber').value = entry.room;
+            validateRoomNumber();
+            cart = entry.items || {};
+            selectCountType(entry.count_type || 'hotel');
+            
+            if (entry.options?.service_style) {
+                const radio = document.querySelector(`input[name="foldingOption"][value="${entry.options.service_style}"]`);
+                if (radio) radio.checked = true;
+            }
+
+            fermerModal();
+            switchMainSection('newRecord');
+        }
+
+        function genererPDF() {
+            const element = document.getElementById('pdfExportArea');
+            const roomVal = document.getElementById('modalRoomNumDisplay').innerText;
+            const opt = {
+                margin:       8,
+                filename:     `Laundry_Slip_Room_${roomVal}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function fermerModal() { document.getElementById('detailModal').classList.add('hidden'); selectedIdForModal = null; }
+
+        async function supprimerBordereauActuel() {
+            if (!selectedIdForModal) return;
+            if (confirm(`Delete this record?`)) {
+                await supabaseClient.from('laundry_slips').delete().eq('id', selectedIdForModal);
+                fermerModal();
+                await afficherListeBordereauxFromCloud();
+            }
+        }
+    </script>
 </body>
 </html>
