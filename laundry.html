@@ -54,7 +54,7 @@
         </div>
     </header>
 
-    <!-- BANNIÈRE ROUGE D'ALERTE + NOTE DU CLIENT + BOUTON STOP ALARME -->
+    <!-- BANNIÈRE ROUGE D'ALERTE AVEC NOTE DU CLIENT -->
     <div id="laundryPlantAlert" class="hidden bg-rose-600 text-white px-4 py-3 text-center text-xs font-bold tracking-wide shadow-md pulse-notification flex items-center justify-between gap-2">
         <div class="flex items-center gap-2 text-left">
             <span>🚨</span>
@@ -68,17 +68,20 @@
 
     <div class="max-w-2xl mx-auto px-4 py-4 space-y-4">
 
-        <!-- BOUTONS DE NAVIGATION DU HAUT -->
-        <div class="flex items-center gap-3 pt-1">
-            <button onclick="switchMainSection('newRecord')" id="navBtnNewRecord" class="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-remal-sand text-white font-bold text-xs shadow-md transition">
-                <span class="text-sm">＋</span> <span id="txtBtnNewRecord">New Record</span>
+        <!-- 3 SECTIONS DE NAVIGATION EN HAUT -->
+        <div class="grid grid-cols-3 gap-2 pt-1 text-xs font-bold">
+            <button onclick="switchMainSection('newRecord')" id="navBtnNewRecord" class="py-3 rounded-2xl bg-remal-sand text-white shadow-md transition flex items-center justify-center gap-1">
+                <span>➕</span> <span id="txtBtnNewRecord">New Record</span>
             </button>
-            <button onclick="switchMainSection('pdfList')" id="navBtnPdfList" class="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 font-bold text-xs hover:bg-stone-200 transition">
-                <span class="text-sm">📄</span> <span id="txtBtnPdfList">PDF List & Live Orders</span>
+            <button onclick="switchMainSection('liveRecord')" id="navBtnLiveRecord" class="py-3 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 transition flex items-center justify-center gap-1">
+                <span>🔴</span> <span id="txtBtnLiveRecord">Live Orders</span>
+            </button>
+            <button onclick="switchMainSection('pdfList')" id="navBtnPdfList" class="py-3 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 transition flex items-center justify-center gap-1">
+                <span>📋</span> <span id="txtBtnPdfList">PDF List</span>
             </button>
         </div>
 
-        <!-- SECTION 1: FORMULAIRE FLOTTANT -->
+        <!-- SECTION 1: FORMULAIRE NEW RECORD -->
         <div id="sectionNewRecord" class="space-y-4">
             <div class="remal-card p-6 rounded-3xl space-y-5 relative">
                 
@@ -141,11 +144,22 @@
             </div>
         </div>
 
-        <!-- SECTION 2: LISTE PDF & LIVE ORDERS -->
+        <!-- SECTION 2: LIVE ORDERS (AVEC SUIVI PROCESSUS LAUNDRY) -->
+        <div id="sectionLiveRecord" class="hidden space-y-4">
+            <div class="remal-card p-6 rounded-3xl space-y-4">
+                <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+                    <h3 class="text-sm font-serif-luxury font-bold text-stone-900">🔴 Live Laundry Orders</h3>
+                    <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2.5 py-1 rounded-full">Real-time Tracking</span>
+                </div>
+                <div id="liveOrdersList" class="space-y-3 pt-2"><p class="text-xs text-stone-400 text-center py-4">Loading live orders...</p></div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: PDF LIST & ARCHIVES -->
         <div id="sectionPdfList" class="hidden space-y-4">
             <div class="remal-card p-6 rounded-3xl space-y-4">
                 <div class="flex justify-between items-center border-b border-stone-100 pb-3">
-                    <h3 class="text-sm font-serif-luxury font-bold text-stone-900" id="lblArchiveTitle">Live Orders & Records</h3>
+                    <h3 class="text-sm font-serif-luxury font-bold text-stone-900" id="lblArchiveTitle">PDF List & Records</h3>
                     <span class="text-[10px] bg-stone-100 text-stone-600 font-bold px-2.5 py-1 rounded-full" id="lblAutoArchive">Auto-Archive at 00:00</span>
                 </div>
 
@@ -239,31 +253,31 @@
 
         const i18n = {
             en: {
-                txtBtnNewRecord: "New Record", txtBtnPdfList: "PDF List & Live Orders",
+                txtBtnNewRecord: "New Record", txtBtnLiveRecord: "Live Orders", txtBtnPdfList: "PDF List",
                 lblFormTitle: "New Record", lblRoomNum: "Room Number",
                 lblSelectedGarments: "Total Garments:", lblSubTotal: "Subtotal:",
                 lblVat: "VAT (5%):", lblGrandTotal: "Grand Total:", btnPhotoProof: "📷 Proof Photo (Optional)",
-                btnSaveRecord: "💾 Save Record", lblArchiveTitle: "Live Orders & Records",
+                btnSaveRecord: "💾 Save Record", lblArchiveTitle: "PDF List & Records",
                 lblAutoArchive: "Auto-Archive at 00:00", lblSearchRoom: "Search Room", lblSearchDate: "Search Date",
                 lblLoadingRecords: "Loading records...", noRecords: "No laundry records found.",
                 lblRoomError: "Invalid room number! Allowed ranges: 103-144, 201-246, 301-348, 401-448, 501-520, 601-608."
             },
             ar: {
-                txtBtnNewRecord: "سجل جديد", txtBtnPdfList: "قائمة الطلبات والأرشيف",
+                txtBtnNewRecord: "سجل جديد", txtBtnLiveRecord: "الطلبات الحية", txtBtnPdfList: "قائمة PDF",
                 lblFormTitle: "سجل جديد", lblRoomNum: "رقم الغرفة",
                 lblSelectedGarments: "مجموع الملابس:", lblSubTotal: "المجموع الفرعي:",
                 lblVat: "ضريبة القيمة المضافة (٥٪):", lblGrandTotal: "المجموع الإجمالي:", btnPhotoProof: "📷 صورة إثبات (اختياري)",
-                btnSaveRecord: "💾 حفظ السجل", lblArchiveTitle: "الطلبات الحالية والسجلات",
+                btnSaveRecord: "💾 حفظ السجل", lblArchiveTitle: "قائمة PDF والسجلات",
                 lblAutoArchive: "أرشفة تلقائية ٠٠:٠٠", lblSearchRoom: "بحث برقم الغرفة", lblSearchDate: "بحث بالتاريخ",
                 lblLoadingRecords: "جاري تحميل السجلات...", noRecords: "لا توجد سجلات.",
                 lblRoomError: "رقم الغرفة غير صحيح! النطاقات المسموحة: 103-144، 201-246، 301-348، 401-448، 501-520، 601-608."
             },
             hi: {
-                txtBtnNewRecord: "नया रिकॉर्ड", txtBtnPdfList: "लाइव ऑर्डर सूची",
+                txtBtnNewRecord: "नया रिकॉर्ड", txtBtnLiveRecord: "लाइव ऑर्डर", txtBtnPdfList: "पीडीएफ सूची",
                 lblFormTitle: "नया रिकॉर्ड", lblRoomNum: "कमरा नंबर",
                 lblSelectedGarments: "कुल कपड़े:", lblSubTotal: "उप-कुल:",
                 lblVat: "जीएसटी/वैट (5%):", lblGrandTotal: "कुल योग:", btnPhotoProof: "📷 प्रमाण फोटो (वैकल्पिक)",
-                btnSaveRecord: "💾 रिकॉर्ड सुरक्षित करें", lblArchiveTitle: "लाइव ऑर्डर और रिकॉर्ड",
+                btnSaveRecord: "💾 रिकॉर्ड सुरक्षित करें", lblArchiveTitle: "पीडीएफ सूची और रिकॉर्ड",
                 lblAutoArchive: "00:00 बजे ऑटो-संग्रह", lblSearchRoom: "कमरा खोजें", lblSearchDate: "तारीख खोजें",
                 lblLoadingRecords: "रिकॉर्ड लोड हो रहे हैं...", noRecords: "कोई रिकॉर्ड नहीं मिला।",
                 lblRoomError: "अमान्य कमरा नंबर! केवल ये नंबर मान्य हैं: 103-144, 201-246, 301-348, 401-448, 501-520, 601-608."
@@ -362,14 +376,13 @@
                 const { data } = await supabaseClient
                     .from('requests')
                     .select('*')
-                    .ilike('service', '%laundry%')
-                    .eq('status', 'Pending');
+                    .ilike('service', '%laundry%');
                 
                 const alertBanner = document.getElementById('laundryPlantAlert');
                 if (data && data.length > 0) {
                     const latestReq = data[data.length - 1];
                     const roomNum = latestReq.room || latestReq.room_number || '---';
-                    const clientNote = latestReq.notes || latestreq.note || latestReq.details || 'No specific notes from guest.';
+                    const clientNote = latestReq.notes || latestReq.note || latestReq.details || latestReq.description || 'No specific notes from guest.';
                     
                     document.getElementById('alertTitleText').innerText = `🚨 New Laundry Request from Room ${roomNum}!`;
                     document.getElementById('alertClientNote').innerText = `Note: "${clientNote}"`;
@@ -446,6 +459,7 @@
             });
 
             document.getElementById('txtBtnNewRecord').innerText = t.txtBtnNewRecord;
+            document.getElementById('txtBtnLiveRecord').innerText = t.txtBtnLiveRecord;
             document.getElementById('txtBtnPdfList').innerText = t.txtBtnPdfList;
             document.getElementById('lblFormTitle').innerText = t.lblFormTitle;
             document.getElementById('lblRoomNum').innerText = t.lblRoomNum;
@@ -465,16 +479,19 @@
         }
 
         function switchMainSection(section) {
-            if (section === 'newRecord') {
-                document.getElementById('sectionNewRecord').classList.remove('hidden');
-                document.getElementById('sectionPdfList').classList.add('hidden');
-                document.getElementById('navBtnNewRecord').className = "flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-remal-sand text-white font-bold text-xs shadow-md transition";
-                document.getElementById('navBtnPdfList').className = "flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 font-bold text-xs hover:bg-stone-200 transition";
-            } else {
-                document.getElementById('sectionPdfList').classList.remove('hidden');
-                document.getElementById('sectionNewRecord').classList.add('hidden');
-                document.getElementById('navBtnPdfList').className = "flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-remal-sand text-white font-bold text-xs shadow-md transition";
-                document.getElementById('navBtnNewRecord').className = "flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 font-bold text-xs hover:bg-stone-200 transition";
+            ['newRecord', 'liveRecord', 'pdfList'].forEach(sec => {
+                document.getElementById(`section${sec.charAt(0).toUpperCase() + sec.slice(1)}`).classList.add('hidden');
+            });
+            ['newRecord', 'liveRecord', 'pdfList'].forEach(sec => {
+                document.getElementById(`navBtn${sec.charAt(0).toUpperCase() + sec.slice(1)}`).className = "py-3 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 transition flex items-center justify-center gap-1 font-bold";
+            });
+
+            document.getElementById(`section${section.charAt(0).toUpperCase() + section.slice(1)}`).classList.remove('hidden');
+            document.getElementById(`navBtn${section.charAt(0).toUpperCase() + section.slice(1)}`).className = "py-3 rounded-2xl bg-remal-sand text-white shadow-md transition flex items-center justify-center gap-1 font-bold";
+
+            if (section === 'liveRecord') {
+                chargerLiveOrders();
+            } else if (section === 'pdfList') {
                 afficherListeBordereauxFromCloud();
             }
         }
@@ -595,7 +612,7 @@
             }
 
             reinitialiserFormulaire();
-            switchMainSection('pdfList');
+            switchMainSection('liveRecord');
         }
 
         function reinitialiserFormulaire() {
@@ -607,6 +624,69 @@
             selectCountType('hotel'); renderItems(); calculateGlobalTotals();
         }
 
+        async function chargerLiveOrders() {
+            const container = document.getElementById('liveOrdersList');
+            const { data } = await supabaseClient.from('laundry_slips').select('*');
+            
+            cachedSlips = data || [];
+            cachedSlips.sort((a, b) => (parseInt(a.room) || 0) - (parseInt(b.room) || 0));
+
+            if (cachedSlips.length === 0) {
+                container.innerHTML = `<p class="text-xs text-stone-400 text-center py-4">No live laundry orders.</p>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            cachedSlips.forEach(entry => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'p-4 bg-stone-50 rounded-2xl border border-stone-200 text-xs space-y-3';
+                
+                const isHotel = entry.count_type === 'hotel';
+                const status = entry.status || 'Collected';
+
+                let statusBg = 'bg-amber-100 text-amber-800';
+                if (status === 'Washing') statusBg = 'bg-blue-100 text-blue-800';
+                if (status === 'Ready') statusBg = 'bg-purple-100 text-purple-800';
+                if (status === 'Delivered') statusBg = 'bg-emerald-100 text-emerald-800';
+
+                itemDiv.innerHTML = `
+                    <div class="flex justify-between items-center cursor-pointer" onclick="ouvrirModalDetails(${entry.id})">
+                        <div>
+                            <span class="font-serif-luxury font-bold text-stone-900 text-sm">Room ${entry.room}</span>
+                            <span class="ml-2 text-[10px] font-bold px-2 py-0.5 rounded-full ${isHotel ? 'bg-amber-100 text-amber-800' : 'bg-stone-200 text-stone-800'}">${isHotel ? 'Hotel' : 'Guest'}</span>
+                        </div>
+                        <div class="text-right font-bold text-stone-900">
+                            <span class="text-remal-sand font-serif-luxury text-sm">${entry.total.toFixed(2)} AED</span>
+                        </div>
+                    </div>
+
+                    <!-- BOUTONS DE PROGRESSION EXCLUSIFS LAUNDRY PLANT -->
+                    <div class="flex items-center justify-between gap-1 pt-2 border-t border-stone-200">
+                        <span class="text-[10px] font-bold px-2 py-1 rounded-lg ${statusBg}">📍 ${status}</span>
+                        <div class="flex gap-1">
+                            <button onclick="updateOrderStatus(${entry.id}, 'Collected')" class="px-2 py-1 rounded text-[10px] font-bold ${status === 'Collected' ? 'bg-stone-900 text-white' : 'bg-stone-200 text-stone-700'}">Collected</button>
+                            <button onclick="updateOrderStatus(${entry.id}, 'Washing')" class="px-2 py-1 rounded text-[10px] font-bold ${status === 'Washing' ? 'bg-blue-600 text-white' : 'bg-stone-200 text-stone-700'}">Washing</button>
+                            <button onclick="updateOrderStatus(${entry.id}, 'Ready')" class="px-2 py-1 rounded text-[10px] font-bold ${status === 'Ready' ? 'bg-purple-600 text-white' : 'bg-stone-200 text-stone-700'}">Ready</button>
+                            <button onclick="updateOrderStatus(${entry.id}, 'Delivered')" class="px-2 py-1 rounded text-[10px] font-bold ${status === 'Delivered' ? 'bg-emerald-600 text-white' : 'bg-stone-200 text-stone-700'}">Delivered</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(itemDiv);
+            });
+        }
+
+        async function updateOrderStatus(id, newStatus) {
+            // Mise à jour simultanée dans laundry_slips ET requests pour que le client voie le statut changer
+            await supabaseClient.from('laundry_slips').update({ status: newStatus }).eq('id', id);
+            
+            const slip = cachedSlips.find(s => s.id === id);
+            if (slip) {
+                await supabaseClient.from('requests').update({ status: newStatus }).eq('room', slip.room).ilike('service', '%laundry%');
+            }
+
+            await chargerLiveOrders();
+        }
+
         async function afficherListeBordereauxFromCloud() {
             const container = document.getElementById('laundryList');
             const { data } = await supabaseClient.from('laundry_slips').select('*');
@@ -614,16 +694,6 @@
             cachedSlips = data || [];
             cachedSlips.sort((a, b) => (parseInt(a.room) || 0) - (parseInt(b.room) || 0));
             filtrerListeCloud();
-        }
-
-        async function updateOrderStatus(id, newStatus, event) {
-            event.stopPropagation();
-            const { error } = await supabaseClient.from('laundry_slips').update({ status: newStatus }).eq('id', id);
-            if (error) {
-                alert("Error updating status: " + error.message);
-            } else {
-                await afficherListeBordereauxFromCloud();
-            }
         }
 
         function filtrerListeCloud() {
@@ -649,37 +719,19 @@
             container.innerHTML = '';
             filtered.forEach(entry => {
                 const itemDiv = document.createElement('div');
-                itemDiv.className = 'p-4 bg-stone-50 rounded-2xl border border-stone-200 text-xs space-y-3 cursor-pointer hover:bg-stone-100 transition'; 
+                itemDiv.className = 'p-3.5 bg-stone-50 rounded-2xl border border-stone-200 text-xs flex justify-between items-center cursor-pointer hover:bg-stone-100 transition'; 
                 itemDiv.onclick = () => ouvrirModalDetails(entry.id);
-                
                 const isHotel = entry.count_type === 'hotel';
-                const status = entry.status || 'Collected';
-
-                let statusBg = 'bg-amber-100 text-amber-800';
-                if (status === 'Washing') statusBg = 'bg-blue-100 text-blue-800';
-                if (status === 'Ready') statusBg = 'bg-purple-100 text-purple-800';
-                if (status === 'Delivered') statusBg = 'bg-emerald-100 text-emerald-800';
+                const styleOpt = entry.options?.service_style || 'F — Folding';
 
                 itemDiv.innerHTML = `
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <span class="font-serif-luxury font-bold text-stone-900 text-sm">Room ${entry.room}</span>
-                            <span class="ml-2 text-[10px] font-bold px-2 py-0.5 rounded-full ${isHotel ? 'bg-amber-100 text-amber-800' : 'bg-stone-200 text-stone-800'}">${isHotel ? 'Hotel' : 'Guest'}</span>
-                        </div>
-                        <div class="text-right font-bold text-stone-900">
-                            <span class="text-remal-sand font-serif-luxury text-sm">${entry.total.toFixed(2)} AED</span>
-                        </div>
+                    <div>
+                        <span class="font-serif-luxury font-bold text-stone-900 text-sm">Room ${entry.room}</span>
+                        <span class="ml-2 text-[10px] font-bold px-2 py-0.5 rounded-full ${isHotel ? 'bg-amber-100 text-amber-800' : 'bg-stone-200 text-stone-800'}">${isHotel ? 'Hotel Count' : 'Guest Count'}</span>
+                        <div class="text-[10px] text-stone-500 font-semibold mt-0.5">Style: ${styleOpt} | Status: ${entry.status || 'Collected'}</div>
                     </div>
-
-                    <!-- BOUTONS DE PROGRESSION EXCLUSIVEMENT DANS LE LAUNDRY PLANT -->
-                    <div class="flex items-center justify-between gap-1 pt-2 border-t border-stone-200">
-                        <span class="text-[10px] font-bold px-2 py-1 rounded-lg ${statusBg}">📍 ${status}</span>
-                        <div class="flex gap-1" onclick="event.stopPropagation()">
-                            <button onclick="updateOrderStatus(${entry.id}, 'Collected', event)" class="px-2 py-1 rounded text-[10px] font-bold ${status === 'Collected' ? 'bg-stone-900 text-white' : 'bg-stone-200 text-stone-700'}">Collected</button>
-                            <button onclick="updateOrderStatus(${entry.id}, 'Washing', event)" class="px-2 py-1 rounded text-[10px] font-bold ${status === 'Washing' ? 'bg-blue-600 text-white' : 'bg-stone-200 text-stone-700'}">Washing</button>
-                            <button onclick="updateOrderStatus(${entry.id}, 'Ready', event)" class="px-2 py-1 rounded text-[10px] font-bold ${status === 'Ready' ? 'bg-purple-600 text-white' : 'bg-stone-200 text-stone-700'}">Ready</button>
-                            <button onclick="updateOrderStatus(${entry.id}, 'Delivered', event)" class="px-2 py-1 rounded text-[10px] font-bold ${status === 'Delivered' ? 'bg-emerald-600 text-white' : 'bg-stone-200 text-stone-700'}">Delivered</button>
-                        </div>
+                    <div class="text-right font-bold text-stone-900">
+                        <small class="text-stone-400 font-normal">(${entry.total_clothes} pcs)</small> <span class="text-remal-sand font-serif-luxury text-sm">${entry.total.toFixed(2)} AED</span> ${entry.photo ? '📸' : ''}
                     </div>
                 `;
                 container.appendChild(itemDiv);
