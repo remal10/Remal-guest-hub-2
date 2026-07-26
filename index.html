@@ -73,7 +73,7 @@
   <div id="printTicketSection" class="hidden"></div>
   <div id="printFolioSection" class="hidden"></div>
 
-  <!-- BANNIÈRE ROUGE DE NOTIFICATION (LAUNDRY PLANT EXCLUSIVE) -->
+  <!-- BANNIÈRE ROUGE DE NOTIFICATION (LAUNDRY PLANT EXCLUSIVE - DANS LA SECTION LAUNDRY PLANT) -->
   <div id="laundryAlertBanner" class="hidden bg-rose-600 text-white px-4 py-2.5 text-center text-xs font-bold tracking-wide shadow-sm pulse-notification">
     <span id="laundryAlertText">🚨 NEW LAUNDRY ORDER RECEIVED FROM PLANT!</span>
   </div>
@@ -374,6 +374,10 @@
           🔔 Requests
           <span id="requestBadge" class="hidden absolute -top-1 -right-1 bg-rose-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full pulse-notification">0</span>
         </button>
+        <button onclick="switchAdminTab('laundry')" id="admTabLaundry" class="px-4 py-2.5 rounded-xl text-stone-600 relative whitespace-nowrap">
+          🧺 Laundry Plant
+          <span id="laundryBadge" class="hidden absolute -top-1 -right-1 bg-rose-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full pulse-notification">0</span>
+        </button>
         <button onclick="switchAdminTab('feedback')" id="admTabFeedback" class="px-4 py-2.5 rounded-xl text-stone-600 whitespace-nowrap">⭐ Guest Reviews</button>
         <button onclick="switchAdminTab('analytics')" id="admTabAnalytics" class="px-4 py-2.5 rounded-xl text-stone-600 whitespace-nowrap">📊 Analytics</button>
         <button onclick="switchAdminTab('banner')" id="admTabBanner" class="px-4 py-2.5 rounded-xl text-stone-600 whitespace-nowrap">📢 Announcement</button>
@@ -482,6 +486,20 @@
       </div>
     </div>
 
+    <!-- ADMIN LAUNDRY PLANT -->
+    <div id="adminLaundryPanel" class="hidden space-y-4">
+      <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
+        <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+          <div>
+            <h2 class="text-base font-serif-luxury font-bold text-stone-900">🧺 Laundry Plant Management</h2>
+            <p class="text-[10px] text-stone-500">Manage laundry order lifecycle (Collected ➔ Washing ➔ Ready ➔ Delivered)</p>
+          </div>
+          <button onclick="fetchLaundryOrdersFromCloud()" class="text-xs bg-stone-100 text-stone-700 px-3 py-2 rounded-xl font-semibold border border-stone-200">🔄 Refresh</button>
+        </div>
+        <div id="adminLaundryContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      </div>
+    </div>
+
     <!-- ADMIN AVIS / FEEDBACK -->
     <div id="adminFeedbackPanel" class="hidden space-y-4">
       <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
@@ -542,6 +560,7 @@
     let audioContext = null;
     let audioEnabled = false;
     let previousPendingCount = 0;
+    let previousLaundryCount = 0;
     let currentUserSession = null;
     let roomServiceMenu = [];
     let cartState = {};
@@ -940,6 +959,7 @@
         fetchOffersFromCloud(),
         fetchAnnouncementFromCloud(),
         fetchRequestsFromCloud(),
+        fetchLaundryOrdersFromCloud(),
         fetchFeedbackFromCloud()
       ]);
 
@@ -948,6 +968,7 @@
 
       setInterval(() => {
         fetchRequestsFromCloud();
+        fetchLaundryOrdersFromCloud();
       }, 20000);
     }
 
@@ -993,6 +1014,7 @@
         renderAdminList();
         renderAdminMenuList();
         renderAdminRequests();
+        renderAdminLaundry();
         renderAdminFeedback();
         renderAnalyticsData();
       } else {
@@ -1018,7 +1040,11 @@
       const room = document.getElementById('req_room')?.value?.trim() || 'General';
       const comment = document.getElementById('feedback_comment').value;
 
-      await supabaseClient.from('feedback').insert([{ room, rating: currentFeedbackRating, comment }]);
+      const { error } = await supabaseClient.from('feedback').insert([{ room, rating: currentFeedbackRating, comment }]);
+      if (error) {
+        alert("Error submitting review. Please try again.");
+        return;
+      }
       alert("Thank you for sharing your feedback with Remal Hotel & Villas!");
       document.getElementById('feedback_comment').value = '';
       setFeedbackRating(5);
@@ -1434,6 +1460,7 @@
       
       const activeLaundry = cachedLaundryOrders.filter(l => l.status !== 'Delivered');
       const banner = document.getElementById('laundryAlertBanner');
+      const laundryBadge = document.getElementById('laundryBadge');
 
       if (activeLaundry.length > previousLaundryCount) {
         playNotificationSound();
@@ -1441,8 +1468,15 @@
       }
       previousLaundryCount = activeLaundry.length;
 
-      if (activeLaundry.length === 0) {
+      if (activeLaundry.length > 0) {
+        if (laundryBadge) { laundryBadge.innerText = activeLaundry.length; laundryBadge.classList.remove('hidden'); }
+      } else {
         if (banner) banner.classList.add('hidden');
+        if (laundryBadge) laundryBadge.classList.add('hidden');
+      }
+
+      if (currentView === 'admin') {
+        renderAdminLaundry();
       }
       renderClientTracker();
     }
@@ -1544,7 +1578,7 @@
       `;
       }).join('');
 
-      // 2. Rendu de la Timeline Laundry exclusive aux statuts Laundry (Collected ➔ Washing ➔ Ready ➔ Delivered)
+      // 2. Rendu de la Timeline Laundry sur le rythme exact (Collected ➔ Washing ➔ Ready ➔ Delivered)
       html += myLaundry.map(laundry => {
         let lStatus = laundry.status || 'Collected';
         let lWidth = 'w-1/4';
@@ -1558,13 +1592,13 @@
         return `
         <div class="p-3.5 bg-stone-50 rounded-2xl border border-stone-200 text-xs space-y-2.5">
           <div class="flex justify-between items-center">
-            <span class="font-bold text-stone-900">🧺 Laundry Service (Plant)</span>
+            <span class="font-bold text-stone-900">🧺 Laundry Service</span>
             <span class="${badgeColor} text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">${lStatus}</span>
           </div>
           <p class="text-stone-600 bg-white p-2.5 rounded-xl border border-stone-100">${laundry.details}</p>
           <div class="space-y-1 pt-1">
             <div class="flex justify-between text-[10px] text-stone-400 font-semibold">
-              <span>Laundry Lifecycle (Collected ➔ Washing ➔ Ready ➔ Delivered)</span>
+              <span>Lifecycle: Collected ➔ Washing ➔ Ready ➔ Delivered</span>
               <span>${lStatus}</span>
             </div>
             <div class="w-full bg-stone-200 h-1.5 rounded-full overflow-hidden">
@@ -1639,6 +1673,50 @@
           </div>
         </div>
       `).join('');
+    }
+
+    function renderAdminLaundry() {
+      const container = document.getElementById('adminLaundryContainer');
+      if (!container) return;
+      if (cachedLaundryOrders.length === 0) {
+        container.innerHTML = `<p class="text-xs text-stone-400 text-center py-4 col-span-2">No laundry orders found.</p>`;
+        return;
+      }
+      container.innerHTML = cachedLaundryOrders.map(laundry => {
+        let lStatus = laundry.status || 'Collected';
+        return `
+        <div class="p-4 bg-stone-50 rounded-2xl border text-xs space-y-3 flex flex-col justify-between">
+          <div class="space-y-2">
+            <div class="flex justify-between items-start">
+              <div><span class="font-bold text-stone-900 text-sm">Room: ${laundry.room || 'N/A'}</span><p class="text-remal-sand font-semibold">Laundry Order #${laundry.id}</p></div>
+              <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase bg-stone-200 text-stone-800">${lStatus}</span>
+            </div>
+            <p class="text-stone-700 bg-white p-3 rounded-xl border">${laundry.details}</p>
+          </div>
+          <div class="flex justify-between items-center pt-2 border-t text-[11px] overflow-x-auto gap-1">
+            <div class="flex space-x-1">
+              <button onclick="updateLaundryStatus(${laundry.id}, 'Collected')" class="px-2 py-1 bg-stone-200 text-stone-800 rounded font-semibold">Collected</button>
+              <button onclick="updateLaundryStatus(${laundry.id}, 'Washing')" class="px-2 py-1 bg-blue-100 text-blue-800 rounded font-semibold">Washing</button>
+              <button onclick="updateLaundryStatus(${laundry.id}, 'Ready')" class="px-2 py-1 bg-amber-100 text-amber-800 rounded font-semibold">Ready</button>
+              <button onclick="updateLaundryStatus(${laundry.id}, 'Delivered')" class="px-2 py-1 bg-emerald-100 text-emerald-800 rounded font-semibold">Delivered</button>
+            </div>
+            <button onclick="deleteLaundryOrder(${laundry.id})" class="text-rose-600 font-bold p-1">🗑️</button>
+          </div>
+        </div>
+      `;
+      }).join('');
+    }
+
+    async function updateLaundryStatus(id, newStatus) {
+      await supabaseClient.from('laundry_orders').update({ status: newStatus }).eq('id', id);
+      await fetchLaundryOrdersFromCloud();
+    }
+
+    async function deleteLaundryOrder(id) {
+      if (confirm('Delete laundry order?')) {
+        await supabaseClient.from('laundry_orders').delete().eq('id', id);
+        await fetchLaundryOrdersFromCloud();
+      }
     }
 
     function printRequestTicket(reqId) {
@@ -1855,9 +1933,10 @@
 
       if (service === 'Laundry') {
         await supabaseClient.from('laundry_orders').insert([{ room, details: details || 'Standard laundry service request', status: 'Collected' }]);
+      } else {
+        await supabaseClient.from('requests').insert([{ room, service, details, status: 'Pending' }]);
       }
 
-      await supabaseClient.from('requests').insert([{ room, service, details, status: 'Pending' }]);
       const textMessage = encodeURIComponent(`Hello Remal Reception,\nI submitted a request for Room/Villa ${room}.\n\n*Service:* ${service}\n*Details:*\n${details}`);
       document.getElementById('btnWhatsappDirect').href = `https://wa.me/971526966865?text=${textMessage}`;
       document.getElementById('whatsappConfirmation').classList.remove('hidden');
@@ -1895,7 +1974,7 @@
     }
 
     function switchAdminTab(tab) {
-      ['adminOffersPanel', 'adminRequestsPanel', 'adminFeedbackPanel', 'adminAnalyticsPanel', 'adminBannerPanel'].forEach(p => {
+      ['adminOffersPanel', 'adminRequestsPanel', 'adminLaundryPanel', 'adminFeedbackPanel', 'adminAnalyticsPanel', 'adminBannerPanel'].forEach(p => {
         const el = document.getElementById(p);
         if (el) el.classList.add('hidden');
       });
@@ -1903,6 +1982,10 @@
       else if (tab === 'requests') { 
         document.getElementById('adminRequestsPanel').classList.remove('hidden'); 
         fetchRequestsFromCloud(); 
+      }
+      else if (tab === 'laundry') {
+        document.getElementById('adminLaundryPanel').classList.remove('hidden');
+        fetchLaundryOrdersFromCloud();
       }
       else if (tab === 'feedback') {
         document.getElementById('adminFeedbackPanel').classList.remove('hidden');
@@ -1972,7 +2055,7 @@
       document.getElementById('lblWakeupTitle').innerText = t.wakeupTitle;
       document.getElementById('lblWakeupLabel').innerText = t.wakeupLabel;
       document.getElementById('lblLateTitle').innerText = t.lateTitle;
-      document.getElementById('lblLateLabel').innerText = t.lblLateLabel;
+      document.getElementById('lblLateLabel').innerText = t.lateLabel;
 
       const selectService = document.getElementById('req_service');
       selectService.innerHTML = t.services.map(s => `<option value="${s.val}">${s.text}</option>`).join('');
