@@ -41,11 +41,11 @@
       body * {
         display: none !important;
       }
-      #printTicketSection, #printTicketSection * {
+      #printTicketSection, #printTicketSection *, #printFolioSection, #printFolioSection * {
         display: block !important;
         visibility: visible !important;
       }
-      #printTicketSection {
+      #printTicketSection, #printFolioSection {
         position: absolute !important;
         left: 15mm !important;
         top: 15mm !important;
@@ -71,6 +71,7 @@
 
   <!-- ZONE CACHÉE POUR L'IMPRESSION A4 -->
   <div id="printTicketSection" class="hidden"></div>
+  <div id="printFolioSection" class="hidden"></div>
 
   <!-- HEADER -->
   <header class="bg-white sticky top-0 z-50 border-b border-stone-200 shadow-sm">
@@ -135,6 +136,17 @@
     <!-- SECTION DEMANDES & ROOM SERVICE -->
     <div id="guestRequestSection" class="hidden space-y-6">
       
+      <!-- ROOM FOLIO & BILLING (FACTURE DE SÉJOUR) -->
+      <div class="remal-card p-5 rounded-3xl space-y-3 bg-gradient-to-br from-amber-50/50 to-white">
+        <div class="flex justify-between items-center border-b border-stone-100 pb-2">
+          <span class="text-xs font-serif-luxury font-bold text-stone-900">📄 My Room Folio & Charges</span>
+          <button type="button" onclick="generateRoomFolio()" class="bg-stone-900 text-white px-3 py-1.5 rounded-xl font-bold text-[10px] shadow">🖨️ Print Folio</button>
+        </div>
+        <div id="clientRoomFolioContainer" class="space-y-2 text-xs">
+          <p class="text-[11px] text-stone-400 italic">Enter your room number below to view your live billing summary.</p>
+        </div>
+      </div>
+
       <!-- FAVORIS ET HISTORIQUE -->
       <div id="guestHistoryBlock" class="remal-card p-5 rounded-3xl space-y-3">
         <div class="flex justify-between items-center border-b border-stone-100 pb-2">
@@ -156,6 +168,44 @@
           <div>
             <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblService">Service Type</label>
             <select id="req_service" onchange="toggleServiceDynamicFields()" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 outline-none"></select>
+          </div>
+
+          <!-- MODULE RÉSERVATION DE TABLE / SPA (DYNAMIQUE) -->
+          <div id="bookingBlock" class="hidden space-y-3 bg-emerald-50/60 p-4 rounded-2xl border border-emerald-200">
+            <div class="flex items-center space-x-2 text-emerald-900 font-bold text-xs">
+              <span>📅</span><span>Table / Spa Reservation Details</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[10px] font-bold text-stone-700 mb-1">Venue / Service</label>
+                <select id="booking_venue" class="w-full border border-stone-200 rounded-xl p-2.5 text-xs bg-white outline-none">
+                  <option value="Falaj Restaurant">🍽️ Falaj Restaurant</option>
+                  <option value="Sarab Bar">🍸 Sarab Bar & Lounge</option>
+                  <option value="The Spa">💆 The Spa & Wellness</option>
+                  <option value="Al Waha Pool Cabana">🏖️ Al Waha Cabana</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold text-stone-700 mb-1">Guests Count</label>
+                <select id="booking_guests" class="w-full border border-stone-200 rounded-xl p-2.5 text-xs bg-white outline-none">
+                  <option value="1 Person">1 Person</option>
+                  <option value="2 Persons" selected>2 Persons</option>
+                  <option value="3 Persons">3 Persons</option>
+                  <option value="4 Persons">4 Persons</option>
+                  <option value="5+ Persons">5+ Persons (Group)</option>
+                </select>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[10px] font-bold text-stone-700 mb-1">Reservation Date</label>
+                <input type="date" id="booking_date" class="w-full border border-stone-200 rounded-xl p-2 text-xs bg-white outline-none">
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold text-stone-700 mb-1">Preferred Time</label>
+                <input type="time" id="booking_time" class="w-full border border-stone-200 rounded-xl p-2 text-xs bg-white outline-none" value="19:30">
+              </div>
+            </div>
           </div>
 
           <!-- MODULE WAKE-UP CALL (DYNAMIQUE) -->
@@ -619,6 +669,7 @@
         trackNoReq: "No active requests found for room ", loadingOffers: "Loading live offers...", noOffers: "No offers available in this category.",
         swipePhotos: "👈 Swipe for more photos 👉", bookInquiry: "Book / Inquiry →",
         services: [
+          { val: "Table / Spa Reservation", text: "Table / Spa Reservation" },
           { val: "Wake-up Call Request", text: "Wake-up Call / Alarm Service" },
           { val: "Late Check-out Request", text: "Late Check-out / Extension" },
           { val: "Housekeeping", text: "Housekeeping / Room Cleaning" },
@@ -639,6 +690,7 @@
         trackNoReq: "لا توجد طلبات مسجلة للغرفة ", loadingOffers: "جاري تحميل العروض المباشرة...", noOffers: "لا توجد عروض متاحة في هذه الفئة.",
         swipePhotos: "👈 اسحب لرؤية المزيد من الصور 👉", bookInquiry: "حجز / استفسار ←",
         services: [
+          { val: "Table / Spa Reservation", text: "حجز طاولة مطعم أو موعد سبا" },
           { val: "Wake-up Call Request", text: "خدمة الإيقاظ / التنبيه الصباحي" },
           { val: "Late Check-out Request", text: "طلب مغادرة متأخرة / تمديد الإقامة" },
           { val: "Housekeeping", text: "خدمة الغرف / تنظيف الغرفة (Housekeeping)" },
@@ -659,6 +711,7 @@
         trackNoReq: "कमरा नंबर के लिए कोई अनुरोध नहीं मिला ", loadingOffers: "ऑफ़र लोड हो रहे हैं...", noOffers: "इस श्रेणी में कोई ऑफ़र उपलब्ध नहीं है।",
         swipePhotos: "👈 अधिक फ़ोटो के लिए स्वाइप करें 👉", bookInquiry: "बुक / पूछताछ →",
         services: [
+          { val: "Table / Spa Reservation", text: "टेबल या स्पा बुकिंग" },
           { val: "Wake-up Call Request", text: "वेक-अप कॉल / सुबह की अलार्म सेवा" },
           { val: "Late Check-out Request", text: "देर से चेक-आउट / समय बढ़ाना" },
           { val: "Housekeeping", text: "हाउसकीपिंग / कमरे की सफाई" },
@@ -745,6 +798,10 @@
         currentUserSession = null;
       }
 
+      const todayStr = new Date().toISOString().split('T')[0];
+      const dateInput = document.getElementById('booking_date');
+      if (dateInput) dateInput.value = todayStr;
+
       setLang('en');
       renderFacilities();
       await fetchMenuItemsFromCloud();
@@ -752,6 +809,7 @@
       await fetchAnnouncementFromCloud();
       await fetchRequestsFromCloud();
       renderClientFavoritesAndHistory();
+      renderRoomFolioWidget();
       setInterval(fetchRequestsFromCloud, 5000);
     }
 
@@ -890,10 +948,12 @@
       const roomServiceBlock = document.getElementById('roomServiceMenuBlock');
       const lateCheckoutBlock = document.getElementById('lateCheckoutBlock');
       const wakeupCallBlock = document.getElementById('wakeupCallBlock');
+      const bookingBlock = document.getElementById('bookingBlock');
 
       roomServiceBlock.classList.add('hidden');
       lateCheckoutBlock.classList.add('hidden');
       wakeupCallBlock.classList.add('hidden');
+      bookingBlock.classList.add('hidden');
 
       if (selectedService === 'Room Service / Dining') {
         roomServiceBlock.classList.remove('hidden');
@@ -901,6 +961,8 @@
         lateCheckoutBlock.classList.remove('hidden');
       } else if (selectedService === 'Wake-up Call Request') {
         wakeupCallBlock.classList.remove('hidden');
+      } else if (selectedService === 'Table / Spa Reservation') {
+        bookingBlock.classList.remove('hidden');
       }
     }
 
@@ -998,9 +1060,50 @@
       container.innerHTML = html;
     }
 
+    function renderRoomFolioWidget() {
+      const container = document.getElementById('clientRoomFolioContainer');
+      if (!container) return;
+      const roomNum = document.getElementById('req_room')?.value?.trim();
+
+      if (!roomNum) {
+        container.innerHTML = `<p class="text-[11px] text-stone-400 italic">Enter your room number below to view your live billing summary.</p>`;
+        return;
+      }
+
+      const roomReqs = cachedRequests.filter(r => String(r.room).trim().toLowerCase() === roomNum.toLowerCase());
+      let totalSpent = 0;
+      let itemsListHtml = '';
+
+      roomReqs.forEach(req => {
+        if (req.details && req.details.includes('AED')) {
+          const match = req.details.match(/AED\s+([0-9]+(?:\.[0-9]+)?)/);
+          if (match) {
+            const amt = parseFloat(match[1]);
+            totalSpent += amt;
+            itemsListHtml += `<div class="flex justify-between py-1 border-b border-stone-100 text-stone-700"><span>[${req.service}] #${req.id}</span><span class="font-bold text-stone-900">AED ${amt}</span></div>`;
+          }
+        }
+      });
+
+      if (itemsListHtml === '') {
+        itemsListHtml = `<p class="text-[11px] text-stone-400 italic">No billable charges recorded yet for room ${roomNum}.</p>`;
+      }
+
+      container.innerHTML = `
+        <div class="space-y-2">
+          <div class="max-h-36 overflow-y-auto pr-1 space-y-1">${itemsListHtml}</div>
+          <div class="flex justify-between items-center pt-2 border-t border-stone-200 font-bold text-stone-900 text-sm">
+            <span>Total Accrued Charges:</span>
+            <span class="text-remal-sand font-serif-luxury">AED ${totalSpent}</span>
+          </div>
+        </div>
+      `;
+    }
+
     function onRoomNumberChange() {
       renderClientTracker();
       renderClientFavoritesAndHistory();
+      renderRoomFolioWidget();
     }
 
     function updateCart(itemId, change) {
@@ -1093,6 +1196,7 @@
       }
       renderClientTracker();
       renderClientFavoritesAndHistory();
+      renderRoomFolioWidget();
     }
 
     function renderAnalyticsData() {
@@ -1119,7 +1223,6 @@
 
       let analyticsHtml = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">`;
       
-      // Services breakdown
       analyticsHtml += `<div class="bg-stone-50 p-4 rounded-2xl border border-stone-200 space-y-2">`;
       analyticsHtml += `<p class="font-bold text-stone-800 uppercase text-[11px]">Requests by Department</p>`;
       for (const [srv, count] of Object.entries(serviceCounts)) {
@@ -1127,7 +1230,6 @@
       }
       analyticsHtml += `</div>`;
 
-      // Status overview
       const pendingCount = cachedRequests.filter(r => r.status === 'Pending' || !r.status).length;
       const progressCount = cachedRequests.filter(r => r.status === 'In Progress').length;
       
@@ -1243,11 +1345,12 @@
       `).join('');
     }
 
-    // Impression garantie sur 1 seule page A4 sans débordement
+    // Impression garantie d'un ticket individuel sur 1 seule page A4
     function printRequestTicket(reqId) {
       const req = cachedRequests.find(r => r.id === reqId);
       if (!req) return;
 
+      document.getElementById('printFolioSection').innerHTML = '';
       const printSection = document.getElementById('printTicketSection');
       printSection.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #E2B383; padding-bottom: 12px; margin-bottom: 15px;">
@@ -1288,9 +1391,94 @@
         </div>
       `;
 
-      setTimeout(() => {
-        window.print();
-      }, 150);
+      setTimeout(() => { window.print(); }, 150);
+    }
+
+    // Génération et impression du Room Folio (Facture de séjour complète)
+    function generateRoomFolio() {
+      const roomNum = document.getElementById('req_room')?.value?.trim();
+      if (!roomNum) {
+        alert("Please enter your Room Number first.");
+        return;
+      }
+
+      const roomReqs = cachedRequests.filter(r => String(r.room).trim().toLowerCase() === roomNum.toLowerCase());
+      let totalSpent = 0;
+      let rowsHtml = '';
+
+      roomReqs.forEach(req => {
+        let amount = 0;
+        if (req.details && req.details.includes('AED')) {
+          const match = req.details.match(/AED\s+([0-9]+(?:\.[0-9]+)?)/);
+          if (match) amount = parseFloat(match[1]);
+        }
+        totalSpent += amount;
+        rowsHtml += `
+          <tr style="border-bottom: 1px solid #EEE;">
+            <td style="padding: 8px; font-size: 11px;">#${req.id}</td>
+            <td style="padding: 8px; font-size: 11px; font-weight: bold;">${req.service}</td>
+            <td style="padding: 8px; font-size: 10px; color: #555; max-width: 200px; white-space: pre-wrap;">${req.details}</td>
+            <td style="padding: 8px; font-size: 11px; text-align: right; font-weight: bold;">AED ${amount}</td>
+          </tr>
+        `;
+      });
+
+      if (rowsHtml === '') {
+        rowsHtml = `<tr><td colspan="4" style="text-align: center; padding: 20px; color: #777; font-style: italic;">No charges recorded for this room yet.</td></tr>`;
+      }
+
+      document.getElementById('printTicketSection').innerHTML = '';
+      const folioSection = document.getElementById('printFolioSection');
+      folioSection.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #E2B383; padding-bottom: 12px; margin-bottom: 15px;">
+          <div>
+            <h1 style="font-size: 20px; font-weight: bold; font-family: 'Playfair Display', serif; margin: 0; color: #111;">REMAL HOTEL & VILLAS</h1>
+            <p style="font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin: 2px 0 0 0;">Al Dhannah City • Official Room Folio Statement</p>
+          </div>
+          <div style="text-align: right; font-size: 11px; color: #444;">
+            <div><strong>Room / Villa:</strong> ${roomNum}</div>
+            <div style="font-size: 10px; color: #666; margin-top: 1px;">Date: ${new Date().toLocaleDateString()}</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+          <h3 style="font-size: 12px; font-weight: bold; text-transform: uppercase; color: #444; margin-bottom: 6px;">Stay Charges & Services Breakdown</h3>
+          <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+              <tr style="background: #F4F4F4; border-bottom: 2px solid #DDD;">
+                <th style="padding: 8px; font-size: 10px; text-transform: uppercase;">ID</th>
+                <th style="padding: 8px; font-size: 10px; text-transform: uppercase;">Service</th>
+                <th style="padding: 8px; font-size: 10px; text-transform: uppercase;">Details</th>
+                <th style="padding: 8px; font-size: 10px; text-transform: uppercase; text-align: right;">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsHtml}
+            </tbody>
+          </table>
+        </div>
+
+        <div style="background: #F9F9F9; padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #EEE; margin-bottom: 20px;">
+          <div>
+            <span style="font-size: 11px; font-weight: bold; color: #333;">Total Balance Due:</span>
+            <div style="font-size: 9px; color: #666;">All local taxes and service charges included</div>
+          </div>
+          <div style="font-size: 18px; font-weight: bold; font-family: 'Playfair Display', serif; color: #DCA773;">
+            AED ${totalSpent}
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #EEE; padding-top: 12px; margin-top: 20px;">
+          <div style="font-size: 10px; color: #555;">
+            Guest Signature: _______________________
+          </div>
+          <div style="font-size: 10px; color: #888; text-align: right;">
+            Remal Hotel & Villas Management<br>Authorized Billing Document
+          </div>
+        </div>
+      `;
+
+      setTimeout(() => { window.print(); }, 150);
     }
 
     function previewPromoImage(event) {
@@ -1359,6 +1547,12 @@
       } else if (service === 'Wake-up Call Request') {
         const wakeupTime = document.getElementById('wakeup_time').value;
         details = `⏰ WAKE-UP ALARM TIME: ${wakeupTime}\n📝 Notes: ${details || 'No additional comments'}`;
+      } else if (service === 'Table / Spa Reservation') {
+        const venue = document.getElementById('booking_venue').value;
+        const guests = document.getElementById('booking_guests').value;
+        const bDate = document.getElementById('booking_date').value;
+        const bTime = document.getElementById('booking_time').value;
+        details = `📅 BOOKING VENUE: ${venue}\n👥 Guests: ${guests}\n📅 Date: ${bDate} at ${bTime}\n📝 Notes: ${details || 'No additional comments'}`;
       }
 
       await supabaseClient.from('requests').insert([{ room, service, details, status: 'Pending' }]);
@@ -1384,7 +1578,7 @@
 
       if (tab === 'offers') { document.getElementById('guestOffersSection').classList.remove('hidden'); document.getElementById('tabOffersBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; }
       else if (tab === 'facilities') { document.getElementById('guestFacilitiesSection').classList.remove('hidden'); document.getElementById('tabFacilitiesBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; }
-      else if (tab === 'request') { document.getElementById('guestRequestSection').classList.remove('hidden'); document.getElementById('tabRequestBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; toggleServiceDynamicFields(); renderClientTracker(); renderClientFavoritesAndHistory(); }
+      else if (tab === 'request') { document.getElementById('guestRequestSection').classList.remove('hidden'); document.getElementById('tabRequestBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; toggleServiceDynamicFields(); renderClientTracker(); renderClientFavoritesAndHistory(); renderRoomFolioWidget(); }
     }
 
     function switchAdminTab(tab) {
@@ -1427,6 +1621,7 @@
       renderClientTracker();
       renderRoomServiceMenu();
       renderClientFavoritesAndHistory();
+      renderRoomFolioWidget();
     }
 
     function filterCategory(cat) { currentCategory = cat; renderCategoryFilters(); renderClientCards(); }
