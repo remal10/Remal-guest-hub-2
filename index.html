@@ -158,6 +158,17 @@
             <select id="req_service" onchange="toggleServiceDynamicFields()" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 outline-none"></select>
           </div>
 
+          <!-- MODULE WAKE-UP CALL (DYNAMIQUE) -->
+          <div id="wakeupCallBlock" class="hidden space-y-3 bg-blue-50/60 p-4 rounded-2xl border border-blue-200">
+            <div class="flex items-center space-x-2 text-blue-900 font-bold text-xs">
+              <span>⏰</span><span>Wake-Up Call Scheduler</span>
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-stone-700 mb-1">Select Alarm Time</label>
+              <input type="time" id="wakeup_time" class="w-full border border-stone-200 rounded-xl p-2.5 text-xs bg-white outline-none" value="07:00">
+            </div>
+          </div>
+
           <!-- MODULE LATE CHECK-OUT (DYNAMIQUE) -->
           <div id="lateCheckoutBlock" class="hidden space-y-3 bg-amber-50/60 p-4 rounded-2xl border border-amber-200">
             <div class="flex items-center space-x-2 text-amber-900 font-bold text-xs">
@@ -608,6 +619,7 @@
         trackNoReq: "No active requests found for room ", loadingOffers: "Loading live offers...", noOffers: "No offers available in this category.",
         swipePhotos: "👈 Swipe for more photos 👉", bookInquiry: "Book / Inquiry →",
         services: [
+          { val: "Wake-up Call Request", text: "Wake-up Call / Alarm Service" },
           { val: "Late Check-out Request", text: "Late Check-out / Extension" },
           { val: "Housekeeping", text: "Housekeeping / Room Cleaning" },
           { val: "Front Desk Inquiry", text: "Front Desk Inquiry" }, 
@@ -627,6 +639,7 @@
         trackNoReq: "لا توجد طلبات مسجلة للغرفة ", loadingOffers: "جاري تحميل العروض المباشرة...", noOffers: "لا توجد عروض متاحة في هذه الفئة.",
         swipePhotos: "👈 اسحب لرؤية المزيد من الصور 👉", bookInquiry: "حجز / استفسار ←",
         services: [
+          { val: "Wake-up Call Request", text: "خدمة الإيقاظ / التنبيه الصباحي" },
           { val: "Late Check-out Request", text: "طلب مغادرة متأخرة / تمديد الإقامة" },
           { val: "Housekeeping", text: "خدمة الغرف / تنظيف الغرفة (Housekeeping)" },
           { val: "Front Desk Inquiry", text: "استفسار الاستقبال" }, 
@@ -646,6 +659,7 @@
         trackNoReq: "कमरा नंबर के लिए कोई अनुरोध नहीं मिला ", loadingOffers: "ऑफ़र लोड हो रहे हैं...", noOffers: "इस श्रेणी में कोई ऑफ़र उपलब्ध नहीं है।",
         swipePhotos: "👈 अधिक फ़ोटो के लिए स्वाइप करें 👉", bookInquiry: "बुक / पूछताछ →",
         services: [
+          { val: "Wake-up Call Request", text: "वेक-अप कॉल / सुबह की अलार्म सेवा" },
           { val: "Late Check-out Request", text: "देर से चेक-आउट / समय बढ़ाना" },
           { val: "Housekeeping", text: "हाउसकीपिंग / कमरे की सफाई" },
           { val: "Front Desk Inquiry", text: "फ्रंट डेस्क पूछताछ" }, 
@@ -875,16 +889,18 @@
       const selectedService = document.getElementById('req_service').value;
       const roomServiceBlock = document.getElementById('roomServiceMenuBlock');
       const lateCheckoutBlock = document.getElementById('lateCheckoutBlock');
+      const wakeupCallBlock = document.getElementById('wakeupCallBlock');
+
+      roomServiceBlock.classList.add('hidden');
+      lateCheckoutBlock.classList.add('hidden');
+      wakeupCallBlock.classList.add('hidden');
 
       if (selectedService === 'Room Service / Dining') {
         roomServiceBlock.classList.remove('hidden');
-        lateCheckoutBlock.classList.add('hidden');
       } else if (selectedService === 'Late Check-out Request') {
         lateCheckoutBlock.classList.remove('hidden');
-        roomServiceBlock.classList.add('hidden');
-      } else {
-        roomServiceBlock.classList.add('hidden');
-        lateCheckoutBlock.classList.add('hidden');
+      } else if (selectedService === 'Wake-up Call Request') {
+        wakeupCallBlock.classList.remove('hidden');
       }
     }
 
@@ -1340,6 +1356,9 @@
       } else if (service === 'Late Check-out Request') {
         const checkoutTime = document.getElementById('late_checkout_time').value;
         details = `⏱️ REQUESTED CHECK-OUT TIME: ${checkoutTime}\n📝 Notes: ${details || 'No additional comments'}`;
+      } else if (service === 'Wake-up Call Request') {
+        const wakeupTime = document.getElementById('wakeup_time').value;
+        details = `⏰ WAKE-UP ALARM TIME: ${wakeupTime}\n📝 Notes: ${details || 'No additional comments'}`;
       }
 
       await supabaseClient.from('requests').insert([{ room, service, details, status: 'Pending' }]);
