@@ -137,64 +137,19 @@
     <!-- SECTION FAQ & ASSISTANT INTELLIGENT -->
     <div id="guestFaqSection" class="hidden space-y-5">
       <div class="text-center border-b border-stone-200 pb-3">
-        <h3 class="text-lg font-serif-luxury font-bold text-stone-900">💡 Intelligent Assistant & FAQ</h3>
-        <p class="text-xs text-stone-500">Instant answers to common hotel questions</p>
+        <h3 class="text-lg font-serif-luxury font-bold text-stone-900" id="faqHeaderTitle">💡 Intelligent Assistant & FAQ</h3>
+        <p class="text-xs text-stone-500" id="faqHeaderSub">Instant answers to common hotel questions</p>
       </div>
       <div class="remal-card p-5 rounded-3xl space-y-4">
-        <input type="text" id="faqSearchInput" placeholder="🔍 Search question (e.g. Wi-Fi, Pool, Breakfast)..." onkeyup="filterFaq()" class="w-full border border-stone-200 rounded-xl p-3 text-xs bg-stone-50 outline-none">
+        <input type="text" id="faqSearchInput" placeholder="🔍 Search question..." onkeyup="filterFaq()" class="w-full border border-stone-200 rounded-xl p-3 text-xs bg-stone-50 outline-none">
         <div id="faqContainer" class="space-y-3 max-h-[450px] overflow-y-auto pr-1"></div>
       </div>
     </div>
 
-    <!-- SECTION DEMANDES & ROOM SERVICE -->
+    <!-- SECTION DEMANDES & ROOM SERVICE (REORGANISÉE : REQUEST EN PREMIER) -->
     <div id="guestRequestSection" class="hidden space-y-6">
       
-      <!-- ROOM FOLIO & BILLING (FACTURE DE SÉJOUR) -->
-      <div class="remal-card p-5 rounded-3xl space-y-3 bg-gradient-to-br from-amber-50/50 to-white">
-        <div class="flex justify-between items-center border-b border-stone-100 pb-2">
-          <span class="text-xs font-serif-luxury font-bold text-stone-900">📄 My Room Folio & Charges</span>
-          <button type="button" onclick="generateRoomFolio()" class="bg-stone-900 text-white px-3 py-1.5 rounded-xl font-bold text-[10px] shadow">🖨️ Print Folio</button>
-        </div>
-        <div id="clientRoomFolioContainer" class="space-y-2 text-xs">
-          <p class="text-[11px] text-stone-400 italic">Enter your room number below to view your live billing summary.</p>
-        </div>
-      </div>
-
-      <!-- MODULE FEEDBACK & ÉVALUATION DE FIN DE SÉJOUR -->
-      <div class="remal-card p-5 rounded-3xl space-y-3 bg-gradient-to-br from-emerald-50/40 to-white">
-        <div class="border-b border-stone-100 pb-2">
-          <span class="text-xs font-serif-luxury font-bold text-stone-900">⭐ Stay Feedback & Experience Rating</span>
-          <p class="text-[10px] text-stone-500">Share your thoughts to help us improve our services</p>
-        </div>
-        <form id="feedbackForm" onsubmit="submitGuestFeedback(event)" class="space-y-3">
-          <div class="flex items-center justify-center space-x-2 py-1">
-            <span class="text-xs font-bold text-stone-700">Rating:</span>
-            <div id="starRatingContainer" class="flex space-x-1 text-xl cursor-pointer">
-              <span onclick="setFeedbackRating(1)" id="star-1" class="text-amber-400">★</span>
-              <span onclick="setFeedbackRating(2)" id="star-2" class="text-amber-400">★</span>
-              <span onclick="setFeedbackRating(3)" id="star-3" class="text-amber-400">★</span>
-              <span onclick="setFeedbackRating(4)" id="star-4" class="text-amber-400">★</span>
-              <span onclick="setFeedbackRating(5)" id="star-5" class="text-amber-400">★</span>
-            </div>
-          </div>
-          <div>
-            <textarea id="feedback_comment" rows="2" placeholder="Tell us about your stay, room cleanliness, or dining experience..." class="w-full border border-stone-200 rounded-xl p-2.5 text-xs bg-white outline-none" required></textarea>
-          </div>
-          <button type="submit" class="w-full bg-remal-sand hover:bg-amber-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-sm">Submit Review</button>
-        </form>
-      </div>
-
-      <!-- FAVORIS ET HISTORIQUE -->
-      <div id="guestHistoryBlock" class="remal-card p-5 rounded-3xl space-y-3">
-        <div class="flex justify-between items-center border-b border-stone-100 pb-2">
-          <span class="text-xs font-serif-luxury font-bold text-stone-900">⭐ My Favorites & Recent Orders</span>
-          <span class="text-[9px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">Quick Access</span>
-        </div>
-        <div id="clientFavoritesContainer" class="space-y-2">
-          <p class="text-[11px] text-stone-400 italic">No starred favorite dishes yet.</p>
-        </div>
-      </div>
-
+      <!-- FORMULAIRE DE DEMANDE (PLACÉ EN PREMIER) -->
       <div class="remal-card p-6 rounded-3xl space-y-5">
         <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-3" id="reqHeader">Request Guest Service</h2>
         <form id="guestRequestForm" class="space-y-4">
@@ -211,36 +166,36 @@
           <!-- MODULE RÉSERVATION DE TABLE / SPA (DYNAMIQUE) -->
           <div id="bookingBlock" class="hidden space-y-3 bg-emerald-50/60 p-4 rounded-2xl border border-emerald-200">
             <div class="flex items-center space-x-2 text-emerald-900 font-bold text-xs">
-              <span>📅</span><span>Table / Spa Reservation Details</span>
+              <span>📅</span><span id="lblBookingTitle">Table / Spa Reservation Details</span>
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
-                <label class="block text-[10px] font-bold text-stone-700 mb-1">Venue / Service</label>
+                <label class="block text-[10px] font-bold text-stone-700 mb-1" id="lblVenue">Venue / Service</label>
                 <select id="booking_venue" class="w-full border border-stone-200 rounded-xl p-2.5 text-xs bg-white outline-none">
-                  <option value="Falaj Restaurant">🍽️ Falaj Restaurant</option>
-                  <option value="Sarab Bar">🍸 Sarab Bar & Lounge</option>
-                  <option value="The Spa">💆 The Spa & Wellness</option>
-                  <option value="Al Waha Pool Cabana">🏖️ Al Waha Cabana</option>
+                  <option value="Falaj Restaurant" id="optFalaj">🍽️ Falaj Restaurant</option>
+                  <option value="Sarab Bar" id="optSarab">🍸 Sarab Bar & Lounge</option>
+                  <option value="The Spa" id="optSpa">💆 The Spa & Wellness</option>
+                  <option value="Al Waha Pool Cabana" id="optCabana">🏖️ Al Waha Cabana</option>
                 </select>
               </div>
               <div>
-                <label class="block text-[10px] font-bold text-stone-700 mb-1">Guests Count</label>
+                <label class="block text-[10px] font-bold text-stone-700 mb-1" id="lblGuests">Guests Count</label>
                 <select id="booking_guests" class="w-full border border-stone-200 rounded-xl p-2.5 text-xs bg-white outline-none">
-                  <option value="1 Person">1 Person</option>
-                  <option value="2 Persons" selected>2 Persons</option>
-                  <option value="3 Persons">3 Persons</option>
-                  <option value="4 Persons">4 Persons</option>
-                  <option value="5+ Persons">5+ Persons (Group)</option>
+                  <option value="1 Person" id="optG1">1 Person</option>
+                  <option value="2 Persons" selected id="optG2">2 Persons</option>
+                  <option value="3 Persons" id="optG3">3 Persons</option>
+                  <option value="4 Persons" id="optG4">4 Persons</option>
+                  <option value="5+ Persons" id="optG5">5+ Persons (Group)</option>
                 </select>
               </div>
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
-                <label class="block text-[10px] font-bold text-stone-700 mb-1">Reservation Date</label>
+                <label class="block text-[10px] font-bold text-stone-700 mb-1" id="lblBDate">Reservation Date</label>
                 <input type="date" id="booking_date" class="w-full border border-stone-200 rounded-xl p-2 text-xs bg-white outline-none">
               </div>
               <div>
-                <label class="block text-[10px] font-bold text-stone-700 mb-1">Preferred Time</label>
+                <label class="block text-[10px] font-bold text-stone-700 mb-1" id="lblBTime">Preferred Time</label>
                 <input type="time" id="booking_time" class="w-full border border-stone-200 rounded-xl p-2 text-xs bg-white outline-none" value="19:30">
               </div>
             </div>
@@ -249,10 +204,10 @@
           <!-- MODULE WAKE-UP CALL (DYNAMIQUE) -->
           <div id="wakeupCallBlock" class="hidden space-y-3 bg-blue-50/60 p-4 rounded-2xl border border-blue-200">
             <div class="flex items-center space-x-2 text-blue-900 font-bold text-xs">
-              <span>⏰</span><span>Wake-Up Call Scheduler</span>
+              <span>⏰</span><span id="lblWakeupTitle">Wake-Up Call Scheduler</span>
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-stone-700 mb-1">Select Alarm Time</label>
+              <label class="block text-[11px] font-bold text-stone-700 mb-1" id="lblWakeupLabel">Select Alarm Time</label>
               <input type="time" id="wakeup_time" class="w-full border border-stone-200 rounded-xl p-2.5 text-xs bg-white outline-none" value="07:00">
             </div>
           </div>
@@ -260,10 +215,10 @@
           <!-- MODULE LATE CHECK-OUT (DYNAMIQUE) -->
           <div id="lateCheckoutBlock" class="hidden space-y-3 bg-amber-50/60 p-4 rounded-2xl border border-amber-200">
             <div class="flex items-center space-x-2 text-amber-900 font-bold text-xs">
-              <span>⏱️</span><span>Late Check-Out Request</span>
+              <span>⏱️</span><span id="lblLateTitle">Late Check-Out Request</span>
             </div>
             <div>
-              <label class="block text-[11px] font-bold text-stone-700 mb-1">Requested Departure Time</label>
+              <label class="block text-[11px] font-bold text-stone-700 mb-1" id="lblLateLabel">Requested Departure Time</label>
               <select id="late_checkout_time" class="w-full border border-stone-200 rounded-xl p-2.5 text-xs bg-white outline-none">
                 <option value="13:00 PM (1:00 PM)">13:00 PM (1:00 PM)</option>
                 <option value="14:00 PM (2:00 PM)">14:00 PM (2:00 PM)</option>
@@ -276,22 +231,22 @@
           <!-- MODULE ROOM SERVICE -->
           <div id="roomServiceMenuBlock" class="hidden space-y-4 bg-stone-50 p-4 rounded-2xl border border-stone-200">
             <div class="flex justify-between items-center border-b border-stone-200 pb-2">
-              <span class="text-xs font-bold text-stone-800">🍽️ Select Menu Items</span>
-              <span class="text-[10px] bg-remal-sand text-white font-bold px-2 py-0.5 rounded-full">In-Room Dining</span>
+              <span class="text-xs font-bold text-stone-800" id="lblMenuHeader">🍽️ Select Menu Items</span>
+              <span class="text-[10px] bg-remal-sand text-white font-bold px-2 py-0.5 rounded-full" id="lblMenuBadge">In-Room Dining</span>
             </div>
             <div id="foodItemsContainer" class="space-y-3 max-h-[500px] overflow-y-auto pr-1"><p class="text-center text-xs text-stone-400">Loading menu...</p></div>
             <div class="pt-2 border-t border-stone-200 space-y-2">
               <div class="flex justify-between text-xs font-bold text-stone-900">
-                <span>Total Amount:</span>
+                <span id="lblTotalAmt">Total Amount:</span>
                 <span id="cartTotalDisplay" class="text-remal-sand font-serif-luxury text-sm">AED 0</span>
               </div>
               <div>
-                <label class="block text-[11px] font-bold text-stone-600 mb-1">Preferred Delivery Time</label>
+                <label class="block text-[11px] font-bold text-stone-600 mb-1" id="lblDelivTime">Preferred Delivery Time</label>
                 <select id="delivery_time" class="w-full border border-stone-200 rounded-xl p-2.5 text-xs bg-white outline-none">
-                  <option value="As soon as possible">⚡ As soon as possible (~30 min)</option>
-                  <option value="In 45 minutes">🕒 In 45 minutes</option>
-                  <option value="In 1 hour">🕒 In 1 hour</option>
-                  <option value="Scheduled Breakfast (07:00 AM - 08:00 AM)">🥐 Scheduled Breakfast (07:00 AM - 08:00 AM)</option>
+                  <option value="As soon as possible" id="deliv1">⚡ As soon as possible (~30 min)</option>
+                  <option value="In 45 minutes" id="deliv2">🕒 In 45 minutes</option>
+                  <option value="In 1 hour" id="deliv3">🕒 In 1 hour</option>
+                  <option value="Scheduled Breakfast (07:00 AM - 08:00 AM)" id="deliv4">🥐 Scheduled Breakfast (07:00 AM - 08:00 AM)</option>
                 </select>
               </div>
             </div>
@@ -313,6 +268,52 @@
           <a id="btnWhatsappDirect" href="#" target="_blank" class="flex items-center justify-center space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 px-4 rounded-xl font-bold text-xs shadow-md transition">
             <span id="lblChatWhatsapp">💬 Chat on WhatsApp</span>
           </a>
+        </div>
+      </div>
+
+      <!-- ROOM FOLIO & BILLING (PLACÉ APRÈS LE FORMULAIRE) -->
+      <div class="remal-card p-5 rounded-3xl space-y-3 bg-gradient-to-br from-amber-50/50 to-white">
+        <div class="flex justify-between items-center border-b border-stone-100 pb-2">
+          <span class="text-xs font-serif-luxury font-bold text-stone-900" id="lblFolioTitle">📄 My Room Folio & Charges</span>
+          <button type="button" onclick="generateRoomFolio()" class="bg-stone-900 text-white px-3 py-1.5 rounded-xl font-bold text-[10px] shadow" id="btnPrtFolio">🖨️ Print Folio</button>
+        </div>
+        <div id="clientRoomFolioContainer" class="space-y-2 text-xs">
+          <p class="text-[11px] text-stone-400 italic" id="lblFolioPlaceholder">Enter your room number above to view your live billing summary.</p>
+        </div>
+      </div>
+
+      <!-- MODULE FEEDBACK & ÉVALUATION DE FIN DE SÉJOUR -->
+      <div class="remal-card p-5 rounded-3xl space-y-3 bg-gradient-to-br from-emerald-50/40 to-white">
+        <div class="border-b border-stone-100 pb-2">
+          <span class="text-xs font-serif-luxury font-bold text-stone-900" id="lblFeedbackTitle">⭐ Stay Feedback & Experience Rating</span>
+          <p class="text-[10px] text-stone-500" id="lblFeedbackSub">Share your thoughts to help us improve our services</p>
+        </div>
+        <form id="feedbackForm" onsubmit="submitGuestFeedback(event)" class="space-y-3">
+          <div class="flex items-center justify-center space-x-2 py-1">
+            <span class="text-xs font-bold text-stone-700" id="lblRatingText">Rating:</span>
+            <div id="starRatingContainer" class="flex space-x-1 text-xl cursor-pointer">
+              <span onclick="setFeedbackRating(1)" id="star-1" class="text-amber-400">★</span>
+              <span onclick="setFeedbackRating(2)" id="star-2" class="text-amber-400">★</span>
+              <span onclick="setFeedbackRating(3)" id="star-3" class="text-amber-400">★</span>
+              <span onclick="setFeedbackRating(4)" id="star-4" class="text-amber-400">★</span>
+              <span onclick="setFeedbackRating(5)" id="star-5" class="text-amber-400">★</span>
+            </div>
+          </div>
+          <div>
+            <textarea id="feedback_comment" rows="2" placeholder="Tell us about your stay, room cleanliness, or dining experience..." class="w-full border border-stone-200 rounded-xl p-2.5 text-xs bg-white outline-none" required></textarea>
+          </div>
+          <button type="submit" id="btnSubmitReview" class="w-full bg-remal-sand hover:bg-amber-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-sm">Submit Review</button>
+        </form>
+      </div>
+
+      <!-- FAVORIS ET HISTORIQUE -->
+      <div id="guestHistoryBlock" class="remal-card p-5 rounded-3xl space-y-3">
+        <div class="flex justify-between items-center border-b border-stone-100 pb-2">
+          <span class="text-xs font-serif-luxury font-bold text-stone-900" id="lblFavTitle">⭐ My Favorites & Recent Orders</span>
+          <span class="text-[9px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full" id="lblFavBadge">Quick Access</span>
+        </div>
+        <div id="clientFavoritesContainer" class="space-y-2">
+          <p class="text-[11px] text-stone-400 italic" id="lblFavEmpty">No starred favorite dishes yet.</p>
         </div>
       </div>
 
@@ -572,132 +573,132 @@
     ];
 
     const HARDCODED_MENU = [
-      { id: 'hm_bf1', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار' }, name: { en: 'Continental', ar: 'كونتيننتال' }, desc: { en: 'Croissant, Muffin, Danish and Seasonal Sliced Fruits', ar: 'تشكيلة من الكرواسون والمفن والدانش، وفواكه موسمية مقطعة' }, price: 49 },
-      { id: 'hm_bf2', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار' }, name: { en: 'Emirati Flavors', ar: 'الفطور بالطعم الإماراتي' }, desc: { en: 'Harees, Chebab, Balaleet, Arabic Cheese, Labneh, Olives, Cucumber, Tomatoes, Foul Medames, Egg Shakshuka, Kuboos, and Seasonal Sliced Fruits', ar: 'هريس، جباب، بالاليط، جبن عريج، لبنة، زيتون، خيار، طماطم، فول مدمس، شكشوكة البيض، خبز، وفواكه موسمية مقطعة' }, price: 59 },
-      { id: 'hm_bf3', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار' }, name: { en: 'Arabic Breakfast', ar: 'فطور عربي' }, desc: { en: 'Hummus, Falafel, Foul Medames, Labneh, Halloumi White Cheese, Fried Egg, Assorted Vegetables, Olives, Mixed Pickles, and Seasonal Fruits', ar: 'حمص، فلافل، فول مدمس، لبنة، جبنة حلومي، بيض مقلي، تشكيلة من الخضروات، زيتون، مخللات مشكلة، وفواكه موسمية' }, price: 59 },
-      { id: 'hm_bf4', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار' }, name: { en: 'International', ar: 'العالمي' }, desc: { en: 'Fresh bakery basket, Two eggs prepared to your liking, Chicken sausage, turkey bacon, and hash brown potatoes, Grilled tomatoes, sautéed mushrooms, and baked beans, Yogurt with dried fruits and nuts or mixed berries, Seasonal sliced fruits', ar: 'سلة مخبوزات طازجة، بيضتان تحضران حسب رغبتك، سقا دجاج، لحم ديك رومي مقدد، بطاطس هاش براون، طماطم مشوية، فطر سوتيه، فاصوليا مطبوخة، زبادي مع فواكه مجففة ومكسرات أو توت مشكل وفواكه موسمية مقطعة' }, price: 61 },
-      { id: 'hm_bf5', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار' }, name: { en: 'Choice of Eggs', ar: 'اختيارات من البيض' }, desc: { en: 'Scrambled Eggs, Fried Eggs, Boiled Eggs, Plain Omelette, Vegetable Omelette, Cheese Omelette, Poached Eggs, Sunny Side Up Eggs', ar: 'بيض مخفوق، بيض مقلي، بيض مسلوق، أومليت سادة، أومليت بالخضار، أومليت بالجبن، بيض مسلوق (بوشيه)، بيض عيون' }, price: 25 },
-      { id: 'hm_bf6', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار' }, name: { en: 'Shakshuka', ar: 'شكشوكة' }, desc: { en: 'Poached eggs in a spicy tomato and bell pepper sauce, seasoned with garlic and onions. Served with Arabic bread.', ar: 'بيض مسلوق بطريقة بوشيه في صلصة طماطم حارة مع الفلفل، متبل بالثوم والبصل، يقدم مع الخبز العربي' }, price: 30 },
-      { id: 'hm_bf7', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار' }, name: { en: 'Eggs Benedict with Turkey Ham', ar: 'بيض بندكت مع ديك رومي' }, desc: { en: 'Poached eggs and turkey ham on a toasted English muffin, topped with rich Hollandaise sauce.', ar: 'بيض مسلوق (بوشيه) مع هام ديك رومي، يقدم على مافن إنجليزي محمص، مع صلصة الهولنديز' }, price: 30 },
-      { id: 'hm_bf8', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار' }, name: { en: 'Eggs Benedict with Smoked Salmon', ar: 'بيض بندكت مع سلمون مدخن' }, desc: { en: 'Poached eggs and smoked salmon on a toasted English muffin, topped with creamy Hollandaise sauce.', ar: 'بيض مسلوق (بوشيه) مع سلمون مدخن، يقدم على مافن إنجليزي محمص، مع صلصة الهولنديز الكريمية' }, price: 35 },
+      { id: 'hm_bf1', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Continental', ar: 'كونتيننتال', hi: 'महाद्वीपीय' }, desc: { en: 'Croissant, Muffin, Danish and Seasonal Sliced Fruits', ar: 'تشكيلة من الكرواسون والمفن والدانش، وفواكه موسمية مقطعة', hi: 'क्रॉसेंट, मफिन, दानिश और मौसमी कटे हुए फल' }, price: 49 },
+      { id: 'hm_bf2', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Emirati Flavors', ar: 'الفطور بالطعم الإماراتي', hi: 'अमीराती स्वाद' }, desc: { en: 'Harees, Chebab, Balaleet, Arabic Cheese, Labneh, Olives, Cucumber, Tomatoes, Foul Medames, Egg Shakshuka, Kuboos, and Seasonal Sliced Fruits', ar: 'هريس، جباب، بالاليط، جبن عريج، لبنة، زيتون، خيار، طماطم، فول مدمس، شكشوكة البيض، خبز، وفواكه موسمية مقطعة', hi: 'हरीस, चेबाब, बलालीट, अरबी पनीर, लाबनेह, जैतून, ककड़ी, टमाटर, फुल मेदमेस, अंडा शक्शुका' }, price: 59 },
+      { id: 'hm_bf3', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Arabic Breakfast', ar: 'فطور عربي', hi: 'अरबी नाश्ता' }, desc: { en: 'Hummus, Falafel, Foul Medames, Labneh, Halloumi White Cheese, Fried Egg, Assorted Vegetables, Olives, Mixed Pickles, and Seasonal Fruits', ar: 'حمص، فلافل، فول مدمس، لبنة، جبنة حلومي، بيض مقلي، تشكيلة من الخضروات، زيتون، مخللات مشكلة، وفواكه موسمية', hi: 'हम्मुस, फलाफेल, फुल मेदमेस, लाबनेह, हलोमी सफेद पनीर, तला हुआ अंडा, मिश्रित सब्जियां' }, price: 59 },
+      { id: 'hm_bf4', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'International', ar: 'العالمي', hi: 'अंतर्राष्ट्रीय' }, desc: { en: 'Fresh bakery basket, Two eggs prepared to your liking, Chicken sausage, turkey bacon, and hash brown potatoes, Grilled tomatoes, sautéed mushrooms, and baked beans, Yogurt with dried fruits and nuts or mixed berries, Seasonal sliced fruits', ar: 'سلة مخبوزات طازجة، بيضتان تحضران حسب رغبتك، سقا دجاج، لحم ديك رومي مقدد، بطاطس هاش براون، طماطم مشوية، فطر سوتيه، فاصوليا مطبوخة، زبادي مع فواكه مجففة ومكسرات أو توت مشكل وفواكه موسمية مقطعة', hi: 'ताजा बेकरी बास्केट, आपकी पसंद के अनुसार दो अंडे, चिकन सॉसेज, टर्की बेकन' }, price: 61 },
+      { id: 'hm_bf5', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Choice of Eggs', ar: 'اختيارات من البيض', hi: 'अंडे की पसंद' }, desc: { en: 'Scrambled Eggs, Fried Eggs, Boiled Eggs, Plain Omelette, Vegetable Omelette, Cheese Omelette, Poached Eggs, Sunny Side Up Eggs', ar: 'بيض مخفوق، بيض مقلي، بيض مسلوق، أومليت سادة، أومليت بالخضار، أومليت بالجبن، بيض مسلوق (بوشيه)، بيض عيون', hi: 'स्क्रैम्बल अंडे, तले हुए अंडे, उबले हुए अंडे, सादा आमलेट, सब्जी आमलेट, पनीर आमलेट' }, price: 25 },
+      { id: 'hm_bf6', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Shakshuka', ar: 'شكشوكة', hi: 'शक्शुका' }, desc: { en: 'Poached eggs in a spicy tomato and bell pepper sauce, seasoned with garlic and onions. Served with Arabic bread.', ar: 'بيض مسلوق بطريقة بوشيه في صلصة طماطم حارة مع الفلفل، متبل بالثوم والبصل، يقدم مع الخبز العربي', hi: ' मसालेदार टमाटर और शिमला मिर्च की चटनी में उबले हुए अंडे। अरबी ब्रेड के साथ परोसा जाता है।' }, price: 30 },
+      { id: 'hm_bf7', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Eggs Benedict with Turkey Ham', ar: 'بيض بندكت مع ديك رومي', hi: 'टर्की हैम के साथ अंडे बेनेडिक्ट' }, desc: { en: 'Poached eggs and turkey ham on a toasted English muffin, topped with rich Hollandaise sauce.', ar: 'بيض مسلوق (بوشيه) مع هام ديك رومي، يقدم على مافن إنجليزي محمص، مع صلصة الهولنديز', hi: 'टोस्टेड इंग्लिश मफिन पर उबले अंडे और टर्की हैम, समृद्ध होलांडाइज सॉस के साथ।' }, price: 30 },
+      { id: 'hm_bf8', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Eggs Benedict with Smoked Salmon', ar: 'بيض بندكت مع سلمون مدخن', hi: 'स्मोक्ड सैल्मन के साथ अंडे बेनेडिक्ट' }, desc: { en: 'Poached eggs and smoked salmon on a toasted English muffin, topped with creamy Hollandaise sauce.', ar: 'بيض مسلوق (بوشيه) مع سلمون مدخن، يقدم على مافن إنجليزي محمص، مع صلصة الهولنديز الكريمية', hi: 'टोस्टेड इंग्लिश मफिन पर उबले अंडे और स्मोक्ड सैल्मन, मलाईदार होलांडाइज सॉस के साथ।' }, price: 35 },
 
-      { id: 'hm_sp1', categoryKey: 'Soup', catName: { en: 'Soup', ar: 'الشوربة' }, name: { en: 'Traditional Lentil Soup', ar: 'شوربة العدس' }, desc: { en: 'With roasted cumin, fresh lemon and crispy pita bread', ar: 'تقدم مع كمون محمص، ليمون طازج وخبر بيتا مقرمش' }, price: 25 },
-      { id: 'hm_sp2', categoryKey: 'Soup', catName: { en: 'Soup', ar: 'الشوربة' }, name: { en: 'Minestrone Soup', ar: 'شوربة المينستروني' }, desc: { en: 'Classic Italian vegetable soup with pasta and herbs', ar: 'شوربة إيطالية كلاسيكية من الخضار مع المعكرونة والأعشاب' }, price: 25 },
-      { id: 'hm_sp3', categoryKey: 'Soup', catName: { en: 'Soup', ar: 'الشوربة' }, name: { en: 'Harira Soup', ar: 'شوربة الحريرة' }, desc: { en: 'Moroccan spiced soup made with lentils, chickpeas and tomatoes', ar: 'شوربة مغربية متبلة من العدس والحمص والطماطم' }, price: 25 },
-      { id: 'hm_sp4', categoryKey: 'Soup', catName: { en: 'Soup', ar: 'الشوربة' }, name: { en: 'Soup of the Day', ar: 'شوربة اليوم' }, desc: { en: 'Chef\'s daily special, freshly prepared with seasonal ingredients', ar: 'الشوربة اليومية المميزة من إعداد الشيف، تحضر طازجة باستخدام مكونات موسمية مختارة' }, price: 25 },
+      { id: 'hm_sp1', categoryKey: 'Soup', catName: { en: 'Soup', ar: 'الشوربة', hi: 'सूप' }, name: { en: 'Traditional Lentil Soup', ar: 'شوربة العدس', hi: 'पारंपरिक दाल का सूप' }, desc: { en: 'With roasted cumin, fresh lemon and crispy pita bread', ar: 'تقدم مع كمون محمص، ليمون طازج وخبر بيتا مقرمش', hi: 'भुना हुआ जीरा, ताज़ा नींबू और कुरकुरी पिटा ब्रेड के साथ' }, price: 25 },
+      { id: 'hm_sp2', categoryKey: 'Soup', catName: { en: 'Soup', ar: 'الشوربة', hi: 'सूप' }, name: { en: 'Minestrone Soup', ar: 'شوربة المينستروني', hi: 'मिनस्ट्रोनी सूप' }, desc: { en: 'Classic Italian vegetable soup with pasta and herbs', ar: 'شوربة إيطالية كلاسيكية من الخضار مع المعكرونة والأعشاب', hi: 'पास्ता और जड़ी-बूटियों के साथ क्लासिक इतालवी सब्जी सूप' }, price: 25 },
+      { id: 'hm_sp3', categoryKey: 'Soup', catName: { en: 'Soup', ar: 'الشوربة', hi: 'सूप' }, name: { en: 'Harira Soup', ar: 'شوربة الحريرة', hi: हरीरा सूप }, desc: { en: 'Moroccan spiced soup made with lentils, chickpeas and tomatoes', ar: 'شوربة مغربية متبلة من العدس والحمص والطماطم', hi: 'दाल, छोले और टमाटर से बना मोरक्कन मसालेदार सूप' }, price: 25 },
+      { id: 'hm_sp4', categoryKey: 'Soup', catName: { en: 'Soup', ar: 'الشوربة', hi: 'सूप' }, name: { en: 'Soup of the Day', ar: 'شوربة اليوم', hi: 'दिन का सूप' }, desc: { en: 'Chef\'s daily special, freshly prepared with seasonal ingredients', ar: 'الشوربة اليومية المميزة من إعداد الشيف، تحضر طازجة باستخدام مكونات موسمية مختارة', hi: 'शेफ की दैनिक विशेष डिश, मौसमी सामग्री के साथ ताज़ा तैयार की गई' }, price: 25 },
 
-      { id: 'hm_sl1', categoryKey: 'Salads and Mezzeh', catName: { en: 'Salads and Mezzeh', ar: 'السلطات والمقبلات' }, name: { en: 'Classic Caesar Salad', ar: 'سلطة سيزر الكلاسيكية' }, desc: { en: 'Lettuce, shaved parmesan cheese, Caesar dressing, croutons', ar: 'خس، جبنة بارميزان مبشورة، صلصة سيزر، خبز محمص' }, price: 45 },
-      { id: 'hm_sl2', categoryKey: 'Salads and Mezzeh', catName: { en: 'Salads and Mezzeh', ar: 'السلطات والمقبلات' }, name: { en: 'Chicken Caesar Salad', ar: 'سلطة سيزر مع الدجاج' }, desc: { en: 'Lettuce, chicken, beef bacon, shaved parmesan cheese, Caesar dressing, croutons', ar: 'خس، دجاج، لحم بقري مقدد، جبنة بارميزان مبشورة، صلصة سيزر، خبز محمص' }, price: 49 },
-      { id: 'hm_sl3', categoryKey: 'Salads and Mezzeh', catName: { en: 'Salads and Mezzeh', ar: 'السلطات والمقبلات' }, name: { en: 'Shrimps Caesar Salad', ar: 'سلطة سيزر بالروبيان' }, desc: { en: 'Lettuce, grilled shrimps, parmesan cheese, Caesar dressing, croutons', ar: 'خس، روبيان مشوي، جبنة بارميزان، صلصة سيزر، خبز محمص' }, price: 59 },
-      { id: 'hm_sl4', categoryKey: 'Salads and Mezzeh', catName: { en: 'Salads and Mezzeh', ar: 'السلطات والمقبلات' }, name: { en: 'Quinoa Salad', ar: 'سلطة الكينوا' }, desc: { en: 'Quinoa combined with finely chopped parsley and tomato', ar: 'كينوا مع بقدونس وطماطم مفرومة ناعماً' }, price: 40 },
-      { id: 'hm_sl5', categoryKey: 'Salads and Mezzeh', catName: { en: 'Salads and Mezzeh', ar: 'السلطات والمقبلات' }, name: { en: 'Fattoush', ar: 'فتوش' }, desc: { en: 'Lettuce, mint, zaatar, tomatoes, peppers, cucumber, onion, radish, olive oil, lemon juice, pomegranate molasses', ar: 'خس، نعناع، زعتر، طماطم، فلفل، خيار، بصل، فجل، زيت زيتون، عصير ليمون، دبس الرمان' }, price: 40 },
-      { id: 'hm_sl6', categoryKey: 'Salads and Mezzeh', catName: { en: 'Salads and Mezzeh', ar: 'السلطات والمقبلات' }, name: { en: '(Warak Enab) Vine Leaves', ar: 'ورق عنب' }, desc: { en: 'Stuffed grape leaves with rice, herbs, and lemon', ar: 'ورق عنب محشو بالأرز والأعشاب والليمون' }, price: 40 },
+      { id: 'hm_sl1', categoryKey: 'Salads and Mezzeh', catName: { en: 'Salads and Mezzeh', ar: 'السلطات والمقبلات', hi: 'सलाद और मेज़ेह' }, name: { en: 'Classic Caesar Salad', ar: 'سلطة سيزر الكلاسيكية', hi: 'क्लासिक सीज़र सलाद' }, desc: { en: 'Lettuce, shaved parmesan cheese, Caesar dressing, croutons', ar: 'خس، جبنة بارميزان مبشورة، صلصة سيزر، خبز محمص', hi: 'सलाद पत्ता, परमेसन पनीर, सीज़र ड्रेसिंग, क्रौटन' }, price: 45 },
+      { id: 'hm_sl2', categoryKey: 'Salads and Mezzeh', catName: { en: 'Salads and Mezzeh', ar: 'السلطات والمقبلات', hi: 'सलाद और मेज़ेह' }, name: { en: 'Chicken Caesar Salad', ar: 'سلطة سيزر مع الدجاج', hi: 'चिकन सीज़र सलाद' }, desc: { en: 'Lettuce, chicken, beef bacon, shaved parmesan cheese, Caesar dressing, croutons', ar: 'خس، دجاج، لحم بقري مقدد، جبنة بارميزان مبشورة، صلصة سيزر، خبز محمص', hi: 'सलाद पत्ता, चिकन, बीफ बेकन, परमेसन पनीर, सीज़र ड्रेसिंग' }, price: 49 },
+      { id: 'hm_sl3', categoryKey: 'Salads and Mezzeh', catName: { en: 'Salads and Mezzeh', ar: 'السلطات والمقبلات', hi: 'सलाद और मेज़ेह' }, name: { en: 'Shrimps Caesar Salad', ar: 'سلطة سيزر بالروبيان', hi: 'झींगा सीज़र सलाद' }, desc: { en: 'Lettuce, grilled shrimps, parmesan cheese, Caesar dressing, croutons', ar: 'خس، روبيان مشوي، جبنة بارميزان، صلصة سيزر، خبز محمص', hi: 'सलाद पत्ता, ग्रिल्ड झींगा, परमेसन पनीर, सीज़र ड्रेसिंग' }, price: 59 },
+      { id: 'hm_sl4', categoryKey: 'Salads and Mezzeh', catName: { en: 'Salads and Mezzeh', ar: 'السلطات والمقبلات', hi: 'सलाद और मेज़ेह' }, name: { en: 'Quinoa Salad', ar: 'سلطة الكينوا', hi: 'क्विनोआ सलाद' }, desc: { en: 'Quinoa combined with finely chopped parsley and tomato', ar: 'كينوا مع بقدونس وطماطم مفرومة ناعماً', hi: 'बारीक कटे अजमोद और टमाटर के साथ क्विनोआ' }, price: 40 },
+      { id: 'hm_sl5', categoryKey: 'Salads and Mezzeh', catName: { en: 'Salads and Mezzeh', ar: 'السلطات والمقبلات', hi: 'सलाद और मेज़ेह' }, name: { en: 'Fattoush', ar: 'فتوش', hi: 'फत्तूश सलाद' }, desc: { en: 'Lettuce, mint, zaatar, tomatoes, peppers, cucumber, onion, radish, olive oil, lemon juice, pomegranate molasses', ar: 'خس، نعناع، زعتر، طماطم، فلفل، خيار، بصل، فجل، زيت زيتون، عصير ليمون، دبس الرمان', hi: 'सलाद पत्ता, पुदीना, जतूर, टमाटर, शिमला मिर्च, ककड़ी, प्याज, मूली, जैतून का तेल' }, price: 40 },
+      { id: 'hm_sl6', categoryKey: 'Salads and Mezzeh', catName: { en: 'Salads and Mezzeh', ar: 'السلطات والمقبلات', hi: 'सलाद और मेज़ेह' }, name: { en: '(Warak Enab) Vine Leaves', ar: 'ورق عنب', hi: 'अंगूर के पत्ते (वारक एनाब)' }, desc: { en: 'Stuffed grape leaves with rice, herbs, and lemon', ar: 'ورق عنب محشو بالأرز والأعشاب والليمون', hi: 'चावल, जड़ी-बूटियों और नींबू के साथ भरे हुए अंगूर के पत्ते' }, price: 40 },
 
-      { id: 'hm_sw1', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر' }, name: { en: 'Beef Burger', ar: 'برجر لحم بقري' }, desc: { en: 'Juicy beef patty with mayonnaise, lettuce, tomato, gherkins, cheddar cheese, and caramelized onions, served with French fries', ar: 'برجر لحم بقري مع مايونيز، خس، طماطم، خيار مخلل، جبنة شيدر وبصل مكرمل، يقدم مع بطاطس مقلية' }, price: 60 },
-      { id: 'hm_sw2', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر' }, name: { en: 'Mac Beef Burger', ar: 'برجر لحم بقري ماك' }, desc: { en: 'Special beef patty with signature toppings, served with French fries', ar: 'برجر لحم بقري مميز مع مكونات خاصة، يقدم مع بطاطس مقلية' }, price: 65 },
-      { id: 'hm_sw3', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر' }, name: { en: 'Grilled Chicken Burger', ar: 'برجر الدجاج المشوي' }, desc: { en: 'Juicy chicken patty with mayonnaise, tomato, jalapeño, lettuce, and mozzarella cheese, served with French fries', ar: 'برجر دجاج مع مايونيز، طماطم، هالابينو، خس وجبنة موزاريلا، يقدم مع بطاطس مقلية' }, price: 55 },
-      { id: 'hm_sw4', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر' }, name: { en: 'Club Sandwich', ar: 'كلوب ساندويتش' }, desc: { en: 'Triple decker with turkey bacon, lettuce, tomato, chicken mousse, cheese, fried egg, cocktail sauce, served with French fries', ar: 'توست مع ثلاث طبقات من لحم ديك رومي مقدد، خس، طماطم، موس دجاج، جبنة، بيض مقلي، ووصوص كوكتيل، يقدم مع بطاطس مقلية' }, price: 60 },
-      { id: 'hm_sw5', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر' }, name: { en: 'Fish and Chips', ar: 'سمك مقلي مع بطاطس مقلية' }, desc: { en: 'Crispy battered fried fish served with tartar sauce and French fries', ar: 'أصابع سمك مقلية مقرمشة تقدم مع صلصة التارتار والبطاطس المقلية' }, price: 69 },
-      { id: 'hm_sw6', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر' }, name: { en: 'Chicken Quesadilla', ar: 'كاساديا الدجاج' }, desc: { en: 'Chicken with Mexican flavors, capsicum, chopped onions, peppers, tomatoes, and mixed cheese, served with tomato salsa, sour cream and avocado sauce', ar: 'دجاج بالنكهة المكسيكية مع فلفل رومي، بصل، طماطم، جبنة مشكلة، تقدم مع صلصة الطماطم، كريمة حامضة وصوص الأفوكادو' }, price: 60 },
-      { id: 'hm_sw7', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر' }, name: { en: 'Smoked Salmon Sandwich', ar: 'ساندويتش سلمون مدخن' }, desc: { en: 'Smoked salmon with cream cheese, capers, rocket leaves, and onion slices, served with French fries', ar: 'سلمون مدخن مع جبنة كريمية، كابر، أوراق جرجير وشرائح بصل، يقدم مع بطاطس مقلية' }, price: 55 },
-      { id: 'hm_sw8', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر' }, name: { en: 'Cheese Sandwich', ar: 'ساندويتش الجبن' }, desc: { en: 'Melted cheese on toasted bread with fresh vegetables, served with French fries', ar: 'جبن ذائب على خبز محمص مع خضار طازجة، يقدم مع بطاطس مقلية' }, price: 45 },
-      { id: 'hm_sw9', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر' }, name: { en: 'Chicken Steak Sandwich', ar: 'ساندويتش ستيك الدجاج' }, desc: { en: 'Grilled chicken steak with sautéed vegetables, sauce, and mozzarella cheese, served with Cajun-spiced potato wedges', ar: 'ستيك دجاج مشوي مع خضار سوتيه وصوص وجبنة موزاريلا، يقدم مع بطاطس ويدجز متبلة بالكاجون' }, price: 60 },
-      { id: 'hm_sw10', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر' }, name: { en: 'Beef Steak Sandwich', ar: 'ساندويتش ستيك اللحم البقري' }, desc: { en: 'Grilled beef steak with cheddar cheese, fresh vegetables, and sauce, served with French fries', ar: 'ستيك لحم بقري مشوي مع جبنة شيدر، خضار طازجة وصوص، يقدم مع بطاطس مقلية' }, price: 65 },
+      { id: 'hm_sw1', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Beef Burger', ar: 'برجر لحم بقري', hi: 'बीफ बर्गर' }, desc: { en: 'Juicy beef patty with mayonnaise, lettuce, tomato, gherkins, cheddar cheese, and caramelized onions, served with French fries', ar: 'برجر لحم بقري مع مايونيز، خس، طماطم، خيار مخلل، جبنة شيدر وبصل مكرمل، يقدم مع بطاطس مقلية', hi: 'मयोनीज़, सलाद पत्ता, टमाटर, चेडर पनीर और caramelized प्याज के साथ रसदार बीफ पैटी' }, price: 60 },
+      { id: 'hm_sw2', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Mac Beef Burger', ar: 'برجر لحم بقري ماك', hi: 'मैक बीफ बर्गर' }, desc: { en: 'Special beef patty with signature toppings, served with French fries', ar: 'برجر لحم بقري مميز مع مكونات خاصة، يقدم مع بطاطس مقلية', hi: 'French fries के साथ परोसा जाने वाला विशेष बीफ बर्गर' }, price: 65 },
+      { id: 'hm_sw3', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Grilled Chicken Burger', ar: 'برجر الدجاج المشوي', hi: 'ग्रिल्ड चिकन बर्गर' }, desc: { en: 'Juicy chicken patty with mayonnaise, tomato, jalapeño, lettuce, and mozzarella cheese, served with French fries', ar: 'برجر دجاج مع مايونيز، طماطم، هالابينو، خس وجبنة موزاريلا، يقدم مع بطاطس مقلية', hi: 'मयोनीज़, टमाटर, जलापीनो और मोज़ेरेला पनीर के साथ चिकन पैटी' }, price: 55 },
+      { id: 'hm_sw4', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Club Sandwich', ar: 'كلوب ساندويتش', hi: 'क्लब सैंडविच' }, desc: { en: 'Triple decker with turkey bacon, lettuce, tomato, chicken mousse, cheese, fried egg, cocktail sauce, served with French fries', ar: 'توست مع ثلاث طبقات من لحم ديك رومي مقدد، خس، طماطم، موس دجاج، جبنة، بيض مقلي، ووصوص كوكتيل، يقدم مع بطاطس مقلية', hi: 'टर्की बेकन, सलाद पत्ता, टमाटर, चिकन मूस और तले हुए अंडे के साथ ट्रिपल डेकर' }, price: 60 },
+      { id: 'hm_sw5', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Fish and Chips', ar: 'سمك مقلي مع بطاطس مقلية', hi: 'फिश एंड चिप्स' }, desc: { en: 'Crispy battered fried fish served with tartar sauce and French fries', ar: 'أصابع سمك مقلية مقرمشة تقدم مع صلصة التارتار والبطاطس المقلية', hi: 'टारटर सॉस और फ्रेंच फ्राइज़ के साथ परोसी जाने वाली कुरकुरी तली हुई मछली' }, price: 69 },
+      { id: 'hm_sw6', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Chicken Quesadilla', ar: 'كاساديا الدجاج', hi: 'चिकन कैसाडिला' }, desc: { en: 'Chicken with Mexican flavors, capsicum, chopped onions, peppers, tomatoes, and mixed cheese, served with tomato salsa, sour cream and avocado sauce', ar: 'دجاج بالنكهة المكسيكية مع فلفل رومي، بصل، طماطم، جبنة مشكلة، تقدم مع صلصة الطماطم، كريمة حامضة وصوص الأفوكادو', hi: 'मेक्सिकन स्वादों के साथ चिकन, शिमला मिर्च, प्याज, टमाटर और मिश्रित पनीर' }, price: 60 },
+      { id: 'hm_sw7', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Smoked Salmon Sandwich', ar: 'ساندويتش سلمون مدخن', hi: 'स्मोक्ड सैल्मन सैंडविच' }, desc: { en: 'Smoked salmon with cream cheese, capers, rocket leaves, and onion slices, served with French fries', ar: 'سلمون مدخن مع جبنة كريمية، كابر، أوراق جرجير وشرائح بصل، يقدم مع بطاطس مقلية', hi: 'क्रीम चीज़, केपर्स और रॉकेट पत्तियों के साथ स्मोक्ड सैल्मन' }, price: 55 },
+      { id: 'hm_sw8', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Cheese Sandwich', ar: 'ساندويتش الجبن', hi: 'चीज़ सैंडविच' }, desc: { en: 'Melted cheese on toasted bread with fresh vegetables, served with French fries', ar: 'جبن ذائب على خبز محمص مع خضار طازجة، يقدم مع بطاطس مقلية', hi: 'ताज़ी सब्जियों के साथ टोस्टेड ब्रेड पर पिघला हुआ पनीर' }, price: 45 },
+      { id: 'hm_sw9', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Chicken Steak Sandwich', ar: 'ساندويتش ستيك الدجاج', hi: 'चिकन स्टेक सैंडविच' }, desc: { en: 'Grilled chicken steak with sautéed vegetables, sauce, and mozzarella cheese, served with Cajun-spiced potato wedges', ar: 'ستيك دجاج مشوي مع خضار سوتيه وصوص وجبنة موزاريلا، يقدم مع بطاطس ويدجز متبلة بالكاجون', hi: 'सॉटे सब्जियों और मोज़ेरेला पनीर के साथ ग्रिल्ड चिकन स्टेक' }, price: 60 },
+      { id: 'hm_sw10', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Beef Steak Sandwich', ar: 'ساندويتش ستيك اللحم البقري', hi: 'बीफ स्टेक सैंडविच' }, desc: { en: 'Grilled beef steak with cheddar cheese, fresh vegetables, and sauce, served with French fries', ar: 'ستيك لحم بقري مشوي مع جبنة شيدر، خضار طازجة وصوص، يقدم مع بطاطس مقلية', hi: 'चेडर पनीर और ताज़ी सब्जियों के साथ ग्रिल्ड बीफ स्टेक' }, price: 65 },
 
-      { id: 'hm_pz1', categoryKey: 'Pizza', catName: { en: 'Pizza', ar: 'البيتزا' }, name: { en: 'Margherita', ar: 'مارغريتا' }, desc: { en: 'Mozzarella cheese, tomato sauce, oregano', ar: 'جبن موزاريلا، صلصة الطماطم، أوريغانو' }, price: 49 },
-      { id: 'hm_pz2', categoryKey: 'Pizza', catName: { en: 'Pizza', ar: 'البيتزا' }, name: { en: 'Vadodara', ar: 'فادودارا' }, desc: { en: 'Grilled zucchini, eggplant, bell peppers, mushrooms, and sun-dried tomatoes with mozzarella cheese and tomato sauce', ar: 'كوسة مشوية، باذنجان مشوي، فلفل رومي، فطر، طماطم مجففة مع جبن موزاريلا وصلصة الطماطم' }, price: 59 },
-      { id: 'hm_pz3', categoryKey: 'Pizza', catName: { en: 'Pizza', ar: 'البيتزا' }, name: { en: 'Cajun Spiced Chicken', ar: 'دجاج متبل بالكاجون' }, desc: { en: 'Tomato sauce, mozzarella, basil, oregano, grilled Cajun-spiced chicken, roasted bell peppers, and rocket leaves', ar: 'صلصة الطماطم، جبن موزاريلا، ريحان، أوريغانو، دجاج مشوي متبل بالكاجون، فلفل رومي مشوي وأوراق الجرجير' }, price: 65 },
-      { id: 'hm_pz4', categoryKey: 'Pizza', catName: { en: 'Pizza', ar: 'البيتزا' }, name: { en: 'Polo', ar: 'بولو' }, desc: { en: 'Thinly sliced chicken and mushrooms on tomato sauce, finished with oregano', ar: 'شرائح دجاج رفيعة مع فطر على صلصة الطماطم، مع لمسة من الأوريغانو' }, price: 60 },
-      { id: 'hm_pz5', categoryKey: 'Pizza', catName: { en: 'Pizza', ar: 'البيتزا' }, name: { en: 'Pepperoni', ar: 'بيبروني' }, desc: { en: 'Mozzarella, beef pepperoni, tomato sauce', ar: 'جبن موزاريلا، بيبروني لحم بقري، صلصة الطماطم' }, price: 65 },
-      { id: 'hm_pz6', categoryKey: 'Pizza', catName: { en: 'Pizza', ar: 'البيتزا' }, name: { en: 'Gorgonzola', ar: 'غورغونزولا' }, desc: { en: 'Gorgonzola and mozzarella cheese on tomato sauce, topped with oregano and pesto drizzle', ar: 'جبن غورغونزولا وموزاريلا على صلصة الطماطم، مع أوريغانو ولمسة من صلصة البيستو' }, price: 69 },
+      { id: 'hm_pz1', categoryKey: 'Pizza', catName: { en: 'Pizza', ar: 'البيتزا', hi: 'पिज़्ज़ा' }, name: { en: 'Margherita', ar: 'مارغريتا', hi: 'मार्गेरिटा' }, desc: { en: 'Mozzarella cheese, tomato sauce, oregano', ar: 'جبن موزاريلا، صلصة الطماطم، أوريغانو', hi: 'मोज़ेरेला पनीर, टमाटर की चटनी, ओरेगानो' }, price: 49 },
+      { id: 'hm_pz2', categoryKey: 'Pizza', catName: { en: 'Pizza', ar: 'البيتزا', hi: 'पिज़्ज़ा' }, name: { en: 'Vadodara', ar: 'فادودارا', hi: 'वडोदरा पिज़्ज़ा' }, desc: { en: 'Grilled zucchini, eggplant, bell peppers, mushrooms, and sun-dried tomatoes with mozzarella cheese and tomato sauce', ar: 'كوسة مشوية، باذنجان مشوي، فلفل رومي، فطر، طماطم مجففة مع جبن موزاريلا وصلصة الطماطم', hi: 'ग्रिल्ड ज़ूचिनी, बैंगन, शिमला मिर्च, मशरूम और धूप में सूखे टमाटर' }, price: 59 },
+      { id: 'hm_pz3', categoryKey: 'Pizza', catName: { en: 'Pizza', ar: 'البيتزا', hi: 'पिज़्ज़ा' }, name: { en: 'Cajun Spiced Chicken', ar: 'دجاج متبل بالكاجون', hi: 'कॅजुन मसालेदार चिकन' }, desc: { en: 'Tomato sauce, mozzarella, basil, oregano, grilled Cajun-spiced chicken, roasted bell peppers, and rocket leaves', ar: 'صلصة الطماطم، جبن موزاريلا، ريحان، أوريغانو، دجاج مشوي متبل بالكاجون، فلفل رومي مشوي وأوراق الجرجير', hi: 'टमाटर की चटनी, मोज़ेरेला, तुलसी, ओरेगानो, ग्रिल्ड कैजुन-मसालेदार चिकन' }, price: 65 },
+      { id: 'hm_pz4', categoryKey: 'Pizza', catName: { en: 'Pizza', ar: 'البيتزا', hi: 'पिज़्ज़ा' }, name: { en: 'Polo', ar: 'بولو', hi: 'पोलो पिज़्ज़ा' }, desc: { en: 'Thinly sliced chicken and mushrooms on tomato sauce, finished with oregano', ar: 'شرائح دجاج رفيعة ومشروفر على صلصة الطماطم، مع لمسة من الأوريغانو', hi: 'टमाटर की चटनी पर पतले कटे चिकन और मशरूम' }, price: 60 },
+      { id: 'hm_pz5', categoryKey: 'Pizza', catName: { en: 'Pizza', ar: 'البيتزا', hi: 'पिज़्ज़ा' }, name: { en: 'Pepperoni', ar: 'بيبروني', hi: 'पेपरोनी पिज़्ज़ा' }, desc: { en: 'Mozzarella, beef pepperoni, tomato sauce', ar: 'جبن موزاريلا، بيبروني لحم بقري، صلصة الطماطم', hi: 'मोज़ेरेला, बीफ पेपरोनी, टमाटर की चटनी' }, price: 65 },
+      { id: 'hm_pz6', categoryKey: 'Pizza', catName: { en: 'Pizza', ar: 'البيتزا', hi: 'पिज़्ज़ा' }, name: { en: 'Gorgonzola', ar: 'غورغونزولا', hi: 'गॉरगॉन्ज़ोला पिज़्ज़ा' }, desc: { en: 'Gorgonzola and mozzarella cheese on tomato sauce, topped with oregano and pesto drizzle', ar: 'جبن غورغونزولا وموزاريلا على صلصة الطماطم، مع أوريغانو ولمسة من صلصة البيستو', hi: 'टमाटर की चटनी पर गॉरगॉन्ज़ोला और मोज़ेरेला पनीर' }, price: 69 },
 
-      { id: 'hm_pt1', categoryKey: 'Pasta', catName: { en: 'Pasta', ar: 'الباستا' }, name: { en: 'Spaghetti Bolognese', ar: 'سباغيتي بولونيز' }, desc: { en: 'Classic Italian pasta with rich tomato sauce, minced beef, garlic, and herbs', ar: 'سباغيتي إيطالية كلاسيكية بصلصة طماطم غنية مع لحم مفروم، ثوم وأعشاب' }, price: 56 },
-      { id: 'hm_pt2', categoryKey: 'Pasta', catName: { en: 'Pasta', ar: 'الباستا' }, name: { en: 'Ravioli Pasta with Spinach & Ricotta', ar: 'رافيولي بالسبانخ والريكوتا' }, desc: { en: 'Pasta filled with ricotta, spinach, and Parmesan, served with light tomato or creamy onion sauce', ar: 'باستا محشوة بجبن الريكوتا والسبانخ والبارميزان، تقدم مع صلصة طماطم خفيفة أو صلصة بصل كريمية' }, price: 69 },
-      { id: 'hm_pt3', categoryKey: 'Pasta', catName: { en: 'Pasta', ar: 'الباستا' }, name: { en: 'Fettuccine Alfredo with Grilled Chicken', ar: 'فيتوتشيني ألفريدو مع دجاج مشوي' }, desc: { en: 'Fettuccine in rich creamy Alfredo sauce topped with grilled chicken', ar: 'فيتوتشيني بصلصة ألفريدو كريمية غنية مع دجاج مشوي' }, price: 60 },
-      { id: 'hm_pt4', categoryKey: 'Pasta', catName: { en: 'Pasta', ar: 'الباستا' }, name: { en: 'Tagliatelle with Shrimp & Spring Onion Sauce', ar: 'تالياتيلي بالروبيان وصلصة البصل الأخضر' }, desc: { en: 'Fresh tagliatelle with shrimp in a light spring onion cream sauce', ar: 'تالياتيلي طازجة مع روبيان بصلصة كريمية خفيفة بنكهة البصل الأخضر' }, price: 60 },
+      { id: 'hm_pt1', categoryKey: 'Pasta', catName: { en: 'Pasta', ar: 'الباستا', hi: 'पास्ता' }, name: { en: 'Spaghetti Bolognese', ar: 'سباغيتي بولونيز', hi: 'स्पघेटी बोलोमीज़' }, desc: { en: 'Classic Italian pasta with rich tomato sauce, minced beef, garlic, and herbs', ar: 'سباغيتي إيطالية كلاسيكية بصلصة طماطم غنية مع لحم مفروم، ثوم وأعشاب', hi: 'समृद्ध टमाटर की चटनी, कीमा बनाया हुआ बीफ और लहसुन के साथ क्लासिक पास्ता' }, price: 56 },
+      { id: 'hm_pt2', categoryKey: 'Pasta', catName: { en: 'Pasta', ar: 'الباستا', hi: 'पास्ता' }, name: { en: 'Ravioli Pasta with Spinach & Ricotta', ar: 'رافيولي بالسبانخ والريكوتا', hi: 'पालक और रिकोटा के साथ रविoli' }, desc: { en: 'Pasta filled with ricotta, spinach, and Parmesan, served with light tomato or creamy onion sauce', ar: 'باستا محشوة بجبن الريكوتا والسبانخ والبارميزان، تقدم مع صلصة طماطم خفيفة أو صلصة بصل كريمية', hi: 'रिकोटा, पालक और परमेसन से भरा पास्ता' }, price: 69 },
+      { id: 'hm_pt3', categoryKey: 'Pasta', catName: { en: 'Pasta', ar: 'الباستا', hi: 'पास्ता' }, name: { en: 'Fettuccine Alfredo with Grilled Chicken', ar: 'فيتوتشيني ألفريدو مع دجاج مشوي', hi: 'ग्रिल्ड चिकन के साथ फेटुचिनी अल्फ्रेडो' }, desc: { en: 'Fettuccine in rich creamy Alfredo sauce topped with grilled chicken', ar: 'فيتوتشيني بصلصة ألفريدو كريمية غنية مع دجاج مشوي', hi: 'ग्रिल्ड चिकन के साथ समृद्ध मलाईदार अल्फ्रेडो सॉस में फेटुचिनी' }, price: 60 },
+      { id: 'hm_pt4', categoryKey: 'Pasta', catName: { en: 'Pasta', ar: 'الباستا', hi: 'पास्ता' }, name: { en: 'Tagliatelle with Shrimp & Spring Onion Sauce', ar: 'تالياتيلي بالروبيان وصلصة البصل الأخضر', hi: 'झींगा और स्प्रिंग अनियन सॉस के साथ टग्लियाटेले' }, desc: { en: 'Fresh tagliatelle with shrimp in a light spring onion cream sauce', ar: 'تالياتيلي طازجة مع روبيان بصلصة كريمية خفيفة بنكهة البصل الأخضر', hi: 'हल्के स्प्रिंग अनियन क्रीम सॉस में झींगा के साथ ताजा टग्लियाटेले' }, price: 60 },
 
-      { id: 'hm_mc1', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية' }, name: { en: 'Lamb Machboos', ar: 'مجبوس لحم' }, desc: { en: 'Fragrant rice with tender lamb and Middle Eastern spices, served with tomato salsa', ar: 'أرز مندي مطبوخ مع لحم غنم طري وبهارات شرق أوسطية، يقدم مع صلصة الطماطم' }, price: 75 },
-      { id: 'hm_mc2', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية' }, name: { en: 'Chicken Machboos', ar: 'مجبوس دجاج' }, desc: { en: 'Rice cooked with tender bone-in chicken', ar: 'أرز مطبوخ مع دجاج طري بالعظم' }, price: 65 },
-      { id: 'hm_mc3', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية' }, name: { en: 'Chicken Kabsa', ar: 'كبسة دجاج' }, desc: { en: 'Traditional spiced rice with slow-cooked chicken', ar: 'أرز مندي تقليدي مع دجاج مطبوخ ببطء' }, price: 70 },
-      { id: 'hm_mc4', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية' }, name: { en: 'Chicken Tikka Biryani', ar: 'برياني دجاج تيكا' }, desc: { en: 'Basmati rice layered with marinated chicken tikka, served with raita, papad, and pickle', ar: 'أرز بسمتي مع دجاج تيكا متبل، يقدم مع رايتا، باباد ومخلل' }, price: 65 },
-      { id: 'hm_mc5', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية' }, name: { en: 'Lamb Biryani', ar: 'برياني لحم' }, desc: { en: 'Basmati rice with tender lamb, spices, and fried onions', ar: 'أرز بسمتي مع لحم غنم طري، بهارات، وبصل مقلي' }, price: 80 },
-      { id: 'hm_mc6', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية' }, name: { en: 'Vegetable Biryani', ar: 'برياني خضار' }, desc: { en: 'Served with papadum, raita, pickles, and mango chutney', ar: 'يقدم مع بابادوم، رايتا، مخللات وصلصة المانجو' }, price: 53 },
-      { id: 'hm_mc7', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية' }, name: { en: 'Hammour Fish Curry', ar: 'كاري سمك الهامور' }, desc: { en: 'Fresh hammour fish in aromatic curry sauce with steamed rice', ar: 'سمك هامور طازج مطبوخ بصلصة كاري غنية ويقدم مع أرز أبيض' }, price: 70 },
-      { id: 'hm_mc8', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية' }, name: { en: 'Paneer Butter Masala', ar: 'بانير بتر ماسالا' }, desc: { en: 'Paneer cubes in creamy tomato butter sauce', ar: 'مكعبات بانير مطهوة بصلصة طماطم كريمية بالزبدة' }, price: 60 },
-      { id: 'hm_mc9', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية' }, name: { en: 'Gobi Masala', ar: 'قرنبيط ماسالا' }, desc: { en: 'Spiced cauliflower in tomato gravy', ar: 'قرنبيط مطهو بصلصة طماطم متبلة' }, price: 60 },
-      { id: 'hm_mc10', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية' }, name: { en: 'Vegetable Kurma', ar: 'كورما خضار' }, desc: { en: 'Mixed vegetables in coconut-based curry', ar: 'خضار مشكلة مطهوة بصلصة كاري جوز الهند' }, price: 60 },
-      { id: 'hm_mc11', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية' }, name: { en: 'Butter Chicken Masala', ar: 'دجاج بتر ماسالا' }, desc: { en: 'Chicken in rich tomato butter sauce', ar: 'دجاج مطهو بصلصة طماطم بالزبدة' }, price: 65 },
-      { id: 'hm_mc12', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية' }, name: { en: 'Kadai Paneer', ar: 'كاداي بانير' }, desc: { en: 'Paneer with bell peppers and onions in spiced tomato gravy', ar: 'بانير مع فلفل رومي وبصل بصلصة طماطم متبلة' }, price: 60 },
-      { id: 'hm_mc13', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية' }, name: { en: 'Gobi Manchurian', ar: 'قرنبيط مانتشوريان' }, desc: { en: 'Crispy cauliflower in Indo-Chinese sauce', ar: 'قرنبيط مقرمش بصلصة هندية صينية' }, price: 60 },
-      { id: 'hm_mc14', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية' }, name: { en: 'Grilled Salmon (200g)', ar: 'سلمون مشوي (200 جم)' }, desc: { en: 'Grilled salmon with lemon butter sauce', ar: 'سلمون مشوي يخدم مع صلصة الزبدة والليمون' }, price: 90 },
-      { id: 'hm_mc15', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية' }, name: { en: 'Lamb Chops', ar: 'ريش لحم غنم' }, desc: { en: 'Grilled marinated lamb chops', ar: 'ريش لحم غنم متبلة ومشوية' }, price: 85 },
-      { id: 'hm_mc16', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية' }, name: { en: 'Grilled Chicken Breast (200g)', ar: 'صدر دجاج مشوي (200 جم)' }, desc: { en: 'With mushroom sauce and steamed vegetables', ar: 'يقدم مع صلصة الفطر وخضار مشوية مطهو على البخار' }, price: 70 },
-      { id: 'hm_mc17', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية' }, name: { en: 'Fried Shrimp', ar: 'روبيان مقلي' }, desc: { en: 'Breaded shrimp served with tartar sauce', ar: 'روبيان مقلي بالتشيبادا يقدم مع صلصة التارتار' }, price: 75 },
-      { id: 'hm_mc18', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية' }, name: { en: 'Grilled Beef Tenderloin (200g)', ar: 'فيليه لحم بقري مشوي (200 جم)' }, desc: { en: 'Juicy beef tenderloin grilled to perfection', ar: 'فيليه لحم بقري طري مشوي بإتقان' }, price: 85 },
-      { id: 'hm_mc19', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية' }, name: { en: 'Nasi Goreng', ar: 'ناسي جورينغ' }, desc: { en: 'Indonesian fried rice with vegetables, egg, and chicken', ar: 'أرز مقلي إندونيسي مع خضار وبيض ودجاج' }, price: 65 },
-      { id: 'hm_mc20', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية' }, name: { en: 'Plain Fried Rice', ar: 'أرز مقلي عادي' }, desc: { en: 'Wok-fried rice with vegetables and chili soy sauce', ar: 'أرز مقلي مع خضار وصلصة الصويا' }, price: 35 },
+      { id: 'hm_mc1', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Lamb Machboos', ar: 'مجبوس لحم', hi: 'लैंब मचबूज़' }, desc: { en: 'Fragrant rice with tender lamb and Middle Eastern spices, served with tomato salsa', ar: 'أرز مندي مطبوخ مع لحم غنم طري وبهارات شرق أوسطية، يقدم مع صلصة الطماطم', hi: 'कोमल मेमने और मध्य पूर्वी मसालों के साथ सुगंधित चावल' }, price: 75 },
+      { id: 'hm_mc2', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Chicken Machboos', ar: 'مجبوس دجاج', hi: 'चिकन मचबूज़' }, desc: { en: 'Rice cooked with tender bone-in chicken', ar: 'أرز مطبوخ مع دجاج طري بالعظم', hi: 'कोमल हड्डी वाले चिकन के साथ पकाया गया चावल' }, price: 65 },
+      { id: 'hm_mc3', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Chicken Kabsa', ar: 'كبسة دجاج', hi: 'चिकन कब्सा' }, desc: { en: 'Traditional spiced rice with slow-cooked chicken', ar: 'أرز مندي تقليدي مع دجاج مطبوخ ببطء', hi: 'धीमी गति से पके हुए चिकन के साथ पारंपरिक मसालेदार चावल' }, price: 70 },
+      { id: 'hm_mc4', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Chicken Tikka Biryani', ar: 'برياني دجاج تيكا', hi: 'चिकन टिक्का बिरयानी' }, desc: { en: 'Basmati rice layered with marinated chicken tikka, served with raita, papad, and pickle', ar: 'أرز بسمتي مع دجاج تيكا متبل، يقدم مع رايتا، باباد ومخلل', hi: 'मैरीनेटेड चिकन टिक्का के साथ पकी बासमती चावल की बिरयानी' }, price: 65 },
+      { id: 'hm_mc5', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Lamb Biryani', ar: 'برياني لحم', hi: 'लैंब बिरयानी' }, desc: { en: 'Basmati rice with tender lamb, spices, and fried onions', ar: 'أرز بسمتي مع لحم غنم طري، بهارات، وبصل مقلي', hi: 'कोमल मेमने, मसालों और तले हुए प्याज के साथ बासमती चावल' }, price: 80 },
+      { id: 'hm_mc6', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Vegetable Biryani', ar: 'برياني خضار', hi: 'वेज बिरयानी' }, desc: { en: 'Served with papadum, raita, pickles, and mango chutney', ar: 'يقدم مع بابادوم، رايتا، مخللات وصلصة المانجو', hi: 'पापड़, रायता, अचार और आम की चटनी के साथ परोसा जाता है' }, price: 53 },
+      { id: 'hm_mc7', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Hammour Fish Curry', ar: 'كاري سمك الهامور', hi: 'हैमौर फिश करी' }, desc: { en: 'Fresh hammour fish in aromatic curry sauce with steamed rice', ar: 'سمك هامور طازج مطبوخ بصلصة كاري غنية ويقدم مع أرز أبيض', hi: 'उबले चावल के साथ सुगंधित करी सॉस में ताजी हैमौर मछली' }, price: 70 },
+      { id: 'hm_mc8', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Paneer Butter Masala', ar: 'بانير بتر ماسالا', hi: 'पनीर बटर मसाला' }, desc: { en: 'Paneer cubes in creamy tomato butter sauce', ar: 'مكعبات بانير مطهوة بصلصة طماطم كريمية بالزبدة', hi: 'मलाईदार टमाटर बटर सॉस में पनीर के टुकड़े' }, price: 60 },
+      { id: 'hm_mc9', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Gobi Masala', ar: 'قرنبيط ماسالا', hi: 'गोभी मसाला' }, desc: { en: 'Spiced cauliflower in tomato gravy', ar: 'قرنبيط مطهو بصلصة طماطم متبلة', hi: 'टमाटर की ग्रेवी में मसालेदार फूलगोभी' }, price: 60 },
+      { id: 'hm_mc10', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Vegetable Kurma', ar: 'كورما خضار', hi: 'वेजिटेबल कुरमा' }, desc: { en: 'Mixed vegetables in coconut-based curry', ar: 'خضار مشكلة مطهوة بصلصة كاري جوز الهند', hi: 'नारियल आधारित करी में मिश्रित सब्जियां' }, price: 60 },
+      { id: 'hm_mc11', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Butter Chicken Masala', ar: 'دجاج بتر ماسالا', hi: 'बटर चिकन मसाला' }, desc: { en: 'Chicken in rich tomato butter sauce', ar: 'دجاج مطهو بصلصة طماطم بالزبدة', hi: 'समृद्ध टमाटर बटर सॉस में चिकन' }, price: 65 },
+      { id: 'hm_mc12', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Kadai Paneer', ar: 'كاداي بانير', hi: 'कड़ाई पनीर' }, desc: { en: 'Paneer with bell peppers and onions in spiced tomato gravy', ar: 'بانير مع فلفل رومي وبصل بصلصة طماطم متبلة', hi: 'मसालेदार टमाटर की ग्रेवी में शिमला मिर्च और प्याज के साथ पनीर' }, price: 60 },
+      { id: 'hm_mc13', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Gobi Manchurian', ar: 'قرنبيط مانتشوريان', hi: 'गोभी मंचूरियन' }, desc: { en: 'Crispy cauliflower in Indo-Chinese sauce', ar: 'قرنبيط مقرمش بصلصة هندية صينية', hi: 'इंडो-चाइनीज सॉस में कुरकुरी गोभी' }, price: 60 },
+      { id: 'hm_mc14', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Grilled Salmon (200g)', ar: 'سلمون مشوي (200 جم)', hi: 'ग्रिल्ड सैल्मन (200 ग्राम)' }, desc: { en: 'Grilled salmon with lemon butter sauce', ar: 'سلمون مشوي يخدم مع صلصة الزبدة والليمون' }, price: 90 },
+      { id: 'hm_mc15', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Lamb Chops', ar: 'ريش لحم غنم', hi: 'लैंब चॉप्स' }, desc: { en: 'Grilled marinated lamb chops', ar: 'ريش لحم غنم متبلة ومشوية' }, price: 85 },
+      { id: 'hm_mc16', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Grilled Chicken Breast (200g)', ar: 'صدر دجاج مشوي (200 جم)', hi: 'ग्रिल्ड चिकन ब्रेस्ट (200 ग्राम)' }, desc: { en: 'With mushroom sauce and steamed vegetables', ar: 'يقدم مع صلصة الفطر وخضار مشوية مطهو على البخار' }, price: 70 },
+      { id: 'hm_mc17', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Fried Shrimp', ar: 'روبيان مقلي', hi: 'तले हुए झींगे' }, desc: { en: 'Breaded shrimp served with tartar sauce', ar: 'روبيان مقلي بالتشيبادا يقدم مع صلصة التارتار' }, price: 75 },
+      { id: 'hm_mc18', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Grilled Beef Tenderloin (200g)', ar: 'فيليه لحم بقري مشوي (200 جم)', hi: 'ग्रिल्ड बीफ टेंडरलोइन (200 ग्राम)' }, desc: { en: 'Juicy beef tenderloin grilled to perfection', ar: 'فيليه لحم بقري طري مشوي بإتقان' }, price: 85 },
+      { id: 'hm_mc19', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Nasi Goreng', ar: 'ناسي جورينغ', hi: 'नासी गोरेन्ग' }, desc: { en: 'Indonesian fried rice with vegetables, egg, and chicken', ar: 'أرز مقلي إندونيسي مع خضار وبيض ودجاج' }, price: 65 },
+      { id: 'hm_mc20', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Plain Fried Rice', ar: 'أرز مقلي عادي', hi: 'सादा फ्राइड राइस' }, desc: { en: 'Wok-fried rice with vegetables and chili soy sauce', ar: 'أرز مقلي مع خضار وصلصة الصويا' }, price: 35 },
 
-      { id: 'hm_hb1', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي' }, name: { en: 'Espresso', ar: 'إسبريسو' }, desc: { en: 'Rich & strong espresso shot', ar: 'إسبريسو غني وقوي' }, price: 16 },
-      { id: 'hm_hb2', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي' }, name: { en: 'Double Espresso', ar: 'دبل إسبريسو' }, desc: { en: 'Double shot of rich espresso', ar: 'جرعة مضاعفة من الإسبريسو' }, price: 22 },
-      { id: 'hm_hb3', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي' }, name: { en: 'Turkish Coffee', ar: 'قهوة تركية' }, desc: { en: 'Authentic traditional Turkish coffee', ar: 'قهوة تركية تقليدية أصيلة' }, price: 22 },
-      { id: 'hm_hb4', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي' }, name: { en: 'Cappuccino', ar: 'كابتشينو' }, desc: { en: 'Espresso with steamed milk and thick foam', ar: 'إسبريسو مع حليب مبشور ورغوة كثيفة' }, price: 27 },
-      { id: 'hm_hb5', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي' }, name: { en: 'Caffè Latte', ar: 'لاتيه' }, desc: { en: 'Espresso with smooth creamy milk', ar: 'إسبريسو مع حليب كريمي ناعم' }, price: 27 },
-      { id: 'hm_hb6', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي' }, name: { en: 'Hot Chocolate', ar: 'شوكولاتة ساخنة' }, desc: { en: 'Rich and creamy hot chocolate', ar: 'شوكولاتة ساخنة غنية ولذيذة' }, price: 30 },
-      { id: 'hm_hb7', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي' }, name: { en: 'Americano', ar: 'أمريكانو' }, desc: { en: 'Espresso diluted with hot water', ar: 'إسبريسو تخفيف بالماء الساخن' }, price: 20 },
-      { id: 'hm_hb8', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي' }, name: { en: 'Iced Coffee', ar: 'قهوة مثلجة' }, desc: { en: 'Refreshing iced coffee', ar: 'قهوة باردة منعشة' }, price: 22 },
-      { id: 'hm_hb9', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي' }, name: { en: 'Tea', ar: 'شاي' }, desc: { en: 'Selection of fine teas', ar: 'أنواع مختارة من الشاي الفاخر' }, price: 16 },
+      { id: 'hm_hb1', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي', hi: 'गर्म पेय' }, name: { en: 'Espresso', ar: 'إسبريسو', hi: 'एस्प्रेसो' }, desc: { en: 'Rich & strong espresso shot', ar: 'إسبريسو غني وقوي' }, price: 16 },
+      { id: 'hm_hb2', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي', hi: 'गर्म पेय' }, name: { en: 'Double Espresso', ar: 'دبل إسبريسو', hi: 'डबल एस्प्रेसो' }, desc: { en: 'Double shot of rich espresso', ar: 'جرعة مضاعفة من الإسبريسو' }, price: 22 },
+      { id: 'hm_hb3', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي', hi: 'गर्म पेय' }, name: { en: 'Turkish Coffee', ar: 'قهوة تركية', hi: 'तुर्की कॉफी' }, desc: { en: 'Authentic traditional Turkish coffee', ar: 'قهوة تركية تقليدية أصيلة' }, price: 22 },
+      { id: 'hm_hb4', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي', hi: 'गर्म पेय' }, name: { en: 'Cappuccino', ar: 'كابتشينو', hi: 'कपुचिनो' }, desc: { en: 'Espresso with steamed milk and thick foam', ar: 'إسبريسو مع حليب مبشور ورغوة كثيفة' }, price: 27 },
+      { id: 'hm_hb5', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي', hi: 'गर्म पेय' }, name: { en: 'Caffè Latte', ar: 'لاتيه', hi: 'कैफे लाटे' }, desc: { en: 'Espresso with smooth creamy milk', ar: 'إسبريسو مع حليب كريمي ناعم' }, price: 27 },
+      { id: 'hm_hb6', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي', hi: 'गर्म पेय' }, name: { en: 'Hot Chocolate', ar: 'شوكولاتة ساخنة', hi: 'हॉट चॉकलेट' }, desc: { en: 'Rich and creamy hot chocolate', ar: 'شوكولاتة ساخنة غنية ولذيذة' }, price: 30 },
+      { id: 'hm_hb7', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي', hi: 'गर्म पेय' }, name: { en: 'Americano', ar: 'أمريكانو', hi: 'अमेरिकानो' }, desc: { en: 'Espresso diluted with hot water', ar: 'إسبريسو تخفيف بالماء الساخن' }, price: 20 },
+      { id: 'hm_hb8', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي', hi: 'गर्म पेय' }, name: { en: 'Iced Coffee', ar: 'قهوة مثلجة', hi: 'आइज्ड कॉफी' }, desc: { en: 'Refreshing iced coffee', ar: 'قهوة باردة منعشة' }, price: 22 },
+      { id: 'hm_hb9', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي', hi: 'गर्म पेय' }, name: { en: 'Tea', ar: 'شاي', hi: 'चाय' }, desc: { en: 'Selection of fine teas', ar: 'أنواع مختارة من الشاي الفاخر' }, price: 16 },
 
-      { id: 'hm_ms1', categoryKey: 'Milkshake', catName: { en: 'Milkshake', ar: 'ميلك شيك' }, name: { en: 'Chocolate', ar: 'شوكولاتة' }, desc: { en: 'Milk, chocolate ice cream, chocolate sauce, sugar', ar: 'حليب، آيس كريم شوكولاتة، صوص شوكولاتة، سكر' }, price: 33 },
-      { id: 'hm_ms2', categoryKey: 'Milkshake', catName: { en: 'Milkshake', ar: 'ميلك شيك' }, name: { en: 'Vanilla', ar: 'فانيليا' }, desc: { en: 'Milk, vanilla ice cream, sugar, vanilla', ar: 'حليب، آيس كريم فانيليا، سكر، فانيليا' }, price: 33 },
-      { id: 'hm_ms3', categoryKey: 'Milkshake', catName: { en: 'Milkshake', ar: 'ميلك شيك' }, name: { en: 'Strawberry', ar: 'فراولة' }, desc: { en: 'Milk, strawberry ice cream, fresh strawberries, sugar', ar: 'حليب، آيس كريم فراولة، فراولة طازجة، سكر' }, price: 33 },
+      { id: 'hm_ms1', categoryKey: 'Milkshake', catName: { en: 'Milkshake', ar: 'ميلك شيك', hi: 'मिल्कशेेक' }, name: { en: 'Chocolate', ar: 'شوكولاتة', hi: 'चॉकलेट' }, desc: { en: 'Milk, chocolate ice cream, chocolate sauce, sugar', ar: 'حليب، آيس كريم شوكولاتة، صوص شوكولاتة، سكر' }, price: 33 },
+      { id: 'hm_ms2', categoryKey: 'Milkshake', catName: { en: 'Milkshake', ar: 'ميلك شيك', hi: 'मिल्कशेेक' }, name: { en: 'Vanilla', ar: 'فانيليا', hi: 'वैनिला' }, desc: { en: 'Milk, vanilla ice cream, sugar, vanilla', ar: 'حليب، آيس كريم فانيليا، سكر، فانيليا' }, price: 33 },
+      { id: 'hm_ms3', categoryKey: 'Milkshake', catName: { en: 'Milkshake', ar: 'ميلك شيك', hi: 'मिल्कशेेक' }, name: { en: 'Strawberry', ar: 'فراولة', hi: 'स्ट्रॉबेरी' }, desc: { en: 'Milk, strawberry ice cream, fresh strawberries, sugar', ar: 'حليب، آيس كريم فراولة، فراولة طازجة، سكر' }, price: 33 },
 
-      { id: 'hm_mk1', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل' }, name: { en: 'Fruity', ar: 'فروتي' }, desc: { en: 'Fresh banana, strawberry, mango, orange juice', ar: 'موز طازج، فراولة، مانجو، عصير برتقال' }, price: 33 },
-      { id: 'hm_mk2', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل' }, name: { en: 'Piña Colada', ar: 'بينا كولادا' }, desc: { en: 'Pineapple juice, coconut cream', ar: 'عصير أناناس، كريمة جوز الهند' }, price: 33 },
-      { id: 'hm_mk3', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل' }, name: { en: 'Strawberry Margarita', ar: 'مارغريتا الفراولة' }, desc: { en: 'Fresh strawberries, lime juice, lime-flavored seltzer', ar: 'فراولة طازجة، عصير ليمون أخضر، صودا بنكهة الليمون' }, price: 33 },
-      { id: 'hm_mk4', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل' }, name: { en: 'Mojito', ar: 'موهيتو' }, desc: { en: 'Fresh mint leaves, lime, demerara sugar, soda water', ar: 'أوراق نعناع طازجة، ليمون أخضر، سكر ديميرارا، مياه صودا' }, price: 33 },
-      { id: 'hm_mk5', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل' }, name: { en: 'Mai Tai', ar: 'ماي تاي' }, desc: { en: 'Lemon-lime soda, pineapple juice, orange juice, grenadine syrup', ar: 'مشروب صودا بالليمون، عصير أناناس، عصير برتقال، شراب الغرينادين' }, price: 33 },
-      { id: 'hm_mk6', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل' }, name: { en: 'Nutella Hot Chocolate', ar: 'شوكولاتة ساخنة مع نوتيلا' }, desc: { en: 'Milk, Nutella, cocoa', ar: 'حليب، نوتيلا، كاكاو' }, price: 33 },
-      { id: 'hm_mk7', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل' }, name: { en: 'Banana Milk Coffee', ar: 'قهوة مع حليب الموز' }, desc: { en: 'Ripe banana, coffee, milk, cinnamon', ar: 'موز ناضج، قهوة، حليب، قرفة' }, price: 33 },
+      { id: 'hm_mk1', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोकटेल' }, name: { en: 'Fruity', ar: 'فروتي', hi: 'फ्रूटी' }, desc: { en: 'Fresh banana, strawberry, mango, orange juice', ar: 'موز طازج، فراولة، مانجو، عصير برتقال' }, price: 33 },
+      { id: 'hm_mk2', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोकटेल' }, name: { en: 'Piña Colada', ar: 'بينا كولادا', hi: 'पिना कोलाडा' }, desc: { en: 'Pineapple juice, coconut cream', ar: 'عصير أناناس، كريمة جوز الهند' }, price: 33 },
+      { id: 'hm_mk3', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोकटेल' }, name: { en: 'Strawberry Margarita', ar: 'مارغريتا الفراولة', hi: 'स्ट्रॉबेरी मार्गारिटा' }, desc: { en: 'Fresh strawberries, lime juice, lime-flavored seltzer', ar: 'فراولة طازجة، عصير ليمون أخضر، صودا بنكهة الليمون' }, price: 33 },
+      { id: 'hm_mk4', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोकटेल' }, name: { en: 'Mojito', ar: 'موهيتو', hi: 'मोहितो' }, desc: { en: 'Fresh mint leaves, lime, demerara sugar, soda water', ar: 'أوراق نعناع طازجة، ليمون أخضر، سكر ديميرارا، مياه صودا' }, price: 33 },
+      { id: 'hm_mk5', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोकटेल' }, name: { en: 'Mai Tai', ar: 'ماي تاي', hi: 'माई ताई' }, desc: { en: 'Lemon-lime soda, pineapple juice, orange juice, grenadine syrup', ar: 'مشروب صودا بالليمون، عصير أناناس، عصير برتقال، شراب الغرينادين' }, price: 33 },
+      { id: 'hm_mk6', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोकटेल' }, name: { en: 'Nutella Hot Chocolate', ar: 'شوكولاتة ساخنة مع نوتيلا', hi: 'नूटेला हॉट चॉकलेट' }, desc: { en: 'Milk, Nutella, cocoa', ar: 'حليب، نوتيلا، كاكاو' }, price: 33 },
+      { id: 'hm_mk7', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोकटेल' }, name: { en: 'Banana Milk Coffee', ar: 'قهوة مع حليب الموز', hi: 'बनाना मिल्क कॉफी' }, desc: { en: 'Ripe banana, coffee, milk, cinnamon', ar: 'موز ناضج، قهوة، حليب، قرفة' }, price: 33 },
 
-      { id: 'hm_b1', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Corona', ar: 'كورونا' }, desc: { en: 'Mexican refreshing beer', ar: 'بيرة مكسيكية منعشة' }, price: 40 },
-      { id: 'hm_b2', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Stella', ar: 'ستيلا' }, desc: { en: 'Classic European lager', ar: 'بيرة أوروبية كلاسيكية' }, price: 40 },
-      { id: 'hm_b3', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Heineken', ar: 'هاينكن' }, desc: { en: 'Premium quality Dutch beer', ar: 'بيرة هولندية فاخرة' }, price: 40 },
-      { id: 'hm_b4', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Budweiser', ar: 'بادفايزر' }, desc: { en: 'King of beers', ar: 'بيرة شهيرة' }, price: 40 },
-      { id: 'hm_b5', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Hoegaarden', ar: 'هوغاردن' }, desc: { en: 'Belgian white wheat beer', ar: 'بيرة القمح البلجيكية البيضاء' }, price: 40 },
-      { id: 'hm_b6', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Guinness Stout', ar: 'غينيس ستوت' }, desc: { en: 'Rich Irish dry stout', ar: 'بيرة إيرلندية غنية' }, price: 44 },
-      { id: 'hm_b7', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Bacardi Breezers', ar: 'بكاردي بريزرز' }, desc: { en: 'Fruit flavored alcoholic drink', ar: 'مشروب كحولي بنكهة الفواكه' }, price: 35 },
-      { id: 'hm_b8', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Strongbow Cider', ar: 'سترونغبو سايدر' }, desc: { en: 'Crisp apple cider', ar: 'عصير التفاح المتخمر' }, price: 44 },
-      { id: 'hm_b9', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Soju', ar: 'سوجو' }, desc: { en: 'Traditional Korean spirit', ar: 'مشروب كوري تقليدي' }, price: 55 },
+      { id: 'hm_b1', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Corona', ar: 'كورونا', hi: 'कोरोना' }, desc: { en: 'Mexican refreshing beer', ar: 'بيرة مكسيكية منعشة' }, price: 40 },
+      { id: 'hm_b2', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Stella', ar: 'ستيلا', hi: 'स्टेला' }, desc: { en: 'Classic European lager', ar: 'بيرة أوروبية كلاسيكية' }, price: 40 },
+      { id: 'hm_b3', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Heineken', ar: 'هاينكن', hi: 'हाइनेकेन' }, desc: { en: 'Premium quality Dutch beer', ar: 'بيرة هولندية فاخرة' }, price: 40 },
+      { id: 'hm_b4', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Budweiser', ar: 'بادفايزر', hi: 'बडवाइज़र' }, desc: { en: 'King of beers', ar: 'بيرة شهيرة' }, price: 40 },
+      { id: 'hm_b5', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Hoegaarden', ar: 'هوغاردن', hi: 'हूगार्डन' }, desc: { en: 'Belgian white wheat beer', ar: 'بيرة القمح البلجيكية البيضاء' }, price: 40 },
+      { id: 'hm_b6', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Guinness Stout', ar: 'غينيس ستوت', hi: 'गिनीज स्टाउट' }, desc: { en: 'Rich Irish dry stout', ar: 'بيرة إيرلندية غنية' }, price: 44 },
+      { id: 'hm_b7', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Bacardi Breezers', ar: 'بكاردي بريزرز', hi: 'बकार्डी ब्रीज़र' }, desc: { en: 'Fruit flavored alcoholic drink', ar: 'مشروب كحولي بنكهة الفواكه' }, price: 35 },
+      { id: 'hm_b8', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Strongbow Cider', ar: 'سترونغبو سايدر', hi: 'स्ट्रॉन्गबो साइडर' }, desc: { en: 'Crisp apple cider', ar: 'عصير التفاح المتخمر' }, price: 44 },
+      { id: 'hm_b9', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Soju', ar: 'سوجو', hi: 'सोजू' }, desc: { en: 'Traditional Korean spirit', ar: 'مشروب كوري تقليدي' }, price: 55 },
 
-      { id: 'hm_ck1', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Bloody Mary', ar: 'بلودي ماري' }, desc: { en: 'Vodka, tomato juice, lemon juice, spices', ar: 'فودكا، عصير طماطم، ليمون، بهارات' }, price: 44 },
-      { id: 'hm_ck2', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Cosmopolitan', ar: 'كوزموبوليتان' }, desc: { en: 'Vodka, triple sec, cranberry juice, lime', ar: 'فودكا، تريبل سيك، عصير التوت البري، ليمون' }, price: 44 },
-      { id: 'hm_ck3', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Margarita', ar: 'مارغريتا' }, desc: { en: 'Tequila, triple sec, lemon juice', ar: 'تكيلا، تريبل سيك، عصير ليمون' }, price: 44 },
-      { id: 'hm_ck4', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Piña Colada', ar: 'بينا كولادا' }, desc: { en: 'Rum, Malibu, coconut syrup, pineapple juice', ar: 'روم، ماليبو، شراب جوز الهند، عصير أناناس' }, price: 44 },
-      { id: 'hm_ck5', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Negroni', ar: 'نيغروني' }, desc: { en: 'Gin, Campari and sweet vermouth', ar: 'جن، كامباري، فيرموث حلو' }, price: 44 },
-      { id: 'hm_ck6', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Martini', ar: 'مارتيني' }, desc: { en: 'Gin, dry vermouth and olive', ar: 'جن، فيرموث جاف، زيتون' }, price: 44 },
-      { id: 'hm_ck7', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Bull Frog', ar: 'بول فروغ' }, desc: { en: 'Vodka, tequila, rum, gin, blue curaçao and Red Bull', ar: 'فودكا، تكيلا، روم، جن، بلو كوراساو، ريد بول' }, price: 65 },
-      { id: 'hm_ck8', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Long Island Tea', ar: 'لونغ آيلاند آيس تي' }, desc: { en: 'Vodka, tequila, rum, gin, triple sec and Coke', ar: 'فودكا، تكيلا، روم، جن، تريبل سيك، كوكاكولا' }, price: 65 },
-      { id: 'hm_ck9', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Aperol Spritz', ar: 'أبيرول سبريتز' }, desc: { en: 'Aperol, sparkling wine and soda', ar: 'أبيرول، نبيذ فوار، صودا' }, price: 65 },
+      { id: 'hm_ck1', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Bloody Mary', ar: 'بلودي ماري', hi: 'ब्लडी मैरी' }, desc: { en: 'Vodka, tomato juice, lemon juice, spices', ar: 'فودكا، عصير طماطم، ليمون، بهارات' }, price: 44 },
+      { id: 'hm_ck2', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Cosmopolitan', ar: 'كوزموبوليتان', hi: 'कॉस्मॉपोलिटन' }, desc: { en: 'Vodka, triple sec, cranberry juice, lime', ar: 'فودكا، تريبل سيك، عصير التوت البري، ليمون' }, price: 44 },
+      { id: 'hm_ck3', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Margarita', ar: 'مارغريتا', hi: 'मार्गारिटा' }, desc: { en: 'Tequila, triple sec, lemon juice', ar: 'تكيلا، تريبل سيك، عصير ليمون' }, price: 44 },
+      { id: 'hm_ck4', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Piña Colada', ar: 'بينا كولادا', hi: 'पिना कोलाडा' }, desc: { en: 'Rum, Malibu, coconut syrup, pineapple juice', ar: 'روم، ماليبو، شراب جوز الهند، عصير أناناس' }, price: 44 },
+      { id: 'hm_ck5', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Negroni', ar: 'نيغروني', hi: 'नेग्रोनी' }, desc: { en: 'Gin, Campari and sweet vermouth', ar: 'جن، كامباري، فيرموث حلو' }, price: 44 },
+      { id: 'hm_ck6', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Martini', ar: 'مارتيني', hi: 'मार्टिनी' }, desc: { en: 'Gin, dry vermouth and olive', ar: 'جن، فيرموث جاف، زيتون' }, price: 44 },
+      { id: 'hm_ck7', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Bull Frog', ar: 'بول فروغ', hi: 'बुल फ्रॉग' }, desc: { en: 'Vodka, tequila, rum, gin, blue curaçao and Red Bull', ar: 'فودكا، تكيلا، روم، جن، بلو كوراساو، ريد بول' }, price: 65 },
+      { id: 'hm_ck8', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Long Island Tea', ar: 'لونغ آيلاند آيس تي', hi: 'लॉन्ग आइलैंड टी' }, desc: { en: 'Vodka, tequila, rum, gin, triple sec and Coke', ar: 'فودكا، تكيلا، روم، جن، تريبل سيك، كوكاكولا' }, price: 65 },
+      { id: 'hm_ck9', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Aperol Spritz', ar: 'أبيرول سبريتز', hi: 'एपेरोल स्प्रिट्ज़' }, desc: { en: 'Aperol, sparkling wine and soda', ar: 'أبيرول، نبيذ فوار، صودا' }, price: 65 },
 
-      { id: 'hm_wh1_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Jim Beam (Bourbon) - Glass', ar: 'جيم بيم (بوربون) - كاس' }, desc: { en: 'Standard glass serving', ar: 'تقديم بالكاس القياسي' }, price: 44 },
-      { id: 'hm_wh1_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Jim Beam (Bourbon) - Bottle', ar: 'جيم بيم (بوربون) - زجاجة' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة' }, price: 470 },
-      { id: 'hm_wh2_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Jack Daniel\'s - Glass', ar: 'جاك دانيالز - كاس' }, desc: { en: 'Standard glass serving', ar: 'تقديم بالكاس القياسي' }, price: 44 },
-      { id: 'hm_wh2_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Jack Daniel\'s - Bottle', ar: 'جاك دانيالز - زجاجة' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة' }, price: 470 },
-      { id: 'hm_wh3_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Jameson (Irish) - Glass', ar: 'جيميسون (إيرلندي) - كاس' }, desc: { en: 'Standard glass serving', ar: 'تقديم بالكاس القياسي' }, price: 44 },
-      { id: 'hm_wh3_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Jameson (Irish) - Bottle', ar: 'جيميسون (إيرلندي) - زجاجة' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة' }, price: 470 },
-      { id: 'hm_wh10_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Glenfiddich 12 Years - Glass', ar: 'غلينفيديخ 12 سنة - كاس' }, desc: { en: 'Single malt standard glass', ar: 'كاس شعير مفرد' }, price: 55 },
-      { id: 'hm_wh10_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Glenfiddich 12 Years - Bottle', ar: 'غلينفيديخ 12 سنة - زجاجة' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة' }, price: 795 },
+      { id: 'hm_wh1_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Jim Beam (Bourbon) - Glass', ar: 'جيم بيم (بوربون) - كاس', hi: 'जिम बीम - ग्लास' }, desc: { en: 'Standard glass serving', ar: 'تقديم بالكاس القياسي' }, price: 44 },
+      { id: 'hm_wh1_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Jim Beam (Bourbon) - Bottle', ar: 'جيم بيم (بوربون) - زجاجة', hi: 'जिम बीम - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة' }, price: 470 },
+      { id: 'hm_wh2_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Jack Daniel\'s - Glass', ar: 'جاك دانيالز - كاس', hi: 'जैक डैनियल - ग्लास' }, desc: { en: 'Standard glass serving', ar: 'تقديم بالكاس القياسي' }, price: 44 },
+      { id: 'hm_wh2_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Jack Daniel\'s - Bottle', ar: 'جاك دانيالز - زجاجة', hi: 'जैक डैनियल - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة' }, price: 470 },
+      { id: 'hm_wh3_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Jameson (Irish) - Glass', ar: 'جيميسون (إيرلندي) - كاس', hi: 'जेम्सन - ग्लास' }, desc: { en: 'Standard glass serving', ar: 'تقديم بالكاس القياسي' }, price: 44 },
+      { id: 'hm_wh3_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Jameson (Irish) - Bottle', ar: 'جيميسون (إيرلندي) - زجاجة', hi: 'जेम्सन - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة' }, price: 470 },
+      { id: 'hm_wh10_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Glenfiddich 12 Years - Glass', ar: 'غلينفيديخ 12 سنة - كاس', hi: 'ग्लेनफिडिच 12 वर्ष - ग्लास' }, desc: { en: 'Single malt standard glass', ar: 'كاس شعير مفرد' }, price: 55 },
+      { id: 'hm_wh10_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Glenfiddich 12 Years - Bottle', ar: 'غلينفيديخ 12 سنة - زجاجة', hi: 'ग्लेनफिडिच 12 वर्ष - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة' }, price: 795 },
       
-      { id: 'hm_cg1_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Hennessy VSOP - Glass', ar: 'هينيسي في إس أو بي - كاس' }, desc: { en: 'Cognac glass serving', ar: 'تقديم كاس كونياك' }, price: 55 },
-      { id: 'hm_cg1_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Hennessy VSOP - Bottle', ar: 'هينيسي في إس أو بي - زجاجة' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة' }, price: 520 },
-      { id: 'hm_cg3_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Hennessy XO - Glass', ar: 'هينيسي إكس أو - كاس' }, desc: { en: 'Premium cognac glass', ar: 'كاس كونياك فاخر' }, price: 100 },
-      { id: 'hm_cg3_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Hennessy XO - Bottle', ar: 'هينيسي إكس أو - زجاجة' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة' }, price: 1600 },
+      { id: 'hm_cg1_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Hennessy VSOP - Glass', ar: 'هينيسي في إس أو بي - كاس', hi: 'हेनेसियों VSOP - ग्लास' }, desc: { en: 'Cognac glass serving', ar: 'تقديم كاس كونياك' }, price: 55 },
+      { id: 'hm_cg1_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Hennessy VSOP - Bottle', ar: 'هينيسي في إس أو بي - زجاجة', hi: 'हेनेसियों VSOP - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة' }, price: 520 },
+      { id: 'hm_cg3_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Hennessy XO - Glass', ar: 'هينيسي إكس أو - كاس', hi: 'हेनेसियों XO - ग्लास' }, desc: { en: 'Premium cognac glass', ar: 'كاس كونياك فاخر' }, price: 100 },
+      { id: 'hm_cg3_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Hennessy XO - Bottle', ar: 'هينيسي إكس أو - زجاجة', hi: 'हेनेसियों XO - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة' }, price: 1600 },
 
-      { id: 'hm_ch1_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Champagne - Glass', ar: 'شامبانيا - كاس' }, desc: { en: 'Sparkling flute', ar: 'كاس نبيذ فوار' }, price: 80 },
-      { id: 'hm_ch1_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Champagne - Bottle', ar: 'شامبانيا - زجاجة' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة' }, price: 735 },
+      { id: 'hm_ch1_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Champagne - Glass', ar: 'شامبانيا - كاس', hi: 'शैंपेन - ग्लास' }, desc: { en: 'Sparkling flute', ar: 'كاس نبيذ فوار' }, price: 80 },
+      { id: 'hm_ch1_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Champagne - Bottle', ar: 'شامبانيا - زجاجة', hi: 'शैंपेन - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة' }, price: 735 },
 
-      { id: 'hm_wn1_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'House Wine (Red/White/Rosé) - Glass', ar: 'نبيذ البيت (أحمر/أبيض/وردي) - كاس' }, desc: { en: 'Choice of glass', ar: 'اختيار الكاس' }, price: 38 },
-      { id: 'hm_wn1_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'House Wine (Red/White/Rosé) - Bottle', ar: 'نبيذ البيت (أحمر/أبيض/وردي) - زجاجة' }, desc: { en: 'Choice of bottle', ar: 'اختيار الزجاجة' }, price: 190 }
+      { id: 'hm_wn1_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'House Wine (Red/White/Rosé) - Glass', ar: 'نبيذ البيت (أحمر/أبيض/وردي) - كاس', hi: 'हाउस वाइन - ग्लास' }, desc: { en: 'Choice of glass', ar: 'اختيار الكاس' }, price: 38 },
+      { id: 'hm_wn1_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'House Wine (Red/White/Rosé) - Bottle', ar: 'نبيذ البيت (أحمر/أبيض/وردي) - زجاجة', hi: 'हाउस वाइन - बोतल' }, desc: { en: 'Choice of bottle', ar: 'اختيار الزجاجة' }, price: 190 }
     ];
 
     function enableAudioAlerts() {
@@ -742,6 +743,14 @@
         trackHeader: "📡 Track Active Requests", liveStatus: "Live Status", trackEmpty: "Enter your room number above to track active requests in real time.",
         trackNoReq: "No active requests found for room ", loadingOffers: "Loading live offers...", noOffers: "No offers available in this category.",
         swipePhotos: "👈 Swipe for more photos 👉", bookInquiry: "Book / Inquiry →",
+        faqHeaderTitle: "💡 Intelligent Assistant & FAQ", faqHeaderSub: "Instant answers to common hotel questions",
+        folioTitle: "📄 My Room Folio & Charges", btnPrtFolio: "🖨️ Print Folio", folioPlaceholder: "Enter your room number above to view your live billing summary.",
+        feedbackTitle: "⭐ Stay Feedback & Experience Rating", feedbackSub: "Share your thoughts to help us improve our services", ratingText: "Rating:", btnSubmitReview: "Submit Review",
+        favTitle: "⭐ My Favorites & Recent Orders", favBadge: "Quick Access", favEmpty: "No starred favorite dishes yet.",
+        menuHeader: "🍽️ Select Menu Items", menuBadge: "In-Room Dining", totalAmt: "Total Amount:", delivTime: "Preferred Delivery Time",
+        bookingTitle: "Table / Spa Reservation Details", lblVenue: "Venue / Service", lblGuests: "Guests Count", lblBDate: "Reservation Date", lblBTime: "Preferred Time",
+        wakeupTitle: "Wake-Up Call Scheduler", wakeupLabel: "Select Alarm Time",
+        lateTitle: "Late Check-Out Request", lateLabel: "Requested Departure Time",
         services: [
           { val: "Table / Spa Reservation", text: "Table / Spa Reservation" },
           { val: "Wake-up Call Request", text: "Wake-up Call / Alarm Service" },
@@ -763,6 +772,14 @@
         trackHeader: "📡 متابعة الطلبات الحالية", liveStatus: "حالة مباشرة", trackEmpty: "أدخل رقم الغرفة أعلاه لمتابعة طلباتك في الوقت الفعلي.",
         trackNoReq: "لا توجد طلبات مسجلة للغرفة ", loadingOffers: "جاري تحميل العروض المباشرة...", noOffers: "لا توجد عروض متاحة في هذه الفئة.",
         swipePhotos: "👈 اسحب لرؤية المزيد من الصور 👉", bookInquiry: "حجز / استفسار ←",
+        faqHeaderTitle: "💡 المساعد الذكي والأسئلة الشائعة", faqHeaderSub: "إجابات فورية على الأسئلة الشائعة في الفندق",
+        folioTitle: "📄 كشف الحساب والمصاريف", btnPrtFolio: "🖨️ طباعة الكشف", folioPlaceholder: "أدخل رقم غرفتك أعلاه لعرض ملخص فواتيرك.",
+        feedbackTitle: "⭐ تقييم الإقامة والخدمة", feedbackSub: "شارعنا رأيك لمساعدتنا على تحسين خدماتنا", ratingText: "التقييم:", btnSubmitReview: "إرسال التقييم",
+        favTitle: "⭐ المفضلة والطلبات الأخيرة", favBadge: "وصول سريع", favEmpty: "لا توجد أطباق مفضلة حتى الآن.",
+        menuHeader: "🍽️ اختر أصناف القائمة", menuBadge: "خدمة الغرف", totalAmt: "المبلغ الإجمالي:", delivTime: "وقت التوصيل المفضل",
+        bookingTitle: "تفاصيل حجز الطاولة أو السبا", lblVenue: "المكان / الخدمة", lblGuests: "عدد الضيوف", lblBDate: "تاريخ الحجز", lblBTime: "الوقت المفضل",
+        wakeupTitle: "جدولة خدمة الإيقاظ", wakeupLabel: "اختر وقت التنبيه",
+        lateTitle: "طلب مغادرة متأخرة", lateLabel: "وقت المغادرة المطلوب",
         services: [
           { val: "Table / Spa Reservation", text: "حجز طاولة مطعم أو موعد سبا" },
           { val: "Wake-up Call Request", text: "خدمة الإيقاظ / التنبيه الصباحي" },
@@ -784,6 +801,14 @@
         trackHeader: "📡 सक्रिय अनुरोध ट्रैकिंग", liveStatus: "लाइव स्थिति", trackEmpty: "वास्तविक समय में अनुरोध ट्रैक करने के लिए ऊपर कमरा नंबर दर्ज करें।",
         trackNoReq: "कमरा नंबर के लिए कोई अनुरोध नहीं मिला ", loadingOffers: "ऑफ़र लोड हो रहे हैं...", noOffers: "इस श्रेणी में कोई ऑफ़र उपलब्ध नहीं है।",
         swipePhotos: "👈 अधिक फ़ोटो के लिए स्वाइप करें 👉", bookInquiry: "बुक / पूछताछ →",
+        faqHeaderTitle: "💡 बुद्धिमान सहायक और सामान्य प्रश्न", faqHeaderSub: "आम होटल के सवालों के त्वरित जवाब",
+        folioTitle: "📄 मेरा कमरा फोलियो और शुल्क", btnPrtFolio: "🖨️ फोलियो प्रिंट करें", folioPlaceholder: "अपना लाइव बिलिंग सारांश देखने के लिए ऊपर अपना कमरा नंबर दर्ज करें।",
+        feedbackTitle: "⭐ ठहरने की प्रतिक्रिया और रेटिंग", feedbackSub: "अपनी सेवाएं सुधारने में हमारी मदद करें", ratingText: "रेटिंग:", btnSubmitReview: "समीक्षा जमा करें",
+        favTitle: "⭐ मेरे पसंदीदा और हाल के ऑर्डर", favBadge: "त्वरित पहुंच", favEmpty: "अभी तक कोई पसंदीदा व्यंजन नहीं है।",
+        menuHeader: "🍽️ मेनू आइटम चुनें", menuBadge: "इन-रूम डाइनिंग", totalAmt: "कुल राशि:", delivTime: "पसंदीदा डिलीवरी का समय",
+        bookingTitle: "टेबल / स्पा बुकिंग विवरण", lblVenue: "स्थान / सेवा", lblGuests: "मेहमानों की संख्या", lblBDate: "बुकिंग की तारीख", lblBTime: "पसंदीदा समय",
+        wakeupTitle: "वेक-अप कॉल शेड्यूलर", wakeupLabel: "अलार्म का समय चुनें",
+        lateTitle: "देर से चेक-आउट अनुरोध", lateLabel: "अनुरोधित प्रस्थान समय",
         services: [
           { val: "Table / Spa Reservation", text: "टेबल या स्पा बुकिंग" },
           { val: "Wake-up Call Request", text: "वेक-अप कॉल / सुबह की अलार्म सेवा" },
@@ -859,18 +884,11 @@
       let num = parseInt(cleanVal, 10);
       if (isNaN(num)) return false;
 
-      // Vérification des plages autorisées :
-      // 103 à 144
       if (num >= 103 && num <= 144) return true;
-      // 201 à 246
       if (num >= 201 && num <= 246) return true;
-      // 301 à 348
       if (num >= 301 && num <= 348) return true;
-      // 401 à 448
       if (num >= 401 && num <= 448) return true;
-      // 501 à 520
       if (num >= 501 && num <= 520) return true;
-      // Villas : 601 à 608
       if (num >= 601 && num <= 608) return true;
 
       return false;
@@ -1016,8 +1034,8 @@
       if (!container) return;
       container.innerHTML = FAQ_DATA.map(item => `
         <div class="bg-stone-50 p-3.5 rounded-2xl border border-stone-200 text-xs space-y-1">
-          <p class="font-bold text-stone-900">❓ ${item.q[currentLang] || item.q.en}</p>
-          <p class="text-stone-600 pl-4 border-l-2 border-remal-sand">${item.a[currentLang] || item.a.en}</p>
+          <p class="font-bold text-stone-900">❓ ${item.q[currentLang]}</p>
+          <p class="text-stone-600 pl-4 border-l-2 border-remal-sand">${item.a[currentLang]}</p>
         </div>
       `).join('');
     }
@@ -1026,15 +1044,13 @@
       const query = document.getElementById('faqSearchInput').value.toLowerCase();
       const container = document.getElementById('faqContainer');
       const filtered = FAQ_DATA.filter(item => 
-        item.q.en.toLowerCase().includes(query) || 
-        item.a.en.toLowerCase().includes(query) ||
-        (item.q.ar && item.q.ar.includes(query)) ||
-        (item.q.hi && item.q.hi.toLowerCase().includes(query))
+        item.q[currentLang].toLowerCase().includes(query) || 
+        item.a[currentLang].toLowerCase().includes(query)
       );
       container.innerHTML = filtered.map(item => `
         <div class="bg-stone-50 p-3.5 rounded-2xl border border-stone-200 text-xs space-y-1">
-          <p class="font-bold text-stone-900">❓ ${item.q[currentLang] || item.q.en}</p>
-          <p class="text-stone-600 pl-4 border-l-2 border-remal-sand">${item.a[currentLang] || item.a.en}</p>
+          <p class="font-bold text-stone-900">❓ ${item.q[currentLang]}</p>
+          <p class="text-stone-600 pl-4 border-l-2 border-remal-sand">${item.a[currentLang]}</p>
         </div>
       `).join('');
     }
@@ -1043,9 +1059,9 @@
       const { data } = await supabaseClient.from('menu_items').select('*').order('id', { ascending: true });
       const formattedCloudItems = (data || []).map(item => ({
         ...item,
-        catName: { en: item.category, ar: item.category },
-        name: { en: item.name, ar: item.name },
-        desc: { en: item.desc || '', ar: item.desc || '' }
+        catName: { en: item.category, ar: item.category, hi: item.category },
+        name: { en: item.name, ar: item.name, hi: item.name },
+        desc: { en: item.desc || '', ar: item.desc || '', hi: item.desc || '' }
       }));
       roomServiceMenu = [...HARDCODED_MENU, ...formattedCloudItems];
       renderRoomServiceMenu();
@@ -1105,8 +1121,8 @@
             ? `<span class="text-[9px] bg-stone-200 text-stone-500 px-2 py-1 rounded font-bold">Fixed</span>`
             : `<button onclick="deleteMenuItem(${item.id})" class="text-rose-600 font-bold p-1">🗑️ Delete</button>`;
           
-          const displayName = typeof item.name === 'object' ? `${item.name.en} | ${item.name.ar}` : item.name;
-          const displayDesc = typeof item.desc === 'object' ? `${item.desc.en} | ${item.desc.ar}` : item.desc;
+          const displayName = typeof item.name === 'object' ? (item.name[currentLang] || item.name.en) : item.name;
+          const displayDesc = typeof item.desc === 'object' ? (item.desc[currentLang] || item.desc.en) : item.desc;
 
           return `
           <div class="flex items-center justify-between p-2 mb-1 bg-stone-50 rounded-xl border border-stone-200 text-xs">
@@ -1203,7 +1219,7 @@
 
       let html = '';
       if (starredDishObjects.length > 0) {
-        html += `<div class="space-y-1 mb-2"><p class="text-[10px] font-bold text-stone-500 uppercase">⭐ Starred Favorites</p>`;
+        html += `<div class="space-y-1 mb-2"><p class="text-[10px] font-bold text-stone-500 uppercase">${i18n[currentLang].favTitle}</p>`;
         html += starredDishObjects.map(item => {
           let nameText = typeof item.name === 'object' ? (item.name[currentLang] || item.name.en) : item.name;
           return `<div class="flex justify-between items-center bg-stone-50 p-2 rounded-xl border border-stone-200 text-xs">
@@ -1230,7 +1246,7 @@
       }
 
       if (!html) {
-        html = `<p class="text-[11px] text-stone-400 italic">No starred favorite dishes or recent room service history found yet.</p>`;
+        html = `<p class="text-[11px] text-stone-400 italic">${i18n[currentLang].favEmpty}</p>`;
       }
       container.innerHTML = html;
     }
@@ -1241,7 +1257,7 @@
       const roomNum = document.getElementById('req_room')?.value?.trim();
 
       if (!roomNum || !validateRoomNumber(roomNum)) {
-        container.innerHTML = `<p class="text-[11px] text-stone-400 italic">Enter your room number below to view your live billing summary.</p>`;
+        container.innerHTML = `<p class="text-[11px] text-stone-400 italic">${i18n[currentLang].folioPlaceholder}</p>`;
         return;
       }
 
@@ -1314,7 +1330,7 @@
 
     function renderFacilities() {
       const container = document.getElementById('facilitiesContainer');
-      const t = i18n[currentLang] || i18n.en;
+      const t = i18n[currentLang];
       container.innerHTML = facilitiesData.map(item => `
         <div class="remal-card rounded-3xl overflow-hidden shadow-sm">
           <div class="flex overflow-x-auto snap-x snap-mandatory scrollbar-none h-52 bg-stone-100">
@@ -1324,10 +1340,10 @@
           </div>
           ${item.images.length > 1 ? `<p class="text-[9px] text-stone-400 text-center pt-1 font-semibold">${t.swipePhotos}</p>` : ''}
           <div class="p-5 space-y-2">
-            <h4 class="text-base font-serif-luxury font-bold text-stone-900">${item.title[currentLang] || item.title['en']}</h4>
-            <p class="text-xs text-stone-600 leading-relaxed">${item.desc[currentLang] || item.desc['en']}</p>
+            <h4 class="text-base font-serif-luxury font-bold text-stone-900">${item.title[currentLang]}</h4>
+            <p class="text-xs text-stone-600 leading-relaxed">${item.desc[currentLang]}</p>
             <div class="pt-2 border-t border-stone-100 flex justify-between items-center text-[11px] font-semibold text-stone-500">
-              <span>🕒 ${item.timing[currentLang] || item.timing['en']}</span>
+              <span>🕒 ${item.timing[currentLang]}</span>
               <button onclick="switchGuestTab('request')" class="text-remal-sand hover:underline font-bold">${t.bookInquiry}</button>
             </div>
           </div>
@@ -1346,7 +1362,7 @@
       const banner = document.getElementById('announcementBanner');
       const textEl = document.getElementById('announcementText');
       if (activeAnnouncement && activeAnnouncement.is_active) {
-        textEl.innerText = `📢 ${activeAnnouncement.message[currentLang] || activeAnnouncement.message['en']}`;
+        textEl.innerText = `📢 ${activeAnnouncement.message[currentLang]}`;
         banner.classList.remove('hidden');
       } else banner.classList.add('hidden');
     }
@@ -1438,7 +1454,7 @@
       const roomNum = document.getElementById('req_room')?.value?.trim();
       const container = document.getElementById('clientTrackerContainer');
       if (!container) return;
-      const t = i18n[currentLang] || i18n.en;
+      const t = i18n[currentLang];
 
       if (!roomNum || !validateRoomNumber(roomNum)) { container.innerHTML = `<p class="text-center text-xs text-stone-400 py-3">${t.trackEmpty}</p>`; return; }
       const myRequests = cachedRequests.filter(r => String(r.room).trim().toLowerCase() === roomNum.toLowerCase());
@@ -1487,17 +1503,19 @@
     function renderClientCards() {
       const container = document.getElementById('cardsContainer');
       container.innerHTML = '';
-      const t = i18n[currentLang] || i18n.en;
+      const t = i18n[currentLang];
       const filtered = currentCategory === 'All' ? cachedOffers : cachedOffers.filter(item => item.category === currentCategory);
 
       if (filtered.length === 0) { container.innerHTML = `<p class="text-center text-xs text-stone-400 py-8">${t.noOffers}</p>`; return; }
       filtered.forEach(item => {
+        const titleText = (item.title && item.title[currentLang]) ? item.title[currentLang] : (item.title?.en || item.title || '');
+        const timingText = (item.timing && item.timing[currentLang]) ? item.timing[currentLang] : (item.timing?.en || item.timing || '');
         container.innerHTML += `
           <div class="remal-card rounded-3xl overflow-hidden">
             <img src="${item.image}" class="w-full h-48 object-cover">
             <div class="p-5 space-y-3">
-              <h3 class="text-lg font-serif-luxury font-bold text-stone-900">${item.title[currentLang] || item.title['en']}</h3>
-              <div class="flex justify-between items-center pt-3 border-t text-xs"><span class="text-stone-500">🕒 ${item.timing[currentLang] || item.timing['en']}</span><span class="text-remal-sand font-bold">${item.price}</span></div>
+              <h3 class="text-lg font-serif-luxury font-bold text-stone-900">${titleText}</h3>
+              <div class="flex justify-between items-center pt-3 border-t text-xs"><span class="text-stone-500">🕒 ${timingText}</span><span class="text-remal-sand font-bold">${item.price}</span></div>
             </div>
           </div>
         `;
@@ -1728,7 +1746,7 @@
         let orderSummary = [];
         roomServiceMenu.forEach(item => { 
           if (cartState[item.id] > 0) {
-            let itemName = typeof item.name === 'object' ? item.name.en : item.name;
+            let itemName = typeof item.name === 'object' ? (item.name[currentLang] || item.name.en) : item.name;
             orderSummary.push(`${cartState[item.id]}x ${itemName}`);
           }
         });
@@ -1799,7 +1817,18 @@
 
     function setLang(lang) {
       currentLang = lang;
-      const t = i18n[lang] || i18n.en;
+      const t = i18n[lang];
+
+      // Mise à jour visuelle des boutons de langue (un seul actif)
+      ['en', 'ar', 'hi'].forEach(l => {
+        const btn = document.getElementById(`btn-${l}`);
+        if (l === lang) {
+          btn.className = "px-2.5 py-1 rounded-full bg-remal-sand text-white shadow-sm";
+        } else {
+          btn.className = "px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900";
+        }
+      });
+
       document.getElementById('htmlRoot').setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
       document.getElementById('welcomeMsg').innerText = t.welcome;
       document.getElementById('lblTabOffers').innerText = t.lblOffers;
@@ -1808,6 +1837,38 @@
       document.getElementById('lblTabRequest').innerText = t.lblService;
       document.getElementById('reqHeader').innerText = t.reqHeader;
       document.getElementById('btnSubmitReq').innerText = t.btnSubmit;
+
+      document.getElementById('facHeader').innerText = t.facHeader;
+      document.getElementById('facSub').innerText = t.facSub;
+      document.getElementById('faqHeaderTitle').innerText = t.faqHeaderTitle;
+      document.getElementById('faqHeaderSub').innerText = t.faqHeaderSub;
+
+      document.getElementById('lblFolioTitle').innerText = t.folioTitle;
+      document.getElementById('btnPrtFolio').innerText = t.btnPrtFolio;
+      document.getElementById('lblFeedbackTitle').innerText = t.feedbackTitle;
+      document.getElementById('lblFeedbackSub').innerText = t.feedbackSub;
+      document.getElementById('lblRatingText').innerText = t.ratingText;
+      document.getElementById('btnSubmitReview').innerText = t.btnSubmitReview;
+      document.getElementById('lblFavTitle').innerText = t.favTitle;
+      document.getElementById('lblFavBadge').innerText = t.favBadge;
+      document.getElementById('lblTrackHeader').innerText = t.trackHeader;
+      document.getElementById('lblLiveStatus').innerText = t.liveStatus;
+
+      document.getElementById('lblMenuHeader').innerText = t.menuHeader;
+      document.getElementById('lblMenuBadge').innerText = t.menuBadge;
+      document.getElementById('lblTotalAmt').innerText = t.totalAmt;
+      document.getElementById('lblDelivTime').innerText = t.delivTime;
+
+      document.getElementById('lblBookingTitle').innerText = t.bookingTitle;
+      document.getElementById('lblVenue').innerText = t.lblVenue;
+      document.getElementById('lblGuests').innerText = t.lblGuests;
+      document.getElementById('lblBDate').innerText = t.lblBDate;
+      document.getElementById('lblBTime').innerText = t.lblBTime;
+
+      document.getElementById('lblWakeupTitle').innerText = t.wakeupTitle;
+      document.getElementById('lblWakeupLabel').innerText = t.wakeupLabel;
+      document.getElementById('lblLateTitle').innerText = t.lateTitle;
+      document.getElementById('lblLateLabel').innerText = t.lateLabel;
 
       const selectService = document.getElementById('req_service');
       selectService.innerHTML = t.services.map(s => `<option value="${s.val}">${s.text}</option>`).join('');
