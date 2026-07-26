@@ -152,7 +152,7 @@
       </div>
     </div>
 
-    <!-- SECTION DEMANDES & ROOM SERVICE (REQUEST EN PREMIER) -->
+    <!-- SECTION DEMANDES & ROOM SERVICE -->
     <div id="guestRequestSection" class="space-y-6">
       
       <!-- FORMULAIRE DE DEMANDE -->
@@ -375,7 +375,7 @@
           <span id="requestBadge" class="hidden absolute -top-1 -right-1 bg-rose-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full pulse-notification">0</span>
         </button>
         <button onclick="switchAdminTab('laundry')" id="admTabLaundry" class="px-4 py-2.5 rounded-xl text-stone-600 relative whitespace-nowrap">
-          🧺 Laundry Plant
+          🧺 Laundry Plant (Tablet)
           <span id="laundryBadge" class="hidden absolute -top-1 -right-1 bg-rose-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full pulse-notification">0</span>
         </button>
         <button onclick="switchAdminTab('feedback')" id="admTabFeedback" class="px-4 py-2.5 rounded-xl text-stone-600 whitespace-nowrap">⭐ Guest Reviews</button>
@@ -486,13 +486,13 @@
       </div>
     </div>
 
-    <!-- ADMIN LAUNDRY PLANT -->
+    <!-- ADMIN LAUNDRY PLANT (TABLET INTERFACE EXCLUSIVE) -->
     <div id="adminLaundryPanel" class="hidden space-y-4">
       <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
         <div class="flex justify-between items-center border-b border-stone-100 pb-3">
           <div>
-            <h2 class="text-base font-serif-luxury font-bold text-stone-900">🧺 Laundry Plant Management</h2>
-            <p class="text-[10px] text-stone-500">Track and update laundry lifecycle (Collected, Washing, Ready, Delivered)</p>
+            <h2 class="text-base font-serif-luxury font-bold text-stone-900">🧺 Laundry Plant Tablet Interface</h2>
+            <p class="text-[10px] text-stone-500">Dedicated workshop view: Manage garment lifecycle (Collected → Washing → Ready → Delivered)</p>
           </div>
           <button onclick="fetchLaundryOrdersFromCloud()" class="text-xs bg-stone-100 text-stone-700 px-3 py-2 rounded-xl font-semibold border border-stone-200">🔄 Refresh Laundry</button>
         </div>
@@ -681,7 +681,7 @@
       { id: 'hm_ms3', categoryKey: 'Milkshake', catName: { en: 'Milkshake', ar: 'ميلك شيك', hi: 'मिल्कशेेक' }, name: { en: 'Strawberry', ar: 'فراولة', hi: 'स्ट्रॉबेरी' }, desc: { en: 'Milk, strawberry ice cream, fresh strawberries, sugar', ar: 'حليب، آيس كريم فراولة، فراولة طازجة، سكر' }, price: 33 },
 
       { id: 'hm_mk1', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोकटेल' }, name: { en: 'Fruity', ar: 'فروتي', hi: 'फ्रूटी' }, desc: { en: 'Fresh banana, strawberry, mango, orange juice', ar: 'موز طازج، فراولة، مانجو، عصير برتقال' }, price: 33 },
-      { id: 'hm_mk2', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोकटेल' }, name: { en: 'Piña Colada', ar: 'بينا كولادا', hi: 'पिना कोलाडा' }, desc: { en: 'Pineapple juice, coconut cream', ar: 'عصير أناناس، كريمة جوز الهند' }, price: 33 },
+      { id: 'hm_mk2', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'पिना कोलाडा' }, name: { en: 'Piña Colada', ar: 'بينا كولادا', hi: 'पिना कोलाडा' }, desc: { en: 'Pineapple juice, coconut cream', ar: 'عصير أناناس، كريمة جوز الهند' }, price: 33 },
       { id: 'hm_mk3', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोकटेल' }, name: { en: 'Strawberry Margarita', ar: 'مارغريتا الفراولة', hi: 'स्ट्रॉबेरी मार्गारिटा' }, desc: { en: 'Fresh strawberries, lime juice, lime-flavored seltzer', ar: 'فراولة طازجة، عصير ليمون أخضر، صودا بنكهة الليمون' }, price: 33 },
       { id: 'hm_mk4', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोहितो' }, name: { en: 'Mojito', ar: 'موهيتو', hi: 'मोहितो' }, desc: { en: 'Fresh mint leaves, lime, demerara sugar, soda water', ar: 'أوراق نعناع طازجة، ليمون أخضر، سكر ديميرارا، مياه صودا' }, price: 33 },
       { id: 'hm_mk5', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोकटेल' }, name: { en: 'Mai Tai', ar: 'ماي تاي', hi: 'माई ताई' }, desc: { en: 'Lemon-lime soda, pineapple juice, orange juice, grenadine syrup', ar: 'مشروب صودا بالليمون، عصير أناناس، عصير برتقال، شراب الغرينادين' }, price: 33 },
@@ -849,7 +849,7 @@
           { val: "Luggage Assistance", text: "सामान सहायता" },
           { val: "Room Service / Dining", text: "रूम सर्विस / खाना ऑर्डर करें" }, 
           { val: "Maintenance / Technical Support", text: "रखरखाव / तकनीकी सहायता" },
-          { val: "Laundry", text: "लॉन्ड्ररी (कपड़े धोने की सेवा)" }
+          { val: "Laundry", text: "لॉन्ड्ररी (कपड़े धोने की सेवा)" }
         ]
       }
     };
@@ -954,7 +954,6 @@
       renderFacilities();
       renderFaqList();
       
-      // Chargement initial asynchrone non bloquant
       await Promise.all([
         fetchMenuItemsFromCloud(),
         fetchOffersFromCloud(),
@@ -967,7 +966,6 @@
       renderClientFavoritesAndHistory();
       renderRoomFolioWidget();
 
-      // Intervalle optimisé à 20 secondes pour alléger la charge du processeur et du réseau
       setInterval(() => {
         fetchRequestsFromCloud();
         fetchLaundryOrdersFromCloud();
@@ -1486,7 +1484,7 @@
       const container = document.getElementById('adminLaundryContainer');
       if (!container) return;
       if (cachedLaundryOrders.length === 0) {
-        container.innerHTML = `<p class="text-xs text-stone-400 text-center py-4 col-span-2">No active laundry orders.</p>`;
+        container.innerHTML = `<p class="text-xs text-stone-400 text-center py-4 col-span-2">No active laundry orders in workshop.</p>`;
         return;
       }
       container.innerHTML = cachedLaundryOrders.map(order => `
@@ -1620,7 +1618,7 @@
       `;
       }).join('');
 
-      // 2. Rendu des commandes Laundry avec timeline synchronisée sur la Laundry Plant
+      // 2. Rendu de la Timeline Laundry synchronisée exactement sur les statuts de la Laundry Plant (Collected, Washing, Ready, Delivered)
       html += myLaundry.map(laundry => {
         let lStatus = laundry.status || 'Collected';
         let lWidth = 'w-1/4';
@@ -1640,7 +1638,7 @@
           <p class="text-stone-600 bg-white p-2.5 rounded-xl border border-stone-100">${laundry.details}</p>
           <div class="space-y-1 pt-1">
             <div class="flex justify-between text-[10px] text-stone-400 font-semibold">
-              <span>Laundry Lifecycle</span>
+              <span>Laundry Timeline (Collected ➔ Washing ➔ Ready ➔ Delivered)</span>
               <span>${lStatus}</span>
             </div>
             <div class="w-full bg-stone-200 h-1.5 rounded-full overflow-hidden">
