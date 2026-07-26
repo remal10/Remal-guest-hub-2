@@ -21,9 +21,19 @@
       50% { opacity: 0.8; transform: scale(1.05); }
     }
     .pulse-notification { animation: pulse-red 1.5s infinite; }
+
+    /* Style spécifique pour l'impression directe */
+    @media print {
+      body * { visibility: hidden; }
+      #printTicketSection, #printTicketSection * { visibility: visible; }
+      #printTicketSection { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
+    }
   </style>
 </head>
 <body class="min-h-screen pb-20">
+
+  <!-- ZONE CACHÉE POUR L'IMPRESSION DIRECTE -->
+  <div id="printTicketSection" class="hidden p-6 font-mono text-sm"></div>
 
   <!-- HEADER -->
   <header class="bg-white sticky top-0 z-50 border-b border-stone-200 shadow-sm">
@@ -1057,7 +1067,7 @@
           <div class="flex justify-between items-center pt-2 border-t text-[11px]">
             <div class="space-x-1"><button onclick="updateRequestStatus(${req.id}, 'Pending')" class="px-2 py-1 bg-amber-100 text-amber-800 rounded font-semibold">Pending</button><button onclick="updateRequestStatus(${req.id}, 'In Progress')" class="px-2 py-1 bg-blue-100 text-blue-800 rounded font-semibold">In Progress</button><button onclick="updateRequestStatus(${req.id}, 'Completed')" class="px-2 py-1 bg-emerald-100 text-emerald-800 rounded font-semibold">Completed</button></div>
             <div class="flex items-center space-x-2">
-              <button onclick="printRequestTicket(${req.id})" class="bg-stone-900 text-white px-2.5 py-1 rounded font-bold">print Ticket</button>
+              <button onclick="printRequestTicket(${req.id})" class="bg-stone-900 text-white px-2.5 py-1 rounded font-bold">Print Ticket</button>
               <button onclick="deleteRequest(${req.id})" class="text-rose-600 font-bold p-1">🗑️</button>
             </div>
           </div>
@@ -1065,41 +1075,28 @@
       `).join('');
     }
 
+    // Fonction d'impression directe corrigée pour mobile et desktop
     function printRequestTicket(reqId) {
       const req = cachedRequests.find(r => r.id === reqId);
       if (!req) return;
 
-      const printWindow = window.open('', '_blank', 'width=400,height=600');
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>Remal Hotel - Ticket #${req.id}</title>
-            <style>
-              body { font-family: 'Courier New', monospace; padding: 20px; font-size: 14px; color: #000; }
-              .center { text-align: center; }
-              .bold { font-weight: bold; }
-              .line { border-bottom: 1px dashed #000; margin: 10px 0; }
-            </style>
-          </head>
-          <body>
-            <div class="center bold">REMAL HOTEL & VILLAS</div>
-            <div class="center">Al Dhannah City • Guest Hub</div>
-            <div class="line"></div>
-            <div><strong>Ticket ID:</strong> #${req.id}</div>
-            <div><strong>Room / Villa:</strong> ${req.room}</div>
-            <div><strong>Service:</strong> ${req.service}</div>
-            <div><strong>Status:</strong> ${req.status || 'Pending'}</div>
-            <div class="line"></div>
-            <div class="bold">Details:</div>
-            <pre style="white-space: pre-wrap; font-family: 'Courier New', monospace;">${req.details}</pre>
-            <div class="line"></div>
-            <div class="center" style="font-size: 11px;">Printed on: ${newtoLocaleString ? new Date().toLocaleString() : new Date().toString()}</div>
-          </body>
-        </html>
-      `);
-      printWindow.document.close();
-      printWindow.focus();
-      setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
+      const printSection = document.getElementById('printTicketSection');
+      printSection.innerHTML = `
+        <div style="text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 5px;">REMAL HOTEL & VILLAS</div>
+        <div style="text-align: center; font-size: 11px; margin-bottom: 15px;">Al Dhannah City • Guest Hub</div>
+        <div style="border-top: 1px dashed #000; margin: 10px 0;"></div>
+        <div><strong>Ticket ID:</strong> #${req.id}</div>
+        <div><strong>Room / Villa:</strong> ${req.room}</div>
+        <div><strong>Service:</strong> ${req.service}</div>
+        <div><strong>Status:</strong> ${req.status || 'Pending'}</div>
+        <div style="border-top: 1px dashed #000; margin: 10px 0;"></div>
+        <div style="font-weight: bold;">Details:</div>
+        <div style="white-space: pre-wrap; margin-top: 5px;">${req.details}</div>
+        <div style="border-top: 1px dashed #000; margin: 10px 0;"></div>
+        <div style="text-align: center; font-size: 10px;">Printed on: ${new Date().toLocaleString()}</div>
+      `;
+
+      window.print();
     }
 
     function previewPromoImage(event) {
