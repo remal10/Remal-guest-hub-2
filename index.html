@@ -73,6 +73,11 @@
   <div id="printTicketSection" class="hidden"></div>
   <div id="printFolioSection" class="hidden"></div>
 
+  <!-- BANNIÈRE ROUGE DE NOTIFICATION (LAUNDRY PLANT EXCLUSIVE) -->
+  <div id="laundryAlertBanner" class="hidden bg-rose-600 text-white px-4 py-2.5 text-center text-xs font-bold tracking-wide shadow-sm pulse-notification">
+    <span id="laundryAlertText">🚨 NEW LAUNDRY ORDER RECEIVED FROM PLANT!</span>
+  </div>
+
   <!-- HEADER -->
   <header class="bg-white sticky top-0 z-50 border-b border-stone-200 shadow-sm">
     <div class="max-w-6xl mx-auto px-5 py-3 flex justify-between items-center">
@@ -89,7 +94,7 @@
           <button onclick="setLang('ar')" id="btn-ar" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">العربية</button>
           <button onclick="setLang('hi')" id="btn-hi" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">हिन्दी</button>
         </div>
-        <button onclick="handleAdminAccess()" id="viewToggleBtn" class="hidden bg-stone-900 text-white px-3 py-1.5 rounded-full text-xs font-semibold shadow relative">
+        <button onclick="handleAdminAccess()" id="viewToggleBtn" class="hidden bg-stone-900 text-white px-3 py-1.5 rounded-xl text-xs font-semibold shadow relative">
           ⚙️ Staff Panel
         </button>
       </div>
@@ -110,15 +115,16 @@
       </div>
 
       <div class="flex bg-black/40 backdrop-blur-md p-1.5 rounded-2xl text-[11px] font-medium border border-white/25 overflow-x-auto scrollbar-none">
-        <button onclick="switchGuestTab('offers')" id="tabOffersBtn" class="flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap">🏷️ <span id="lblTabOffers">Offers</span></button>
+        <button onclick="switchGuestTab('request')" id="tabRequestBtn" class="flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap">🔔 <span id="lblTabRequest">Guest Service</span></button>
+        <button onclick="switchGuestTab('folio')" id="tabFolioBtn" class="flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap">📄 <span id="lblTabFolio">My Room Folio</span></button>
+        <button onclick="switchGuestTab('offers')" id="tabOffersBtn" class="flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap">🏷️ <span id="lblTabOffers">Offers</span></button>
         <button onclick="switchGuestTab('facilities')" id="tabFacilitiesBtn" class="flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap">🏛️ <span id="lblTabFacilities">Facilities</span></button>
         <button onclick="switchGuestTab('faq')" id="tabFaqBtn" class="flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap">❓ <span id="lblTabFaq">FAQ</span></button>
-        <button onclick="switchGuestTab('request')" id="tabRequestBtn" class="flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap">🔔 <span id="lblTabRequest">Service</span></button>
       </div>
     </div>
 
     <!-- SECTION OFFRES -->
-    <div id="guestOffersSection" class="space-y-5">
+    <div id="guestOffersSection" class="hidden space-y-5">
       <div id="categoryFilters" class="flex space-x-2 overflow-x-auto pb-1 text-xs font-semibold scrollbar-none"></div>
       <div id="cardsContainer" class="space-y-5">
         <p class="text-center text-xs text-stone-400 py-8" id="lblLoadingOffers">Loading live offers...</p>
@@ -146,10 +152,10 @@
       </div>
     </div>
 
-    <!-- SECTION DEMANDES & ROOM SERVICE (REORGANISÉE : REQUEST EN PREMIER) -->
-    <div id="guestRequestSection" class="hidden space-y-6">
+    <!-- SECTION DEMANDES & ROOM SERVICE (REQUEST EN PREMIER) -->
+    <div id="guestRequestSection" class="space-y-6">
       
-      <!-- FORMULAIRE DE DEMANDE (PLACÉ EN PREMIER) -->
+      <!-- FORMULAIRE DE DEMANDE -->
       <div class="remal-card p-6 rounded-3xl space-y-5">
         <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-3" id="reqHeader">Request Guest Service</h2>
         <form id="guestRequestForm" class="space-y-4">
@@ -271,14 +277,35 @@
         </div>
       </div>
 
-      <!-- ROOM FOLIO & BILLING (PLACÉ APRÈS LE FORMULAIRE) -->
+      <!-- FAVORIS ET HISTORIQUE -->
+      <div id="guestHistoryBlock" class="remal-card p-5 rounded-3xl space-y-3">
+        <div class="flex justify-between items-center border-b border-stone-100 pb-2">
+          <span class="text-xs font-serif-luxury font-bold text-stone-900" id="lblFavTitle">⭐ My Favorites & Recent Orders</span>
+          <span class="text-[9px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full" id="lblFavBadge">Quick Access</span>
+        </div>
+        <div id="clientFavoritesContainer" class="space-y-2">
+          <p class="text-[11px] text-stone-400 italic" id="lblFavEmpty">No starred favorite dishes yet.</p>
+        </div>
+      </div>
+
+      <div class="remal-card p-6 rounded-3xl space-y-4">
+        <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+          <h3 class="text-sm font-serif-luxury font-bold text-stone-900" id="lblTrackHeader">📡 Track Active Requests</h3>
+          <span class="text-[10px] bg-stone-100 text-stone-600 font-semibold px-2.5 py-1 rounded-full" id="lblLiveStatus">Live Status</span>
+        </div>
+        <div id="clientTrackerContainer" class="space-y-3"><p class="text-center text-xs text-stone-400 py-3" id="lblTrackEmpty">Enter your room number above to track active requests in real time.</p></div>
+      </div>
+    </div>
+
+    <!-- SECTION FOLIO & BILLING -->
+    <div id="guestFolioSection" class="hidden space-y-6">
       <div class="remal-card p-5 rounded-3xl space-y-3 bg-gradient-to-br from-amber-50/50 to-white">
         <div class="flex justify-between items-center border-b border-stone-100 pb-2">
           <span class="text-xs font-serif-luxury font-bold text-stone-900" id="lblFolioTitle">📄 My Room Folio & Charges</span>
           <button type="button" onclick="generateRoomFolio()" class="bg-stone-900 text-white px-3 py-1.5 rounded-xl font-bold text-[10px] shadow" id="btnPrtFolio">🖨️ Print Folio</button>
         </div>
         <div id="clientRoomFolioContainer" class="space-y-2 text-xs">
-          <p class="text-[11px] text-stone-400 italic" id="lblFolioPlaceholder">Enter your room number above to view your live billing summary.</p>
+          <p class="text-[11px] text-stone-400 italic" id="lblFolioPlaceholder">Enter your room number in Guest Service to view your live billing summary.</p>
         </div>
       </div>
 
@@ -304,25 +331,6 @@
           </div>
           <button type="submit" id="btnSubmitReview" class="w-full bg-remal-sand hover:bg-amber-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-sm">Submit Review</button>
         </form>
-      </div>
-
-      <!-- FAVORIS ET HISTORIQUE -->
-      <div id="guestHistoryBlock" class="remal-card p-5 rounded-3xl space-y-3">
-        <div class="flex justify-between items-center border-b border-stone-100 pb-2">
-          <span class="text-xs font-serif-luxury font-bold text-stone-900" id="lblFavTitle">⭐ My Favorites & Recent Orders</span>
-          <span class="text-[9px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full" id="lblFavBadge">Quick Access</span>
-        </div>
-        <div id="clientFavoritesContainer" class="space-y-2">
-          <p class="text-[11px] text-stone-400 italic" id="lblFavEmpty">No starred favorite dishes yet.</p>
-        </div>
-      </div>
-
-      <div class="remal-card p-6 rounded-3xl space-y-4">
-        <div class="flex justify-between items-center border-b border-stone-100 pb-3">
-          <h3 class="text-sm font-serif-luxury font-bold text-stone-900" id="lblTrackHeader">📡 Track Active Requests</h3>
-          <span class="text-[10px] bg-stone-100 text-stone-600 font-semibold px-2.5 py-1 rounded-full" id="lblLiveStatus">Live Status</span>
-        </div>
-        <div id="clientTrackerContainer" class="space-y-3"><p class="text-center text-xs text-stone-400 py-3" id="lblTrackEmpty">Enter your room number above to track active requests in real time.</p></div>
       </div>
     </div>
   </div>
@@ -365,6 +373,10 @@
         <button onclick="switchAdminTab('requests')" id="admTabRequests" class="px-4 py-2.5 rounded-xl text-stone-600 relative whitespace-nowrap">
           🔔 Requests
           <span id="requestBadge" class="hidden absolute -top-1 -right-1 bg-rose-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full pulse-notification">0</span>
+        </button>
+        <button onclick="switchAdminTab('laundry')" id="admTabLaundry" class="px-4 py-2.5 rounded-xl text-stone-600 relative whitespace-nowrap">
+          🧺 Laundry Plant
+          <span id="laundryBadge" class="hidden absolute -top-1 -right-1 bg-rose-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full pulse-notification">0</span>
         </button>
         <button onclick="switchAdminTab('feedback')" id="admTabFeedback" class="px-4 py-2.5 rounded-xl text-stone-600 whitespace-nowrap">⭐ Guest Reviews</button>
         <button onclick="switchAdminTab('analytics')" id="admTabAnalytics" class="px-4 py-2.5 rounded-xl text-stone-600 whitespace-nowrap">📊 Analytics</button>
@@ -474,6 +486,20 @@
       </div>
     </div>
 
+    <!-- ADMIN LAUNDRY PLANT -->
+    <div id="adminLaundryPanel" class="hidden space-y-4">
+      <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
+        <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+          <div>
+            <h2 class="text-base font-serif-luxury font-bold text-stone-900">🧺 Laundry Plant Management</h2>
+            <p class="text-[10px] text-stone-500">Track and update laundry lifecycle (Collected, Washing, Ready, Delivered)</p>
+          </div>
+          <button onclick="fetchLaundryOrdersFromCloud()" class="text-xs bg-stone-100 text-stone-700 px-3 py-2 rounded-xl font-semibold border border-stone-200">🔄 Refresh Laundry</button>
+        </div>
+        <div id="adminLaundryContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      </div>
+    </div>
+
     <!-- ADMIN AVIS / FEEDBACK -->
     <div id="adminFeedbackPanel" class="hidden space-y-4">
       <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
@@ -534,6 +560,7 @@
     let audioContext = null;
     let audioEnabled = false;
     let previousPendingCount = 0;
+    let previousLaundryCount = 0;
     let currentUserSession = null;
     let roomServiceMenu = [];
     let cartState = {};
@@ -544,6 +571,7 @@
     let currentCategory = 'All';
     let cachedOffers = [];
     let cachedRequests = [];
+    let cachedLaundryOrders = [];
     let cachedFeedback = [];
     let activeAnnouncement = null;
     let currentPromoImageData = null;
@@ -584,7 +612,7 @@
 
       { id: 'hm_sp1', categoryKey: 'Soup', catName: { en: 'Soup', ar: 'الشوربة', hi: 'सूप' }, name: { en: 'Traditional Lentil Soup', ar: 'شوربة العدس', hi: 'पारंपरिक दाल का सूप' }, desc: { en: 'With roasted cumin, fresh lemon and crispy pita bread', ar: 'تقدم مع كمون محمص، ليمون طازج وخبر بيتا مقرمش', hi: 'भुना हुआ जीरा, ताज़ा नींबू और कुरकुरी पिटा ब्रेड के साथ' }, price: 25 },
       { id: 'hm_sp2', categoryKey: 'Soup', catName: { en: 'Soup', ar: 'الشوربة', hi: 'सूप' }, name: { en: 'Minestrone Soup', ar: 'شوربة المينستروني', hi: 'मिनस्ट्रोनी सूप' }, desc: { en: 'Classic Italian vegetable soup with pasta and herbs', ar: 'شوربة إيطالية كلاسيكية من الخضار مع المعكرونة والأعشاب', hi: 'पास्ता और जड़ी-बूटियों के साथ क्लासिक इतालवी सब्जी सूप' }, price: 25 },
-      { id: 'hm_sp3', categoryKey: 'Soup', catName: { en: 'Soup', ar: 'الشوربة', hi: 'सूप' }, name: { en: 'Harira Soup', ar: 'شوربة الحريرة', hi: हरीरा सूप }, desc: { en: 'Moroccan spiced soup made with lentils, chickpeas and tomatoes', ar: 'شوربة مغربية متبلة من العدس والحمص والطماطم', hi: 'दाल, छोले और टमाटर से बना मोरक्कन मसालेदार सूप' }, price: 25 },
+      { id: 'hm_sp3', categoryKey: 'Soup', catName: { en: 'Soup', ar: 'الشوربة', hi: 'सूप' }, name: { en: 'Harira Soup', ar: 'شوربة الحريرة', hi: 'हरीरा सूप' }, desc: { en: 'Moroccan spiced soup made with lentils, chickpeas and tomatoes', ar: 'شوربة مغربية متبلة من العدس والحمص والطماطم', hi: 'दाल, छोले और टमाटर से बना मोरक्कन मसालेदार सूप' }, price: 25 },
       { id: 'hm_sp4', categoryKey: 'Soup', catName: { en: 'Soup', ar: 'الشوربة', hi: 'सूप' }, name: { en: 'Soup of the Day', ar: 'شوربة اليوم', hi: 'दिन का सूप' }, desc: { en: 'Chef\'s daily special, freshly prepared with seasonal ingredients', ar: 'الشوربة اليومية المميزة من إعداد الشيف، تحضر طازجة باستخدام مكونات موسمية مختارة', hi: 'शेफ की दैनिक विशेष डिश, मौसमी सामग्री के साथ ताज़ा तैयार की गई' }, price: 25 },
 
       { id: 'hm_sl1', categoryKey: 'Salads and Mezzeh', catName: { en: 'Salads and Mezzeh', ar: 'السلطات والمقبلات', hi: 'सलाद और मेज़ेह' }, name: { en: 'Classic Caesar Salad', ar: 'سلطة سيزر الكلاسيكية', hi: 'क्लासिक सीज़र सलाद' }, desc: { en: 'Lettuce, shaved parmesan cheese, Caesar dressing, croutons', ar: 'خس، جبنة بارميزان مبشورة، صلصة سيزر، خبز محمص', hi: 'सलाद पत्ता, परमेसन पनीर, सीज़र ड्रेसिंग, क्रौटन' }, price: 45 },
@@ -735,7 +763,7 @@
 
     const i18n = {
       en: {
-        welcome: "Welcome to Remal Hotel & Villas", lblOffers: "Offers", lblFacilities: "Facilities", lblService: "Service", lblFaq: "FAQ",
+        welcome: "Welcome to Remal Hotel & Villas", lblOffers: "Offers", lblFacilities: "Facilities", lblService: "Guest Service", lblFaq: "FAQ", lblFolio: "My Room Folio",
         facHeader: "Hotel Facilities & Amenities", facSub: "Explore our premium venues and spaces", reqHeader: "Request Guest Service",
         lblRoom: "Room Number", placeholderRoom: "e.g., 104 or Villa 02", lblServiceType: "Service Type",
         lblDetails: "Additional Notes / Request Details", placeholderDetails: "Specify your request here...", btnSubmit: "Send Request to Reception",
@@ -744,7 +772,7 @@
         trackNoReq: "No active requests found for room ", loadingOffers: "Loading live offers...", noOffers: "No offers available in this category.",
         swipePhotos: "👈 Swipe for more photos 👉", bookInquiry: "Book / Inquiry →",
         faqHeaderTitle: "💡 Intelligent Assistant & FAQ", faqHeaderSub: "Instant answers to common hotel questions",
-        folioTitle: "📄 My Room Folio & Charges", btnPrtFolio: "🖨️ Print Folio", folioPlaceholder: "Enter your room number above to view your live billing summary.",
+        folioTitle: "📄 My Room Folio & Charges", btnPrtFolio: "🖨️ Print Folio", folioPlaceholder: "Enter your room number in Guest Service to view your live billing summary.",
         feedbackTitle: "⭐ Stay Feedback & Experience Rating", feedbackSub: "Share your thoughts to help us improve our services", ratingText: "Rating:", btnSubmitReview: "Submit Review",
         favTitle: "⭐ My Favorites & Recent Orders", favBadge: "Quick Access", favEmpty: "No starred favorite dishes yet.",
         menuHeader: "🍽️ Select Menu Items", menuBadge: "In-Room Dining", totalAmt: "Total Amount:", delivTime: "Preferred Delivery Time",
@@ -752,6 +780,7 @@
         wakeupTitle: "Wake-Up Call Scheduler", wakeupLabel: "Select Alarm Time",
         lateTitle: "Late Check-Out Request", lateLabel: "Requested Departure Time",
         services: [
+          { val: "Request Guest Service", text: "Request Guest Service" },
           { val: "Table / Spa Reservation", text: "Table / Spa Reservation" },
           { val: "Wake-up Call Request", text: "Wake-up Call / Alarm Service" },
           { val: "Late Check-out Request", text: "Late Check-out / Extension" },
@@ -760,11 +789,11 @@
           { val: "Luggage Assistance", text: "Luggage Assistance" },
           { val: "Room Service / Dining", text: "Room Service / Order Food" }, 
           { val: "Maintenance / Technical Support", text: "Maintenance / Technical Support" },
-          { val: "Laundry", text: "Laundry" }
+          { val: "Laundry", text: "Laundry Service" }
         ]
       },
       ar: {
-        welcome: "مرحباً بكم في فندق وڤلل رمال", lblOffers: "العروض", lblFacilities: "المرافق والخدمات", lblService: "طلب خدمة", lblFaq: "الأسئلة الشائعة",
+        welcome: "مرحباً بكم في فندق وڤلل رمال", lblOffers: "العروض", lblFacilities: "المرافق والخدمات", lblService: "خدمة النزلاء", lblFaq: "الأسئلة الشائعة", lblFolio: "كشف الحساب",
         facHeader: "مرافق الفندق والخدمات", facSub: "استكشف أرقى مرافقنا وخدماتنا المميزة", reqHeader: "طلب خدمة النزلاء",
         lblRoom: "رقم الغرفة", placeholderRoom: "مثال: 104 أو فيلا 02", lblServiceType: "نوع الخدمة",
         lblDetails: "ملاحظات إضافية / تفاصيل الطلب", placeholderDetails: "اكتب تفاصيل طلبك هنا...", btnSubmit: "إرسال الطلب إلى الاستقبال",
@@ -773,7 +802,7 @@
         trackNoReq: "لا توجد طلبات مسجلة للغرفة ", loadingOffers: "جاري تحميل العروض المباشرة...", noOffers: "لا توجد عروض متاحة في هذه الفئة.",
         swipePhotos: "👈 اسحب لرؤية المزيد من الصور 👉", bookInquiry: "حجز / استفسار ←",
         faqHeaderTitle: "💡 المساعد الذكي والأسئلة الشائعة", faqHeaderSub: "إجابات فورية على الأسئلة الشائعة في الفندق",
-        folioTitle: "📄 كشف الحساب والمصاريف", btnPrtFolio: "🖨️ طباعة الكشف", folioPlaceholder: "أدخل رقم غرفتك أعلاه لعرض ملخص فواتيرك.",
+        folioTitle: "📄 كشف الحساب والمصاريف", btnPrtFolio: "🖨️ طباعة الكشف", folioPlaceholder: "أدخل رقم غرفتك في خدمة النزلاء لعرض ملخص فواتيرك.",
         feedbackTitle: "⭐ تقييم الإقامة والخدمة", feedbackSub: "شارعنا رأيك لمساعدتنا على تحسين خدماتنا", ratingText: "التقييم:", btnSubmitReview: "إرسال التقييم",
         favTitle: "⭐ المفضلة والطلبات الأخيرة", favBadge: "وصول سريع", favEmpty: "لا توجد أطباق مفضلة حتى الآن.",
         menuHeader: "🍽️ اختر أصناف القائمة", menuBadge: "خدمة الغرف", totalAmt: "المبلغ الإجمالي:", delivTime: "وقت التوصيل المفضل",
@@ -781,6 +810,7 @@
         wakeupTitle: "جدولة خدمة الإيقاظ", wakeupLabel: "اختر وقت التنبيه",
         lateTitle: "طلب مغادرة متأخرة", lateLabel: "وقت المغادرة المطلوب",
         services: [
+          { val: "Request Guest Service", text: "Request Guest Service" },
           { val: "Table / Spa Reservation", text: "حجز طاولة مطعم أو موعد سبا" },
           { val: "Wake-up Call Request", text: "خدمة الإيقاظ / التنبيه الصباحي" },
           { val: "Late Check-out Request", text: "طلب مغادرة متأخرة / تمديد الإقامة" },
@@ -793,7 +823,7 @@
         ]
       },
       hi: {
-        welcome: "रेमल होटल एंड विला में आपका स्वागत है", lblOffers: "विशेष ऑफ़र", lblFacilities: "सुविधाएं", lblService: "सेवा अनुरोध", lblFaq: "सामान्य प्रश्न",
+        welcome: "रेमल होटल एंड विला में आपका स्वागत है", lblOffers: "विशेष ऑफ़र", lblFacilities: "सुविधाएं", lblService: "अतिथि सेवा", lblFaq: "सामान्य प्रश्न", lblFolio: "मेरा फोलियो",
         facHeader: "होटल सुविधाएं", facSub: "हमारे प्रीमियम स्थानों और सेवाओं का अन्वेषण करें", reqHeader: "अतिथि सेवा का अनुरोध करें",
         lblRoom: "कमरा संख्या", placeholderRoom: "उदा., 104 या विला 02", lblServiceType: "सेवा का प्रकार",
         lblDetails: "अतिरिक्त विवरण / अनुरोध", placeholderDetails: "अपना अनुरोध यहां दर्ज करें...", btnSubmit: "रिसेप्शन को अनुरोध भेजें",
@@ -802,7 +832,7 @@
         trackNoReq: "कमरा नंबर के लिए कोई अनुरोध नहीं मिला ", loadingOffers: "ऑफ़र लोड हो रहे हैं...", noOffers: "इस श्रेणी में कोई ऑफ़र उपलब्ध नहीं है।",
         swipePhotos: "👈 अधिक फ़ोटो के लिए स्वाइप करें 👉", bookInquiry: "बुक / पूछताछ →",
         faqHeaderTitle: "💡 बुद्धिमान सहायक और सामान्य प्रश्न", faqHeaderSub: "आम होटल के सवालों के त्वरित जवाब",
-        folioTitle: "📄 मेरा कमरा फोलियो और शुल्क", btnPrtFolio: "🖨️ फोलियो प्रिंट करें", folioPlaceholder: "अपना लाइव बिलिंग सारांश देखने के लिए ऊपर अपना कमरा नंबर दर्ज करें।",
+        folioTitle: "📄 मेरा कमरा फोलियो और शुल्क", btnPrtFolio: "🖨️ फोलियो प्रिंट करें", folioPlaceholder: "अपना लाइव बिलिंग सारांश देखने के लिए अतिथि सेवा में कमरा नंबर दर्ज करें।",
         feedbackTitle: "⭐ ठहरने की प्रतिक्रिया और रेटिंग", feedbackSub: "अपनी सेवाएं सुधारने में हमारी मदद करें", ratingText: "रेटिंग:", btnSubmitReview: "समीक्षा जमा करें",
         favTitle: "⭐ मेरे पसंदीदा और हाल के ऑर्डर", favBadge: "त्वरित पहुंच", favEmpty: "अभी तक कोई पसंदीदा व्यंजन नहीं है।",
         menuHeader: "🍽️ मेनू आइटम चुनें", menuBadge: "इन-रूम डाइनिंग", totalAmt: "कुल राशि:", delivTime: "पसंदीदा डिलीवरी का समय",
@@ -810,6 +840,7 @@
         wakeupTitle: "वेक-अप कॉल शेड्यूलर", wakeupLabel: "अलार्म का समय चुनें",
         lateTitle: "देर से चेक-आउट अनुरोध", lateLabel: "अनुरोधित प्रस्थान समय",
         services: [
+          { val: "Request Guest Service", text: "Request Guest Service" },
           { val: "Table / Spa Reservation", text: "टेबल या स्पा बुकिंग" },
           { val: "Wake-up Call Request", text: "वेक-अप कॉल / सुबह की अलार्म सेवा" },
           { val: "Late Check-out Request", text: "देर से चेक-आउट / समय बढ़ाना" },
@@ -922,14 +953,25 @@
       setLang('en');
       renderFacilities();
       renderFaqList();
-      await fetchMenuItemsFromCloud();
-      await fetchOffersFromCloud();
-      await fetchAnnouncementFromCloud();
-      await fetchRequestsFromCloud();
-      await fetchFeedbackFromCloud();
+      
+      // Chargement initial allégé pour optimiser les performances
+      await Promise.all([
+        fetchMenuItemsFromCloud(),
+        fetchOffersFromCloud(),
+        fetchAnnouncementFromCloud(),
+        fetchRequestsFromCloud(),
+        fetchLaundryOrdersFromCloud(),
+        fetchFeedbackFromCloud()
+      ]);
+
       renderClientFavoritesAndHistory();
       renderRoomFolioWidget();
-      setInterval(fetchRequestsFromCloud, 5000);
+
+      // Intervalle optimisé à 15 secondes pour réduire la charge réseau et CPU
+      setInterval(() => {
+        fetchRequestsFromCloud();
+        fetchLaundryOrdersFromCloud();
+      }, 15000);
     }
 
     function handleAdminAccess() {
@@ -973,9 +1015,12 @@
         btn.innerText = "📱 Client View";
         renderAdminList();
         renderAdminMenuList();
+        renderAdminRequests();
+        renderAdminLaundryOrders();
         renderAdminFeedback();
         renderAnalyticsData();
       } else {
+        currentView = 'admin';
         currentView = 'client';
         adminV.classList.add('hidden');
         clientV.classList.remove('hidden');
@@ -1021,7 +1066,7 @@
       container.innerHTML = cachedFeedback.map(fb => `
         <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 text-xs space-y-1">
           <div class="flex justify-between font-bold text-stone-900">
-            <span>Room/Villa: ${fb.room}</span>
+            <span>Room: ${fb.room}</span>
             <span class="text-amber-500">${'★'.repeat(fb.rating)}${'☆'.repeat(5 - fb.rating)}</span>
           </div>
           <p class="text-stone-700">${fb.comment}</p>
@@ -1103,6 +1148,7 @@
 
     function renderAdminMenuList() {
       const container = document.getElementById('adminMenuListContainer');
+      if (!container) return;
       if (roomServiceMenu.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400">No dishes.</p>`; return; }
       
       const grouped = {};
@@ -1405,6 +1451,79 @@
       renderRoomFolioWidget();
     }
 
+    async function fetchLaundryOrdersFromCloud() {
+      const { data, error } = await supabaseClient.from('laundry_orders').select('*').order('id', { ascending: false });
+      if (error) return;
+      cachedLaundryOrders = data || [];
+      
+      // Notification rouge exclusive pour la section Laundry Plant
+      const activeLaundry = cachedLaundryOrders.filter(l => l.status !== 'Delivered');
+      const banner = document.getElementById('laundryAlertBanner');
+      const laundryBadge = document.getElementById('laundryBadge');
+
+      if (activeLaundry.length > previousLaundryCount) {
+        playNotificationSound();
+        if (banner) banner.classList.remove('hidden');
+      }
+      previousLaundryCount = activeLaundry.length;
+
+      if (activeLaundry.length > 0) {
+        if (laundryBadge) {
+          laundryBadge.innerText = activeLaundry.length;
+          laundryBadge.classList.remove('hidden');
+        }
+      } else {
+        if (laundryBadge) laundryBadge.classList.add('hidden');
+        if (banner) banner.classList.add('hidden');
+      }
+
+      if (currentView === 'admin') {
+        renderAdminLaundryOrders();
+      }
+      renderClientTracker();
+    }
+
+    function renderAdminLaundryOrders() {
+      const container = document.getElementById('adminLaundryContainer');
+      if (!container) return;
+      if (cachedLaundryOrders.length === 0) {
+        container.innerHTML = `<p class="text-xs text-stone-400 text-center py-4 col-span-2">No active laundry orders.</p>`;
+        return;
+      }
+      container.innerHTML = cachedLaundryOrders.map(order => `
+        <div class="p-4 bg-stone-50 rounded-2xl border text-xs space-y-3 flex flex-col justify-between">
+          <div class="space-y-2">
+            <div class="flex justify-between items-start">
+              <div><span class="font-bold text-stone-900 text-sm">Room: ${order.room}</span><p class="text-remal-sand font-semibold">Laundry Order #${order.id}</p></div>
+              <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full ${order.status === 'Delivered' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'}">${order.status || 'Collected'}</span>
+            </div>
+            <p class="text-stone-700 bg-white p-3 rounded-xl border">${order.details}</p>
+          </div>
+          <div class="flex justify-between items-center pt-2 border-t text-[11px]">
+            <div class="space-x-1">
+              <button onclick="updateLaundryStatus(${order.id}, 'Collected')" class="px-2 py-1 bg-stone-200 text-stone-800 rounded font-semibold">Collected</button>
+              <button onclick="updateLaundryStatus(${order.id}, 'Washing')" class="px-2 py-1 bg-blue-100 text-blue-800 rounded font-semibold">Washing</button>
+              <button onclick="updateLaundryStatus(${order.id}, 'Ready')" class="px-2 py-1 bg-amber-100 text-amber-800 rounded font-semibold">Ready</button>
+              <button onclick="updateLaundryStatus(${order.id}, 'Delivered')" class="px-2 py-1 bg-emerald-100 text-emerald-800 rounded font-semibold">Delivered</button>
+            </div>
+            <button onclick="deleteLaundryOrder(${order.id})" class="text-rose-600 font-bold p-1">🗑️</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function updateLaundryStatus(id, newStatus) {
+      await supabaseClient.from('laundry_orders').update({ status: newStatus }).eq('id', id);
+      await fetchLaundryOrdersFromCloud();
+    }
+
+    async function deleteLaundryOrder(id) {
+      if (confirm('Delete laundry order?')) {
+        await supabaseClient.from('laundry_orders').delete().eq('id', id);
+        await fetchLaundryOrdersFromCloud();
+      }
+    }
+
     function renderAnalyticsData() {
       const totalReq = cachedRequests.length;
       const completedReq = cachedRequests.filter(r => r.status === 'Completed').length;
@@ -1457,10 +1576,19 @@
       const t = i18n[currentLang];
 
       if (!roomNum || !validateRoomNumber(roomNum)) { container.innerHTML = `<p class="text-center text-xs text-stone-400 py-3">${t.trackEmpty}</p>`; return; }
+      
       const myRequests = cachedRequests.filter(r => String(r.room).trim().toLowerCase() === roomNum.toLowerCase());
-      if (myRequests.length === 0) { container.innerHTML = `<p class="text-center text-xs text-stone-400 py-3">${t.trackNoReq} ${roomNum}.</p>`; return; }
+      const myLaundry = cachedLaundryOrders.filter(l => String(l.room).trim().toLowerCase() === roomNum.toLowerCase());
 
-      container.innerHTML = myRequests.map(req => {
+      if (myRequests.length === 0 && myLaundry.length === 0) { 
+        container.innerHTML = `<p class="text-center text-xs text-stone-400 py-3">${t.trackNoReq} ${roomNum}.</p>`; 
+        return; 
+      }
+
+      let html = '';
+
+      // 1. Rendu des requêtes standard
+      html += myRequests.map(req => {
         let statusBadgeClass = "bg-amber-100 text-amber-800";
         let statusText = req.status || 'Pending';
         let progressWidth = "w-1/3";
@@ -1492,16 +1620,51 @@
         </div>
       `;
       }).join('');
+
+      // 2. Rendu des commandes Laundry liées à Laundry Plant (Collected, Washing, Ready, Delivered)
+      html += myLaundry.map(laundry => {
+        let lStatus = laundry.status || 'Collected';
+        let lWidth = 'w-1/4';
+        let badgeColor = 'bg-stone-200 text-stone-800';
+
+        if (lStatus === 'Collected') { lWidth = 'w-1/4'; badgeColor = 'bg-stone-200 text-stone-800'; }
+        else if (lStatus === 'Washing') { lWidth = 'w-2/4'; badgeColor = 'bg-blue-100 text-blue-800'; }
+        else if (lStatus === 'Ready') { lWidth = 'w-3/4'; badgeColor = 'bg-amber-100 text-amber-800'; }
+        else if (lStatus === 'Delivered') { lWidth = 'w-full'; badgeColor = 'bg-emerald-100 text-emerald-800'; }
+
+        return `
+        <div class="p-3.5 bg-stone-50 rounded-2xl border border-stone-200 text-xs space-y-2.5">
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-stone-900">🧺 Laundry Service (Plant)</span>
+            <span class="${badgeColor} text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">${lStatus}</span>
+          </div>
+          <p class="text-stone-600 bg-white p-2.5 rounded-xl border border-stone-100">${laundry.details}</p>
+          <div class="space-y-1 pt-1">
+            <div class="flex justify-between text-[10px] text-stone-400 font-semibold">
+              <span>Laundry Plant Lifecycle</span>
+              <span>${lStatus}</span>
+            </div>
+            <div class="w-full bg-stone-200 h-1.5 rounded-full overflow-hidden">
+              <div class="bg-remal-sand h-full transition-all duration-500 ${lWidth}"></div>
+            </div>
+          </div>
+        </div>
+      `;
+      }).join('');
+
+      container.innerHTML = html;
     }
 
     function renderCategoryFilters() {
       const container = document.getElementById('categoryFilters');
+      if (!container) return;
       const cats = ['All', 'Falaj Restaurant', 'Sarab', 'Al Waha Pool', 'The Spa'];
       container.innerHTML = cats.map(cat => `<button onclick="filterCategory('${cat}')" class="px-4 py-2 rounded-full whitespace-nowrap text-xs font-semibold ${currentCategory === cat ? 'bg-remal-sand text-white' : 'bg-white text-stone-600 border'}">${categoriesTranslations[currentLang][cat] || cat}</button>`).join('');
     }
 
     function renderClientCards() {
       const container = document.getElementById('cardsContainer');
+      if (!container) return;
       container.innerHTML = '';
       const t = i18n[currentLang];
       const filtered = currentCategory === 'All' ? cachedOffers : cachedOffers.filter(item => item.category === currentCategory);
@@ -1524,6 +1687,7 @@
 
     function renderAdminList() {
       const container = document.getElementById('adminListContainer');
+      if (!container) return;
       if (cachedOffers.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400">No active offers.</p>`; return; }
       container.innerHTML = cachedOffers.map(item => `
         <div class="flex items-center justify-between p-3 bg-stone-50 rounded-2xl border text-xs">
@@ -1535,6 +1699,7 @@
 
     function renderAdminRequests() {
       const container = document.getElementById('adminRequestsContainer');
+      if (!container) return;
       if (cachedRequests.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400 text-center py-4 col-span-2">No active requests.</p>`; return; }
       container.innerHTML = cachedRequests.map(req => `
         <div class="p-4 bg-stone-50 rounded-2xl border text-xs space-y-3 flex flex-col justify-between">
@@ -1604,7 +1769,7 @@
     function generateRoomFolio() {
       const roomNum = document.getElementById('req_room')?.value?.trim();
       if (!roomNum || !validateRoomNumber(roomNum)) {
-        alert("Please enter a valid Room Number first.");
+        alert("Please enter a valid Room Number in Guest Service first.");
         return;
       }
 
@@ -1763,6 +1928,9 @@
         const bDate = document.getElementById('booking_date').value;
         const bTime = document.getElementById('booking_time').value;
         details = `📅 BOOKING VENUE: ${venue}\n👥 Guests: ${guests}\n📅 Date: ${bDate} at ${bTime}\n📝 Notes: ${details || 'No additional comments'}`;
+      } else if (service === 'Laundry') {
+        // Enregistre également dans la table laundry_orders pour suivre le rythme exact de la Laundry Plant
+        await supabaseClient.from('laundry_orders').insert([{ room, details: details || 'Standard laundry service request', status: 'Collected' }]);
       }
 
       await supabaseClient.from('requests').insert([{ room, service, details, status: 'Pending' }]);
@@ -1775,7 +1943,10 @@
       renderRoomServiceMenu();
       calculateCartTotal();
       
-      await fetchRequestsFromCloud();
+      await Promise.all([
+        fetchRequestsFromCloud(),
+        fetchLaundryOrdersFromCloud()
+      ]);
     }
 
     async function updateRequestStatus(id, newStatus) { await supabaseClient.from('requests').update({ status: newStatus }).eq('id', id); await fetchRequestsFromCloud(); }
@@ -1783,21 +1954,35 @@
     async function deleteOffer(id) { if (confirm('Delete?')) { await supabaseClient.from('offers').delete().eq('id', id); await fetchOffersFromCloud(); } }
 
     function switchGuestTab(tab) {
-      ['guestOffersSection', 'guestFacilitiesSection', 'guestFaqSection', 'guestRequestSection'].forEach(s => document.getElementById(s).classList.add('hidden'));
-      ['tabOffersBtn', 'tabFacilitiesBtn', 'tabFaqBtn', 'tabRequestBtn'].forEach(b => document.getElementById(b).className = "flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap");
+      ['guestOffersSection', 'guestFacilitiesSection', 'guestFaqSection', 'guestRequestSection', 'guestFolioSection'].forEach(s => {
+        const el = document.getElementById(s);
+        if (el) el.classList.add('hidden');
+      });
+      ['tabOffersBtn', 'tabFacilitiesBtn', 'tabFaqBtn', 'tabRequestBtn', 'tabFolioBtn'].forEach(b => {
+        const el = document.getElementById(b);
+        if (el) el.className = "flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap";
+      });
 
       if (tab === 'offers') { document.getElementById('guestOffersSection').classList.remove('hidden'); document.getElementById('tabOffersBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; }
       else if (tab === 'facilities') { document.getElementById('guestFacilitiesSection').classList.remove('hidden'); document.getElementById('tabFacilitiesBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; }
       else if (tab === 'faq') { document.getElementById('guestFaqSection').classList.remove('hidden'); document.getElementById('tabFaqBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; renderFaqList(); }
-      else if (tab === 'request') { document.getElementById('guestRequestSection').classList.remove('hidden'); document.getElementById('tabRequestBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; toggleServiceDynamicFields(); renderClientTracker(); renderClientFavoritesAndHistory(); renderRoomFolioWidget(); }
+      else if (tab === 'request') { document.getElementById('guestRequestSection').classList.remove('hidden'); document.getElementById('tabRequestBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; toggleServiceDynamicFields(); renderClientTracker(); renderClientFavoritesAndHistory(); }
+      else if (tab === 'folio') { document.getElementById('guestFolioSection').classList.remove('hidden'); document.getElementById('tabFolioBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; renderRoomFolioWidget(); }
     }
 
     function switchAdminTab(tab) {
-      ['adminOffersPanel', 'adminRequestsPanel', 'adminFeedbackPanel', 'adminAnalyticsPanel', 'adminBannerPanel'].forEach(p => document.getElementById(p).classList.add('hidden'));
+      ['adminOffersPanel', 'adminRequestsPanel', 'adminLaundryPanel', 'adminFeedbackPanel', 'adminAnalyticsPanel', 'adminBannerPanel'].forEach(p => {
+        const el = document.getElementById(p);
+        if (el) el.classList.add('hidden');
+      });
       if (tab === 'offers') document.getElementById('adminOffersPanel').classList.remove('hidden');
       else if (tab === 'requests') { 
         document.getElementById('adminRequestsPanel').classList.remove('hidden'); 
         fetchRequestsFromCloud(); 
+      }
+      else if (tab === 'laundry') {
+        document.getElementById('adminLaundryPanel').classList.remove('hidden');
+        fetchLaundryOrdersFromCloud();
       }
       else if (tab === 'feedback') {
         document.getElementById('adminFeedbackPanel').classList.remove('hidden');
@@ -1819,13 +2004,11 @@
       currentLang = lang;
       const t = i18n[lang];
 
-      // Mise à jour visuelle des boutons de langue (un seul actif)
       ['en', 'ar', 'hi'].forEach(l => {
         const btn = document.getElementById(`btn-${l}`);
-        if (l === lang) {
-          btn.className = "px-2.5 py-1 rounded-full bg-remal-sand text-white shadow-sm";
-        } else {
-          btn.className = "px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900";
+        if (btn) {
+          if (l === lang) btn.className = "px-2.5 py-1 rounded-full bg-remal-sand text-white shadow-sm";
+          else btn.className = "px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900";
         }
       });
 
@@ -1835,6 +2018,7 @@
       document.getElementById('lblTabFacilities').innerText = t.lblFacilities;
       document.getElementById('lblTabFaq').innerText = t.lblFaq;
       document.getElementById('lblTabRequest').innerText = t.lblService;
+      document.getElementById('lblTabFolio').innerText = t.lblFolio;
       document.getElementById('reqHeader').innerText = t.reqHeader;
       document.getElementById('btnSubmitReq').innerText = t.btnSubmit;
 
