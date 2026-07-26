@@ -22,19 +22,15 @@
     }
     .pulse-notification { animation: pulse-red 1.5s infinite; }
 
-    /* CONFIGURATION STRICTE POUR FORCER UNE SEULE PAGE */
+    /* CONFIGURATION STRICTE : 1 SEULE PAGE MAXIMUM */
     @media print {
-      * {
-        background: transparent !important;
-        color: #000 !important;
-        box-shadow: none !important;
-        text-shadow: none !important;
-      }
-      body, html {
-        height: 100% !important;
+      html, body {
+        width: 80mm !important;
+        height: auto !important;
         margin: 0 !important;
         padding: 0 !important;
-        overflow: hidden !important;
+        background: #fff !important;
+        overflow: visible !important;
       }
       body * {
         display: none !important;
@@ -49,17 +45,17 @@
         top: 0 !important;
         width: 100% !important;
         max-width: 80mm !important;
-        margin: 0 auto !important;
-        padding: 5mm !important;
+        margin: 0 !important;
+        padding: 2mm !important;
         font-family: monospace !important;
-        font-size: 11px !important;
-        line-height: 1.2 !important;
+        font-size: 10px !important;
+        line-height: 1.15 !important;
         page-break-inside: avoid !important;
         page-break-after: avoid !important;
         page-break-before: avoid !important;
       }
       @page {
-        size: auto;
+        size: 80mm auto;
         margin: 0mm;
       }
     }
@@ -586,7 +582,7 @@
       },
       hi: {
         welcome: "रेमल होटल एंड विला में आपका स्वागत है", lblOffers: "विशेष ऑफ़र", lblFacilities: "सुविधाएं", lblService: "सेवा अनुरोध",
-        facHeader: "होटल सुविधाएं", facSub: "हमारे हमारे प्रीमियम स्थानों और सेवाओं का अन्वेषण करें", reqHeader: "अतिथि सेवा का अनुरोध करें",
+        facHeader: "होटल सुविधाएं", facSub: "हमारे प्रीमियम स्थानों और सेवाओं का अन्वेषण करें", reqHeader: "अतिथि सेवा का अनुरोध करें",
         lblRoom: "कमरा संख्या", placeholderRoom: "उदा., 104 या विला 02", lblServiceType: "सेवा का प्रकार",
         lblDetails: "अतिरिक्त विवरण / अनुरोध", placeholderDetails: "अपना अनुरोध यहां दर्ज करें...", btnSubmit: "रिसेप्शन को अनुरोध भेजें",
         whatsappBtn: "व्हाट्सएप रिसेप्शन", successMsg: "आपका अनुरोध सफलतापूर्वक भेजा गया!", chatWhatsapp: "💬 व्हाट्सएप पर चैट करें",
@@ -605,7 +601,7 @@
       {
         id: 'exterior', images: ['Remal_exterior_view1.jpg', 'Remal_exterior_view2.jpg', 'Remal_exterior_view3.jpg', 'Remal_exterior_view4.jpg'],
         title: { en: 'Hotel Exterior & Grounds', ar: 'المظهر الخارجي والمحيط', hi: 'होटल का बाहरी दृश्य' },
-        desc: { en: 'Experience our pristine architecture and welcoming surroundings at Remal Hotel & Villas.', ar: 'استمتع بالتصميم المعماري الفريد والمحيط الهادئ في فندق وڤلل رمال.', hi: 'रेमल होटल एंड विला के शानदार वास्तुशिल्پ का अनुभव करें।' },
+        desc: { en: 'Experience our pristine architecture and welcoming surroundings at Remal Hotel & Villas.', ar: 'استمتع بالتصميم المعماري الفريد والمحيط الهادئ في فندق وڤلل رمال.', hi: 'रेमल होटल एंड विला के शानदार वास्तुशिल्प का अनुभव करें।' },
         timing: { en: '24/7 Welcome', ar: 'ترحيب على مدار الساعة', hi: '24 घंटे स्वागत' }
       },
       {
@@ -1110,25 +1106,25 @@
       `).join('');
     }
 
-    // Fonction d'impression optimisée pour tenir strictement sur 1 seule page
+    // Impression garantie sur une seule page de reçu
     function printRequestTicket(reqId) {
       const req = cachedRequests.find(r => r.id === reqId);
       if (!req) return;
 
       const printSection = document.getElementById('printTicketSection');
       printSection.innerHTML = `
-        <div style="text-align: center; font-weight: bold; font-size: 13px; margin-bottom: 2px;">REMAL HOTEL & VILLAS</div>
-        <div style="text-align: center; font-size: 9px; margin-bottom: 6px;">Al Dhannah City • Guest Hub</div>
-        <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
-        <div style="font-size: 10px;"><strong>Ticket ID:</strong> #${req.id}</div>
-        <div style="font-size: 10px;"><strong>Room / Villa:</strong> ${req.room}</div>
-        <div style="font-size: 10px;"><strong>Service:</strong> ${req.service}</div>
-        <div style="font-size: 10px;"><strong>Status:</strong> ${req.status || 'Pending'}</div>
-        <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
-        <div style="font-size: 10px; font-weight: bold;">Details:</div>
-        <div style="font-size: 10px; white-space: pre-wrap; margin-top: 2px;">${req.details}</div>
-        <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
-        <div style="text-align: center; font-size: 8px;">Printed: ${new Date().toLocaleString()}</div>
+        <div style="text-align: center; font-weight: bold; font-size: 12px; margin-bottom: 2px;">REMAL HOTEL & VILLAS</div>
+        <div style="text-align: center; font-size: 8px; margin-bottom: 4px;">Al Dhannah City • Guest Hub</div>
+        <div style="border-top: 1px dashed #000; margin: 3px 0;"></div>
+        <div style="font-size: 9px;"><strong>Ticket ID:</strong> #${req.id}</div>
+        <div style="font-size: 9px;"><strong>Room / Villa:</strong> ${req.room}</div>
+        <div style="font-size: 9px;"><strong>Service:</strong> ${req.service}</div>
+        <div style="font-size: 9px;"><strong>Status:</strong> ${req.status || 'Pending'}</div>
+        <div style="border-top: 1px dashed #000; margin: 3px 0;"></div>
+        <div style="font-size: 9px; font-weight: bold;">Details:</div>
+        <div style="font-size: 9px; white-space: pre-wrap; margin-top: 2px;">${req.details}</div>
+        <div style="border-top: 1px dashed #000; margin: 3px 0;"></div>
+        <div style="text-align: center; font-size: 7px;">Printed: ${new Date().toLocaleString()}</div>
       `;
 
       setTimeout(() => {
