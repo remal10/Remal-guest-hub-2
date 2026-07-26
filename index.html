@@ -22,30 +22,45 @@
     }
     .pulse-notification { animation: pulse-red 1.5s infinite; }
 
-    /* STYLE STRICT POUR IMPRESSION SUR 1 SEULE PAGE */
+    /* CONFIGURATION STRICTE POUR FORCER UNE SEULE PAGE */
     @media print {
+      * {
+        background: transparent !important;
+        color: #000 !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+      }
+      body, html {
+        height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+      }
       body * {
-        visibility: hidden !important;
+        display: none !important;
       }
       #printTicketSection, #printTicketSection * {
+        display: block !important;
         visibility: visible !important;
       }
       #printTicketSection {
-        position: fixed !important;
+        position: absolute !important;
         left: 0 !important;
         top: 0 !important;
         width: 100% !important;
-        height: auto !important;
-        margin: 0 !important;
-        padding: 10px !important;
-        background: white !important;
-        display: block !important;
-        font-size: 12px !important;
+        max-width: 80mm !important;
+        margin: 0 auto !important;
+        padding: 5mm !important;
+        font-family: monospace !important;
+        font-size: 11px !important;
         line-height: 1.2 !important;
+        page-break-inside: avoid !important;
+        page-break-after: avoid !important;
+        page-break-before: avoid !important;
       }
       @page {
         size: auto;
-        margin: 5mm;
+        margin: 0mm;
       }
     }
   </style>
@@ -53,7 +68,7 @@
 <body class="min-h-screen pb-20">
 
   <!-- ZONE CACHÉE POUR L'IMPRESSION DIRECTE -->
-  <div id="printTicketSection" class="hidden p-4 font-mono text-xs"></div>
+  <div id="printTicketSection" class="hidden font-mono text-xs"></div>
 
   <!-- HEADER -->
   <header class="bg-white sticky top-0 z-50 border-b border-stone-200 shadow-sm">
@@ -571,7 +586,7 @@
       },
       hi: {
         welcome: "रेमल होटल एंड विला में आपका स्वागत है", lblOffers: "विशेष ऑफ़र", lblFacilities: "सुविधाएं", lblService: "सेवा अनुरोध",
-        facHeader: "होटल सुविधाएं", facSub: "हमारे प्रीमियम स्थानों और सेवाओं का अन्वेषण करें", reqHeader: "अतिथि सेवा का अनुरोध करें",
+        facHeader: "होटल सुविधाएं", facSub: "हमारे हमारे प्रीमियम स्थानों और सेवाओं का अन्वेषण करें", reqHeader: "अतिथि सेवा का अनुरोध करें",
         lblRoom: "कमरा संख्या", placeholderRoom: "उदा., 104 या विला 02", lblServiceType: "सेवा का प्रकार",
         lblDetails: "अतिरिक्त विवरण / अनुरोध", placeholderDetails: "अपना अनुरोध यहां दर्ज करें...", btnSubmit: "रिसेप्शन को अनुरोध भेजें",
         whatsappBtn: "व्हाट्सएप रिसेप्शन", successMsg: "आपका अनुरोध सफलतापूर्वक भेजा गया!", chatWhatsapp: "💬 व्हाट्सएप पर चैट करें",
@@ -590,7 +605,7 @@
       {
         id: 'exterior', images: ['Remal_exterior_view1.jpg', 'Remal_exterior_view2.jpg', 'Remal_exterior_view3.jpg', 'Remal_exterior_view4.jpg'],
         title: { en: 'Hotel Exterior & Grounds', ar: 'المظهر الخارجي والمحيط', hi: 'होटल का बाहरी दृश्य' },
-        desc: { en: 'Experience our pristine architecture and welcoming surroundings at Remal Hotel & Villas.', ar: 'استمتع بالتصميم المعماري الفريد والمحيط الهادئ في فندق وڤلل رمال.', hi: 'रेमल होटल एंड विला के शानदार वास्तुशिल्प का अनुभव करें।' },
+        desc: { en: 'Experience our pristine architecture and welcoming surroundings at Remal Hotel & Villas.', ar: 'استمتع بالتصميم المعماري الفريد والمحيط الهادئ في فندق وڤلل رمال.', hi: 'रेमल होटल एंड विला के शानदार वास्तुशिल्پ का अनुभव करें।' },
         timing: { en: '24/7 Welcome', ar: 'ترحيب على مدار الساعة', hi: '24 घंटे स्वागत' }
       },
       {
@@ -1095,30 +1110,30 @@
       `).join('');
     }
 
-    // Fonction d'impression ultra-compacte tenant sur une seule page
+    // Fonction d'impression optimisée pour tenir strictement sur 1 seule page
     function printRequestTicket(reqId) {
       const req = cachedRequests.find(r => r.id === reqId);
       if (!req) return;
 
       const printSection = document.getElementById('printTicketSection');
       printSection.innerHTML = `
-        <div style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 2px;">REMAL HOTEL & VILLAS</div>
-        <div style="text-align: center; font-size: 9px; margin-bottom: 8px;">Al Dhannah City • Guest Hub</div>
-        <hr style="border: 0; border-top: 1px dashed #000; margin: 5px 0;">
-        <div style="font-size: 11px;"><strong>Ticket ID:</strong> #${req.id}</div>
-        <div style="font-size: 11px;"><strong>Room / Villa:</strong> ${req.room}</div>
-        <div style="font-size: 11px;"><strong>Service:</strong> ${req.service}</div>
-        <div style="font-size: 11px;"><strong>Status:</strong> ${req.status || 'Pending'}</div>
-        <hr style="border: 0; border-top: 1px dashed #000; margin: 5px 0;">
-        <div style="font-size: 11px; font-weight: bold;">Details:</div>
-        <div style="font-size: 11px; white-space: pre-wrap; margin-top: 3px;">${req.details}</div>
-        <hr style="border: 0; border-top: 1px dashed #000; margin: 5px 0;">
+        <div style="text-align: center; font-weight: bold; font-size: 13px; margin-bottom: 2px;">REMAL HOTEL & VILLAS</div>
+        <div style="text-align: center; font-size: 9px; margin-bottom: 6px;">Al Dhannah City • Guest Hub</div>
+        <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
+        <div style="font-size: 10px;"><strong>Ticket ID:</strong> #${req.id}</div>
+        <div style="font-size: 10px;"><strong>Room / Villa:</strong> ${req.room}</div>
+        <div style="font-size: 10px;"><strong>Service:</strong> ${req.service}</div>
+        <div style="font-size: 10px;"><strong>Status:</strong> ${req.status || 'Pending'}</div>
+        <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
+        <div style="font-size: 10px; font-weight: bold;">Details:</div>
+        <div style="font-size: 10px; white-space: pre-wrap; margin-top: 2px;">${req.details}</div>
+        <div style="border-top: 1px dashed #000; margin: 4px 0;"></div>
         <div style="text-align: center; font-size: 8px;">Printed: ${new Date().toLocaleString()}</div>
       `;
 
       setTimeout(() => {
         window.print();
-      }, 100);
+      }, 150);
     }
 
     function previewPromoImage(event) {
