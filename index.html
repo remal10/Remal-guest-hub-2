@@ -683,7 +683,7 @@
       { id: 'hm_mk1', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोकटेल' }, name: { en: 'Fruity', ar: 'فروتي', hi: 'फ्रूटी' }, desc: { en: 'Fresh banana, strawberry, mango, orange juice', ar: 'موز طازج، فراولة، مانجو، عصير برتقال' }, price: 33 },
       { id: 'hm_mk2', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोकटेल' }, name: { en: 'Piña Colada', ar: 'بينا كولادا', hi: 'पिना कोलाडा' }, desc: { en: 'Pineapple juice, coconut cream', ar: 'عصير أناناس، كريمة جوز الهند' }, price: 33 },
       { id: 'hm_mk3', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोकटेल' }, name: { en: 'Strawberry Margarita', ar: 'مارغريتا الفراولة', hi: 'स्ट्रॉबेरी मार्गारिटा' }, desc: { en: 'Fresh strawberries, lime juice, lime-flavored seltzer', ar: 'فراولة طازجة، عصير ليمون أخضر، صودا بنكهة الليمون' }, price: 33 },
-      { id: 'hm_mk4', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोकटेल' }, name: { en: 'Mojito', ar: 'موهيتو', hi: 'मोहितो' }, desc: { en: 'Fresh mint leaves, lime, demerara sugar, soda water', ar: 'أوراق نعناع طازجة، ليمون أخضر، سكر ديميرارا، مياه صودا' }, price: 33 },
+      { id: 'hm_mk4', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोहितो' }, name: { en: 'Mojito', ar: 'موهيتو', hi: 'मोहितो' }, desc: { en: 'Fresh mint leaves, lime, demerara sugar, soda water', ar: 'أوراق نعناع طازجة، ليمون أخضر، سكر ديميرارا، مياه صودا' }, price: 33 },
       { id: 'hm_mk5', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोकटेल' }, name: { en: 'Mai Tai', ar: 'ماي تاي', hi: 'माई ताई' }, desc: { en: 'Lemon-lime soda, pineapple juice, orange juice, grenadine syrup', ar: 'مشروب صودا بالليمون، عصير أناناس، عصير برتقال، شراب الغرينادين' }, price: 33 },
       { id: 'hm_mk6', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोकटेल' }, name: { en: 'Nutella Hot Chocolate', ar: 'شوكولاتة ساخنة مع نوتيلا', hi: 'नूटेला हॉट चॉकलेट' }, desc: { en: 'Milk, Nutella, cocoa', ar: 'حليب، نوتيلا، كاكاو' }, price: 33 },
       { id: 'hm_mk7', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोकटेल' }, name: { en: 'Banana Milk Coffee', ar: 'قهوة مع حليب الموز', hi: 'बनाना मिल्क कॉफी' }, desc: { en: 'Ripe banana, coffee, milk, cinnamon', ar: 'موز ناضج، قهوة، حليب، قرفة' }, price: 33 },
@@ -954,7 +954,7 @@
       renderFacilities();
       renderFaqList();
       
-      // Chargement initial allégé pour optimiser les performances
+      // Chargement initial asynchrone non bloquant
       await Promise.all([
         fetchMenuItemsFromCloud(),
         fetchOffersFromCloud(),
@@ -967,11 +967,11 @@
       renderClientFavoritesAndHistory();
       renderRoomFolioWidget();
 
-      // Intervalle optimisé à 15 secondes pour réduire la charge réseau et CPU
+      // Intervalle optimisé à 20 secondes pour alléger la charge du processeur et du réseau
       setInterval(() => {
         fetchRequestsFromCloud();
         fetchLaundryOrdersFromCloud();
-      }, 15000);
+      }, 20000);
     }
 
     function handleAdminAccess() {
@@ -1020,7 +1020,6 @@
         renderAdminFeedback();
         renderAnalyticsData();
       } else {
-        currentView = 'admin';
         currentView = 'client';
         adminV.classList.add('hidden');
         clientV.classList.remove('hidden');
@@ -1376,6 +1375,7 @@
 
     function renderFacilities() {
       const container = document.getElementById('facilitiesContainer');
+      if (!container) return;
       const t = i18n[currentLang];
       container.innerHTML = facilitiesData.map(item => `
         <div class="remal-card rounded-3xl overflow-hidden shadow-sm">
@@ -1456,7 +1456,6 @@
       if (error) return;
       cachedLaundryOrders = data || [];
       
-      // Notification rouge exclusive pour la section Laundry Plant
       const activeLaundry = cachedLaundryOrders.filter(l => l.status !== 'Delivered');
       const banner = document.getElementById('laundryAlertBanner');
       const laundryBadge = document.getElementById('laundryBadge');
@@ -1621,7 +1620,7 @@
       `;
       }).join('');
 
-      // 2. Rendu des commandes Laundry liées à Laundry Plant (Collected, Washing, Ready, Delivered)
+      // 2. Rendu des commandes Laundry avec timeline synchronisée sur la Laundry Plant
       html += myLaundry.map(laundry => {
         let lStatus = laundry.status || 'Collected';
         let lWidth = 'w-1/4';
@@ -1641,7 +1640,7 @@
           <p class="text-stone-600 bg-white p-2.5 rounded-xl border border-stone-100">${laundry.details}</p>
           <div class="space-y-1 pt-1">
             <div class="flex justify-between text-[10px] text-stone-400 font-semibold">
-              <span>Laundry Plant Lifecycle</span>
+              <span>Laundry Lifecycle</span>
               <span>${lStatus}</span>
             </div>
             <div class="w-full bg-stone-200 h-1.5 rounded-full overflow-hidden">
@@ -1929,7 +1928,6 @@
         const bTime = document.getElementById('booking_time').value;
         details = `📅 BOOKING VENUE: ${venue}\n👥 Guests: ${guests}\n📅 Date: ${bDate} at ${bTime}\n📝 Notes: ${details || 'No additional comments'}`;
       } else if (service === 'Laundry') {
-        // Enregistre également dans la table laundry_orders pour suivre le rythme exact de la Laundry Plant
         await supabaseClient.from('laundry_orders').insert([{ room, details: details || 'Standard laundry service request', status: 'Collected' }]);
       }
 
