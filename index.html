@@ -112,6 +112,7 @@
       <div class="flex bg-black/40 backdrop-blur-md p-1.5 rounded-2xl text-[11px] font-medium border border-white/25 overflow-x-auto scrollbar-none">
         <button onclick="switchGuestTab('offers')" id="tabOffersBtn" class="flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap">🏷️ <span id="lblTabOffers">Offers</span></button>
         <button onclick="switchGuestTab('facilities')" id="tabFacilitiesBtn" class="flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap">🏛️ <span id="lblTabFacilities">Facilities</span></button>
+        <button onclick="switchGuestTab('faq')" id="tabFaqBtn" class="flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap">❓ <span id="lblTabFaq">FAQ</span></button>
         <button onclick="switchGuestTab('request')" id="tabRequestBtn" class="flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap">🔔 <span id="lblTabRequest">Service</span></button>
       </div>
     </div>
@@ -133,6 +134,18 @@
       <div id="facilitiesContainer" class="space-y-6"></div>
     </div>
 
+    <!-- SECTION FAQ & ASSISTANT INTELLIGENT -->
+    <div id="guestFaqSection" class="hidden space-y-5">
+      <div class="text-center border-b border-stone-200 pb-3">
+        <h3 class="text-lg font-serif-luxury font-bold text-stone-900">💡 Intelligent Assistant & FAQ</h3>
+        <p class="text-xs text-stone-500">Instant answers to common hotel questions</p>
+      </div>
+      <div class="remal-card p-5 rounded-3xl space-y-4">
+        <input type="text" id="faqSearchInput" placeholder="🔍 Search question (e.g. Wi-Fi, Pool, Breakfast)..." onkeyup="filterFaq()" class="w-full border border-stone-200 rounded-xl p-3 text-xs bg-stone-50 outline-none">
+        <div id="faqContainer" class="space-y-3 max-h-[450px] overflow-y-auto pr-1"></div>
+      </div>
+    </div>
+
     <!-- SECTION DEMANDES & ROOM SERVICE -->
     <div id="guestRequestSection" class="hidden space-y-6">
       
@@ -145,6 +158,30 @@
         <div id="clientRoomFolioContainer" class="space-y-2 text-xs">
           <p class="text-[11px] text-stone-400 italic">Enter your room number below to view your live billing summary.</p>
         </div>
+      </div>
+
+      <!-- MODULE FEEDBACK & ÉVALUATION DE FIN DE SÉJOUR -->
+      <div class="remal-card p-5 rounded-3xl space-y-3 bg-gradient-to-br from-emerald-50/40 to-white">
+        <div class="border-b border-stone-100 pb-2">
+          <span class="text-xs font-serif-luxury font-bold text-stone-900">⭐ Stay Feedback & Experience Rating</span>
+          <p class="text-[10px] text-stone-500">Share your thoughts to help us improve our services</p>
+        </div>
+        <form id="feedbackForm" onsubmit="submitGuestFeedback(event)" class="space-y-3">
+          <div class="flex items-center justify-center space-x-2 py-1">
+            <span class="text-xs font-bold text-stone-700">Rating:</span>
+            <div id="starRatingContainer" class="flex space-x-1 text-xl cursor-pointer">
+              <span onclick="setFeedbackRating(1)" id="star-1" class="text-amber-400">★</span>
+              <span onclick="setFeedbackRating(2)" id="star-2" class="text-amber-400">★</span>
+              <span onclick="setFeedbackRating(3)" id="star-3" class="text-amber-400">★</span>
+              <span onclick="setFeedbackRating(4)" id="star-4" class="text-amber-400">★</span>
+              <span onclick="setFeedbackRating(5)" id="star-5" class="text-amber-400">★</span>
+            </div>
+          </div>
+          <div>
+            <textarea id="feedback_comment" rows="2" placeholder="Tell us about your stay, room cleanliness, or dining experience..." class="w-full border border-stone-200 rounded-xl p-2.5 text-xs bg-white outline-none" required></textarea>
+          </div>
+          <button type="submit" class="w-full bg-remal-sand hover:bg-amber-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-sm">Submit Review</button>
+        </form>
       </div>
 
       <!-- FAVORIS ET HISTORIQUE -->
@@ -163,7 +200,8 @@
         <form id="guestRequestForm" class="space-y-4">
           <div>
             <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblRoom">Room Number</label>
-            <input type="text" id="req_room" placeholder="e.g., 104 or Villa 02" onkeyup="onRoomNumberChange()" onchange="onRoomNumberChange()" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/55 outline-none" required>
+            <input type="text" id="req_room" placeholder="e.g., 104, 201 or 601" onkeyup="onRoomNumberChange()" onchange="onRoomNumberChange()" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/55 outline-none" required>
+            <p id="roomErrorMsg" class="text-rose-600 text-[11px] font-bold mt-1 hidden">❌ Erreur de numéro : Numéro de chambre ou de villa invalide.</p>
           </div>
           <div>
             <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblService">Service Type</label>
@@ -327,6 +365,7 @@
           🔔 Requests
           <span id="requestBadge" class="hidden absolute -top-1 -right-1 bg-rose-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full pulse-notification">0</span>
         </button>
+        <button onclick="switchAdminTab('feedback')" id="admTabFeedback" class="px-4 py-2.5 rounded-xl text-stone-600 whitespace-nowrap">⭐ Guest Reviews</button>
         <button onclick="switchAdminTab('analytics')" id="admTabAnalytics" class="px-4 py-2.5 rounded-xl text-stone-600 whitespace-nowrap">📊 Analytics</button>
         <button onclick="switchAdminTab('banner')" id="admTabBanner" class="px-4 py-2.5 rounded-xl text-stone-600 whitespace-nowrap">📢 Announcement</button>
       </div>
@@ -434,6 +473,16 @@
       </div>
     </div>
 
+    <!-- ADMIN AVIS / FEEDBACK -->
+    <div id="adminFeedbackPanel" class="hidden space-y-4">
+      <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
+        <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-2">Guest Feedback & Ratings</h2>
+        <div id="adminFeedbackContainer" class="space-y-3">
+          <p class="text-xs text-stone-400">Loading reviews...</p>
+        </div>
+      </div>
+    </div>
+
     <!-- ADMIN ANALYTICS -->
     <div id="adminAnalyticsPanel" class="hidden space-y-6">
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -494,8 +543,33 @@
     let currentCategory = 'All';
     let cachedOffers = [];
     let cachedRequests = [];
+    let cachedFeedback = [];
     let activeAnnouncement = null;
     let currentPromoImageData = null;
+    let currentFeedbackRating = 5;
+
+    const FAQ_DATA = [
+      {
+        q: { en: "What is the Wi-Fi password?", ar: "ما هي كلمة مرور الواي فاي؟", hi: "वाई-फाई पासवर्ड क्या है?" },
+        a: { en: "Wi-Fi is completely free and open across the hotel. Connect to 'Remal_Guest' without any password.", ar: "الواي فاي مجاني ومفتوح في جميع أنحاء الفندق. اتصل بشبكة 'Remal_Guest' بدون كلمة مرور.", hi: "वाई-फाई पूरी तरह से मुफ़्त है। बिना किसी पासवर्ड के 'Remal_Guest' से कनेक्ट करें।" }
+      },
+      {
+        q: { en: "What are the breakfast hours?", ar: "ما هي مواعيد وجبة الإفطار؟", hi: "नाश्ते का समय क्या है?" },
+        a: { en: "Breakfast is served daily at Falaj Restaurant from 06:30 AM to 11:00 AM.", ar: "يُقدم الإفطار يومياً في مطعم الفلج من الساعة 06:30 صباحاً حتى 11:00 مساءً.", hi: "नाश्ता प्रतिदिन फलज रेस्टोरेंट में सुबह 06:30 से सुबह 11:00 बजे तक परोसा जाता है।" }
+      },
+      {
+        q: { en: "How do I request a late check-out?", ar: "كيف يمكنني طلب مغادرة متأخرة؟", hi: "मैं देर से चेक-आउट का अनुरोध कैसे करूं?" },
+        a: { en: "You can request a late check-out up to 16:00 (4:00 PM) directly in the 'Service' tab by selecting 'Late Check-out Request'.", ar: "يمكنك طلب مغادرة متأخرة حتى الساعة 16:00 مساءً مباشرة عبر علامة التبويب 'طلب خدمة'.", hi: "'सेवा' टैब में सीधे 'लेट चेक-आउट अनुरोध' चुनकर दोपहर 04:00 बजे तक अनुरोध कर सकते हैं।" }
+      },
+      {
+        q: { en: "What are the swimming pool timings?", ar: "ما هي مواعيد مسبح الواحة؟", hi: "स्विमिंग पूल का समय क्या है?" },
+        a: { en: "Al Waha Swimming Pool is open daily from 07:00 AM to 08:00 PM.", ar: "مسبح الواحة مفتوح يومياً من الساعة 07:00 صباحاً حتى 08:00 مساءً.", hi: "अल वाहा स्विमिंग पूल प्रतिदिन सुबह 07:00 से रात 08:00 बजे तक खुला रहता है।" }
+      },
+      {
+        q: { en: "How can I order room service?", ar: "كيف يمكنني طلب خدمة الغرف؟", hi: "मैं रूम सर्विस कैसे ऑर्डर कर सकता हूं?" },
+        a: { en: "Go to the 'Service' tab, select 'Room Service / Dining', pick your favorite dishes from our menu, and click send!", ar: "توجه إلى علامة التبويب 'طلب خدمة'، اختر 'خدمة الغرف'، ثم حدد أطباقك المفضلة وأرسل الطلب!", hi: "'सेवा' टैब पर जाएं, 'रूम सर्विस' चुनें, अपने पसंदीदा व्यंजन चुनें और भेजें!" }
+      }
+    ];
 
     const HARDCODED_MENU = [
       { id: 'hm_bf1', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار' }, name: { en: 'Continental', ar: 'كونتيننتال' }, desc: { en: 'Croissant, Muffin, Danish and Seasonal Sliced Fruits', ar: 'تشكيلة من الكرواسون والمفن والدانش، وفواكه موسمية مقطعة' }, price: 49 },
@@ -660,7 +734,7 @@
 
     const i18n = {
       en: {
-        welcome: "Welcome to Remal Hotel & Villas", lblOffers: "Offers", lblFacilities: "Facilities", lblService: "Service",
+        welcome: "Welcome to Remal Hotel & Villas", lblOffers: "Offers", lblFacilities: "Facilities", lblService: "Service", lblFaq: "FAQ",
         facHeader: "Hotel Facilities & Amenities", facSub: "Explore our premium venues and spaces", reqHeader: "Request Guest Service",
         lblRoom: "Room Number", placeholderRoom: "e.g., 104 or Villa 02", lblServiceType: "Service Type",
         lblDetails: "Additional Notes / Request Details", placeholderDetails: "Specify your request here...", btnSubmit: "Send Request to Reception",
@@ -681,7 +755,7 @@
         ]
       },
       ar: {
-        welcome: "مرحباً بكم في فندق وڤلل رمال", lblOffers: "العروض", lblFacilities: "المرافق والخدمات", lblService: "طلب خدمة",
+        welcome: "مرحباً بكم في فندق وڤلل رمال", lblOffers: "العروض", lblFacilities: "المرافق والخدمات", lblService: "طلب خدمة", lblFaq: "الأسئلة الشائعة",
         facHeader: "مرافق الفندق والخدمات", facSub: "استكشف أرقى مرافقنا وخدماتنا المميزة", reqHeader: "طلب خدمة النزلاء",
         lblRoom: "رقم الغرفة", placeholderRoom: "مثال: 104 أو فيلا 02", lblServiceType: "نوع الخدمة",
         lblDetails: "ملاحظات إضافية / تفاصيل الطلب", placeholderDetails: "اكتب تفاصيل طلبك هنا...", btnSubmit: "إرسال الطلب إلى الاستقبال",
@@ -702,7 +776,7 @@
         ]
       },
       hi: {
-        welcome: "रेमल होटल एंड विला में आपका स्वागत है", lblOffers: "विशेष ऑफ़र", lblFacilities: "सुविधाएं", lblService: "सेवा अनुरोध",
+        welcome: "रेमल होटल एंड विला में आपका स्वागत है", lblOffers: "विशेष ऑफ़र", lblFacilities: "सुविधाएं", lblService: "सेवा अनुरोध", lblFaq: "सामान्य प्रश्न",
         facHeader: "होटल सुविधाएं", facSub: "हमारे प्रीमियम स्थानों और सेवाओं का अन्वेषण करें", reqHeader: "अतिथि सेवा का अनुरोध करें",
         lblRoom: "कमरा संख्या", placeholderRoom: "उदा., 104 या विला 02", lblServiceType: "सेवा का प्रकार",
         lblDetails: "अतिरिक्त विवरण / अनुरोध", placeholderDetails: "अपना अनुरोध यहां दर्ज करें...", btnSubmit: "रिसेप्शन को अनुरोध भेजें",
@@ -779,14 +853,39 @@
       hi: { 'All': 'सभी सेवाएं', 'Falaj Restaurant': 'फलज रेस्टोरेंट', 'Sarab': 'सराब बार', 'Al Waha Pool': 'अल वाहा पूल', 'The Spa': 'द स्पा' }
     };
 
+    function validateRoomNumber(roomStr) {
+      if (!roomStr) return false;
+      let cleanVal = roomStr.trim();
+      let num = parseInt(cleanVal, 10);
+      if (isNaN(num)) return false;
+
+      // Vérification des plages autorisées :
+      // 103 à 144
+      if (num >= 103 && num <= 144) return true;
+      // 201 à 246
+      if (num >= 201 && num <= 246) return true;
+      // 301 à 348
+      if (num >= 301 && num <= 348) return true;
+      // 401 à 448
+      if (num >= 401 && num <= 448) return true;
+      // 501 à 520
+      if (num >= 501 && num <= 520) return true;
+      // Villas : 601 à 608
+      if (num >= 601 && num <= 608) return true;
+
+      return false;
+    }
+
     async function init() {
       const urlParams = new URLSearchParams(window.location.search);
       const room = urlParams.get('room');
       const adminParam = urlParams.get('admin');
 
       if (room) {
-        document.getElementById('roomIndicator').innerText = `Room/Villa: ${room} • Remal Hotel`;
-        document.getElementById('req_room').value = room;
+        if (validateRoomNumber(room)) {
+          document.getElementById('roomIndicator').innerText = `Room/Villa: ${room} • Remal Hotel`;
+          document.getElementById('req_room').value = room;
+        }
       }
 
       if (adminParam === 'true') {
@@ -804,10 +903,12 @@
 
       setLang('en');
       renderFacilities();
+      renderFaqList();
       await fetchMenuItemsFromCloud();
       await fetchOffersFromCloud();
       await fetchAnnouncementFromCloud();
       await fetchRequestsFromCloud();
+      await fetchFeedbackFromCloud();
       renderClientFavoritesAndHistory();
       renderRoomFolioWidget();
       setInterval(fetchRequestsFromCloud, 5000);
@@ -854,6 +955,7 @@
         btn.innerText = "📱 Client View";
         renderAdminList();
         renderAdminMenuList();
+        renderAdminFeedback();
         renderAnalyticsData();
       } else {
         currentView = 'client';
@@ -862,6 +964,79 @@
         btn.innerText = "⚙️ Staff Panel";
         renderClientCards();
       }
+    }
+
+    function setFeedbackRating(rating) {
+      currentFeedbackRating = rating;
+      for (let i = 1; i <= 5; i++) {
+        const star = document.getElementById(`star-${i}`);
+        if (i <= rating) star.className = "text-amber-400";
+        else star.className = "text-stone-300";
+      }
+    }
+
+    async function submitGuestFeedback(event) {
+      event.preventDefault();
+      const room = document.getElementById('req_room')?.value?.trim() || 'General';
+      const comment = document.getElementById('feedback_comment').value;
+
+      await supabaseClient.from('feedback').insert([{ room, rating: currentFeedbackRating, comment }]);
+      alert("Thank you for sharing your feedback with Remal Hotel & Villas!");
+      document.getElementById('feedback_comment').value = '';
+      setFeedbackRating(5);
+      await fetchFeedbackFromCloud();
+    }
+
+    async function fetchFeedbackFromCloud() {
+      const { data } = await supabaseClient.from('feedback').select('*').order('id', { ascending: false });
+      cachedFeedback = data || [];
+      if (currentView === 'admin') renderAdminFeedback();
+    }
+
+    function renderAdminFeedback() {
+      const container = document.getElementById('adminFeedbackContainer');
+      if (!container) return;
+      if (cachedFeedback.length === 0) {
+        container.innerHTML = `<p class="text-xs text-stone-400">No guest reviews submitted yet.</p>`;
+        return;
+      }
+      container.innerHTML = cachedFeedback.map(fb => `
+        <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 text-xs space-y-1">
+          <div class="flex justify-between font-bold text-stone-900">
+            <span>Room/Villa: ${fb.room}</span>
+            <span class="text-amber-500">${'★'.repeat(fb.rating)}${'☆'.repeat(5 - fb.rating)}</span>
+          </div>
+          <p class="text-stone-700">${fb.comment}</p>
+        </div>
+      `).join('');
+    }
+
+    function renderFaqList() {
+      const container = document.getElementById('faqContainer');
+      if (!container) return;
+      container.innerHTML = FAQ_DATA.map(item => `
+        <div class="bg-stone-50 p-3.5 rounded-2xl border border-stone-200 text-xs space-y-1">
+          <p class="font-bold text-stone-900">❓ ${item.q[currentLang] || item.q.en}</p>
+          <p class="text-stone-600 pl-4 border-l-2 border-remal-sand">${item.a[currentLang] || item.a.en}</p>
+        </div>
+      `).join('');
+    }
+
+    function filterFaq() {
+      const query = document.getElementById('faqSearchInput').value.toLowerCase();
+      const container = document.getElementById('faqContainer');
+      const filtered = FAQ_DATA.filter(item => 
+        item.q.en.toLowerCase().includes(query) || 
+        item.a.en.toLowerCase().includes(query) ||
+        (item.q.ar && item.q.ar.includes(query)) ||
+        (item.q.hi && item.q.hi.toLowerCase().includes(query))
+      );
+      container.innerHTML = filtered.map(item => `
+        <div class="bg-stone-50 p-3.5 rounded-2xl border border-stone-200 text-xs space-y-1">
+          <p class="font-bold text-stone-900">❓ ${item.q[currentLang] || item.q.en}</p>
+          <p class="text-stone-600 pl-4 border-l-2 border-remal-sand">${item.a[currentLang] || item.a.en}</p>
+        </div>
+      `).join('');
     }
 
     async function fetchMenuItemsFromCloud() {
@@ -1040,7 +1215,7 @@
       }
 
       const roomNum = document.getElementById('req_room')?.value?.trim();
-      if (roomNum) {
+      if (roomNum && validateRoomNumber(roomNum)) {
         const roomReqs = cachedRequests.filter(r => String(r.room).trim().toLowerCase() === roomNum.toLowerCase() && r.service.includes('Room Service'));
         if (roomReqs.length > 0) {
           html += `<div class="space-y-1"><p class="text-[10px] font-bold text-stone-500 uppercase">🕒 Recent Room Service Orders for Room ${roomNum}</p>`;
@@ -1065,7 +1240,7 @@
       if (!container) return;
       const roomNum = document.getElementById('req_room')?.value?.trim();
 
-      if (!roomNum) {
+      if (!roomNum || !validateRoomNumber(roomNum)) {
         container.innerHTML = `<p class="text-[11px] text-stone-400 italic">Enter your room number below to view your live billing summary.</p>`;
         return;
       }
@@ -1101,6 +1276,21 @@
     }
 
     function onRoomNumberChange() {
+      const roomInput = document.getElementById('req_room');
+      const roomError = document.getElementById('roomErrorMsg');
+      const val = roomInput.value.trim();
+
+      if (val === '') {
+        roomError.classList.add('hidden');
+        roomInput.classList.remove('border-rose-500');
+      } else if (!validateRoomNumber(val)) {
+        roomError.classList.remove('hidden');
+        roomInput.classList.add('border-rose-500');
+      } else {
+        roomError.classList.add('hidden');
+        roomInput.classList.remove('border-rose-500');
+      }
+
       renderClientTracker();
       renderClientFavoritesAndHistory();
       renderRoomFolioWidget();
@@ -1250,7 +1440,7 @@
       if (!container) return;
       const t = i18n[currentLang] || i18n.en;
 
-      if (!roomNum) { container.innerHTML = `<p class="text-center text-xs text-stone-400 py-3">${t.trackEmpty}</p>`; return; }
+      if (!roomNum || !validateRoomNumber(roomNum)) { container.innerHTML = `<p class="text-center text-xs text-stone-400 py-3">${t.trackEmpty}</p>`; return; }
       const myRequests = cachedRequests.filter(r => String(r.room).trim().toLowerCase() === roomNum.toLowerCase());
       if (myRequests.length === 0) { container.innerHTML = `<p class="text-center text-xs text-stone-400 py-3">${t.trackNoReq} ${roomNum}.</p>`; return; }
 
@@ -1345,7 +1535,6 @@
       `).join('');
     }
 
-    // Impression garantie d'un ticket individuel sur 1 seule page A4
     function printRequestTicket(reqId) {
       const req = cachedRequests.find(r => r.id === reqId);
       if (!req) return;
@@ -1394,11 +1583,10 @@
       setTimeout(() => { window.print(); }, 150);
     }
 
-    // Génération et impression du Room Folio (Facture de séjour complète)
     function generateRoomFolio() {
       const roomNum = document.getElementById('req_room')?.value?.trim();
-      if (!roomNum) {
-        alert("Please enter your Room Number first.");
+      if (!roomNum || !validateRoomNumber(roomNum)) {
+        alert("Please enter a valid Room Number first.");
         return;
       }
 
@@ -1524,11 +1712,15 @@
     }
 
     async function submitGuestRequest() {
-      const room = document.getElementById('req_room').value;
+      const room = document.getElementById('req_room').value.trim();
       const service = document.getElementById('req_service').value;
       let details = document.getElementById('req_details').value;
 
-      if (!room) { alert("Please enter your Room number."); return; }
+      if (!room || !validateRoomNumber(room)) {
+        alert("❌ Erreur : Veuillez entrer un numéro de chambre ou de villa valide.");
+        document.getElementById('req_room').focus();
+        return;
+      }
       
       if (service === 'Room Service / Dining') {
         const total = calculateCartTotal();
@@ -1573,20 +1765,25 @@
     async function deleteOffer(id) { if (confirm('Delete?')) { await supabaseClient.from('offers').delete().eq('id', id); await fetchOffersFromCloud(); } }
 
     function switchGuestTab(tab) {
-      ['guestOffersSection', 'guestFacilitiesSection', 'guestRequestSection'].forEach(s => document.getElementById(s).classList.add('hidden'));
-      ['tabOffersBtn', 'tabFacilitiesBtn', 'tabRequestBtn'].forEach(b => document.getElementById(b).className = "flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap");
+      ['guestOffersSection', 'guestFacilitiesSection', 'guestFaqSection', 'guestRequestSection'].forEach(s => document.getElementById(s).classList.add('hidden'));
+      ['tabOffersBtn', 'tabFacilitiesBtn', 'tabFaqBtn', 'tabRequestBtn'].forEach(b => document.getElementById(b).className = "flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap");
 
       if (tab === 'offers') { document.getElementById('guestOffersSection').classList.remove('hidden'); document.getElementById('tabOffersBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; }
       else if (tab === 'facilities') { document.getElementById('guestFacilitiesSection').classList.remove('hidden'); document.getElementById('tabFacilitiesBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; }
+      else if (tab === 'faq') { document.getElementById('guestFaqSection').classList.remove('hidden'); document.getElementById('tabFaqBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; renderFaqList(); }
       else if (tab === 'request') { document.getElementById('guestRequestSection').classList.remove('hidden'); document.getElementById('tabRequestBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; toggleServiceDynamicFields(); renderClientTracker(); renderClientFavoritesAndHistory(); renderRoomFolioWidget(); }
     }
 
     function switchAdminTab(tab) {
-      ['adminOffersPanel', 'adminRequestsPanel', 'adminAnalyticsPanel', 'adminBannerPanel'].forEach(p => document.getElementById(p).classList.add('hidden'));
+      ['adminOffersPanel', 'adminRequestsPanel', 'adminFeedbackPanel', 'adminAnalyticsPanel', 'adminBannerPanel'].forEach(p => document.getElementById(p).classList.add('hidden'));
       if (tab === 'offers') document.getElementById('adminOffersPanel').classList.remove('hidden');
       else if (tab === 'requests') { 
         document.getElementById('adminRequestsPanel').classList.remove('hidden'); 
         fetchRequestsFromCloud(); 
+      }
+      else if (tab === 'feedback') {
+        document.getElementById('adminFeedbackPanel').classList.remove('hidden');
+        fetchFeedbackFromCloud();
       }
       else if (tab === 'analytics') {
         document.getElementById('adminAnalyticsPanel').classList.remove('hidden');
@@ -1607,6 +1804,7 @@
       document.getElementById('welcomeMsg').innerText = t.welcome;
       document.getElementById('lblTabOffers').innerText = t.lblOffers;
       document.getElementById('lblTabFacilities').innerText = t.lblFacilities;
+      document.getElementById('lblTabFaq').innerText = t.lblFaq;
       document.getElementById('lblTabRequest').innerText = t.lblService;
       document.getElementById('reqHeader').innerText = t.reqHeader;
       document.getElementById('btnSubmitReq').innerText = t.btnSubmit;
@@ -1617,6 +1815,7 @@
       renderCategoryFilters(); 
       renderClientCards(); 
       renderFacilities(); 
+      renderFaqList();
       renderAnnouncement(); 
       renderClientTracker();
       renderRoomServiceMenu();
