@@ -849,7 +849,7 @@
           { val: "Luggage Assistance", text: "सामान सहायता" },
           { val: "Room Service / Dining", text: "रूम सर्विस / खाना ऑर्डर करें" }, 
           { val: "Maintenance / Technical Support", text: "रखरखाव / तकनीकी सहायता" },
-          { val: "Laundry", text: "لॉन्ड्ररी (कपड़े धोने की सेवा)" }
+          { val: "Laundry", text: "लॉन्ड्ररी (कपड़े धोने की सेवा)" }
         ]
       }
     };
@@ -1574,7 +1574,7 @@
 
       if (!roomNum || !validateRoomNumber(roomNum)) { container.innerHTML = `<p class="text-center text-xs text-stone-400 py-3">${t.trackEmpty}</p>`; return; }
       
-      const myRequests = cachedRequests.filter(r => String(r.room).trim().toLowerCase() === roomNum.toLowerCase());
+      const myRequests = cachedRequests.filter(r => String(r.room).trim().toLowerCase() === roomNum.toLowerCase() && !r.service.includes('Laundry'));
       const myLaundry = cachedLaundryOrders.filter(l => String(l.room).trim().toLowerCase() === roomNum.toLowerCase());
 
       if (myRequests.length === 0 && myLaundry.length === 0) { 
@@ -1584,7 +1584,7 @@
 
       let html = '';
 
-      // 1. Rendu des requêtes standard
+      // 1. Rendu des requêtes standard (hors Laundry)
       html += myRequests.map(req => {
         let statusBadgeClass = "bg-amber-100 text-amber-800";
         let statusText = req.status || 'Pending';
@@ -1618,7 +1618,7 @@
       `;
       }).join('');
 
-      // 2. Rendu de la Timeline Laundry synchronisée exactement sur les statuts de la Laundry Plant (Collected, Washing, Ready, Delivered)
+      // 2. Rendu de la Timeline Laundry exclusive aux statuts Laundry (Collected ➔ Washing ➔ Ready ➔ Delivered)
       html += myLaundry.map(laundry => {
         let lStatus = laundry.status || 'Collected';
         let lWidth = 'w-1/4';
@@ -1638,7 +1638,7 @@
           <p class="text-stone-600 bg-white p-2.5 rounded-xl border border-stone-100">${laundry.details}</p>
           <div class="space-y-1 pt-1">
             <div class="flex justify-between text-[10px] text-stone-400 font-semibold">
-              <span>Laundry Timeline (Collected ➔ Washing ➔ Ready ➔ Delivered)</span>
+              <span>Laundry Lifecycle (Collected ➔ Washing ➔ Ready ➔ Delivered)</span>
               <span>${lStatus}</span>
             </div>
             <div class="w-full bg-stone-200 h-1.5 rounded-full overflow-hidden">
