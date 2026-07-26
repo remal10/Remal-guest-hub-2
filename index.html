@@ -118,7 +118,7 @@
         <form id="guestRequestForm" class="space-y-4">
           <div>
             <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblRoom">Room Number</label>
-            <input type="text" id="req_room" placeholder="e.g., 104, 201 or 601" onkeyup="onRoomNumberChange()" onchange="onRoomNumberChange()" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/55 outline-none" required>
+            <input type="text" id="req_room" placeholder="e.g., 104, 201 or 601" oninput="onRoomNumberChange()" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/55 outline-none" required>
             <p id="roomErrorMsg" class="text-rose-600 text-[11px] font-bold mt-1 hidden">❌ Erreur de numéro : Numéro de chambre ou de villa invalide.</p>
           </div>
           <div>
@@ -534,17 +534,17 @@
 
     const HARDCODED_MENU = [
       { id: 'hm_bf1', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Continental', ar: 'كونتيننتال', hi: 'महाद्वीपीय' }, desc: { en: 'Croissant, Muffin, Danish and Seasonal Sliced Fruits', ar: 'تشكيلة من الكرواسون والمفن والدانش، وفواكه موسمية مقطعة', hi: 'क्रॉसेंट, मफिन, दानिश और मौसमी कटे हुए फल' }, price: 49 },
-      { id: 'hm_bf2', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Emirati Flavors', ar: 'الفطور بالطعم الإماراتي', hi: 'अमीराती स्वाद' }, desc: { en: 'Harees, Chebab, Balaleet, Arabic Cheese, Labneh, Olives, Cucumber, Tomatoes, Foul Medames, Egg Shakshuka, Kuboos', ar: 'هريس، جباب، بالاليط، جبن عربي، لبنة، زيتون، خيار، طماطم، فول، شكشوكة، خبز', hi: 'हरीस, चेबाब, बलालीट, अरबी पनीर, लाबनेह, जैतून, ककड़ी, टमाटर, फुल मेदमेस' }, price: 59 },
-      { id: 'hm_sp1', categoryKey: 'Soup', catName: { en: 'Soup', ar: 'الشوربة', hi: 'सूप' }, name: { en: 'Traditional Lentil Soup', ar: 'شوربة العدس', hi: 'पारंपरिक दाल का सूप' }, desc: { en: 'With roasted cumin, fresh lemon and crispy pita bread', ar: 'تقدم مع كمون محمص، ليمون طازج وخبر بيتا مقرمش', hi: 'भुना हुआ जीरा, ताज़ा नींबू और कुरकुरी पिटा ब्रेड के साथ' }, price: 25 },
+      { id: 'hm_bf2', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्تا' }, name: { en: 'Emirati Flavors', ar: 'الفطور بالطعم الإماراتي', hi: 'अमीराती स्वाद' }, desc: { en: 'Harees, Chebab, Balaleet, Arabic Cheese, Labneh, Olives, Cucumber, Tomatoes, Foul Medames, Egg Shakshuka, Kuboos', ar: 'هريس، جباب، بالاليط، جبن عربي، لبنة، زيتون، خيار، طماطم، فول، شكشوكة، خبز', hi: 'हरीस, चेबाब, बलालीट, अरबी पनीर, लाबनेह, जैतून, ककड़ी, टमाटर, फुल मेदमेس' }, price: 59 },
+      { id: 'hm_sp1', categoryKey: 'Soup', catName: { en: 'Soup', ar: 'الشوربة', hi: 'سープ' }, name: { en: 'Traditional Lentil Soup', ar: 'شوربة العدس', hi: 'पारंपरिक दाल का सूप' }, desc: { en: 'With roasted cumin, fresh lemon and crispy pita bread', ar: 'تقدم مع كمون محمص، ليمون طازج وخبر بيتا مقرمش', hi: 'भुना हुआ जीरा, ताज़ा नींबू और कुरकुरी पिटा ब्रेड के साथ' }, price: 25 },
       { id: 'hm_sw1', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Beef Burger', ar: 'برجر لحم بقري', hi: 'बीफ बर्गर' }, desc: { en: 'Juicy beef patty with mayonnaise, lettuce, tomato, gherkins, cheddar cheese, served with French fries', ar: 'برجر لحم بقري مع مايونيز، خس، طماطم، جبنة شيدر، يقدم مع بطاطس مقلية', hi: 'मयोनीज़, सलाद पत्ता, टमाटर और चेडर पनीर के साथ बीफ बर्गर' }, price: 60 },
-      { id: 'hm_sw2', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Club Sandwich', ar: 'كلوب ساندويتش', hi: 'क्लब सैंडविच' }, desc: { en: 'Triple decker with turkey bacon, lettuce, tomato, chicken mousse, cheese, fried egg, served with French fries', ar: 'توست ثلاث طبقات مع لحم ديك رومي، خس، طماطم، دجاج، جبنة، بيض مقلي، يقدم مع بطاطس مقلية', hi: 'टर्की बेकन, सलाद पत्ता, टमाटर, चिकन और तले हुए अंडे के साथ ट्रिपल डेकर' }, price: 60 },
+      { id: 'hm_sw2', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Club Sandwich', ar: 'كلوب ساندويتش', hi: 'क्लब सैंडविच' }, desc: { en: 'Triple decker with turkey bacon, lettuce, tomato, chicken mousse, cheese, fried egg, served with French fries', ar: 'توست ثلاث طبقات مع لحم ديك رومي، خس، طماطم، دجاج، جبنة، بيض مقلي، يقدم مع بطاطس مقلية', hi: 'टर्की बेकن, सलाद पत्ता, टमाटर, चिकन और तले हुए अंडे के साथ ट्रिपल डेकर' }, price: 60 },
       { id: 'hm_pz1', categoryKey: 'Pizza', catName: { en: 'Pizza', ar: 'البيتزا', hi: 'पिज़्ज़ा' }, name: { en: 'Margherita', ar: 'مارغريتا', hi: 'मार्गेरिटा' }, desc: { en: 'Mozzarella cheese, tomato sauce, oregano', ar: 'جبن موزاريلا، صلصة الطماطم، أوريغانو', hi: 'मोज़ेरेला पनीर, टमाटर की चटनी, ओरेगानो' }, price: 49 },
-      { id: 'hm_pz2', categoryKey: 'Pizza', catName: { en: 'Pizza', ar: 'البيتزا', hi: 'पिज़्ज़ा' }, name: { en: 'Pepperoni', ar: 'بيبروني', hi: 'पेपरोनी पिज़्ज़ा' }, desc: { en: 'Mozzarella, beef pepperoni, tomato sauce', ar: 'جبن موزاريلا، بيبروني لحم بقري، صلصة الطماطم', hi: 'मोज़ेरेला, बीफ पेपरोني, टमाटर की चटनी' }, price: 65 },
+      { id: 'hm_pz2', categoryKey: 'Pizza', catName: { en: 'Pizza', ar: 'البيتزا', hi: 'पिज़्ज़ा' }, name: { en: 'Pepperoni', ar: 'بيبروني', hi: 'पेपरोनी पिज़्ज़ा' }, desc: { en: 'Mozzarella, beef pepperoni, tomato sauce', ar: 'جبن موزاريلا، بيبروني لحم بقري، صلصة الطماطم', hi: 'मोज़ेरेلا, बीफ पेपरोनी, टमाटर की चटनी' }, price: 65 },
       { id: 'hm_pt1', categoryKey: 'Pasta', catName: { en: 'Pasta', ar: 'الباستا', hi: 'पास्ता' }, name: { en: 'Fettuccine Alfredo with Grilled Chicken', ar: 'فيتوتشيني ألفريدو مع دجاج مشوي', hi: 'ग्रिल्ड चिकन के साथ फेटुचिनी अल्फ्रेडो' }, desc: { en: 'Fettuccine in rich creamy Alfredo sauce topped with grilled chicken', ar: 'فيتوتشيني بصلصة ألفريدو كريمية غنية مع دجاج مشوي', hi: 'ग्रिल्ड चिकन के साथ मलाईदार अल्फ्रेडो सॉस में फेटुचिनी' }, price: 60 },
-      { id: 'hm_mc1', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Chicken Biryani', ar: 'برياني دجاج', hi: 'चिकन बिरयानी' }, desc: { en: 'Basmati rice with marinated chicken, served with raita, papad, and pickle', ar: 'أرز بسمتي مع دجاج متبل، يقدم مع رايتا، باباد ومخلل', hi: 'मैरीनेटेड चिकन के साथ बाسمती चावल' }, price: 65 },
+      { id: 'hm_mc1', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Chicken Biryani', ar: 'برياني دجاج', hi: 'चिकन बिरयानी' }, desc: { en: 'Basmati rice with marinated chicken, served with raita, papad, and pickle', ar: 'أرز بسمتي مع دجاج متبل، يقدم مع رايتا، باباد ومخلل', hi: 'मैरीनेटेड चिकन के साथ बासमती चावल' }, price: 65 },
       { id: 'hm_mc2', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Butter Chicken Masala', ar: 'دجاج بتر ماسالا', hi: 'बटर चिकन मसाला' }, desc: { en: 'Chicken in rich tomato butter sauce', ar: 'دجاج مطهو بصلصة طماطم بالزبدة', hi: 'समृद्ध टमाटर बटर सॉस में चिकन' }, price: 65 },
       { id: 'hm_hb1', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي', hi: 'गर्म पेय' }, name: { en: 'Cappuccino', ar: 'كابتشينو', hi: 'कपुचिनो' }, desc: { en: 'Espresso with steamed milk and thick foam', ar: 'إسبريسو مع حليب مبشور ورغوة كثيفة', hi: 'एस्प्रेसो और मलाईदार दूध' }, price: 27 },
-      { id: 'hm_mk1', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोकटेल' }, name: { en: 'Mojito', ar: 'موهيتو', hi: 'मोहितो' }, desc: { en: 'Fresh mint leaves, lime, demerara sugar, soda water', ar: 'أوراق نعناع طازجة، ليمون أخضر، سكر، مياه صودا', hi: 'ताजा पुदीना, नींबू और सोड़ा' }, price: 33 }
+      { id: 'hm_mk1', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोकटيل' }, name: { en: 'Mojito', ar: 'موهيتو', hi: 'मोहितो' }, desc: { en: 'Fresh mint leaves, lime, demerara sugar, soda water', ar: 'أوراق نعناع طازجة، ليمون أخضر، سكر، مياه صودا', hi: 'ताजा पुदीना, नींबू और सोड़ा' }, price: 33 }
     ];
 
     const facilitiesData = [
@@ -637,7 +637,7 @@
       setInterval(() => {
         fetchRequestsFromCloud();
         fetchLaundryOrdersFromCloud();
-      }, 15000);
+      }, 10000);
     }
 
     function handleAdminAccess() {
@@ -1060,7 +1060,6 @@
       renderRoomFolioWidget();
     }
 
-    // FONCTION MISE À JOUR : DÉTECTION ET ALERTE SONORE/VISUELLE LAUNDRY DEPUIS LA RÉCEPTION
     async function fetchLaundryOrdersFromCloud() {
       const { data, error } = await supabaseClient.from('laundry_orders').select('*').order('id', { ascending: false });
       if (error) return;
@@ -1068,9 +1067,8 @@
       cachedLaundryOrders = data || [];
       const activeLaundryOrders = cachedLaundryOrders.filter(l => l.status !== 'Delivered');
 
-      // Si une nouvelle commande blanchisserie est enregistrée
       if (activeLaundryOrders.length > previousLaundryCount) {
-        playNotificationSound(); // Signal sonore à la réception
+        playNotificationSound();
       }
       previousLaundryCount = activeLaundryOrders.length;
 
@@ -1127,16 +1125,22 @@
       document.getElementById('analyticsContentContainer').innerHTML = analyticsHtml;
     }
 
+    // FONCTION DE SUIVI CLIENT ÉLÉGANTE (SANS BANNIÈRE ROUGE)
     function renderClientTracker() {
-      const roomNum = document.getElementById('req_room')?.value?.trim();
+      const roomInput = document.getElementById('req_room');
+      const roomNum = roomInput ? roomInput.value.trim() : '';
       const container = document.getElementById('clientTrackerContainer');
       if (!container) return;
       const t = i18n[currentLang];
 
-      if (!roomNum || !validateRoomNumber(roomNum)) { container.innerHTML = `<p class="text-center text-xs text-stone-400 py-3">${t.trackEmpty}</p>`; return; }
-      
-      const myRequests = cachedRequests.filter(r => String(r.room).trim().toLowerCase() === roomNum.toLowerCase() && r.service !== 'Laundry');
-      const myLaundry = cachedLaundryOrders.filter(l => String(l.room).trim().toLowerCase() === roomNum.toLowerCase());
+      if (!roomNum || !validateRoomNumber(roomNum)) { 
+        container.innerHTML = `<p class="text-center text-xs text-stone-400 py-3">${t.trackEmpty}</p>`; 
+        return; 
+      }
+
+      const cleanRoom = String(roomNum).trim().toLowerCase();
+      const myRequests = cachedRequests.filter(r => String(r.room || '').trim().toLowerCase() === cleanRoom && r.service !== 'Laundry');
+      const myLaundry = cachedLaundryOrders.filter(l => String(l.room || '').trim().toLowerCase() === cleanRoom);
 
       if (myRequests.length === 0 && myLaundry.length === 0) { 
         container.innerHTML = `<p class="text-center text-xs text-stone-400 py-3">${t.trackNoReq} ${roomNum}.</p>`; 
@@ -1145,6 +1149,7 @@
 
       let html = '';
 
+      // Demandes générales
       html += myRequests.map(req => {
         let statusBadgeClass = "bg-amber-100 text-amber-800";
         let progressWidth = "w-1/3";
@@ -1164,29 +1169,30 @@
         </div>`;
       }).join('');
 
+      // Suivi Laundry Client (propre, sans bannière d'alerte rouge)
       html += myLaundry.map(laundry => {
         let lStatus = laundry.status || 'Collected';
         let lWidth = 'w-1/4';
         let badgeColor = 'bg-stone-200 text-stone-800';
 
-        if (lStatus === 'Collected') { lWidth = 'w-1/4'; badgeColor = 'bg-stone-200 text-stone-800'; }
+        if (lStatus === 'Collected') { lWidth = 'w-1/4'; badgeColor = 'bg-stone-100 text-stone-800'; }
         else if (lStatus === 'Washing') { lWidth = 'w-2/4'; badgeColor = 'bg-blue-100 text-blue-800'; }
         else if (lStatus === 'Ready') { lWidth = 'w-3/4'; badgeColor = 'bg-amber-100 text-amber-800'; }
         else if (lStatus === 'Delivered') { lWidth = 'w-full'; badgeColor = 'bg-emerald-100 text-emerald-800'; }
 
         return `
-        <div class="p-3.5 bg-stone-50 rounded-2xl border border-stone-200 text-xs space-y-2.5">
+        <div class="p-3.5 bg-white rounded-2xl border border-stone-200 text-xs space-y-2.5 shadow-sm">
           <div class="flex justify-between items-center">
             <span class="font-bold text-stone-900">🧺 Laundry Service</span>
             <span class="${badgeColor} text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">${lStatus}</span>
           </div>
-          <p class="text-stone-600 bg-white p-2.5 rounded-xl border border-stone-100">${laundry.details}</p>
+          <p class="text-stone-600 bg-stone-50 p-2.5 rounded-xl border border-stone-100">${laundry.details}</p>
           <div class="space-y-1 pt-1">
             <div class="flex justify-between text-[10px] text-stone-400 font-semibold">
-              <span>Status Timeline (Laundry Plant Synchronized)</span>
+              <span>Status Timeline</span>
               <span>${lStatus}</span>
             </div>
-            <div class="w-full bg-stone-200 h-1.5 rounded-full overflow-hidden">
+            <div class="w-full bg-stone-100 h-1.5 rounded-full overflow-hidden">
               <div class="bg-remal-sand h-full transition-all duration-500 ${lWidth}"></div>
             </div>
           </div>
@@ -1263,7 +1269,7 @@
       document.getElementById('printFolioSection').innerHTML = '';
       const printSection = document.getElementById('printTicketSection');
       printSection.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #E2B383; padding-bottom: 12px; margin-bottom: 15px;">
+        <div style="display: flex; justify-between; align-items: center; border-bottom: 2px solid #E2B383; padding-bottom: 12px; margin-bottom: 15px;">
           <div>
             <h1 style="font-size: 20px; font-weight: bold; font-family: 'Playfair Display', serif; margin: 0; color: #111;">REMAL HOTEL & VILLAS</h1>
             <p style="font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin: 2px 0 0 0;">Al Dhannah City • Guest Hub Service Ticket</p>
@@ -1447,6 +1453,7 @@
       calculateCartTotal();
 
       await Promise.all([fetchRequestsFromCloud(), fetchLaundryOrdersFromCloud()]);
+      renderClientTracker();
     }
 
     async function updateRequestStatus(id, newStatus) { await supabaseClient.from('requests').update({ status: newStatus }).eq('id', id); await fetchRequestsFromCloud(); }
@@ -1520,7 +1527,7 @@
       document.getElementById('lblFavTitle').innerText = t.favTitle;
       document.getElementById('lblFavBadge').innerText = t.lblFavBadge;
       document.getElementById('lblTrackHeader').innerText = t.trackHeader;
-      document.getElementById('lblLiveStatus').innerText = t.liveStatus;
+      document.getElementById('lblLiveStatus').innerText = t.lblLiveStatus;
 
       document.getElementById('lblMenuHeader').innerText = t.menuHeader;
       document.getElementById('lblMenuBadge').innerText = t.menuBadge;
