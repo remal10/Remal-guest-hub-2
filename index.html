@@ -87,12 +87,24 @@
 
     <!-- SECTION DEMANDES & ROOM SERVICE -->
     <div id="guestRequestSection" class="hidden space-y-6">
+      
+      <!-- NOUVEAU : BLOC HISTORIQUE ET FAVORIS POUR LES CLIENTS RÉCURRENTS -->
+      <div id="guestHistoryBlock" class="remal-card p-5 rounded-3xl space-y-3">
+        <div class="flex justify-between items-center border-b border-stone-100 pb-2">
+          <span class="text-xs font-serif-luxury font-bold text-stone-900">⭐ My Favorites & Recent Orders</span>
+          <span class="text-[9px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">Quick Access</span>
+        </div>
+        <div id="clientFavoritesContainer" class="space-y-2">
+          <p class="text-[11px] text-stone-400 italic">No starred favorite dishes yet. Click the star on any dish to save it here.</p>
+        </div>
+      </div>
+
       <div class="remal-card p-6 rounded-3xl space-y-5">
         <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-3" id="reqHeader">Request Guest Service</h2>
         <form id="guestRequestForm" class="space-y-4">
           <div>
             <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblRoom">Room Number</label>
-            <input type="text" id="req_room" placeholder="e.g., 104 or Villa 02" onkeyup="renderClientTracker()" onchange="renderClientTracker()" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/55 outline-none" required>
+            <input type="text" id="req_room" placeholder="e.g., 104 or Villa 02" onkeyup="onRoomNumberChange()" onchange="onRoomNumberChange()" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/55 outline-none" required>
           </div>
           <div>
             <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblService">Service Type</label>
@@ -325,6 +337,7 @@
     let currentUserSession = null;
     let roomServiceMenu = [];
     let cartState = {};
+    let starredItems = JSON.parse(localStorage.getItem('remal_starred') || '{}');
 
     let currentLang = 'en';
     let currentView = 'client';
@@ -504,7 +517,7 @@
         whatsappBtn: "WhatsApp Reception", successMsg: "Request submitted successfully!", chatWhatsapp: "💬 Chat on WhatsApp",
         trackHeader: "📡 Track Active Requests", liveStatus: "Live Status", trackEmpty: "Enter your room number above to track active requests in real time.",
         trackNoReq: "No active requests found for room ", loadingOffers: "Loading live offers...", noOffers: "No offers available in this category.",
-        swipePhotos: "👈 Swipe for more photos 👉", bookInquiry: "Book / Inquiry →", statusPending: "🟡 Pending (Received)", statusInProgress: "🔵 In Progress (Preparing)", statusCompleted: "🟢 Completed (Delivered)",
+        swipePhotos: "👈 Swipe for more photos 👉", bookInquiry: "Book / Inquiry →",
         services: [
           { val: "Front Desk Inquiry", text: "Front Desk Inquiry" }, { val: "Luggage Assistance", text: "Luggage Assistance" },
           { val: "Room Service / Dining", text: "Room Service / Order Food" }, { val: "Maintenance / Technical Support", text: "Maintenance / Technical Support" },
@@ -519,7 +532,7 @@
         whatsappBtn: "واتساب الاستقبال", successMsg: "تم إرسال طلبك بنجاح!", chatWhatsapp: "💬 التحدث عبر واتساب",
         trackHeader: "📡 متابعة الطلبات الحالية", liveStatus: "حالة مباشرة", trackEmpty: "أدخل رقم الغرفة أعلاه لمتابعة طلباتك في الوقت الفعلي.",
         trackNoReq: "لا توجد طلبات مسجلة للغرفة ", loadingOffers: "جاري تحميل العروض المباشرة...", noOffers: "لا توجد عروض متاحة في هذه الفئة.",
-        swipePhotos: "👈 اسحب لرؤية المزيد من الصور 👉", bookInquiry: "حجز / استفسار ←", statusPending: "🟡 قيد الانتظار (تم الاستلام)", statusInProgress: "🔵 قيد التنفيذ (جاري التحضير)", statusCompleted: "🟢 تم الإنجاز (تم التوصيل)",
+        swipePhotos: "👈 اسحب لرؤية المزيد من الصور 👉", bookInquiry: "حجز / استفسار ←",
         services: [
           { val: "Front Desk Inquiry", text: "استفسار الاستقبال" }, { val: "Luggage Assistance", text: "مساعدة في الأمتعة" },
           { val: "Room Service / Dining", text: "خدمة الغرف / طلب طعام" }, { val: "Maintenance / Technical Support", text: "الصيانة / الدعم الفني" },
@@ -534,7 +547,7 @@
         whatsappBtn: "व्हाट्सएप रिसेप्शन", successMsg: "आपका अनुरोध सफलतापूर्वक भेजा गया!", chatWhatsapp: "💬 व्हाट्सएप पर चैट करें",
         trackHeader: "📡 सक्रिय अनुरोध ट्रैकिंग", liveStatus: "लाइव स्थिति", trackEmpty: "वास्तविक समय में अनुरोध ट्रैक करने के लिए ऊपर कमरा नंबर दर्ज करें।",
         trackNoReq: "कमरा नंबर के लिए कोई अनुरोध नहीं मिला ", loadingOffers: "ऑफ़र लोड हो रहे हैं...", noOffers: "इस श्रेणी में कोई ऑफ़र उपलब्ध नहीं है।",
-        swipePhotos: "👈 अधिक फ़ोटो के लिए स्वाइप करें 👉", bookInquiry: "बुक / पूछताछ →", statusPending: "🟡 लंबित", statusInProgress: "🔵 प्रगति पर है", statusCompleted: "🟢 पूरा हुआ",
+        swipePhotos: "👈 अधिक फ़ोटो के लिए स्वाइप करें 👉", bookInquiry: "बुक / पूछताछ →",
         services: [
           { val: "Front Desk Inquiry", text: "फ्रंट डेस्क पूछताछ" }, { val: "Luggage Assistance", text: "सामान सहायता" },
           { val: "Room Service / Dining", text: "रूम सर्विस / खाना ऑर्डर करें" }, { val: "Maintenance / Technical Support", text: "रखरखाव / तकनीकी सहायता" },
@@ -595,7 +608,7 @@
     const categoriesTranslations = {
       en: { 'All': 'All Services', 'Falaj Restaurant': 'Falaj Restaurant', 'Sarab': 'Sarab Bar', 'Al Waha Pool': 'Al Waha Pool', 'The Spa': 'The Spa' },
       ar: { 'All': 'جميع الخدمات', 'Falaj Restaurant': 'مطعم الفلج', 'Sarab': 'بار سراب', 'Al Waha Pool': 'مسبح الواحة', 'The Spa': 'السبا' },
-      hi: { 'All': 'सभी सेवाएं', 'Falaj Restaurant': 'फलج रेस्टोरेंट', 'Sarab': 'सराब बार', 'Al Waha Pool': 'अल वाहा पूल', 'The Spa': 'द स्पा' }
+      hi: { 'All': 'सभी सेवाएं', 'Falaj Restaurant': 'फलज रेस्टोरेंट', 'Sarab': 'सराब बार', 'Al Waha Pool': 'अल वाहा पूल', 'The Spa': 'द स्पा' }
     };
 
     async function init() {
@@ -623,6 +636,7 @@
       await fetchOffersFromCloud();
       await fetchAnnouncementFromCloud();
       await fetchRequestsFromCloud();
+      renderClientFavoritesAndHistory();
       setInterval(fetchRequestsFromCloud, 5000);
     }
 
@@ -762,6 +776,17 @@
       else block.classList.add('hidden');
     }
 
+    function toggleFavorite(itemId) {
+      if (starredItems[itemId]) {
+        delete starredItems[itemId];
+      } else {
+        starredItems[itemId] = true;
+      }
+      localStorage.setItem('remal_starred', JSON.stringify(starredItems));
+      renderRoomServiceMenu();
+      renderClientFavoritesAndHistory();
+    }
+
     function renderRoomServiceMenu() {
       const container = document.getElementById('foodItemsContainer');
       if (!container) return;
@@ -780,17 +805,21 @@
         html += items.map(item => {
           let nameText = typeof item.name === 'object' ? (item.name[currentLang] || item.name.en) : item.name;
           let descText = typeof item.desc === 'object' ? (item.desc[currentLang] || item.desc.en) : item.desc;
+          const isStarred = starredItems[item.id] ? 'text-amber-500 fill-amber-500' : 'text-stone-300';
 
           return `
           <div class="flex justify-between items-center bg-white p-3 mb-2 rounded-xl border border-stone-200 text-xs shadow-sm">
-            <div class="pr-2 space-y-1" ${currentLang === 'ar' ? 'dir="rtl"' : 'dir="ltr"'}>
-              <p class="font-bold text-stone-900 text-sm leading-tight">${nameText}</p>
-              ${descText ? `<p class="text-[11px] text-stone-500 leading-snug">${descText}</p>` : ''}
-              <p class="text-remal-sand font-bold text-xs">AED ${item.price}</p>
+            <div class="flex items-start space-x-2 pr-2" ${currentLang === 'ar' ? 'dir="rtl"' : 'dir="ltr"'}>
+              <button type="button" onclick="toggleFavorite('${item.id}')" class="mt-0.5 text-base focus:outline-none ${isStarred}">★</button>
+              <div class="space-y-1">
+                <p class="font-bold text-stone-900 text-sm leading-tight">${nameText}</p>
+                ${descText ? `<p class="text-[11px] text-stone-500 leading-snug">${descText}</p>` : ''}
+                <p class="text-remal-sand font-bold text-xs">AED ${item.price}</p>
+              </div>
             </div>
             <div class="flex items-center space-x-2 bg-stone-100 rounded-lg p-1 shrink-0">
               <button type="button" onclick="updateCart('${item.id}', -1)" class="w-6 h-6 bg-white rounded font-bold text-stone-700 shadow-sm">-</button>
-              <span id="qty-item-${item.id}" class="font-bold px-1.5 text-stone-900 w-4 text-center">0</span>
+              <span id="qty-item-${item.id}" class="font-bold px-1.5 text-stone-900 w-4 text-center">${cartState[item.id] || 0}</span>
               <button type="button" onclick="updateCart('${item.id}', 1)" class="w-6 h-6 bg-stone-900 text-white rounded font-bold shadow-sm">+</button>
             </div>
           </div>
@@ -800,17 +829,66 @@
       container.innerHTML = html;
     }
 
+    function renderClientFavoritesAndHistory() {
+      const container = document.getElementById('clientFavoritesContainer');
+      if (!container) return;
+      
+      const starredIds = Object.keys(starredItems).filter(id => starredItems[id]);
+      const starredDishObjects = roomServiceMenu.filter(item => starredIds.includes(String(item.id)));
+
+      let html = '';
+      if (starredDishObjects.length > 0) {
+        html += `<div class="space-y-1 mb-2"><p class="text-[10px] font-bold text-stone-500 uppercase">⭐ Starred Favorites</p>`;
+        html += starredDishObjects.map(item => {
+          let nameText = typeof item.name === 'object' ? (item.name[currentLang] || item.name.en) : item.name;
+          return `<div class="flex justify-between items-center bg-stone-50 p-2 rounded-xl border border-stone-200 text-xs">
+            <span class="font-bold text-stone-800">${nameText} (AED ${item.price})</span>
+            <button type="button" onclick="updateCart('${item.id}', 1); switchGuestTab('request'); document.getElementById('req_service').value='Room Service / Dining'; toggleRoomServiceMenu();" class="bg-remal-sand text-white px-2.5 py-1 rounded-lg font-bold text-[10px]">Order +1</button>
+          </div>`;
+        }).join('');
+        html += `</div>`;
+      }
+
+      // Historique récent basé sur la chambre entrée
+      const roomNum = document.getElementById('req_room')?.value?.trim();
+      if (roomNum) {
+        const roomReqs = cachedRequests.filter(r => String(r.room).trim().toLowerCase() === roomNum.toLowerCase() && r.service.includes('Room Service'));
+        if (roomReqs.length > 0) {
+          html += `<div class="space-y-1"><p class="text-[10px] font-bold text-stone-500 uppercase">🕒 Recent Room Service Orders for Room ${roomNum}</p>`;
+          html += roomReqs.slice(0, 2).map(req => `
+            <div class="bg-stone-50 p-2.5 rounded-xl border border-stone-200 text-[11px] space-y-1">
+              <div class="flex justify-between text-stone-500 font-semibold text-[9px]"><span>Status: ${req.status}</span><span>ID #${req.id}</span></div>
+              <p class="text-stone-800 font-medium whitespace-pre-line">${req.details}</p>
+            </div>
+          `).join('');
+          html += `</div>`;
+        }
+      }
+
+      if (!html) {
+        html = `<p class="text-[11px] text-stone-400 italic">No starred favorite dishes or recent room service history found yet.</p>`;
+      }
+      container.innerHTML = html;
+    }
+
+    function onRoomNumberChange() {
+      renderClientTracker();
+      renderClientFavoritesAndHistory();
+    }
+
     function updateCart(itemId, change) {
       if (!cartState[itemId]) cartState[itemId] = 0;
       cartState[itemId] = Math.max(0, cartState[itemId] + change);
-      document.getElementById(`qty-item-${itemId}`).innerText = cartState[itemId];
+      const qtyEl = document.getElementById(`qty-item-${itemId}`);
+      if (qtyEl) qtyEl.innerText = cartState[itemId];
       calculateCartTotal();
     }
 
     function calculateCartTotal() {
       let total = 0;
       roomServiceMenu.forEach(item => { total += item.price * (cartState[item.id] || 0); });
-      document.getElementById('cartTotalDisplay').innerText = `AED ${total}`;
+      const display = document.getElementById('cartTotalDisplay');
+      if (display) display.innerText = `AED ${total}`;
       return total;
     }
 
@@ -884,6 +962,7 @@
 
       if (currentView === 'admin') renderAdminRequests();
       renderClientTracker();
+      renderClientFavoritesAndHistory();
     }
 
     function renderClientTracker() {
@@ -916,7 +995,6 @@
             <span class="${statusBadgeClass} text-[10px] font-bold px-2.5 py-1 rounded-full">${statusText}</span>
           </div>
           <p class="text-stone-600 bg-white p-2.5 rounded-xl border border-stone-100">${req.details}</p>
-          <!-- Barre de progression visuelle en temps réel -->
           <div class="space-y-1 pt-1">
             <div class="flex justify-between text-[10px] text-stone-400 font-semibold">
               <span>Status Timeline</span>
@@ -1069,7 +1147,7 @@
 
       if (tab === 'offers') { document.getElementById('guestOffersSection').classList.remove('hidden'); document.getElementById('tabOffersBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; }
       else if (tab === 'facilities') { document.getElementById('guestFacilitiesSection').classList.remove('hidden'); document.getElementById('tabFacilitiesBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; }
-      else if (tab === 'request') { document.getElementById('guestRequestSection').classList.remove('hidden'); document.getElementById('tabRequestBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; toggleRoomServiceMenu(); renderClientTracker(); }
+      else if (tab === 'request') { document.getElementById('guestRequestSection').classList.remove('hidden'); document.getElementById('tabRequestBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; toggleRoomServiceMenu(); renderClientTracker(); renderClientFavoritesAndHistory(); }
     }
 
     function switchAdminTab(tab) {
@@ -1107,6 +1185,7 @@
       renderAnnouncement(); 
       renderClientTracker();
       renderRoomServiceMenu();
+      renderClientFavoritesAndHistory();
     }
 
     function filterCategory(cat) { currentCategory = cat; renderCategoryFilters(); renderClientCards(); }
