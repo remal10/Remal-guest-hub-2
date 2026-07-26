@@ -319,7 +319,7 @@
     </div>
   </div>
 
-  <!-- 2. ADMIN VIEW (SANS LAUNDRY PLANT) -->
+  <!-- 2. ADMIN VIEW (STAFF PANEL) -->
   <div id="adminView" class="hidden max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-6">
     <div class="flex justify-between items-center bg-stone-200/80 p-1.5 rounded-2xl text-xs font-bold overflow-x-auto scrollbar-none">
       <div class="flex space-x-2 w-full md:w-auto">
@@ -496,6 +496,7 @@
     let audioContext = null;
     let audioEnabled = false;
     let previousPendingCount = 0;
+    let previousLaundryCount = 0;
     let currentUserSession = null;
     let roomServiceMenu = [];
     let cartState = {};
@@ -523,7 +524,7 @@
       },
       {
         q: { en: "How do I request a late check-out?", ar: "كيف يمكنني طلب مغادرة متأخرة؟", hi: "मैं देर से चेक-आउट का अनुरोध कैसे करूं?" },
-        a: { en: "You can request a late check-out up to 16:00 (4:00 PM) directly in the 'Guest Service' tab by selecting 'Late Check-out Request'.", ar: "يمكنك طلب مغادرة متأخرة حتى الساعة 16:00 مساءً مباشرة عبر علامة التبويب 'خدمة النزلاء'.", hi: "'अतिथि सेवा' टैب में सीधे 'लेट चेक-आउट अनुरोध' चुनकर दोपहर 04:00 बजे तक अनुरोध कर सकते हैं।" }
+        a: { en: "You can request a late check-out up to 16:00 (4:00 PM) directly in the 'Guest Service' tab by selecting 'Late Check-out Request'.", ar: "يمكنك طلب مغادرة متأخرة حتى الساعة 16:00 مساءً مباشرة عبر علامة التبويب 'خدمة النزلاء'.", hi: "'अतिथि सेवा' टैब में सीधे 'लेट चेक-आउट अनुरोध' चुनकर दोपहर 04:00 बजे तक अनुरोध कर सकते हैं।" }
       },
       {
         q: { en: "What are the swimming pool timings?", ar: "ما هي مواعيد مسبح الواحة؟", hi: "स्विमिंग पूल का समय क्या है?" },
@@ -532,15 +533,15 @@
     ];
 
     const HARDCODED_MENU = [
-      { id: 'hm_bf1', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Continental', ar: 'كونتيننتال', hi: 'महाद्वीपीय' }, desc: { en: 'Croissant, Muffin, Danish and Seasonal Sliced Fruits', ar: 'تشكيلة من الكرواسون والمفن والدانش، وفواكه موسمية مقطعة', hi: 'क्रॉसेंट, मफिन, दानिश और मौसمي कटे हुए फल' }, price: 49 },
+      { id: 'hm_bf1', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Continental', ar: 'كونتيننتال', hi: 'महाद्वीपीय' }, desc: { en: 'Croissant, Muffin, Danish and Seasonal Sliced Fruits', ar: 'تشكيلة من الكرواسون والمفن والدانش، وفواكه موسمية مقطعة', hi: 'क्रॉसेंट, मफिन, दानिश और मौसमी कटे हुए फल' }, price: 49 },
       { id: 'hm_bf2', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Emirati Flavors', ar: 'الفطور بالطعم الإماراتي', hi: 'अमीराती स्वाद' }, desc: { en: 'Harees, Chebab, Balaleet, Arabic Cheese, Labneh, Olives, Cucumber, Tomatoes, Foul Medames, Egg Shakshuka, Kuboos', ar: 'هريس، جباب، بالاليط، جبن عربي، لبنة، زيتون، خيار، طماطم، فول، شكشوكة، خبز', hi: 'हरीस, चेबाब, बलालीट, अरबी पनीर, लाबनेह, जैतून, ककड़ी, टमाटर, फुल मेदमेस' }, price: 59 },
       { id: 'hm_sp1', categoryKey: 'Soup', catName: { en: 'Soup', ar: 'الشوربة', hi: 'सूप' }, name: { en: 'Traditional Lentil Soup', ar: 'شوربة العدس', hi: 'पारंपरिक दाल का सूप' }, desc: { en: 'With roasted cumin, fresh lemon and crispy pita bread', ar: 'تقدم مع كمون محمص، ليمون طازج وخبر بيتا مقرمش', hi: 'भुना हुआ जीरा, ताज़ा नींबू और कुरकुरी पिटा ब्रेड के साथ' }, price: 25 },
       { id: 'hm_sw1', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Beef Burger', ar: 'برجر لحم بقري', hi: 'बीफ बर्गर' }, desc: { en: 'Juicy beef patty with mayonnaise, lettuce, tomato, gherkins, cheddar cheese, served with French fries', ar: 'برجر لحم بقري مع مايونيز، خس، طماطم، جبنة شيدر، يقدم مع بطاطس مقلية', hi: 'मयोनीज़, सलाद पत्ता, टमाटर और चेडर पनीर के साथ बीफ बर्गर' }, price: 60 },
       { id: 'hm_sw2', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Club Sandwich', ar: 'كلوب ساندويتش', hi: 'क्लब सैंडविच' }, desc: { en: 'Triple decker with turkey bacon, lettuce, tomato, chicken mousse, cheese, fried egg, served with French fries', ar: 'توست ثلاث طبقات مع لحم ديك رومي، خس، طماطم، دجاج، جبنة، بيض مقلي، يقدم مع بطاطس مقلية', hi: 'टर्की बेकन, सलाद पत्ता, टमाटर, चिकन और तले हुए अंडे के साथ ट्रिपल डेकर' }, price: 60 },
-      { id: 'hm_pz1', categoryKey: 'Pizza', catName: { en: 'Pizza', ar: 'البيتزا', hi: 'पिज़्ज़ा' }, name: { en: 'Margherita', ar: 'مارغريتا', hi: 'मार्गेरिटा' }, desc: { en: 'Mozzarella cheese, tomato sauce, oregano', ar: 'جبن موزاريلا، صلصة الطماطم، أوريغانو', hi: 'मोज़ेरेلا पनीर, टमाटर की चटनी, ओरेगानो' }, price: 49 },
-      { id: 'hm_pz2', categoryKey: 'Pizza', catName: { en: 'Pizza', ar: 'البيتزا', hi: 'पिज़्ज़ा' }, name: { en: 'Pepperoni', ar: 'بيبروني', hi: 'पेपरोनी पिज़्ज़ा' }, desc: { en: 'Mozzarella, beef pepperoni, tomato sauce', ar: 'جبن موزاريلا، بيبروني لحم بقري، صلصة الطماطم', hi: 'मोज़ेरेلا, बीफ पेपरोनी, टमाटर की चटनी' }, price: 65 },
-      { id: 'hm_pt1', categoryKey: 'Pasta', catName: { en: 'Pasta', ar: 'الباستا', hi: 'पास्ता' }, name: { en: 'Fettuccine Alfredo with Grilled Chicken', ar: 'فيتوتشيني ألفريدو مع دجاج مشوي', hi: 'ग्रिल्ड चिकन के साथ फेटुचिनी अल्फ्रेडو' }, desc: { en: 'Fettuccine in rich creamy Alfredo sauce topped with grilled chicken', ar: 'فيتوتشيني بصلصة ألفريدو كريمية غنية مع دجاج مشوي', hi: 'ग्रिल्ड चिकन के साथ मलाईदार अल्फ्रेडो सॉस में फेटुचिनी' }, price: 60 },
-      { id: 'hm_mc1', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Chicken Biryani', ar: 'برياني دجاج', hi: 'चिकन बिरयानी' }, desc: { en: 'Basmati rice with marinated chicken, served with raita, papad, and pickle', ar: 'أرز بسمتي مع دجاج متبل، يقدم مع رايتا، باباد ومخلل', hi: 'मैरीनेटेड चिकन के साथ बासमती चावल' }, price: 65 },
+      { id: 'hm_pz1', categoryKey: 'Pizza', catName: { en: 'Pizza', ar: 'البيتزا', hi: 'पिज़्ज़ा' }, name: { en: 'Margherita', ar: 'مارغريتا', hi: 'मार्गेरिटा' }, desc: { en: 'Mozzarella cheese, tomato sauce, oregano', ar: 'جبن موزاريلا، صلصة الطماطم، أوريغانو', hi: 'मोज़ेरेला पनीर, टमाटर की चटनी, ओरेगानो' }, price: 49 },
+      { id: 'hm_pz2', categoryKey: 'Pizza', catName: { en: 'Pizza', ar: 'البيتزا', hi: 'पिज़्ज़ा' }, name: { en: 'Pepperoni', ar: 'بيبروني', hi: 'पेपरोनी पिज़्ज़ा' }, desc: { en: 'Mozzarella, beef pepperoni, tomato sauce', ar: 'جبن موزاريلا، بيبروني لحم بقري، صلصة الطماطم', hi: 'मोज़ेरेला, बीफ पेपरोني, टमाटर की चटनी' }, price: 65 },
+      { id: 'hm_pt1', categoryKey: 'Pasta', catName: { en: 'Pasta', ar: 'الباستا', hi: 'पास्ता' }, name: { en: 'Fettuccine Alfredo with Grilled Chicken', ar: 'فيتوتشيني ألفريدو مع دجاج مشوي', hi: 'ग्रिल्ड चिकन के साथ फेटुचिनी अल्फ्रेडो' }, desc: { en: 'Fettuccine in rich creamy Alfredo sauce topped with grilled chicken', ar: 'فيتوتشيني بصلصة ألفريدو كريمية غنية مع دجاج مشوي', hi: 'ग्रिल्ड चिकन के साथ मलाईदार अल्फ्रेडो सॉस में फेटुचिनी' }, price: 60 },
+      { id: 'hm_mc1', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Chicken Biryani', ar: 'برياني دجاج', hi: 'चिकन बिरयानी' }, desc: { en: 'Basmati rice with marinated chicken, served with raita, papad, and pickle', ar: 'أرز بسمتي مع دجاج متبل، يقدم مع رايتا، باباد ومخلل', hi: 'मैरीनेटेड चिकन के साथ बाسمती चावल' }, price: 65 },
       { id: 'hm_mc2', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Butter Chicken Masala', ar: 'دجاج بتر ماسالا', hi: 'बटर चिकन मसाला' }, desc: { en: 'Chicken in rich tomato butter sauce', ar: 'دجاج مطهو بصلصة طماطم بالزبدة', hi: 'समृद्ध टमाटर बटर सॉस में चिकन' }, price: 65 },
       { id: 'hm_hb1', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي', hi: 'गर्म पेय' }, name: { en: 'Cappuccino', ar: 'كابتشينو', hi: 'कपुचिनो' }, desc: { en: 'Espresso with steamed milk and thick foam', ar: 'إسبريسو مع حليب مبشور ورغوة كثيفة', hi: 'एस्प्रेसो और मलाईदार दूध' }, price: 27 },
       { id: 'hm_mk1', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोकटेल' }, name: { en: 'Mojito', ar: 'موهيتو', hi: 'मोहितो' }, desc: { en: 'Fresh mint leaves, lime, demerara sugar, soda water', ar: 'أوراق نعناع طازجة، ليمون أخضر، سكر، مياه صودا', hi: 'ताजा पुदीना, नींबू और सोड़ा' }, price: 33 }
@@ -549,7 +550,7 @@
     const facilitiesData = [
       { id: 'exterior', images: ['Remal_exterior_view1.jpg', 'Remal_exterior_view2.jpg'], title: { en: 'Hotel Exterior & Grounds', ar: 'المظهر الخارجي والمحيط', hi: 'होटल का बाहरी दृश्य' }, desc: { en: 'Experience our pristine architecture and welcoming surroundings at Remal Hotel & Villas.', ar: 'استمتع بالتصميم المعماري الفريد والمحيط الهادئ في فندق وڤلل رمال.', hi: 'रेमल होटल एंड विला के शानदार वास्तुशिल्प का अनुभव करें।' }, timing: { en: '24/7 Welcome', ar: 'ترحيب على مدار الساعة', hi: '24 घंटे स्वागत' } },
       { id: 'pool', images: ['Pool.jpg'], title: { en: 'Al Waha Swimming Pool', ar: 'مسبح الواحة', hi: 'अल वाहा स्विमिंग पूल' }, desc: { en: 'Relax by our outdoor swimming pool with comfortable loungers.', ar: 'استرخِ بجانب المسبح الخارجي الجميل مع المشروبات المنعشة.', hi: 'हमारे बाहरी स्विमिंग पूल के पास आराम करें।' }, timing: { en: '07:00 AM - 08:00 PM', ar: '٠٧:٠٠ صباحاً - ٠٨:٠٠ مساءً', hi: 'सुबह 07:00 - रात 08:00' } },
-      { id: 'gym', images: ['Gym.jpg'], title: { en: 'Recreation & Fitness Gym', ar: 'مركز اللياقة والصالة الرياضية', hi: 'फिटनेस और जिम' }, desc: { en: 'Stay active with modern fitness equipment designed for your daily workouts.', ar: 'حافظ على نشاطك وصحتك مع أحدث معدات اللياقة البدنية.', hi: 'हमारे आधुनिक जिम उपकरणों के साथ फिट रहें।' }, timing: { en: '06:00 AM - 10:00 PM', ar: '٠٦:٠0 صباحاً - ١٠:٠٠ مساءً', hi: 'सुबह 06:00 - रात 10:00' } },
+      { id: 'gym', images: ['Gym.jpg'], title: { en: 'Recreation & Fitness Gym', ar: 'مركز اللياقة والصالة الرياضية', hi: 'फिटनेस और जिम' }, desc: { en: 'Stay active with modern fitness equipment designed for your daily workouts.', ar: 'حافظ على نشاطك وصحتك مع أحدث معدات اللياقة البدنية.', hi: 'हमारे आधुनिक जिम उपकरणों के साथ फिट रहें।' }, timing: { en: '06:00 AM - 10:00 PM', ar: '٠٦:٠٠ صباحاً - ١٠:٠٠ مساءً', hi: 'सुबह 06:00 - रात 10:00' } },
       { id: 'restaurant', images: ['Restaurant-1.jpg', 'Restaurant-2.jpg'], title: { en: 'Falaj Restaurant & Dining', ar: 'مطعم الفلج والوجبات', hi: 'फलज रेस्टोरेंट और भोजन' }, desc: { en: 'International buffet breakfast & fine dining options serving delicious global cuisines.', ar: 'بوفيه إفطار عالمي وتجربة طعام فاخرة تقدم أشهى المأكولات العالمية.', hi: 'अंतर्राष्ट्रीय बफ़े नाश्ता और स्वादिष्ट वैश्विक व्यंजन।' }, timing: { en: '06:30 AM - 11:00 PM', ar: '٠٦:٣٠ صباحاً - ١١:٠٠ مساءً', hi: 'सुबह 06:30 - रात 11:00' } }
     ];
 
@@ -1051,9 +1052,7 @@
       if (pendingRequests.length > previousPendingCount) playNotificationSound();
       previousPendingCount = pendingRequests.length;
 
-      const badge = document.getElementById('requestBadge');
-      if (pendingRequests.length > 0) { badge.innerText = pendingRequests.length; badge.classList.remove('hidden'); }
-      else badge.classList.add('hidden');
+      updateAdminBadge();
 
       if (currentView === 'admin') { renderAdminRequests(); renderAnalyticsData(); }
       renderClientTracker();
@@ -1061,10 +1060,39 @@
       renderRoomFolioWidget();
     }
 
+    // FONCTION MISE À JOUR : DÉTECTION ET ALERTE SONORE/VISUELLE LAUNDRY DEPUIS LA RÉCEPTION
     async function fetchLaundryOrdersFromCloud() {
-      const { data } = await supabaseClient.from('laundry_orders').select('*').order('id', { ascending: false });
+      const { data, error } = await supabaseClient.from('laundry_orders').select('*').order('id', { ascending: false });
+      if (error) return;
+
       cachedLaundryOrders = data || [];
+      const activeLaundryOrders = cachedLaundryOrders.filter(l => l.status !== 'Delivered');
+
+      // Si une nouvelle commande blanchisserie est enregistrée
+      if (activeLaundryOrders.length > previousLaundryCount) {
+        playNotificationSound(); // Signal sonore à la réception
+      }
+      previousLaundryCount = activeLaundryOrders.length;
+
+      updateAdminBadge();
       renderClientTracker();
+    }
+
+    function updateAdminBadge() {
+      const pendingRequests = cachedRequests.filter(r => r.status === 'Pending' || !r.status).length;
+      const activeLaundry = cachedLaundryOrders.filter(l => l.status !== 'Delivered').length;
+      
+      const badge = document.getElementById('requestBadge');
+      if (!badge) return;
+
+      const totalActive = pendingRequests + activeLaundry;
+      if (totalActive > 0) {
+        if (activeLaundry > 0) badge.innerText = `🧺 ${totalActive}`;
+        else badge.innerText = `${totalActive}`;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
     }
 
     function renderAnalyticsData() {
