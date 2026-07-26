@@ -243,17 +243,18 @@
 
   <!-- 2. ADMIN VIEW -->
   <div id="adminView" class="hidden max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-    <div class="flex justify-between items-center bg-stone-200/80 p-1.5 rounded-2xl text-xs font-bold">
+    <div class="flex justify-between items-center bg-stone-200/80 p-1.5 rounded-2xl text-xs font-bold overflow-x-auto scrollbar-none">
       <div class="flex space-x-2 w-full md:w-auto">
-        <button onclick="switchAdminTab('offers')" id="admTabOffers" class="flex-1 md:flex-none px-6 py-2.5 rounded-xl bg-stone-900 text-white">🏷️ Content & Menu</button>
-        <button onclick="switchAdminTab('requests')" id="admTabRequests" class="flex-1 md:flex-none px-6 py-2.5 rounded-xl text-stone-600 relative">
+        <button onclick="switchAdminTab('offers')" id="admTabOffers" class="px-4 py-2.5 rounded-xl bg-stone-900 text-white whitespace-nowrap">🏷️ Content & Menu</button>
+        <button onclick="switchAdminTab('requests')" id="admTabRequests" class="px-4 py-2.5 rounded-xl text-stone-600 relative whitespace-nowrap">
           🔔 Requests
           <span id="requestBadge" class="hidden absolute -top-1 -right-1 bg-rose-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full pulse-notification">0</span>
         </button>
-        <button onclick="switchAdminTab('banner')" id="admTabBanner" class="flex-1 md:flex-none px-6 py-2.5 rounded-xl text-stone-600">📢 Announcement</button>
+        <button onclick="switchAdminTab('analytics')" id="admTabAnalytics" class="px-4 py-2.5 rounded-xl text-stone-600 whitespace-nowrap">📊 Analytics</button>
+        <button onclick="switchAdminTab('banner')" id="admTabBanner" class="px-4 py-2.5 rounded-xl text-stone-600 whitespace-nowrap">📢 Announcement</button>
       </div>
-      <div class="flex items-center space-x-2">
-        <button onclick="logoutAdmin()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 px-3 py-1.5 rounded-xl text-xs font-bold border border-rose-200 transition">🚪 Logout</button>
+      <div class="flex items-center space-x-2 pl-2">
+        <button onclick="logoutAdmin()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 px-3 py-1.5 rounded-xl text-xs font-bold border border-rose-200 transition whitespace-nowrap">🚪 Logout</button>
       </div>
     </div>
 
@@ -353,6 +354,31 @@
           </div>
         </div>
         <div id="adminRequestsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      </div>
+    </div>
+
+    <!-- ADMIN ANALYTICS -->
+    <div id="adminAnalyticsPanel" class="hidden space-y-6">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-white p-5 rounded-3xl border border-stone-200 shadow-sm space-y-1">
+          <p class="text-xs text-stone-500 font-bold uppercase">Total Requests</p>
+          <h3 id="statTotalReq" class="text-2xl font-serif-luxury font-bold text-stone-900">0</h3>
+        </div>
+        <div class="bg-white p-5 rounded-3xl border border-stone-200 shadow-sm space-y-1">
+          <p class="text-xs text-stone-500 font-bold uppercase">Resolution Rate</p>
+          <h3 id="statResolutionRate" class="text-2xl font-serif-luxury font-bold text-emerald-600">0%</h3>
+        </div>
+        <div class="bg-white p-5 rounded-3xl border border-stone-200 shadow-sm space-y-1">
+          <p class="text-xs text-stone-500 font-bold uppercase">Room Service Revenue</p>
+          <h3 id="statRevenue" class="text-2xl font-serif-luxury font-bold text-remal-sand">AED 0</h3>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
+        <h3 class="text-sm font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-2">📈 Service Breakdown & Performance</h3>
+        <div id="analyticsContentContainer" class="space-y-3 text-xs text-stone-600">
+          <p class="text-stone-400 italic">Calculating live metrics...</p>
+        </div>
       </div>
     </div>
 
@@ -519,7 +545,7 @@
       { id: 'hm_ch1_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Champagne - Glass', ar: 'شامبانيا - كاس' }, desc: { en: 'Sparkling flute', ar: 'كاس نبيذ فوار' }, price: 80 },
       { id: 'hm_ch1_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Champagne - Bottle', ar: 'شامبانيا - زجاجة' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة' }, price: 735 },
 
-      { id: 'hm_wn1_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'House Wine (Red/White/Rosé) - Glass', ar: 'نبيذ البيت (أحمر/أبيض/وردي) - كاس' }, desc: { en: 'Choice of glass', ar: 'اختيار الكاس' }, price: 38 },
+      { id: 'hm_wn1_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Housekeeping / Room Cleaning', ar: 'نبيذ البيت (أحمر/أبيض/وردي) - كاس' }, desc: { en: 'Choice of glass', ar: 'اختيار الكاس' }, price: 38 },
       { id: 'hm_wn1_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'House Wine (Red/White/Rosé) - Bottle', ar: 'نبيذ البيت (أحمر/أبيض/وردي) - زجاجة' }, desc: { en: 'Choice of bottle', ar: 'اختيار الزجاجة' }, price: 190 }
     ];
 
@@ -566,8 +592,11 @@
         trackNoReq: "No active requests found for room ", loadingOffers: "Loading live offers...", noOffers: "No offers available in this category.",
         swipePhotos: "👈 Swipe for more photos 👉", bookInquiry: "Book / Inquiry →",
         services: [
-          { val: "Front Desk Inquiry", text: "Front Desk Inquiry" }, { val: "Luggage Assistance", text: "Luggage Assistance" },
-          { val: "Room Service / Dining", text: "Room Service / Order Food" }, { val: "Maintenance / Technical Support", text: "Maintenance / Technical Support" },
+          { val: "Housekeeping", text: "Housekeeping / Room Cleaning" },
+          { val: "Front Desk Inquiry", text: "Front Desk Inquiry" }, 
+          { val: "Luggage Assistance", text: "Luggage Assistance" },
+          { val: "Room Service / Dining", text: "Room Service / Order Food" }, 
+          { val: "Maintenance / Technical Support", text: "Maintenance / Technical Support" },
           { val: "Laundry", text: "Laundry" }
         ]
       },
@@ -581,8 +610,11 @@
         trackNoReq: "لا توجد طلبات مسجلة للغرفة ", loadingOffers: "جاري تحميل العروض المباشرة...", noOffers: "لا توجد عروض متاحة في هذه الفئة.",
         swipePhotos: "👈 اسحب لرؤية المزيد من الصور 👉", bookInquiry: "حجز / استفسار ←",
         services: [
-          { val: "Front Desk Inquiry", text: "استفسار الاستقبال" }, { val: "Luggage Assistance", text: "مساعدة في الأمتعة" },
-          { val: "Room Service / Dining", text: "خدمة الغرف / طلب طعام" }, { val: "Maintenance / Technical Support", text: "الصيانة / الدعم الفني" },
+          { val: "Housekeeping", text: "خدمة الغرف / تنظيف الغرفة (Housekeeping)" },
+          { val: "Front Desk Inquiry", text: "استفسار الاستقبال" }, 
+          { val: "Luggage Assistance", text: "مساعدة في الأمتعة" },
+          { val: "Room Service / Dining", text: "خدمة الغرف / طلب طعام" }, 
+          { val: "Maintenance / Technical Support", text: "الصيانة / الدعم الفني" },
           { val: "Laundry", text: "خدمة الغسيل (Laundry)" }
         ]
       },
@@ -596,8 +628,11 @@
         trackNoReq: "कमरा नंबर के लिए कोई अनुरोध नहीं मिला ", loadingOffers: "ऑफ़र लोड हो रहे हैं...", noOffers: "इस श्रेणी में कोई ऑफ़र उपलब्ध नहीं है।",
         swipePhotos: "👈 अधिक फ़ोटो के लिए स्वाइप करें 👉", bookInquiry: "बुक / पूछताछ →",
         services: [
-          { val: "Front Desk Inquiry", text: "फ्रंट डेस्क पूछताछ" }, { val: "Luggage Assistance", text: "सामान सहायता" },
-          { val: "Room Service / Dining", text: "रूम सर्विस / खाना ऑर्डर करें" }, { val: "Maintenance / Technical Support", text: "रखरखाव / तकनीकी सहायता" },
+          { val: "Housekeeping", text: "हाउसकीपिंग / कमरे की सफाई" },
+          { val: "Front Desk Inquiry", text: "फ्रंट डेस्क पूछताछ" }, 
+          { val: "Luggage Assistance", text: "सामान सहायता" },
+          { val: "Room Service / Dining", text: "रूम सर्विस / खाना ऑर्डर करें" }, 
+          { val: "Maintenance / Technical Support", text: "रखरखाव / तकनीकी सहायता" },
           { val: "Laundry", text: "लॉन्ड्ररी (कपड़े धोने की सेवा)" }
         ]
       }
@@ -728,6 +763,7 @@
         btn.innerText = "📱 Client View";
         renderAdminList();
         renderAdminMenuList();
+        renderAnalyticsData();
       } else {
         currentView = 'client';
         adminV.classList.add('hidden');
@@ -1006,9 +1042,59 @@
       if (pendingRequests.length > 0) { badge.innerText = pendingRequests.length; badge.classList.remove('hidden'); }
       else badge.classList.add('hidden');
 
-      if (currentView === 'admin') renderAdminRequests();
+      if (currentView === 'admin') {
+        renderAdminRequests();
+        renderAnalyticsData();
+      }
       renderClientTracker();
       renderClientFavoritesAndHistory();
+    }
+
+    function renderAnalyticsData() {
+      const totalReq = cachedRequests.length;
+      const completedReq = cachedRequests.filter(r => r.status === 'Completed').length;
+      const resolutionRate = totalReq > 0 ? Math.round((completedReq / totalReq) * 100) : 0;
+
+      let totalRevenue = 0;
+      const serviceCounts = {};
+
+      cachedRequests.forEach(req => {
+        const s = req.service || 'Other';
+        serviceCounts[s] = (serviceCounts[s] || 0) + 1;
+
+        if (req.details && req.details.includes('AED')) {
+          const match = req.details.match(/AED\s+([0-9]+(?:\.[0-9]+)?)/);
+          if (match) totalRevenue += parseFloat(match[1]);
+        }
+      });
+
+      document.getElementById('statTotalReq').innerText = totalReq;
+      document.getElementById('statResolutionRate').innerText = `${resolutionRate}%`;
+      document.getElementById('statRevenue').innerText = `AED ${totalRevenue}`;
+
+      let analyticsHtml = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">`;
+      
+      // Services breakdown
+      analyticsHtml += `<div class="bg-stone-50 p-4 rounded-2xl border border-stone-200 space-y-2">`;
+      analyticsHtml += `<p class="font-bold text-stone-800 uppercase text-[11px]">Requests by Department</p>`;
+      for (const [srv, count] of Object.entries(serviceCounts)) {
+        analyticsHtml += `<div class="flex justify-between items-center text-xs border-b border-stone-100 pb-1"><span>${srv}</span><span class="font-bold bg-white px-2 py-0.5 rounded border">${count}</span></div>`;
+      }
+      analyticsHtml += `</div>`;
+
+      // Status overview
+      const pendingCount = cachedRequests.filter(r => r.status === 'Pending' || !r.status).length;
+      const progressCount = cachedRequests.filter(r => r.status === 'In Progress').length;
+      
+      analyticsHtml += `<div class="bg-stone-50 p-4 rounded-2xl border border-stone-200 space-y-2">`;
+      analyticsHtml += `<p class="font-bold text-stone-800 uppercase text-[11px]">Current Pipeline Status</p>`;
+      analyticsHtml += `<div class="flex justify-between items-center text-xs border-b border-stone-100 pb-1"><span>Pending Requests</span><span class="font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">${pendingCount}</span></div>`;
+      analyticsHtml += `<div class="flex justify-between items-center text-xs border-b border-stone-100 pb-1"><span>In Progress</span><span class="font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">${progressCount}</span></div>`;
+      analyticsHtml += `<div class="flex justify-between items-center text-xs border-b border-stone-100 pb-1"><span>Completed</span><span class="font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">${completedCount}</span></div>`;
+      analyticsHtml += `</div>`;
+
+      analyticsHtml += `</div>`;
+      document.getElementById('analyticsContentContainer').innerHTML = analyticsHtml;
     }
 
     function renderClientTracker() {
@@ -1250,13 +1336,17 @@
     }
 
     function switchAdminTab(tab) {
-      ['adminOffersPanel', 'adminRequestsPanel', 'adminBannerPanel'].forEach(p => document.getElementById(p).classList.add('hidden'));
+      ['adminOffersPanel', 'adminRequestsPanel', 'adminAnalyticsPanel', 'adminBannerPanel'].forEach(p => document.getElementById(p).classList.add('hidden'));
       if (tab === 'offers') document.getElementById('adminOffersPanel').classList.remove('hidden');
       else if (tab === 'requests') { 
         document.getElementById('adminRequestsPanel').classList.remove('hidden'); 
         fetchRequestsFromCloud(); 
       }
-      else if (tab === 'banner') document.getElementById('adminBannerPanel').classList.add('hidden');
+      else if (tab === 'analytics') {
+        document.getElementById('adminAnalyticsPanel').classList.remove('hidden');
+        renderAnalyticsData();
+      }
+      else if (tab === 'banner') document.getElementById('adminBannerPanel').classList.remove('hidden');
     }
 
     function switchAdminSubTab(subTab) {
