@@ -155,7 +155,23 @@
           </div>
           <div>
             <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblService">Service Type</label>
-            <select id="req_service" onchange="toggleRoomServiceMenu()" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 outline-none"></select>
+            <select id="req_service" onchange="toggleServiceDynamicFields()" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 outline-none"></select>
+          </div>
+
+          <!-- MODULE LATE CHECK-OUT (DYNAMIQUE) -->
+          <div id="lateCheckoutBlock" class="hidden space-y-3 bg-amber-50/60 p-4 rounded-2xl border border-amber-200">
+            <div class="flex items-center space-x-2 text-amber-900 font-bold text-xs">
+              <span>⏱️</span><span>Late Check-Out Request</span>
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-stone-700 mb-1">Requested Departure Time</label>
+              <select id="late_checkout_time" class="w-full border border-stone-200 rounded-xl p-2.5 text-xs bg-white outline-none">
+                <option value="13:00 PM (1:00 PM)">13:00 PM (1:00 PM)</option>
+                <option value="14:00 PM (2:00 PM)">14:00 PM (2:00 PM)</option>
+                <option value="15:00 PM (3:00 PM)">15:00 PM (3:00 PM)</option>
+                <option value="16:00 PM (4:00 PM)">16:00 PM (4:00 PM - Max)</option>
+              </select>
+            </div>
           </div>
 
           <!-- MODULE ROOM SERVICE -->
@@ -545,7 +561,7 @@
       { id: 'hm_ch1_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Champagne - Glass', ar: 'شامبانيا - كاس' }, desc: { en: 'Sparkling flute', ar: 'كاس نبيذ فوار' }, price: 80 },
       { id: 'hm_ch1_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Champagne - Bottle', ar: 'شامبانيا - زجاجة' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة' }, price: 735 },
 
-      { id: 'hm_wn1_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'Housekeeping / Room Cleaning', ar: 'نبيذ البيت (أحمر/أبيض/وردي) - كاس' }, desc: { en: 'Choice of glass', ar: 'اختيار الكاس' }, price: 38 },
+      { id: 'hm_wn1_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'House Wine (Red/White/Rosé) - Glass', ar: 'نبيذ البيت (أحمر/أبيض/وردي) - كاس' }, desc: { en: 'Choice of glass', ar: 'اختيار الكاس' }, price: 38 },
       { id: 'hm_wn1_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية' }, name: { en: 'House Wine (Red/White/Rosé) - Bottle', ar: 'نبيذ البيت (أحمر/أبيض/وردي) - زجاجة' }, desc: { en: 'Choice of bottle', ar: 'اختيار الزجاجة' }, price: 190 }
     ];
 
@@ -592,6 +608,7 @@
         trackNoReq: "No active requests found for room ", loadingOffers: "Loading live offers...", noOffers: "No offers available in this category.",
         swipePhotos: "👈 Swipe for more photos 👉", bookInquiry: "Book / Inquiry →",
         services: [
+          { val: "Late Check-out Request", text: "Late Check-out / Extension" },
           { val: "Housekeeping", text: "Housekeeping / Room Cleaning" },
           { val: "Front Desk Inquiry", text: "Front Desk Inquiry" }, 
           { val: "Luggage Assistance", text: "Luggage Assistance" },
@@ -610,6 +627,7 @@
         trackNoReq: "لا توجد طلبات مسجلة للغرفة ", loadingOffers: "جاري تحميل العروض المباشرة...", noOffers: "لا توجد عروض متاحة في هذه الفئة.",
         swipePhotos: "👈 اسحب لرؤية المزيد من الصور 👉", bookInquiry: "حجز / استفسار ←",
         services: [
+          { val: "Late Check-out Request", text: "طلب مغادرة متأخرة / تمديد الإقامة" },
           { val: "Housekeeping", text: "خدمة الغرف / تنظيف الغرفة (Housekeeping)" },
           { val: "Front Desk Inquiry", text: "استفسار الاستقبال" }, 
           { val: "Luggage Assistance", text: "مساعدة في الأمتعة" },
@@ -628,6 +646,7 @@
         trackNoReq: "कमरा नंबर के लिए कोई अनुरोध नहीं मिला ", loadingOffers: "ऑफ़र लोड हो रहे हैं...", noOffers: "इस श्रेणी में कोई ऑफ़र उपलब्ध नहीं है।",
         swipePhotos: "👈 अधिक फ़ोटो के लिए स्वाइप करें 👉", bookInquiry: "बुक / पूछताछ →",
         services: [
+          { val: "Late Check-out Request", text: "देर से चेक-आउट / समय बढ़ाना" },
           { val: "Housekeeping", text: "हाउसकीपिंग / कमरे की सफाई" },
           { val: "Front Desk Inquiry", text: "फ्रंट डेस्क पूछताछ" }, 
           { val: "Luggage Assistance", text: "सामान सहायता" },
@@ -852,11 +871,21 @@
       container.innerHTML = html;
     }
 
-    function toggleRoomServiceMenu() {
+    function toggleServiceDynamicFields() {
       const selectedService = document.getElementById('req_service').value;
-      const block = document.getElementById('roomServiceMenuBlock');
-      if (selectedService === 'Room Service / Dining') block.classList.remove('hidden');
-      else block.classList.add('hidden');
+      const roomServiceBlock = document.getElementById('roomServiceMenuBlock');
+      const lateCheckoutBlock = document.getElementById('lateCheckoutBlock');
+
+      if (selectedService === 'Room Service / Dining') {
+        roomServiceBlock.classList.remove('hidden');
+        lateCheckoutBlock.classList.add('hidden');
+      } else if (selectedService === 'Late Check-out Request') {
+        lateCheckoutBlock.classList.remove('hidden');
+        roomServiceBlock.classList.add('hidden');
+      } else {
+        roomServiceBlock.classList.add('hidden');
+        lateCheckoutBlock.classList.add('hidden');
+      }
     }
 
     function toggleFavorite(itemId) {
@@ -926,7 +955,7 @@
           let nameText = typeof item.name === 'object' ? (item.name[currentLang] || item.name.en) : item.name;
           return `<div class="flex justify-between items-center bg-stone-50 p-2 rounded-xl border border-stone-200 text-xs">
             <span class="font-bold text-stone-800">${nameText} (AED ${item.price})</span>
-            <button type="button" onclick="updateCart('${item.id}', 1); switchGuestTab('request'); document.getElementById('req_service').value='Room Service / Dining'; toggleRoomServiceMenu();" class="bg-remal-sand text-white px-2.5 py-1 rounded-lg font-bold text-[10px]">Order +1</button>
+            <button type="button" onclick="updateCart('${item.id}', 1); switchGuestTab('request'); document.getElementById('req_service').value='Room Service / Dining'; toggleServiceDynamicFields();" class="bg-remal-sand text-white px-2.5 py-1 rounded-lg font-bold text-[10px]">Order +1</button>
           </div>`;
         }).join('');
         html += `</div>`;
@@ -1296,6 +1325,7 @@
       let details = document.getElementById('req_details').value;
 
       if (!room) { alert("Please enter your Room number."); return; }
+      
       if (service === 'Room Service / Dining') {
         const total = calculateCartTotal();
         const deliveryTime = document.getElementById('delivery_time').value;
@@ -1307,6 +1337,9 @@
           }
         });
         details = `🛒 ORDER: ${orderSummary.join(', ')}\n💰 Total: AED ${total}\n🕒 Time: ${deliveryTime}\n📝 Notes: ${details || 'None'}`;
+      } else if (service === 'Late Check-out Request') {
+        const checkoutTime = document.getElementById('late_checkout_time').value;
+        details = `⏱️ REQUESTED CHECK-OUT TIME: ${checkoutTime}\n📝 Notes: ${details || 'No additional comments'}`;
       }
 
       await supabaseClient.from('requests').insert([{ room, service, details, status: 'Pending' }]);
@@ -1332,7 +1365,7 @@
 
       if (tab === 'offers') { document.getElementById('guestOffersSection').classList.remove('hidden'); document.getElementById('tabOffersBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; }
       else if (tab === 'facilities') { document.getElementById('guestFacilitiesSection').classList.remove('hidden'); document.getElementById('tabFacilitiesBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; }
-      else if (tab === 'request') { document.getElementById('guestRequestSection').classList.remove('hidden'); document.getElementById('tabRequestBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; toggleRoomServiceMenu(); renderClientTracker(); renderClientFavoritesAndHistory(); }
+      else if (tab === 'request') { document.getElementById('guestRequestSection').classList.remove('hidden'); document.getElementById('tabRequestBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; toggleServiceDynamicFields(); renderClientTracker(); renderClientFavoritesAndHistory(); }
     }
 
     function switchAdminTab(tab) {
