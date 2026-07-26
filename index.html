@@ -105,7 +105,7 @@
               <span class="text-xs font-bold text-stone-800">🍽️ Select Menu Items</span>
               <span class="text-[10px] bg-remal-sand text-white font-bold px-2 py-0.5 rounded-full">In-Room Dining</span>
             </div>
-            <div id="foodItemsContainer" class="space-y-3 max-h-96 overflow-y-auto pr-1"><p class="text-center text-xs text-stone-400">Loading menu...</p></div>
+            <div id="foodItemsContainer" class="space-y-3 max-h-[500px] overflow-y-auto pr-1"><p class="text-center text-xs text-stone-400">Loading menu...</p></div>
             <div class="pt-2 border-t border-stone-200 space-y-2">
               <div class="flex justify-between text-xs font-bold text-stone-900">
                 <span>Total Amount:</span>
@@ -250,22 +250,23 @@
         <div class="lg:col-span-5 bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4 h-fit">
           <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-2">Add New Menu Dish</h2>
           <form id="foodMenuForm" onsubmit="addMenuItem(event)" class="space-y-4">
-            <input type="text" id="food_name" placeholder="Item Name (e.g., Burger | برجر)" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50 outline-none" required>
+            <input type="text" id="food_name" placeholder="Item Name" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50 outline-none" required>
+            <input type="text" id="food_desc" placeholder="Details / Ingredients (English | عربى)" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50 outline-none">
             <input type="number" id="food_price" placeholder="Price (AED)" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50 outline-none" required>
             <select id="food_category" class="w-full border border-stone-200 rounded-xl p-3 bg-stone-50 text-sm outline-none">
-              <option value="Breakfast">Breakfast | وجبة الإفطار</option>
-              <option value="Soup">Soup | الشوربة</option>
-              <option value="Salads and Mezzeh">Salads and Mezzeh | السلطات والمقبلات</option>
-              <option value="Sandwich and Burger">Sandwich and Burger | الساندويش والبرجر</option>
-              <option value="Pizza">Pizza | البيتزا</option>
-              <option value="Pasta">Pasta | الباستا</option>
-              <option value="Main Course">Main Course | الأطباق الرئيسية</option>
-              <option value="Hot Beverage">Hot Beverage | القهوة/ الشاي</option>
-              <option value="Milkshake">Milkshake | ميلك شيك</option>
-              <option value="Mocktail">Mocktail | الموكتيل</option>
+              <option value="Breakfast | وجبة الإفطار">Breakfast | وجبة الإفطار</option>
+              <option value="Soup | الشوربة">Soup | الشوربة</option>
+              <option value="Salads and Mezzeh | السلطات والمقبلات">Salads and Mezzeh | السلطات والمقبلات</option>
+              <option value="Sandwich and Burger | الساندويش والبرجر">Sandwich and Burger | الساندويش والبرجر</option>
+              <option value="Pizza | البيتزا">Pizza | البيتزا</option>
+              <option value="Pasta | الباستا">Pasta | الباستا</option>
+              <option value="Main Course | الأطباق الرئيسية">Main Course | الأطباق الرئيسية</option>
+              <option value="Hot Beverage | القهوة/ الشاي">Hot Beverage | القهوة/ الشاي</option>
+              <option value="Milkshake | ميلك شيك">Milkshake | ميلك شيك</option>
+              <option value="Mocktail | الموكتيل">Mocktail | الموكتيل</option>
               <option value="Alcoholic Beverages">Alcoholic Beverages</option>
             </select>
-            <button type="submit" class="w-full bg-stone-900 text-white font-bold py-3.5 rounded-xl text-sm">➕ Add Dish to Database</button>
+            <button type="submit" class="w-full bg-stone-900 text-white font-bold py-3.5 rounded-xl text-sm">➕ Add Dish</button>
           </form>
         </div>
         <div class="lg:col-span-7 bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
@@ -331,134 +332,145 @@
     let activeAnnouncement = null;
     let currentPromoImageData = null;
 
-    /* ========== MENU HARDCODÉ À PARTIR DU PDF ========== */
+    /* ========== MENU COMPLET AVEC DÉTAILS / INGRÉDIENTS (PDF) ========== */
     const HARDCODED_MENU = [
-      { id: 'hm_bf1', category: 'Breakfast | وجبة الإفطار', name: 'Continental | كونتيننتال', price: 49 },
-      { id: 'hm_bf2', category: 'Breakfast | وجبة الإفطار', name: 'Emirati Flavors | الفطور بالطعم الإماراتي', price: 59 },
-      { id: 'hm_bf3', category: 'Breakfast | وجبة الإفطار', name: 'Arabic Breakfast | فطور عربي', price: 59 },
-      { id: 'hm_bf4', category: 'Breakfast | وجبة الإفطار', name: 'International | العالمي', price: 61 },
-      { id: 'hm_bf5', category: 'Breakfast | وجبة الإفطار', name: 'Choice of Eggs | اختيارات من البيض', price: 25 },
-      { id: 'hm_bf6', category: 'Breakfast | وجبة الإفطار', name: 'Shakshuka | شكشوكة', price: 30 },
-      { id: 'hm_bf7', category: 'Breakfast | وجبة الإفطار', name: 'Eggs Benedict with Turkey Ham | بيض بندكت مع ديك رومي', price: 30 },
-      { id: 'hm_bf8', category: 'Breakfast | وجبة الإفطار', name: 'Eggs Benedict with Smoked Salmon | بيض بندكت مع سلمون مدخن', price: 35 },
+      // BREAKFAST
+      { id: 'hm_bf1', category: 'Breakfast | وجبة الإفطار', name: 'Continental | كونتيننتال', desc: 'تشكيلة من الكرواسون والمفن والدانش، وفواكه موسمية مقطعة | Croissant, Muffin, Danish and Seasonal Sliced Fruits', price: 49 },
+      { id: 'hm_bf2', category: 'Breakfast | وجبة الإفطار', name: 'Emirati Flavors | الفطور بالطعم الإماراتي', desc: 'هريس، جباب، بالاليط، جبن عريج، لبنة، زيتون، خيار، طماطم، فول مدمس، شكشوكة البيض، خبز، وفواكه موسمية مقطعة | Harees, Chebab, Balaleet, Arabic Cheese, Labneh, Olives, Cucumber, Tomatoes, Foul Medames, Egg Shakshuka, Kuboos, and Seasonal Sliced Fruits', price: 59 },
+      { id: 'hm_bf3', category: 'Breakfast | وجبة الإفطار', name: 'Arabic Breakfast | فطور عربي', desc: 'حمص، فلافل، فول مدمس، لبنة، جبنة حلومي، بيض مقلي، تشكيلة من الخضروات، زيتون، مخللات مشكلة، وفواكه موسمية | Hummus, Falafel, Foul Medames, Labneh, Halloumi White Cheese, Fried Egg, Assorted Vegetables, Olives, Mixed Pickles, and Seasonal Fruits', price: 59 },
+      { id: 'hm_bf4', category: 'Breakfast | وجبة الإفطار', name: 'International | العالمي', desc: 'سلة مخبوزات طازجة، بيضتان تحضران حسب رغبتك، سقا دجاج، لحم ديك رومي مقدد، بطاطس هاش براون، طماطم مشوية، فطر سوتيه، فاصوليا مطبوخة، زبادي مع فواكه مجففة ومكسرات أو توت مشكل وفواكه موسمية مقطعة | Fresh bakery basket, Two eggs prepared to your liking, Chicken sausage, turkey bacon, and hash brown potatoes, Grilled tomatoes, sautéed mushrooms, and baked beans, Yogurt with dried fruits and nuts or mixed berries, Seasonal sliced fruits', price: 61 },
+      { id: 'hm_bf5', category: 'Breakfast | وجبة الإفطار', name: 'Choice of Eggs | اختيارات من البيض', desc: 'بيض مخفوق، بيض مقلي، بيض مسلوق، أومليت سادة، أومليت بالخضار، أومليت بالجبن، بيض مسلوق (بوشيه)، بيض عيون | Scrambled Eggs, Fried Eggs, Boiled Eggs, Plain Omelette, Vegetable Omelette, Cheese Omelette, Poached Eggs, Sunny Side Up Eggs', price: 25 },
+      { id: 'hm_bf6', category: 'Breakfast | وجبة الإفطار', name: 'Shakshuka | شكشوكة', desc: 'بيض مسلوق بطريقة بوشيه في صلصة طماطم حارة مع الفلفل، متبل بالثوم والبصل، يقدم مع الخبز العربي | Poached eggs in a spicy tomato and bell pepper sauce, seasoned with garlic and onions. Served with Arabic bread.', price: 30 },
+      { id: 'hm_bf7', category: 'Breakfast | وجبة الإفطار', name: 'Eggs Benedict with Turkey Ham | بيض بندكت مع ديك رومي', desc: 'بيض مسلوق (بوشيه) مع هام ديك رومي، يقدم على مافن إنجليزي محمص، مع صلصة الهولنديز | Poached eggs and turkey ham on a toasted English muffin, topped with rich Hollandaise sauce.', price: 30 },
+      { id: 'hm_bf8', category: 'Breakfast | وجبة الإفطار', name: 'Eggs Benedict with Smoked Salmon | بيض بندكت مع سلمون مدخن', desc: 'بيض مسلوق (بوشيه) مع سلمون مدخن، يقدم على مافن إنجليزي محمص، مع صلصة الهولنديز الكريمية | Poached eggs and smoked salmon on a toasted English muffin, topped with creamy Hollandaise sauce.', price: 35 },
 
-      { id: 'hm_sp1', category: 'Soup | الشوربة', name: 'Traditional Lentil Soup | شوربة العدس', price: 25 },
-      { id: 'hm_sp2', category: 'Soup | الشوربة', name: 'Minestrone Soup | شوربة المينستروني', price: 25 },
-      { id: 'hm_sp3', category: 'Soup | الشوربة', name: 'Harira Soup | شوربة الحريرة', price: 25 },
-      { id: 'hm_sp4', category: 'Soup | الشوربة', name: 'Soup of the Day | شوربة اليوم', price: 25 },
+      // SOUPS
+      { id: 'hm_sp1', category: 'Soup | الشوربة', name: 'Traditional Lentil Soup | شوربة العدس', desc: 'تقدم مع كمون محمص، ليمون طازج وخبر بيتا مقرمش | With roasted cumin, fresh lemon and crispy pita bread', price: 25 },
+      { id: 'hm_sp2', category: 'Soup | الشوربة', name: 'Minestrone Soup | شوربة المينستروني', desc: 'شوربة إيطالية كلاسيكية من الخضار مع المعكرونة والأعشاب | Classic Italian vegetable soup with pasta and herbs', price: 25 },
+      { id: 'hm_sp3', category: 'Soup | الشوربة', name: 'Harira Soup | شوربة الحريرة', desc: 'شوربة مغربية متبلة من العدس والحمص والطماطم | Moroccan spiced soup made with lentils, chickpeas and tomatoes', price: 25 },
+      { id: 'hm_sp4', category: 'Soup | الشوربة', name: 'Soup of the Day | شوربة اليوم', desc: 'الشوربة اليومية المميزة من إعداد الشيف، تحضر طازجة باستخدام مكونات موسمية مختارة | Chef\'s daily special, freshly prepared with seasonal ingredients', price: 25 },
 
-      { id: 'hm_sl1', category: 'Salads and Mezzeh | السلطات والمقبلات', name: 'Classic Caesar Salad | سلطة سيزر الكلاسيكية', price: 45 },
-      { id: 'hm_sl2', category: 'Salads and Mezzeh | السلطات والمقبلات', name: 'Chicken Caesar Salad | سلطة سيزر مع الدجاج', price: 49 },
-      { id: 'hm_sl3', category: 'Salads and Mezzeh | السلطات والمقبلات', name: 'Shrimps Caesar Salad | سلطة سيزر بالروبيان', price: 59 },
-      { id: 'hm_sl4', category: 'Salads and Mezzeh | السلطات والمقبلات', name: 'Quinoa Salad | سلطة الكينوا', price: 40 },
-      { id: 'hm_sl5', category: 'Salads and Mezzeh | السلطات والمقبلات', name: 'Fattoush | فتوش', price: 40 },
-      { id: 'hm_sl6', category: 'Salads and Mezzeh | السلطات والمقبلات', name: '(Warak Enab) Vine Leaves | ورق عنب', price: 40 },
+      // SALADS AND MEZZEH
+      { id: 'hm_sl1', category: 'Salads and Mezzeh | السلطات والمقبلات', name: 'Classic Caesar Salad | سلطة سيزر الكلاسيكية', desc: 'خس، جبنة بارميزان مبشورة، صلصة سيزر، خبز محمص | Lettuce, shaved parmesan cheese, Caesar dressing, croutons', price: 45 },
+      { id: 'hm_sl2', category: 'Salads and Mezzeh | السلطات والمقبلات', name: 'Chicken Caesar Salad | سلطة سيزر مع الدجاج', desc: 'خس، دجاج، لحم بقري مقدد، جبنة بارميزان مبشورة، صلصة سيزر، خبز محمص | Lettuce, chicken, beef bacon, shaved parmesan cheese, Caesar dressing, croutons', price: 49 },
+      { id: 'hm_sl3', category: 'Salads and Mezzeh | السلطات والمقبلات', name: 'Shrimps Caesar Salad | سلطة سيزر بالروبيان', desc: 'خس، روبيان مشوي، جبنة بارميزان، صلصة سيزر، خبز محمص | Lettuce, grilled shrimps, parmesan cheese, Caesar dressing, croutons', price: 59 },
+      { id: 'hm_sl4', category: 'Salads and Mezzeh | السلطات والمقبلات', name: 'Quinoa Salad | سلطة الكينوا', desc: 'كينوا مع بقدونس وطماطم مفرومة ناعماً | Quinoa combined with finely chopped parsley and tomato', price: 40 },
+      { id: 'hm_sl5', category: 'Salads and Mezzeh | السلطات والمقبلات', name: 'Fattoush | فتوش', desc: 'خس، نعناع، زعتر، طماطم، فلفل، خيار، بصل، فجل، زيت زيتون، عصير ليمون، دبس الرمان | Lettuce, mint, zaatar, tomatoes, peppers, cucumber, onion, radish, olive oil, lemon juice, pomegranate molasses', price: 40 },
+      { id: 'hm_sl6', category: 'Salads and Mezzeh | السلطات والمقبلات', name: '(Warak Enab) Vine Leaves | ورق عنب', desc: 'ورق عنب محشو بالأرز والأعشاب والليمون | Stuffed grape leaves with rice, herbs, and lemon', price: 40 },
 
-      { id: 'hm_sw1', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Beef Burger | برجر لحم بقري', price: 60 },
-      { id: 'hm_sw2', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Mac Beef Burger | برجر لحم بقري ماك', price: 65 },
-      { id: 'hm_sw3', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Grilled Chicken Burger | برجر الدجاج المشوي', price: 55 },
-      { id: 'hm_sw4', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Club Sandwich | كلوب ساندويتش', price: 60 },
-      { id: 'hm_sw5', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Fish and Chips | سمك مقلي مع بطاطس مقلية', price: 69 },
-      { id: 'hm_sw6', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Chicken Quesadilla | كاساديا الدجاج', price: 60 },
-      { id: 'hm_sw7', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Smoked Salmon Sandwich | ساندويتش سلمون مدخن', price: 55 },
-      { id: 'hm_sw8', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Cheese Sandwich | ساندويتش الجبن', price: 45 },
-      { id: 'hm_sw9', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Chicken Steak Sandwich | ساندويتش ستيك الدجاج', price: 60 },
-      { id: 'hm_sw10', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Beef Steak Sandwich | ساندويتش ستيك اللحم البقري', price: 65 },
+      // SANDWICH AND BURGER
+      { id: 'hm_sw1', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Beef Burger | برجر لحم بقري', desc: 'برجر لحم بقري مع مايونيز، خس، طماطم، خيار مخلل، جبنة شيدر وبصل مكرمل، يقدم مع بطاطس مقلية | Juicy beef patty with mayonnaise, lettuce, tomato, gherkins, cheddar cheese, and caramelized onions, served with French fries', price: 60 },
+      { id: 'hm_sw2', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Mac Beef Burger | برجر لحم بقري ماك', desc: 'برجر لحم بقري مميز مع مكونات خاصة، يقدم مع بطاطس مقلية | Special beef patty with signature toppings, served with French fries', price: 65 },
+      { id: 'hm_sw3', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Grilled Chicken Burger | برجر الدجاج المشوي', desc: 'برجر دجاج مع مايونيز، طماطم، هالابينو، خس وجبنة موزاريلا، يقدم مع بطاطس مقلية | Juicy chicken patty with mayonnaise, tomato, jalapeño, lettuce, and mozzarella cheese, served with French fries', price: 55 },
+      { id: 'hm_sw4', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Club Sandwich | كلوب ساندويتش', desc: 'توست مع ثلاث طبقات من لحم ديك رومي مقدد، خس، طماطم، موس دجاج، جبنة، بيض مقلي، ووصوص كوكتيل، يقدم مع بطاطس مقلية | Triple decker with turkey bacon, lettuce, tomato, chicken mousse, cheese, fried egg, cocktail sauce, served with French fries', price: 60 },
+      { id: 'hm_sw5', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Fish and Chips | سمك مقلي مع بطاطس مقلية', desc: 'أصابع سمك مقلية مقرمشة تقدم مع صلصة التارتار والبطاطس المقلية | Crispy battered fried fish served with tartar sauce and French fries', price: 69 },
+      { id: 'hm_sw6', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Chicken Quesadilla | كاساديا الدجاج', desc: 'دجاج بالنكهة المكسيكية مع فلفل رومي، بصل، طماطم، جبنة مشكلة، تقدم مع صلصة الطماطم، كريمة حامضة وصوص الأفوكادو | Chicken with Mexican flavors, capsicum, chopped onions, peppers, tomatoes, and mixed cheese, served with tomato salsa, sour cream and avocado sauce', price: 60 },
+      { id: 'hm_sw7', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Smoked Salmon Sandwich | ساندويتش سلمون مدخن', desc: 'سلمون مدخن مع جبنة كريمية، كابر، أوراق جرجير وشرائح بصل، يقدم مع بطاطس مقلية | Smoked salmon with cream cheese, capers, rocket leaves, and onion slices, served with French fries', price: 55 },
+      { id: 'hm_sw8', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Cheese Sandwich | ساندويتش الجبن', desc: 'جبن ذائب على خبز محمص مع خضار طازجة، يقدم مع بطاطس مقلية | Melted cheese on toasted bread with fresh vegetables, served with French fries', price: 45 },
+      { id: 'hm_sw9', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Chicken Steak Sandwich | ساندويتش ستيك الدجاج', desc: 'ستيك دجاج مشوي مع خضار سوتيه وصوص وجبنة موزاريلا، يقدم مع بطاطس ويدجز متبلة بالكاجون | Grilled chicken steak with sautéed vegetables, sauce, and mozzarella cheese, served with Cajun-spiced potato wedges', price: 60 },
+      { id: 'hm_sw10', category: 'Sandwich and Burger | الساندويش والبرجر', name: 'Beef Steak Sandwich | ساندويتش ستيك اللحم البقري', desc: 'ستيك لحم بقري مشوي مع جبنة شيدر، خضار طازجة وصوص، يقدم مع بطاطس مقلية | Grilled beef steak with cheddar cheese, fresh vegetables, and sauce, served with French fries', price: 65 },
 
-      { id: 'hm_pz1', category: 'Pizza | البيتزا', name: 'Margherita | مارغريتا', price: 49 },
-      { id: 'hm_pz2', category: 'Pizza | البيتزا', name: 'Vadodara | فادودارا', price: 59 },
-      { id: 'hm_pz3', category: 'Pizza | البيتزا', name: 'Cajun Spiced Chicken | دجاج متبل بالكاجون', price: 65 },
-      { id: 'hm_pz4', category: 'Pizza | البيتزا', name: 'Polo | بولو', price: 60 },
-      { id: 'hm_pz5', category: 'Pizza | البيتزا', name: 'Pepperoni | بيبروني', price: 65 },
-      { id: 'hm_pz6', category: 'Pizza | البيتزا', name: 'Gorgonzola | غورغونزولا', price: 69 },
+      // PIZZA
+      { id: 'hm_pz1', category: 'Pizza | البيتزا', name: 'Margherita | مارغريتا', desc: 'جبن موزاريلا، صلصة الطماطم، أوريغانو | Mozzarella cheese, tomato sauce, oregano', price: 49 },
+      { id: 'hm_pz2', category: 'Pizza | البيتزا', name: 'Vadodara | فادودارا', desc: 'كوسة مشوية، باذنجان مشوي، فلفل رومي، فطر، طماطم مجففة مع جبن موزاريلا وصلصة الطماطم | Grilled zucchini, eggplant, bell peppers, mushrooms, and sun-dried tomatoes with mozzarella cheese and tomato sauce', price: 59 },
+      { id: 'hm_pz3', category: 'Pizza | البيتزا', name: 'Cajun Spiced Chicken | دجاج متبل بالكاجون', desc: 'صلصة الطماطم، جبن موزاريلا، ريحان، أوريغانو، دجاج مشوي متبل بالكاجون، فلفل رومي مشوي وأوراق الجرجير | Tomato sauce, mozzarella, basil, oregano, grilled Cajun-spiced chicken, roasted bell peppers, and rocket leaves', price: 65 },
+      { id: 'hm_pz4', category: 'Pizza | البيتزا', name: 'Polo | بولو', desc: 'شرائح دجاج رفيعة مع فطر على صلصة الطماطم، مع لمسة من الأوريغانو | Thinly sliced chicken and mushrooms on tomato sauce, finished with oregano', price: 60 },
+      { id: 'hm_pz5', category: 'Pizza | البيتزا', name: 'Pepperoni | بيبروني', desc: 'جبن موزاريلا، بيبروني لحم بقري، صلصة الطماطم | Mozzarella, beef pepperoni, tomato sauce', price: 65 },
+      { id: 'hm_pz6', category: 'Pizza | البيتزا', name: 'Gorgonzola | غورغونزولا', desc: 'جبن غورغونزولا وموزاريلا على صلصة الطماطم، مع أوريغانو ولمسة من صلصة البيستو | Gorgonzola and mozzarella cheese on tomato sauce, topped with oregano and pesto drizzle', price: 69 },
 
-      { id: 'hm_pt1', category: 'Pasta | الباستا', name: 'Spaghetti Bolognese | سباغيتي بولونيز', price: 56 },
-      { id: 'hm_pt2', category: 'Pasta | الباستا', name: 'Ravioli Pasta with Spinach & Ricotta | رافيولي بالسبانخ والريكوتا', price: 69 },
-      { id: 'hm_pt3', category: 'Pasta | الباستا', name: 'Fettuccine Alfredo with Grilled Chicken | فيتوتشيني ألفريدو مع دجاج مشوي', price: 60 },
-      { id: 'hm_pt4', category: 'Pasta | الباستا', name: 'Tagliatelle with Shrimp & Spring Onion Sauce | تالياتيلي بالروبيان وصلصة البصل الأخضر', price: 60 },
+      // PASTA
+      { id: 'hm_pt1', category: 'Pasta | الباستا', name: 'Spaghetti Bolognese | سباغيتي بولونيز', desc: 'سباغيتي إيطالية كلاسيكية بصلصة طماطم غنية مع لحم مفروم، ثوم وأعشاب | Classic Italian pasta with rich tomato sauce, minced beef, garlic, and herbs', price: 56 },
+      { id: 'hm_pt2', category: 'Pasta | الباستا', name: 'Ravioli Pasta with Spinach & Ricotta | رافيولي بالسبانخ والريكوتا', desc: 'باستا محشوة بجبن الريكوتا والسبانخ والبارميزان، تقدم مع صلصة طماطم خفيفة أو صلصة بصل كريمية | Pasta filled with ricotta, spinach, and Parmesan, served with light tomato or creamy onion sauce', price: 69 },
+      { id: 'hm_pt3', category: 'Pasta | الباستا', name: 'Fettuccine Alfredo with Grilled Chicken | فيتوتشيني ألفريدو مع دجاج مشوي', desc: 'فيتوتشيني بصلصة ألفريدو كريمية غنية مع دجاج مشوي | Fettuccine in rich creamy Alfredo sauce topped with grilled chicken', price: 60 },
+      { id: 'hm_pt4', category: 'Pasta | الباستا', name: 'Tagliatelle with Shrimp & Spring Onion Sauce | تالياتيلي بالروبيان وصلصة البصل الأخضر', desc: 'تالياتيلي طازجة مع روبيان بصلصة كريمية خفيفة بنكهة البصل الأخضر | Fresh tagliatelle with shrimp in a light spring onion cream sauce', price: 60 },
 
-      { id: 'hm_mc1', category: 'Main Course | الأطباق الرئيسية', name: 'Lamb Machboos | مجبوس لحم', price: 75 },
-      { id: 'hm_mc2', category: 'Main Course | الأطباق الرئيسية', name: 'Chicken Machboos | مجبوس دجاج', price: 65 },
-      { id: 'hm_mc3', category: 'Main Course | الأطباق الرئيسية', name: 'Chicken Kabsa | كبسة دجاج', price: 70 },
-      { id: 'hm_mc4', category: 'Main Course | الأطباق الرئيسية', name: 'Chicken Tikka Biryani | برياني دجاج تيكا', price: 65 },
-      { id: 'hm_mc5', category: 'Main Course | الأطباق الرئيسية', name: 'Lamb Biryani | برياني لحم', price: 80 },
-      { id: 'hm_mc6', category: 'Main Course | الأطباق الرئيسية', name: 'Vegetable Biryani | برياني خضار', price: 53 },
-      { id: 'hm_mc7', category: 'Main Course | الأطباق الرئيسية', name: 'Hammour Fish Curry | كاري سمك الهامور', price: 70 },
-      { id: 'hm_mc8', category: 'Main Course | الأطباق الرئيسية', name: 'Paneer Butter Masala | بانير بتر ماسالا', price: 60 },
-      { id: 'hm_mc9', category: 'Main Course | الأطباق الرئيسية', name: 'Gobi Masala | قرنبيط ماسالا', price: 60 },
-      { id: 'hm_mc10', category: 'Main Course | الأطباق الرئيسية', name: 'Vegetable Kurma | كورما خضار', price: 60 },
-      { id: 'hm_mc11', category: 'Main Course | الأطباق الرئيسية', name: 'Butter Chicken Masala | دجاج بتر ماسالا', price: 65 },
-      { id: 'hm_mc12', category: 'Main Course | الأطباق الرئيسية', name: 'Kadai Paneer | كاداي بانير', price: 60 },
-      { id: 'hm_mc13', category: 'Main Course | الأطباق الرئيسية', name: 'Gobi Manchurian | قرنبيط مانتشوريان', price: 60 },
-      { id: 'hm_mc14', category: 'Main Course | الأطباق الرئيسية', name: 'Grilled Salmon (200g) | سلمون مشوي', price: 90 },
-      { id: 'hm_mc15', category: 'Main Course | الأطباق الرئيسية', name: 'Lamb Chops | ريش لحم غنم', price: 85 },
-      { id: 'hm_mc16', category: 'Main Course | الأطباق الرئيسية', name: 'Grilled Chicken Breast (200g) | صدر دجاج مشوي', price: 70 },
-      { id: 'hm_mc17', category: 'Main Course | الأطباق الرئيسية', name: 'Fried Shrimp | روبيان مقلي', price: 75 },
-      { id: 'hm_mc18', category: 'Main Course | الأطباق الرئيسية', name: 'Grilled Beef Tenderloin (200g) | فيليه لحم بقري مشوي', price: 85 },
-      { id: 'hm_mc19', category: 'Main Course | الأطباق الرئيسية', name: 'Nasi Goreng | ناسي جورينغ', price: 65 },
-      { id: 'hm_mc20', category: 'Main Course | الأطباق الرئيسية', name: 'Plain Fried Rice | أرز مقلي عادي', price: 35 },
+      // MAIN COURSE
+      { id: 'hm_mc1', category: 'Main Course | الأطباق الرئيسية', name: 'Lamb Machboos | مجبوس لحم', desc: 'أرز مندي مطبوخ مع لحم غنم طري وبهارات شرق أوسطية، يقدم مع صلصة الطماطم | Fragrant rice with tender lamb and Middle Eastern spices, served with tomato salsa', price: 75 },
+      { id: 'hm_mc2', category: 'Main Course | الأطباق الرئيسية', name: 'Chicken Machboos | مجبوس دجاج', desc: 'أرز مطبوخ مع دجاج طري بالعظم | Rice cooked with tender bone-in chicken', price: 65 },
+      { id: 'hm_mc3', category: 'Main Course | الأطباق الرئيسية', name: 'Chicken Kabsa | كبسة دجاج', desc: 'أرز مندي تقليدي مع دجاج مطبوخ ببطء | Traditional spiced rice with slow-cooked chicken', price: 70 },
+      { id: 'hm_mc4', category: 'Main Course | الأطباق الرئيسية', name: 'Chicken Tikka Biryani | برياني دجاج تيكا', desc: 'أرز بسمتي مع دجاج تيكا متبل، يقدم مع رايتا، باباد ومخلل | Basmati rice layered with marinated chicken tikka, served with raita, papad, and pickle', price: 65 },
+      { id: 'hm_mc5', category: 'Main Course | الأطباق الرئيسية', name: 'Lamb Biryani | برياني لحم', desc: 'أرز بسمتي مع لحم غنم طري، بهارات، وبصل مقلي | Basmati rice with tender lamb, spices, and fried onions', price: 80 },
+      { id: 'hm_mc6', category: 'Main Course | الأطباق الرئيسية', name: 'Vegetable Biryani | برياني خضار', desc: 'يقدم مع بابادوم، رايتا، مخللات وصلصة المانجو | Served with papadum, raita, pickles, and mango chutney', price: 53 },
+      { id: 'hm_mc7', category: 'Main Course | الأطباق الرئيسية', name: 'Hammour Fish Curry | كاري سمك الهامور', desc: 'سمك هامور طازج مطبوخ بصلصة كاري غنية ويقدم مع أرز أبيض | Fresh hammour fish in aromatic curry sauce with steamed rice', price: 70 },
+      { id: 'hm_mc8', category: 'Main Course | الأطباق الرئيسية', name: 'Paneer Butter Masala | بانير بتر ماسالا', desc: 'مكعبات بانير مطهوة بصلصة طماطم كريمية بالزبدة | Paneer cubes in creamy tomato butter sauce', price: 60 },
+      { id: 'hm_mc9', category: 'Main Course | الأطباق الرئيسية', name: 'Gobi Masala | قرنبيط ماسالا', desc: 'قرنبيط مطهو بصلصة طماطم متبلة | Spiced cauliflower in tomato gravy', price: 60 },
+      { id: 'hm_mc10', category: 'Main Course | الأطباق الرئيسية', name: 'Vegetable Kurma | كورما خضار', desc: 'خضار مشكلة مطهوة بصلصة كاري جوز الهند | Mixed vegetables in coconut-based curry', price: 60 },
+      { id: 'hm_mc11', category: 'Main Course | الأطباق الرئيسية', name: 'Butter Chicken Masala | دجاج بتر ماسالا', desc: 'دجاج مطهو بصلصة طماطم بالزبدة | Chicken in rich tomato butter sauce', price: 65 },
+      { id: 'hm_mc12', category: 'Main Course | الأطباق الرئيسية', name: 'Kadai Paneer | كاداي بانير', desc: 'بانير مع فلفل رومي وبصل بصلصة طماطم متبلة | Paneer with bell peppers and onions in spiced tomato gravy', price: 60 },
+      { id: 'hm_mc13', category: 'Main Course | الأطباق الرئيسية', name: 'Gobi Manchurian | قرنبيط مانتشوريان', desc: 'قرنبيط مقرمش بصلصة هندية صينية | Crispy cauliflower in Indo-Chinese sauce', price: 60 },
+      { id: 'hm_mc14', category: 'Main Course | الأطباق الرئيسية', name: 'Grilled Salmon (200g) | سلمون مشوي', desc: 'سلمون مشوي يخدم مع صلصة الزبدة والليمون | Grilled salmon with lemon butter sauce', price: 90 },
+      { id: 'hm_mc15', category: 'Main Course | الأطباق الرئيسية', name: 'Lamb Chops | ريش لحم غنم', desc: 'ريش لحم غنم متبلة ومشوية | Grilled marinated lamb chops', price: 85 },
+      { id: 'hm_mc16', category: 'Main Course | الأطباق الرئيسية', name: 'Grilled Chicken Breast (200g) | صدر دجاج مشوي', desc: 'يقدم مع صلصة الفطر وخضار مشوية مطهو على البخار | With mushroom sauce and steamed vegetables', price: 70 },
+      { id: 'hm_mc17', category: 'Main Course | الأطباق الرئيسية', name: 'Fried Shrimp | روبيان مقلي', desc: 'روبيان مقلي بالتشيبادا يقدم مع صلصة التارتار | Breaded shrimp served with tartar sauce', price: 75 },
+      { id: 'hm_mc18', category: 'Main Course | الأطباق الرئيسية', name: 'Grilled Beef Tenderloin (200g) | فيليه لحم بقري مشوي', desc: 'فيليه لحم بقري طري مشوي بإتقان | Juicy beef tenderloin grilled to perfection', price: 85 },
+      { id: 'hm_mc19', category: 'Main Course | الأطباق الرئيسية', name: 'Nasi Goreng | ناسي جورينغ', desc: 'أرز مقلي إندونيسي مع خضار وبيض ودجاج | Indonesian fried rice with vegetables, egg, and chicken', price: 65 },
+      { id: 'hm_mc20', category: 'Main Course | الأطباق الرئيسية', name: 'Plain Fried Rice | أرز مقلي عادي', desc: 'أرز مقلي مع خضار وصلصة الصويا | Wok-fried rice with vegetables and chili soy sauce', price: 35 },
 
-      { id: 'hm_hb1', category: 'Hot Beverage | القهوة/ الشاي', name: 'Espresso | إسبريسو', price: 16 },
-      { id: 'hm_hb2', category: 'Hot Beverage | القهوة/ الشاي', name: 'Double Espresso | دبل إسبريسو', price: 22 },
-      { id: 'hm_hb3', category: 'Hot Beverage | القهوة/ الشاي', name: 'Turkish Coffee | قهوة تركية', price: 22 },
-      { id: 'hm_hb4', category: 'Hot Beverage | القهوة/ الشاي', name: 'Cappuccino | كابتشينو', price: 27 },
-      { id: 'hm_hb5', category: 'Hot Beverage | القهوة/ الشاي', name: 'Caffè Latte | لاتيه', price: 27 },
-      { id: 'hm_hb6', category: 'Hot Beverage | القهوة/ الشاي', name: 'Hot Chocolate | شوكولاتة ساخنة', price: 30 },
-      { id: 'hm_hb7', category: 'Hot Beverage | القهوة/ الشاي', name: 'Americano | أمريكانو', price: 20 },
-      { id: 'hm_hb8', category: 'Hot Beverage | القهوة/ الشاي', name: 'Iced Coffee | قهوة مثلجة', price: 22 },
-      { id: 'hm_hb9', category: 'Hot Beverage | القهوة/ الشاي', name: 'Tea | شاي', price: 16 },
+      // HOT BEVERAGES
+      { id: 'hm_hb1', category: 'Hot Beverage | القهوة/ الشاي', name: 'Espresso | إسبريسو', desc: 'إسبريسو غني وقوي | Rich & strong espresso shot', price: 16 },
+      { id: 'hm_hb2', category: 'Hot Beverage | القهوة/ الشاي', name: 'Double Espresso | دبل إسبريسو', desc: 'جرعة مضاعفة من الإسبريسو | Double shot of rich espresso', price: 22 },
+      { id: 'hm_hb3', category: 'Hot Beverage | القهوة/ الشاي', name: 'Turkish Coffee | قهوة تركية', desc: 'قهوة تركية تقليدية أصيلة | Authentic traditional Turkish coffee', price: 22 },
+      { id: 'hm_hb4', category: 'Hot Beverage | القهوة/ الشاي', name: 'Cappuccino | كابتشينو', desc: 'إسبريسو مع حليب مبشور ورغوة كثيفة | Espresso with steamed milk and thick foam', price: 27 },
+      { id: 'hm_hb5', category: 'Hot Beverage | القهوة/ الشاي', name: 'Caffè Latte | لاتيه', desc: 'إسبريسو مع حليب كريمي ناعم | Espresso with smooth creamy milk', price: 27 },
+      { id: 'hm_hb6', category: 'Hot Beverage | القهوة/ الشاي', name: 'Hot Chocolate | شوكولاتة ساخنة', desc: 'شوكولاتة ساخنة غنية ولذيذة | Rich and creamy hot chocolate', price: 30 },
+      { id: 'hm_hb7', category: 'Hot Beverage | القهوة/ الشاي', name: 'Americano | أمريكانو', desc: 'إسبريسو تخفيف بالماء الساخن | Espresso diluted with hot water', price: 20 },
+      { id: 'hm_hb8', category: 'Hot Beverage | القهوة/ الشاي', name: 'Iced Coffee | قهوة مثلجة', desc: 'قهوة باردة منعشة | Refreshing iced coffee', price: 22 },
+      { id: 'hm_hb9', category: 'Hot Beverage | القهوة/ الشاي', name: 'Tea | شاي', desc: 'أنواع مختارة من الشاي الفاخر | Selection of fine teas', price: 16 },
 
-      { id: 'hm_ms1', category: 'Milkshake | ميلك شيك', name: 'Chocolate | شوكولاتة', price: 33 },
-      { id: 'hm_ms2', category: 'Milkshake | ميلك شيك', name: 'Vanilla | فانيليا', price: 33 },
-      { id: 'hm_ms3', category: 'Milkshake | ميلك شيك', name: 'Strawberry | فراولة', price: 33 },
+      // MILKSHAKES
+      { id: 'hm_ms1', category: 'Milkshake | ميلك شيك', name: 'Chocolate | شوكولاتة', desc: 'حليب، آيس كريم شوكولاتة، صوص شوكولاتة، سكر | Milk, chocolate ice cream, chocolate sauce, sugar', price: 33 },
+      { id: 'hm_ms2', category: 'Milkshake | ميلك شيك', name: 'Vanilla | فانيليا', desc: 'حليب، آيس كريم فانيليا، سكر، فانيليا | Milk, vanilla ice cream, sugar, vanilla', price: 33 },
+      { id: 'hm_ms3', category: 'Milkshake | ميلك شيك', name: 'Strawberry | فراولة', desc: 'حليب، آيس كريم فراولة، فراولة طازجة، سكر | Milk, strawberry ice cream, fresh strawberries, sugar', price: 33 },
 
-      { id: 'hm_mk1', category: 'Mocktail | الموكتيل', name: 'Fruity | فروتي', price: 33 },
-      { id: 'hm_mk2', category: 'Mocktail | الموكتيل', name: 'Piña Colada | بينا كولادا', price: 33 },
-      { id: 'hm_mk3', category: 'Mocktail | الموكتيل', name: 'Strawberry Margarita | مارغريتا الفراولة', price: 33 },
-      { id: 'hm_mk4', category: 'Mocktail | الموكتيل', name: 'Mojito | موهيتو', price: 33 },
-      { id: 'hm_mk5', category: 'Mocktail | الموكتيل', name: 'Mai Tai | ماي تاي', price: 33 },
-      { id: 'hm_mk6', category: 'Mocktail | الموكتيل', name: 'Nutella Hot Chocolate | شوكولاتة ساخنة مع نوتيلا', price: 33 },
-      { id: 'hm_mk7', category: 'Mocktail | الموكتيل', name: 'Banana Milk Coffee | قهوة مع حليب الموز', price: 33 },
+      // MOCKTAILS
+      { id: 'hm_mk1', category: 'Mocktail | الموكتيل', name: 'Fruity | فروتي', desc: 'موز طازج، فراولة، مانجو، عصير برتقال | Fresh banana, strawberry, mango, orange juice', price: 33 },
+      { id: 'hm_mk2', category: 'Mocktail | الموكتيل', name: 'Piña Colada | بينا كولادا', desc: 'عصير أناناس، كريمة جوز الهند | Pineapple juice, coconut cream', price: 33 },
+      { id: 'hm_mk3', category: 'Mocktail | الموكتيل', name: 'Strawberry Margarita | مارغريتا الفراولة', desc: 'فراولة طازجة، عصير ليمون أخضر، صودا بنكهة الليمون | Fresh strawberries, lime juice, lime-flavored seltzer', price: 33 },
+      { id: 'hm_mk4', category: 'Mocktail | الموكتيل', name: 'Mojito | موهيتو', desc: 'أوراق نعناع طازجة، ليمون أخضر، سكر ديميرارا، مياه صودا | Fresh mint leaves, lime, demerara sugar, soda water', price: 33 },
+      { id: 'hm_mk5', category: 'Mocktail | الموكتيل', name: 'Mai Tai | ماي تاي', desc: 'مشروب صودا بالليمون، عصير أناناس، عصير برتقال، شراب الغرينادين | Lemon-lime soda, pineapple juice, orange juice, grenadine syrup', price: 33 },
+      { id: 'hm_mk6', category: 'Mocktail | الموكتيل', name: 'Nutella Hot Chocolate | شوكولاتة ساخنة مع نوتيلا', desc: 'حليب، نوتيلا، كاكاو | Milk, Nutella, cocoa', price: 33 },
+      { id: 'hm_mk7', category: 'Mocktail | الموكتيل', name: 'Banana Milk Coffee | قهوة مع حليب الموز', desc: 'موز ناضج، قهوة، حليب، قرفة | Ripe banana, coffee, milk, cinnamon', price: 33 },
 
-      { id: 'hm_b1', category: 'Alcoholic Beverages', name: 'Corona', price: 40 },
-      { id: 'hm_b2', category: 'Alcoholic Beverages', name: 'Stella', price: 40 },
-      { id: 'hm_b3', category: 'Alcoholic Beverages', name: 'Heineken', price: 40 },
-      { id: 'hm_b4', category: 'Alcoholic Beverages', name: 'Budweiser', price: 40 },
-      { id: 'hm_b5', category: 'Alcoholic Beverages', name: 'Hoegaarden', price: 40 },
-      { id: 'hm_b6', category: 'Alcoholic Beverages', name: 'Guinness Stout', price: 44 },
-      { id: 'hm_b7', category: 'Alcoholic Beverages', name: 'Bacardi Breezers', price: 35 },
-      { id: 'hm_b8', category: 'Alcoholic Beverages', name: 'Strongbow Cider', price: 44 },
-      { id: 'hm_b9', category: 'Alcoholic Beverages', name: 'Soju', price: 55 },
+      // ALCOHOLIC BEVERAGES
+      { id: 'hm_b1', category: 'Alcoholic Beverages', name: 'Corona', desc: 'Mexican refreshing beer', price: 40 },
+      { id: 'hm_b2', category: 'Alcoholic Beverages', name: 'Stella', desc: 'Classic European lager', price: 40 },
+      { id: 'hm_b3', category: 'Alcoholic Beverages', name: 'Heineken', desc: 'Premium quality Dutch beer', price: 40 },
+      { id: 'hm_b4', category: 'Alcoholic Beverages', name: 'Budweiser', desc: 'King of beers', price: 40 },
+      { id: 'hm_b5', category: 'Alcoholic Beverages', name: 'Hoegaarden', desc: 'Belgian white wheat beer', price: 40 },
+      { id: 'hm_b6', category: 'Alcoholic Beverages', name: 'Guinness Stout', desc: 'Rich Irish dry stout', price: 44 },
+      { id: 'hm_b7', category: 'Alcoholic Beverages', name: 'Bacardi Breezers', desc: 'Fruit flavored alcoholic drink', price: 35 },
+      { id: 'hm_b8', category: 'Alcoholic Beverages', name: 'Strongbow Cider', desc: 'Crisp apple cider', price: 44 },
+      { id: 'hm_b9', category: 'Alcoholic Beverages', name: 'Soju', desc: 'Traditional Korean spirit', price: 55 },
 
-      { id: 'hm_ck1', category: 'Alcoholic Beverages', name: 'Bloody Mary', price: 44 },
-      { id: 'hm_ck2', category: 'Alcoholic Beverages', name: 'Cosmopolitan', price: 44 },
-      { id: 'hm_ck3', category: 'Alcoholic Beverages', name: 'Margarita', price: 44 },
-      { id: 'hm_ck4', category: 'Alcoholic Beverages', name: 'Piña Colada', price: 44 },
-      { id: 'hm_ck5', category: 'Alcoholic Beverages', name: 'Negroni', price: 44 },
-      { id: 'hm_ck6', category: 'Alcoholic Beverages', name: 'Martini', price: 44 },
-      { id: 'hm_ck7', category: 'Alcoholic Beverages', name: 'Bull Frog', price: 65 },
-      { id: 'hm_ck8', category: 'Alcoholic Beverages', name: 'Long Island Tea', price: 65 },
-      { id: 'hm_ck9', category: 'Alcoholic Beverages', name: 'Aperol Spritz', price: 65 },
+      { id: 'hm_ck1', category: 'Alcoholic Beverages', name: 'Bloody Mary', desc: 'Vodka, tomato juice, lemon juice, spices', price: 44 },
+      { id: 'hm_ck2', category: 'Alcoholic Beverages', name: 'Cosmopolitan', desc: 'Vodka, triple sec, cranberry juice, lime', price: 44 },
+      { id: 'hm_ck3', category: 'Alcoholic Beverages', name: 'Margarita', desc: 'Tequila, triple sec, lemon juice', price: 44 },
+      { id: 'hm_ck4', category: 'Alcoholic Beverages', name: 'Piña Colada', desc: 'Rum, Malibu, coconut syrup, pineapple juice', price: 44 },
+      { id: 'hm_ck5', category: 'Alcoholic Beverages', name: 'Negroni', desc: 'Gin, Campari and sweet vermouth', price: 44 },
+      { id: 'hm_ck6', category: 'Alcoholic Beverages', name: 'Martini', desc: 'Gin, dry vermouth and olive', price: 44 },
+      { id: 'hm_ck7', category: 'Alcoholic Beverages', name: 'Bull Frog', desc: 'Vodka, tequila, rum, gin, blue curaçao and Red Bull', price: 65 },
+      { id: 'hm_ck8', category: 'Alcoholic Beverages', name: 'Long Island Tea', desc: 'Vodka, tequila, rum, gin, triple sec and Coke', price: 65 },
+      { id: 'hm_ck9', category: 'Alcoholic Beverages', name: 'Aperol Spritz', desc: 'Aperol, sparkling wine and soda', price: 65 },
 
-      { id: 'hm_wh1_g', category: 'Alcoholic Beverages', name: 'Jim Beam (Bourbon) - Glass', price: 44 },
-      { id: 'hm_wh1_b', category: 'Alcoholic Beverages', name: 'Jim Beam (Bourbon) - Bottle', price: 470 },
-      { id: 'hm_wh2_g', category: 'Alcoholic Beverages', name: 'Jack Daniel\'s - Glass', price: 44 },
-      { id: 'hm_wh2_b', category: 'Alcoholic Beverages', name: 'Jack Daniel\'s - Bottle', price: 470 },
-      { id: 'hm_wh3_g', category: 'Alcoholic Beverages', name: 'Jameson (Irish) - Glass', price: 44 },
-      { id: 'hm_wh3_b', category: 'Alcoholic Beverages', name: 'Jameson (Irish) - Bottle', price: 470 },
-      { id: 'hm_wh10_g', category: 'Alcoholic Beverages', name: 'Glenfiddich 12 Years - Glass', price: 55 },
-      { id: 'hm_wh10_b', category: 'Alcoholic Beverages', name: 'Glenfiddich 12 Years - Bottle', price: 795 },
+      { id: 'hm_wh1_g', category: 'Alcoholic Beverages', name: 'Jim Beam (Bourbon) - Glass', desc: 'Standard glass serving', price: 44 },
+      { id: 'hm_wh1_b', category: 'Alcoholic Beverages', name: 'Jim Beam (Bourbon) - Bottle', desc: 'Full bottle service', price: 470 },
+      { id: 'hm_wh2_g', category: 'Alcoholic Beverages', name: 'Jack Daniel\'s - Glass', desc: 'Standard glass serving', price: 44 },
+      { id: 'hm_wh2_b', category: 'Alcoholic Beverages', name: 'Jack Daniel\'s - Bottle', desc: 'Full bottle service', price: 470 },
+      { id: 'hm_wh3_g', category: 'Alcoholic Beverages', name: 'Jameson (Irish) - Glass', desc: 'Standard glass serving', price: 44 },
+      { id: 'hm_wh3_b', category: 'Alcoholic Beverages', name: 'Jameson (Irish) - Bottle', desc: 'Full bottle service', price: 470 },
+      { id: 'hm_wh10_g', category: 'Alcoholic Beverages', name: 'Glenfiddich 12 Years - Glass', desc: 'Single malt standard glass', price: 55 },
+      { id: 'hm_wh10_b', category: 'Alcoholic Beverages', name: 'Glenfiddich 12 Years - Bottle', desc: 'Full bottle service', price: 795 },
       
-      { id: 'hm_cg1_g', category: 'Alcoholic Beverages', name: 'Hennessy VSOP - Glass', price: 55 },
-      { id: 'hm_cg1_b', category: 'Alcoholic Beverages', name: 'Hennessy VSOP - Bottle', price: 520 },
-      { id: 'hm_cg3_g', category: 'Alcoholic Beverages', name: 'Hennessy XO - Glass', price: 100 },
-      { id: 'hm_cg3_b', category: 'Alcoholic Beverages', name: 'Hennessy XO - Bottle', price: 1600 },
+      { id: 'hm_cg1_g', category: 'Alcoholic Beverages', name: 'Hennessy VSOP - Glass', desc: 'Cognac glass serving', price: 55 },
+      { id: 'hm_cg1_b', category: 'Alcoholic Beverages', name: 'Hennessy VSOP - Bottle', desc: 'Full bottle service', price: 520 },
+      { id: 'hm_cg3_g', category: 'Alcoholic Beverages', name: 'Hennessy XO - Glass', desc: 'Premium cognac glass', price: 100 },
+      { id: 'hm_cg3_b', category: 'Alcoholic Beverages', name: 'Hennessy XO - Bottle', desc: 'Full bottle service', price: 1600 },
 
-      { id: 'hm_ch1_g', category: 'Alcoholic Beverages', name: 'Champagne - Glass', price: 80 },
-      { id: 'hm_ch1_b', category: 'Alcoholic Beverages', name: 'Champagne - Bottle', price: 735 },
+      { id: 'hm_ch1_g', category: 'Alcoholic Beverages', name: 'Champagne - Glass', desc: 'Sparkling flute', price: 80 },
+      { id: 'hm_ch1_b', category: 'Alcoholic Beverages', name: 'Champagne - Bottle', desc: 'Full bottle service', price: 735 },
 
-      { id: 'hm_wn1_g', category: 'Alcoholic Beverages', name: 'House Wine (Red/White/Rosé) - Glass', price: 38 },
-      { id: 'hm_wn1_b', category: 'Alcoholic Beverages', name: 'House Wine (Red/White/Rosé) - Bottle', price: 190 }
+      { id: 'hm_wn1_g', category: 'Alcoholic Beverages', name: 'House Wine (Red/White/Rosé) - Glass', desc: 'Choice of glass', price: 38 },
+      { id: 'hm_wn1_b', category: 'Alcoholic Beverages', name: 'House Wine (Red/White/Rosé) - Bottle', desc: 'Choice of bottle', price: 190 }
     ];
 
     function enableAudioAlerts() {
@@ -545,7 +557,7 @@
       {
         id: 'exterior', images: ['Remal_exterior_view1.jpg', 'Remal_exterior_view2.jpg', 'Remal_exterior_view3.jpg', 'Remal_exterior_view4.jpg'],
         title: { en: 'Hotel Exterior & Grounds', ar: 'المظهر الخارجي والمحيط', hi: 'होटल का बाहरी दृश्य' },
-        desc: { en: 'Experience our pristine architecture and welcoming surroundings at Remal Hotel & Villas.', ar: 'استمتع بالتصميم المعماري الفريد والمحيط الهادئ في فندق وڤلل رمال.', hi: 'रेमल होटल एंड विला के शानदार वास्तुشिल्پ का अनुभव करें।' },
+        desc: { en: 'Experience our pristine architecture and welcoming surroundings at Remal Hotel & Villas.', ar: 'استمتع بالتصميم المعماري الفريد والمحيط الهادئ في فندق وڤلل رمال.', hi: 'रेमल होटल एंड विला के शानदार वास्तुशिल्پ का अनुभव करें।' },
         timing: { en: '24/7 Welcome', ar: 'ترحيب على مدار الساعة', hi: '24 घंटे स्वागत' }
       },
       {
@@ -676,7 +688,6 @@
 
     async function fetchMenuItemsFromCloud() {
       const { data } = await supabaseClient.from('menu_items').select('*').order('id', { ascending: true });
-      // Fusionne le menu statique (PDF) avec les plats ajoutés via Supabase
       roomServiceMenu = [...HARDCODED_MENU, ...(data || [])];
       renderRoomServiceMenu();
       if (currentView === 'admin') renderAdminMenuList();
@@ -685,10 +696,11 @@
     async function addMenuItem(event) {
       event.preventDefault();
       const name = document.getElementById('food_name').value;
+      const desc = document.getElementById('food_desc').value;
       const price = parseFloat(document.getElementById('food_price').value);
       const category = document.getElementById('food_category').value;
 
-      await supabaseClient.from('menu_items').insert([{ name, price, category }]);
+      await supabaseClient.from('menu_items').insert([{ name, desc, price, category }]);
       alert('Dish added to database!');
       document.getElementById('foodMenuForm').reset();
       await fetchMenuItemsFromCloud();
@@ -726,7 +738,7 @@
           
           return `
           <div class="flex items-center justify-between p-2 mb-1 bg-stone-50 rounded-xl border border-stone-200 text-xs">
-            <div><p class="font-bold text-stone-800">${item.name}</p><p class="text-[10px] text-remal-sand font-semibold">AED ${item.price}</p></div>
+            <div><p class="font-bold text-stone-800">${item.name}</p><p class="text-[10px] text-stone-500">${item.desc || ''}</p><p class="text-[10px] text-remal-sand font-semibold">AED ${item.price}</p></div>
             ${deleteBtn}
           </div>
         `}).join('');
@@ -746,7 +758,6 @@
       if (!container) return;
       if (roomServiceMenu.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400 text-center py-2">No menu items currently.</p>`; return; }
       
-      // Grouper les plats par catégorie
       const grouped = {};
       roomServiceMenu.forEach(item => {
         if (!grouped[item.category]) grouped[item.category] = [];
@@ -755,13 +766,17 @@
 
       let html = '';
       for (const [category, items] of Object.entries(grouped)) {
-        // Affichage des Catégories avec le titre souligné
+        // Titre de catégorie souligné
         html += `<h4 class="text-sm font-bold text-stone-900 border-b-2 border-remal-sand pb-1 mt-4 mb-2 uppercase">${category}</h4>`;
         
-        // Affichage des plats de la catégorie
+        // Affichage des plats avec leurs détails/ingrédients
         html += items.map(item => `
-          <div class="flex justify-between items-center bg-white p-2.5 mb-2 rounded-xl border border-stone-200 text-xs shadow-sm">
-            <div class="pr-2"><p class="font-bold text-stone-900 leading-tight">${item.name}</p><p class="text-remal-sand font-bold text-sm mt-0.5">AED ${item.price}</p></div>
+          <div class="flex justify-between items-center bg-white p-3 mb-2 rounded-xl border border-stone-200 text-xs shadow-sm">
+            <div class="pr-2 space-y-1">
+              <p class="font-bold text-stone-900 text-sm leading-tight">${item.name}</p>
+              ${item.desc ? `<p class="text-[11px] text-stone-500 leading-snug">${item.desc}</p>` : ''}
+              <p class="text-remal-sand font-bold text-xs">AED ${item.price}</p>
+            </div>
             <div class="flex items-center space-x-2 bg-stone-100 rounded-lg p-1 shrink-0">
               <button type="button" onclick="updateCart('${item.id}', -1)" class="w-6 h-6 bg-white rounded font-bold text-stone-700 shadow-sm">-</button>
               <span id="qty-item-${item.id}" class="font-bold px-1.5 text-stone-900 w-4 text-center">0</span>
@@ -993,7 +1008,6 @@
       document.getElementById('whatsappConfirmation').classList.remove('hidden');
       document.getElementById('req_details').value = '';
       
-      // Remise à zero du panier
       cartState = {};
       renderRoomServiceMenu();
       calculateCartTotal();
