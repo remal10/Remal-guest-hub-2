@@ -427,6 +427,9 @@ function setupRealtimeSubscriptions() {
     .on('postgres_changes', { event: '*', schema: 'public', table: 'requests' }, payload => {
       fetchRequestsFromCloud();
     })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'laundry_slips' }, payload => {
+      fetchRequestsFromCloud();
+    })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'offers' }, payload => {
       fetchOffersFromCloud();
     })
@@ -771,7 +774,7 @@ function renderClientFavoritesAndHistory() {
 
   const roomNum = document.getElementById('req_room')?.value?.trim();
   if (roomNum && validateRoomNumber(roomNum)) {
-    const roomReqs = cachedRequests.filter(r => String(r.room).trim().toLowerCase() === roomNum.toLowerCase() && r.service.includes('Room Service'));
+    const roomReqs = cachedRequests.filter(r => String(r.room).trim().toLowerCase() === roomNum.toLowerCase() && r.service && r.service.includes('Room Service'));
     if (roomReqs.length > 0) {
       html += `<div class="space-y-1"><p class="text-[10px] font-bold text-stone-500 uppercase">🕒 Recent Room Service Orders for Room ${roomNum}</p>`;
       html += roomReqs.slice(0, 2).map(req => `
@@ -951,6 +954,7 @@ async function fetchOffersFromCloud() {
 }
 
 async function fetchRequestsFromCloud() {
+  // 1. Récupérer les requêtes générales
   const { data: generalData, error: generalError } = await supabaseClient
     .from('requests')
     .select('*')
@@ -959,11 +963,29 @@ async function fetchRequestsFromCloud() {
     
   if (generalError) console.error("Erreur requests:", generalError);
 
-  cachedRequests = generalData || [];
-  updateRequestsUIState();
+  // 2. Récupérer les bulletins de blanchisserie depuis la table "laundry_slips"
+  const { data: laundryData, error: laundryError } = await supabaseClient
+    .from('laundry_slips')
+    .select('*')
+    .order('id', { ascending: false })
+    .limit(50);
+
+  if (laundryError) console.error("Erreur laundry_slips:", laundryError);
+
+  // Normaliser les données de laundry_slips pour qu'elles s'affichent correctement
+  const formattedLaundry = (laundryData || []).map(item => ({
+    id: 'laundry-' + item.id,
+    room: item.room || item.room_number || 'N/A',
+    service: 'Laundry',
+    details: item.details || item.notes || JSON.stringify(item),
+    status: item.status || 'Pending'
+  }));
+
+  // Combiner les deux listes
+  cachedRequests = [...(generalData || []), ...formattedLaundry];
   
-  // Correction ici : détection insensible à la casse et élargie pour "laundry"
-  renderLiveLaundryOrders(cachedRequests.filter(r => r.service && r.service.toLowerCase().includes('laundry')));
+  updateRequestsUIState();
+  renderLiveLaundryOrders(formattedLaundry);
 }
 
 function renderLiveLaundryOrders(laundryData) {
@@ -1407,7 +1429,11 @@ async function submitGuestRequest() {
   renderRoomServiceMenu();
   calculateCartTotal();
 
-  await supabaseClient.from('requests').insert([{ room, service, details, status: 'Pending' }]);
+  if (service === 'Laundry') {
+    await supabaseClient.from('laundry_slips').insert([{ room: room, details: details, status: 'Pending' }]);
+  } else {
+    await supabaseClient.from('requests').insert([{ room, service, details, status: 'Pending' }]);
+  }
 
   await fetchRequestsFromCloud();
 }
@@ -1421,8 +1447,14 @@ async function updateRequestStatus(id, newStatus) {
   updateRequestsUIState();
 
   if (!strId.startsWith('temp-')) {
-    const { error } = await supabaseClient.from('requests').update({ status: newStatus }).eq('id', id);
-    if (error) console.error("Erreur mise à jour requests:", error);
+    if (strId.startsWith('laundry-')) {
+      const actualId = strId.replace('laundry-', '');
+      const { error } = await supabaseClient.from('laundry_slips').update({ status: newStatus }).eq('id', actualId);
+      if (error) console.error("Erreur mise à jour laundry_slips:", error);
+    } else {
+      const { error } = await supabaseClient.from('requests').update({ status: newStatus }).eq('id', id);
+      if (error) console.error("Erreur mise à jour requests:", error);
+    }
   }
   
   await fetchRequestsFromCloud();
@@ -1435,8 +1467,14 @@ async function deleteRequest(id) {
     updateRequestsUIState();
 
     if (!strId.startsWith('temp-')) {
-      const { error } = await supabaseClient.from('requests').delete().eq('id', id);
-      if (error) console.error("Erreur suppression requests:", error);
+      if (strId.startsWith('laundry-')) {
+        const actualId = strId.replace('laundry-', '');
+        const { error } = await supabaseClient.from('laundry_slips').delete().eq('id', actualId);
+        if (error) console.error("Erreur suppression laundry_slips:", error);
+      } else {
+        const { error } = await supabaseClient.from('requests').delete().eq('id', id);
+        if (error) console.error("Erreur suppression requests:", error);
+      }
     }
     
     await fetchRequestsFromCloud();
@@ -1550,7 +1588,7 @@ function setLang(lang) {
   document.getElementById('lblWakeupTitle').innerText = t.wakeupTitle;
   document.getElementById('lblWakeupLabel').innerText = t.wakeupLabel;
   document.getElementById('lblLateTitle').innerText = t.lateTitle;
-  document.getElementById('lblLateLabel').innerText = t.lblLateLabel;
+  document.getElementById('lblLateLabel').innerText = t.lateLabel;
 
   const selectService = document.getElementById('req_service');
   selectService.innerHTML = t.services.map(s => `<option value="${s.val}">${s.text}</option>`).join('');
