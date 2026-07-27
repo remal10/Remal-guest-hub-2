@@ -878,7 +878,6 @@
       renderFacilities();
       renderFaqList();
       
-      // Chargement initial ultra-rapide
       await fetchMenuItemsFromCloud();
       await fetchOffersFromCloud();
       await fetchAnnouncementFromCloud();
@@ -888,15 +887,26 @@
       renderClientFavoritesAndHistory();
       renderRoomFolioWidget();
 
-      // ACTIVATION DU TEMPS RÉEL SUPABASE (Remplace le setInterval lent)
+      // TEMPS RÉEL SUPABASE OPTIMISÉ (Instantané)
       setupRealtimeSubscriptions();
     }
 
     function setupRealtimeSubscriptions() {
       supabaseClient
-        .channel('public-db-changes')
+        .channel('public-db-changes-instant')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'requests' }, payload => {
-          fetchRequestsFromCloud();
+          // Injection directe et instantanée en mémoire pour éviter toute micro-lenteur réseau
+          if (payload.eventType === 'INSERT') {
+            cachedRequests.unshift(payload.new);
+          } else if (payload.eventType === 'UPDATE') {
+            const index = cachedRequests.findIndex(r => r.id === payload.new.id);
+            if (index !== -1) cachedRequests[index] = payload.new;
+          } else if (payload.eventType === 'DELETE') {
+            cachedRequests = cachedRequests.filter(r => r.id !== payload.old.id);
+          }
+
+          // Mise à jour visuelle immédiate
+          updateRequestsUIState();
         })
         .on('postgres_changes', { event: '*', schema: 'public', table: 'offers' }, payload => {
           fetchOffersFromCloud();
@@ -905,6 +915,31 @@
           fetchFeedbackFromCloud();
         })
         .subscribe();
+    }
+
+    function updateRequestsUIState() {
+      const pendingRequests = cachedRequests.filter(r => r.status === 'Pending' || !r.status);
+      
+      if (pendingRequests.length > previousPendingCount) {
+        playNotificationSound();
+      }
+      previousPendingCount = pendingRequests.length;
+
+      const badge = document.getElementById('requestBadge');
+      if (pendingRequests.length > 0) { 
+        badge.innerText = pendingRequests.length; 
+        badge.classList.remove('hidden'); 
+      } else {
+        badge.classList.add('hidden');
+      }
+
+      if (currentView === 'admin') {
+        renderAdminRequests();
+        renderAnalyticsData();
+      }
+      renderClientTracker();
+      renderClientFavoritesAndHistory();
+      renderRoomFolioWidget();
     }
 
     function handleAdminAccess() {
@@ -1399,24 +1434,7 @@
         
       if (error) return;
       cachedRequests = data || [];
-      const pendingRequests = cachedRequests.filter(r => r.status === 'Pending' || !r.status);
-      
-      if (pendingRequests.length > previousPendingCount) {
-        playNotificationSound();
-      }
-      previousPendingCount = pendingRequests.length;
-
-      const badge = document.getElementById('requestBadge');
-      if (pendingRequests.length > 0) { badge.innerText = pendingRequests.length; badge.classList.remove('hidden'); }
-      else badge.classList.add('hidden');
-
-      if (currentView === 'admin') {
-        renderAdminRequests();
-        renderAnalyticsData();
-      }
-      renderClientTracker();
-      renderClientFavoritesAndHistory();
-      renderRoomFolioWidget();
+      updateRequestsUIState();
     }
 
     function renderAnalyticsData() {
