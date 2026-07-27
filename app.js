@@ -965,6 +965,7 @@ async function fetchRequestsFromCloud() {
 }
 
 function renderLiveLaundryOrders(laundryData) {
+  // Recherche robuste du conteneur dans l'interface active (Live View / Staff Panel)
   let container = document.getElementById('liveLaundryOrdersContainer') || document.getElementById('adminLaundryContainer');
   
   if (!container) {
@@ -974,6 +975,7 @@ function renderLiveLaundryOrders(laundryData) {
     }
   }
 
+  // S'il n'y a pas de conteneur affiché à l'écran, on évite l'erreur
   if (!container) return;
 
   if (!laundryData || laundryData.length === 0) {
@@ -1546,7 +1548,7 @@ function setLang(lang) {
   document.getElementById('lblBTime').innerText = t.lblBTime;
 
   document.getElementById('lblWakeupTitle').innerText = t.wakeupTitle;
-  document.getElementById('lblWakeupLabel').innerText = t.lblWakeupLabel;
+  document.getElementById('lblWakeupLabel').innerText = t.wakeupLabel;
   document.getElementById('lblLateTitle').innerText = t.lateTitle;
   document.getElementById('lblLateLabel').innerText = t.lblLateLabel;
 
