@@ -611,9 +611,10 @@ async function fetchMenuItemsFromCloud() {
   const { data } = await supabaseClient.from('menu_items').select('*').order('id', { ascending: true });
   const formattedCloudItems = (data || []).map(item => ({
     ...item,
+    desc: item.description || item.desc || '',
     catName: { en: item.category, ar: item.category, hi: item.category },
     name: { en: item.name, ar: item.name, hi: item.name },
-    desc: { en: item.desc || '', ar: item.desc || '', hi: item.desc || '' }
+    descObj: { en: item.description || item.desc || '', ar: item.description || item.desc || '', hi: item.description || item.desc || '' }
   }));
   roomServiceMenu = [...HARDCODED_MENU, ...formattedCloudItems];
   renderRoomServiceMenu();
@@ -631,7 +632,7 @@ async function addMenuItem(event) {
 
   const fullItem = {
     name: `${nameEn} | ${nameAr}`,
-    desc: `${descEn} | ${descAr}`,
+    description: `${descEn} | ${descAr}`,
     price: price,
     category: category
   };
@@ -674,7 +675,7 @@ function renderAdminMenuList() {
         : `<button onclick="deleteMenuItem(${item.id})" class="text-rose-600 font-bold p-1 hover:underline">🗑️ Delete</button>`;
       
       const displayName = typeof item.name === 'object' ? (item.name[currentLang] || item.name.en) : item.name;
-      const displayDesc = typeof item.desc === 'object' ? (item.desc[currentLang] || item.desc.en) : item.desc;
+      const displayDesc = typeof item.desc === 'object' ? (item.desc[currentLang] || item.desc.en) : (item.description || item.desc || '');
 
       return `
       <div class="flex items-center justify-between p-3.5 mb-2 bg-stone-50 rounded-xl border border-stone-200 text-sm">
@@ -737,7 +738,7 @@ function renderRoomServiceMenu() {
     html += `<h4 class="text-sm font-bold text-stone-900 border-b-2 border-remal-sand pb-1 mt-4 mb-2 uppercase">${category}</h4>`;
     html += items.map(item => {
       let nameText = typeof item.name === 'object' ? (item.name[currentLang] || item.name.en) : item.name;
-      let descText = typeof item.desc === 'object' ? (item.desc[currentLang] || item.desc.en) : item.desc;
+      let descText = typeof item.desc === 'object' ? (item.desc[currentLang] || item.desc.en) : (item.description || item.desc || '');
       const isStarred = starredItems[item.id] ? 'text-amber-500 fill-amber-500' : 'text-stone-300';
 
       return `
