@@ -17,7 +17,6 @@ let cachedOffers = [];
 let cachedRequests = [];
 let cachedFeedback = [];
 let activeAnnouncement = null;
-let currentPromoImageData = null;
 let currentFeedbackRating = 5;
 
 const FAQ_DATA = [
@@ -93,16 +92,20 @@ async function init() {
   const adminParam = urlParams.get('admin');
 
   if (room && validateRoomNumber(room)) {
-    document.getElementById('roomIndicator').innerText = `Room/Villa: ${room} • Remal Hotel`;
-    document.getElementById('req_room').value = room;
+    const roomInd = document.getElementById('roomIndicator');
+    if (roomInd) roomInd.innerText = `Room/Villa: ${room} • Remal Hotel`;
+    const reqRoom = document.getElementById('req_room');
+    if (reqRoom) reqRoom.value = room;
   }
 
   if (adminParam === 'true') {
-    document.getElementById('viewToggleBtn').classList.remove('hidden');
+    const toggleBtn = document.getElementById('viewToggleBtn');
+    if (toggleBtn) toggleBtn.classList.remove('hidden');
     const { data: { session } } = await supabaseClient.auth.getSession();
     currentUserSession = session;
   } else {
-    document.getElementById('viewToggleBtn').classList.add('hidden');
+    const toggleBtn = document.getElementById('viewToggleBtn');
+    if (toggleBtn) toggleBtn.classList.add('hidden');
     currentUserSession = null;
   }
 
@@ -129,24 +132,12 @@ async function init() {
 function setupRealtimeSubscriptions() {
   supabaseClient
     .channel('public-db-changes-instant')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'requests' }, () => {
-      fetchRequestsFromCloud();
-    })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'laundry_slips' }, () => {
-      fetchRequestsFromCloud();
-    })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'offers' }, () => {
-      fetchOffersFromCloud();
-    })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'feedback' }, () => {
-      fetchFeedbackFromCloud();
-    })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'menu_items' }, () => {
-      fetchMenuItemsFromCloud();
-    })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'announcements' }, () => {
-      fetchAnnouncementFromCloud();
-    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'requests' }, () => { fetchRequestsFromCloud(); })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'laundry_slips' }, () => { fetchRequestsFromCloud(); })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'offers' }, () => { fetchOffersFromCloud(); })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'feedback' }, () => { fetchFeedbackFromCloud(); })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'menu_items' }, () => { fetchMenuItemsFromCloud(); })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'announcements' }, () => { fetchAnnouncementFromCloud(); })
     .subscribe();
 }
 
@@ -178,10 +169,16 @@ function updateRequestsUIState() {
 
 function handleAdminAccess() {
   if (currentUserSession) toggleAdminView();
-  else document.getElementById('authModal').classList.remove('hidden');
+  else {
+    const authModal = document.getElementById('authModal');
+    if (authModal) authModal.classList.remove('hidden');
+  }
 }
 
-function closeAuthModal() { document.getElementById('authModal').classList.add('hidden'); }
+function closeAuthModal() { 
+  const authModal = document.getElementById('authModal');
+  if (authModal) authModal.classList.add('hidden'); 
+}
 
 async function loginAdmin(event) {
   event.preventDefault();
@@ -190,8 +187,11 @@ async function loginAdmin(event) {
   const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
   if (error) {
-    document.getElementById('authErrorMsg').innerText = "❌ Invalid email or password.";
-    document.getElementById('authErrorMsg').classList.remove('hidden');
+    const errEl = document.getElementById('authErrorMsg');
+    if (errEl) {
+      errEl.innerText = "❌ Invalid email or password.";
+      errEl.classList.remove('hidden');
+    }
   } else {
     currentUserSession = data.session;
     closeAuthModal();
@@ -212,18 +212,18 @@ function toggleAdminView() {
 
   if (currentView === 'client') {
     currentView = 'admin';
-    clientV.classList.add('hidden');
-    adminV.classList.remove('hidden');
-    btn.innerText = "📱 Client View";
+    if (clientV) clientV.classList.add('hidden');
+    if (adminV) adminV.classList.remove('hidden');
+    if (btn) btn.innerText = "📱 Client View";
     renderAdminList();
     renderAdminMenuList();
     renderAdminFeedback();
     renderAnalyticsData();
   } else {
     currentView = 'client';
-    adminV.classList.add('hidden');
-    clientV.classList.remove('hidden');
-    btn.innerText = "⚙️ Staff Panel";
+    if (adminV) adminV.classList.add('hidden');
+    if (clientV) clientV.classList.remove('hidden');
+    if (btn) btn.innerText = "⚙️ Staff Panel";
     renderClientCards();
   }
 }
@@ -291,8 +291,12 @@ function renderFaqList() {
 }
 
 function filterFaq() {
-  const query = document.getElementById('faqSearchInput').value.toLowerCase();
+  const searchInput = document.getElementById('faqSearchInput');
+  if (!searchInput) return;
+  const query = searchInput.value.toLowerCase();
   const container = document.getElementById('faqContainer');
+  if (!container) return;
+
   const filtered = FAQ_DATA.filter(item => 
     item.q[currentLang].toLowerCase().includes(query) || 
     item.a[currentLang].toLowerCase().includes(query)
@@ -387,7 +391,10 @@ function renderAdminMenuList() {
 }
 
 function toggleServiceDynamicFields() {
-  const selectedService = document.getElementById('req_service').value;
+  const serviceEl = document.getElementById('req_service');
+  if (!serviceEl) return;
+  const selectedService = serviceEl.value;
+  
   const roomServiceBlock = document.getElementById('roomServiceMenuBlock');
   const lateCheckoutBlock = document.getElementById('lateCheckoutBlock');
   const wakeupCallBlock = document.getElementById('wakeupCallBlock');
@@ -476,7 +483,7 @@ function renderClientFavoritesAndHistory() {
       let nameText = typeof item.name === 'object' ? (item.name[currentLang] || item.name.en) : item.name;
       return `<div class="flex justify-between items-center bg-stone-50 p-2 rounded-xl border border-stone-200 text-xs">
         <span class="font-bold text-stone-800">${nameText} (AED ${item.price})</span>
-        <button type="button" onclick="updateCart('${item.id}', 1); switchGuestTab('request'); document.getElementById('req_service').value='Room Service / Dining'; toggleServiceDynamicFields();" class="bg-remal-sand text-white px-2.5 py-1 rounded-lg font-bold text-[10px]">Order +1</button>
+        <button type="button" onclick="updateCart('${item.id}', 1); switchGuestTab('request'); const sEl=document.getElementById('req_service'); if(sEl) sEl.value='Room Service / Dining'; toggleServiceDynamicFields();" class="bg-remal-sand text-white px-2.5 py-1 rounded-lg font-bold text-[10px]">Order +1</button>
       </div>`;
     }).join('');
     html += `</div>`;
@@ -546,17 +553,18 @@ function renderRoomFolioWidget() {
 function onRoomNumberChange() {
   const roomInput = document.getElementById('req_room');
   const roomError = document.getElementById('roomErrorMsg');
+  if (!roomInput) return;
   const val = roomInput.value.trim();
 
   if (val === '') {
     if (roomError) roomError.classList.add('hidden');
-    if (roomInput) roomInput.classList.remove('border-rose-500');
+    roomInput.classList.remove('border-rose-500');
   } else if (!validateRoomNumber(val)) {
     if (roomError) roomError.classList.remove('hidden');
-    if (roomInput) roomInput.classList.add('border-rose-500');
+    roomInput.classList.add('border-rose-500');
   } else {
     if (roomError) roomError.classList.add('hidden');
-    if (roomInput) roomInput.classList.remove('border-rose-500');
+    roomInput.classList.remove('border-rose-500');
   }
 
   renderClientTracker();
@@ -671,7 +679,6 @@ async function fetchRequestsFromCloud() {
   renderLiveLaundryOrders(formattedLaundry);
 }
 
-// Gestion des ordres de blanchisserie avec affichage de la consigne client en bannière rouge d'alerte
 function renderLiveLaundryOrders(laundryData) {
   let container = document.getElementById('liveLaundryOrdersContainer') || document.getElementById('adminLaundryContainer');
   
@@ -701,7 +708,6 @@ function renderLiveLaundryOrders(laundryData) {
 
     return `
     <div class="p-5 bg-white rounded-3xl border-2 border-rose-200 shadow-md space-y-4 mb-4">
-      <!-- Bannière rouge d'alerte critique avec les instructions du client -->
       <div class="bg-rose-50 border-l-4 border-rose-600 p-3.5 rounded-r-2xl text-rose-900 text-xs space-y-1 shadow-inner">
         <p class="font-bold uppercase tracking-wider flex items-center text-rose-700">🚨 ALERTE LAUNDRY PLANT — Chambre ${order.room || 'N/A'}</p>
         <p class="font-semibold italic text-stone-900 text-sm">"${clientNote}"</p>
@@ -712,7 +718,6 @@ function renderLiveLaundryOrders(laundryData) {
         <span class="bg-amber-100 text-amber-900 font-bold px-3 py-1 rounded-full uppercase text-[10px]">Statut : ${currentStatus}</span>
       </div>
 
-      <!-- Boutons du workflow 4 étapes Laundry -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-2 pt-2 border-t border-stone-100">
         <button onclick="updateLaundryStatus('${order.id}', 'collected')" class="py-2.5 px-3 rounded-xl font-bold text-xs transition ${currentStatus === 'collected' ? 'bg-amber-600 text-white shadow' : 'bg-amber-50 text-amber-800 hover:bg-amber-100'}">📦 Collected</button>
         <button onclick="updateLaundryStatus('${order.id}', 'washing')" class="py-2.5 px-3 rounded-xl font-bold text-xs transition ${currentStatus === 'washing' ? 'bg-blue-600 text-white shadow' : 'bg-blue-50 text-blue-800 hover:bg-blue-100'}">🧼 Washing</button>
@@ -780,7 +785,9 @@ function renderAnalyticsData() {
 }
 
 function renderClientTracker() {
-  const roomNum = document.getElementById('req_room')?.value?.trim().toLowerCase();
+  const roomInput = document.getElementById('req_room');
+  if (!roomInput) return;
+  const roomNum = roomInput.value.trim().toLowerCase();
   const container = document.getElementById('clientTrackerContainer');
   if (!container) return;
   const t = i18n[currentLang];
@@ -953,19 +960,25 @@ async function deleteRequest(id) {
 async function deleteOffer(id) { if (confirm('Delete?')) { await supabaseClient.from('offers').delete().eq('id', id); await fetchOffersFromCloud(); } }
 
 async function submitGuestRequest() {
-  const room = document.getElementById('req_room').value.trim();
-  const service = document.getElementById('req_service').value;
-  let details = document.getElementById('req_details').value;
+  const roomInput = document.getElementById('req_room');
+  const serviceEl = document.getElementById('req_service');
+  const detailsEl = document.getElementById('req_details');
+  if (!roomInput || !serviceEl) return;
+
+  const room = roomInput.value.trim();
+  const service = serviceEl.value;
+  let details = detailsEl ? detailsEl.value : '';
 
   if (!room || !validateRoomNumber(room)) {
     alert("❌ Erreur : Veuillez entrer un numéro de chambre ou de villa valide.");
-    document.getElementById('req_room').focus();
+    roomInput.focus();
     return;
   }
   
   if (service === 'Room Service / Dining') {
     const total = calculateCartTotal();
-    const deliveryTime = document.getElementById('delivery_time').value;
+    const deliveryTimeEl = document.getElementById('delivery_time');
+    const deliveryTime = deliveryTimeEl ? deliveryTimeEl.value : 'As soon as possible';
     let orderSummary = [];
     roomServiceMenu.forEach(item => { 
       if (cartState[item.id] > 0) {
@@ -988,8 +1001,7 @@ async function submitGuestRequest() {
   const whatsappConf = document.getElementById('whatsappConfirmation');
   if (whatsappConf) whatsappConf.classList.remove('hidden');
   
-  const reqDetailsEl = document.getElementById('req_details');
-  if (reqDetailsEl) reqDetailsEl.value = '';
+  if (detailsEl) detailsEl.value = '';
   
   cartState = {};
   renderRoomServiceMenu();
@@ -1005,32 +1017,41 @@ async function submitGuestRequest() {
 }
 
 function switchGuestTab(tab) {
-  ['guestOffersSection', 'guestFacilitiesSection', 'guestFaqSection', 'guestRequestSection'].forEach(s => {
+  const sections = ['guestOffersSection', 'guestFacilitiesSection', 'guestFaqSection', 'guestRequestSection'];
+  sections.forEach(s => {
     const el = document.getElementById(s);
     if (el) el.classList.add('hidden');
   });
-  ['tabOffersBtn', 'tabFacilitiesBtn', 'tabFaqBtn', 'tabRequestBtn'].forEach(b => {
+
+  const buttons = ['tabOffersBtn', 'tabFacilitiesBtn', 'tabFaqBtn', 'tabRequestBtn'];
+  buttons.forEach(b => {
     const el = document.getElementById(b);
-    if (el) el.className = "flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap";
+    if (el) el.className = "flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap transition";
   });
 
   if (tab === 'offers') { 
-    document.getElementById('guestOffersSection')?.classList.remove('hidden'); 
+    const sec = document.getElementById('guestOffersSection');
+    if (sec) sec.classList.remove('hidden'); 
     const b = document.getElementById('tabOffersBtn');
-    if (b) b.className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; 
+    if (b) b.className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap transition"; 
+    renderClientCards();
   } else if (tab === 'facilities') { 
-    document.getElementById('guestFacilitiesSection')?.classList.remove('hidden'); 
+    const sec = document.getElementById('guestFacilitiesSection');
+    if (sec) sec.classList.remove('hidden'); 
     const b = document.getElementById('tabFacilitiesBtn');
-    if (b) b.className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; 
+    if (b) b.className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap transition"; 
+    renderFacilities();
   } else if (tab === 'faq') { 
-    document.getElementById('guestFaqSection')?.classList.remove('hidden'); 
+    const sec = document.getElementById('guestFaqSection');
+    if (sec) sec.classList.remove('hidden'); 
     const b = document.getElementById('tabFaqBtn');
-    if (b) b.className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; 
+    if (b) b.className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap transition"; 
     renderFaqList(); 
   } else if (tab === 'request') { 
-    document.getElementById('guestRequestSection')?.classList.remove('hidden'); 
+    const sec = document.getElementById('guestRequestSection');
+    if (sec) sec.classList.remove('hidden'); 
     const b = document.getElementById('tabRequestBtn');
-    if (b) b.className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; 
+    if (b) b.className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap transition"; 
     toggleServiceDynamicFields(); 
     renderClientTracker(); 
     renderClientFavoritesAndHistory(); 
@@ -1114,7 +1135,7 @@ function setLang(lang) {
   setTxt('lblRatingText', t.ratingText);
   setTxt('btnSubmitReview', t.btnSubmitReview);
   setTxt('lblFavTitle', t.favTitle);
-  setTxt('lblFavBadge', t.lblFavBadge);
+  setTxt('lblFavBadge', t.favBadge);
   setTxt('lblTrackHeader', t.trackHeader);
   setTxt('lblLiveStatus', t.liveStatus);
 
