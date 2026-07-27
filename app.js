@@ -1546,7 +1546,7 @@ function setLang(lang) {
   document.getElementById('lblBTime').innerText = t.lblBTime;
 
   document.getElementById('lblWakeupTitle').innerText = t.wakeupTitle;
-  document.getElementById('lblWakeupLabel').innerText = t.wakeupLabel;
+  document.getElementById('lblWakeupLabel').innerText = t.lblWakeupLabel;
   document.getElementById('lblLateTitle').innerText = t.lateTitle;
   document.getElementById('lblLateLabel').innerText = t.lblLateLabel;
 
