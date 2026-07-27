@@ -1,5 +1,5 @@
 const SUPABASE_URL = 'https://tbsroleffqhyzbbfmtvp.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRic3JvbGVmZnFoeXpiYmZtdHZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MzUyMzMsImV4cCI6MjEwMDQxMTIzM30.oNKhoPJ7v__YJQW7flC9UsP2cIDHLMuxjqmf6_NvYW4';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRic3JvbGVmZnFoeXpiYmZtdHZwIiwicm9sZSI6InFub24iLCJpYXQiOjE3ODQ4MzUyMzMsImV4cCI6MjEwMDQxMTIzM30.oNKhoPJ7v__YJQW7flC9UsP2cIDHLMuxjqmf6_NvYW4';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let audioContext = null;
@@ -47,129 +47,7 @@ const HARDCODED_MENU = [
   { id: 'hm_bf1', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Continental', ar: 'كونتيننتال', hi: 'महाद्वीपीय' }, desc: { en: 'Croissant, Muffin, Danish and Seasonal Sliced Fruits', ar: 'تشكيلة من الكرواسون والمفن والدانش، وفواكه موسمية مقطعة', hi: 'क्रॉसेंट, मफिन, दानिश और मौसमी कटे हुए फल' }, price: 49 },
   { id: 'hm_bf2', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Emirati Flavors', ar: 'الفطور بالطعم الإماراتي', hi: 'अमीराती स्वाद' }, desc: { en: 'Harees, Chebab, Balaleet, Arabic Cheese, Labneh, Olives, Cucumber, Tomatoes, Foul Medames, Egg Shakshuka, Kuboos, and Seasonal Sliced Fruits', ar: 'هريس، جباب، بالاليط، جبن عريج، لبنة، زيتون، خيار، طماطم، فول مدمس، شكشوكة البيض، خبز، وفواكه موسمية مقطعة', hi: 'हरीस, चेबाब, बलालीट, अरबी पनीर, लाबनेह, जैतून, ककड़ी, टमाटर, फुल मेदमेस, अंडा शक्शुका' }, price: 59 },
   { id: 'hm_bf3', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Arabic Breakfast', ar: 'فطور عربي', hi: 'अरबी नाश्ता' }, desc: { en: 'Hummus, Falafel, Foul Medames, Labneh, Halloumi White Cheese, Fried Egg, Assorted Vegetables, Olives, Mixed Pickles, and Seasonal Fruits', ar: 'حمص، فلافل، فول مدمس، لبنة، جبنة حلومي، بيض مقلي، تشكيلة من الخضروات، زيتون، مخللات مشكلة، وفواكه موسمية', hi: 'हम्मुस, फलाफेल, फुल मेदमेस, लाबनेह, हलोमी सफेद पनीर, तला हुआ अंडा, मिश्रित सब्जियां' }, price: 59 },
-  { id: 'hm_bf4', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'International', ar: 'العالمي', hi: 'अंतर्राष्ट्रीय' }, desc: { en: 'Fresh bakery basket, Two eggs prepared to your liking, Chicken sausage, turkey bacon, and hash brown potatoes, Grilled tomatoes, sautéed mushrooms, and baked beans, Yogurt with dried fruits and nuts or mixed berries, Seasonal sliced fruits', ar: 'سلة مخبوزات طازجة، بيضتان تحضران حسب رغبتك، سقا دجاج، لحم ديك رومي مقدد، بطاطس هاش براون، طماطم مشوية، فطر سوتيه، فاصوليا مطبوخة، زبادي مع فواكه مجففة ومكسرات أو توت مشكل وفواكه موسمية مقطعة', hi: 'ताजा बेकरी बास्केट, आपकी पसंद के अनुसार दो अंडे, चिकन सॉसेज, टर्की बेकन' }, price: 61 },
-  { id: 'hm_bf5', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Choice of Eggs', ar: 'اختيارات من البيض', hi: 'अंडे की पसंद' }, desc: { en: 'Scrambled Eggs, Fried Eggs, Boiled Eggs, Plain Omelette, Vegetable Omelette, Cheese Omelette, Poached Eggs, Sunny Side Up Eggs', ar: 'بيض مخفوق، بيض مقلي، بيض مسلوق، أومليت سادة، أومليت بالخضار، أومليت بالجبن، بيض مسلوق (بوشيه)، بيض عيون', hi: 'स्क्रैम्बल अंडे, तले हुए अंडे, उबले हुए अंडे, सादा आमलेट, सब्जी आमलेट, पनीर आमलेट' }, price: 25 },
-  { id: 'hm_bf6', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Shakshuka', ar: 'شكشوكة', hi: 'शक्शुका' }, desc: { en: 'Poached eggs in a spicy tomato and bell pepper sauce, seasoned with garlic and onions. Served with Arabic bread.', ar: 'بيض مسلوق بطريقة بوشيه في صلصة طماطم حارة مع الفلفل، متبل بالثوم والبصل، يقدم مع الخبز العربي', hi: ' मसालेदार टमाटर और शिमला मिर्च की चटनी में उबले हुए अंडे। अरबी ब्रेड के साथ परोसा जाता है।' }, price: 30 },
-  { id: 'hm_bf7', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Eggs Benedict with Turkey Ham', ar: 'بيض بندكت مع ديك رومي', hi: 'टर्की हैम के साथ अंडे बेनेडिक्ट' }, desc: { en: 'Poached eggs and turkey ham on a toasted English muffin, topped with rich Hollandaise sauce.', ar: 'بيض مسلوق (بوشيه) مع هام ديك رومي، يقدم على مافن إنجليزي محمص، مع صلصة الهولنديز', hi: 'टोस्टेड इंग्लिश मफिन पर उबले अंडे और टर्की हैम, समृद्ध होलांडाइज सॉस के साथ।' }, price: 30 },
-  { id: 'hm_bf8', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Eggs Benedict with Smoked Salmon', ar: 'بيض بندكت مع سلمون مدخن', hi: 'स्मोक्ड सैल्मन के साथ अंडे बेनेडिक्ट' }, desc: { en: 'Poached eggs and smoked salmon on a toasted English muffin, topped with creamy Hollandaise sauce.', ar: 'بيض مسلوق (بوشيه) مع سلمون مدخن، يقدم على مافن إنجليزي محمص، مع صلصة الهولنديز الكريمية', hi: 'टोस्टेड इंग्लिश मफिन पर उबले अंडे और स्मोक्ड सैल्मन, मलाईदार होलांडाइज सॉस के साथ।' }, price: 35 },
-
-  { id: 'hm_sp1', categoryKey: 'Soup', catName: { en: 'Soup', ar: 'الشوربة', hi: 'सूप' }, name: { en: 'Traditional Lentil Soup', ar: 'شوربة العدس', hi: 'पारंपरिक दाल का सूप' }, desc: { en: 'With roasted cumin, fresh lemon and crispy pita bread', ar: 'تقدم مع كمون محمص، ليمون طازج وخبر بيتا مقرمش', hi: 'भुना हुआ जीरा, ताज़ा नींबू और कुरकुरी पिटा ब्रेड के साथ' }, price: 25 },
-  { id: 'hm_sp2', categoryKey: 'Soup', catName: { en: 'Soup', ar: 'الشوربة', hi: 'सूप' }, name: { en: 'Minestrone Soup', ar: 'شوربة المينستروني', hi: 'मिनस्ट्रोनी सूप' }, desc: { en: 'Classic Italian vegetable soup with pasta and herbs', ar: 'شوربة إيطالية كلاسيكية من الخضار مع المعكرونة والأعشاب', hi: 'पास्ता और जड़ी-बूटियों के साथ क्लासिक इतालवी सब्जी सूप' }, price: 25 },
-  { id: 'hm_sp3', categoryKey: 'Soup', catName: { en: 'Soup', ar: 'الشوربة', hi: 'सूप' }, name: { en: 'Harira Soup', ar: 'شوربة الحريرة', hi: 'हरीरा सूप' }, desc: { en: 'Moroccan spiced soup made with lentils, chickpeas and tomatoes', ar: 'شوربة مغربية متبلة من العدس والحمص والطماطم', hi: 'दाल, छोले और टमाटर से बना मोरक्कन मसालेदार सूप' }, price: 25 },
-  { id: 'hm_sp4', categoryKey: 'Soup', catName: { en: 'Soup', ar: 'الشوربة', hi: 'सूप' }, name: { en: 'Soup of the Day', ar: 'شوربة اليوم', hi: 'दिन का सूप' }, desc: { en: 'Chef\'s daily special, freshly prepared with seasonal ingredients', ar: 'الشوربة اليومية المميزة من إعداد الشيف، تحضر طازجة باستخدام مكونات موسمية مختارة', hi: 'शेफ की दैनिक विशेष डिश, मौसमी सामग्री के साथ ताज़ा तैयार की गई' }, price: 25 },
-
-  { id: 'hm_sl1', categoryKey: 'Salads and Mezzeh', catName: { en: 'Salads and Mezzeh', ar: 'السلطات والمقبلات', hi: 'सलाद और मेज़ेह' }, name: { en: 'Classic Caesar Salad', ar: 'سلطة سيزر الكلاسيكية', hi: 'क्लासिक सीज़र सलाद' }, desc: { en: 'Lettuce, shaved parmesan cheese, Caesar dressing, croutons', ar: 'خس، جبنة بارميزان مبشورة، صلصة سيزر، خبز محمص', hi: 'सलाद पत्ता, परमेसन पनीर, सीज़र ड्रेसिंग, क्रौटन' }, price: 45 },
-  { id: 'hm_sl2', categoryKey: 'Salads and Mezzeh', catName: { en: 'Salads and Mezzeh', ar: 'السلطات والمقبلات', hi: 'सलाद और मेज़ेह' }, name: { en: 'Chicken Caesar Salad', ar: 'سلطة سيزر مع الدجاج', hi: 'चिकन सीज़र सलाद' }, desc: { en: 'Lettuce, chicken, beef bacon, shaved parmesan cheese, Caesar dressing, croutons', ar: 'خس، دجاج، لحم بقري مقدد، جبنة بارميزان مبشورة، صلصة سيزر، خبز محمص', hi: 'सलाद पत्ता, चिकन, बीफ बेकन, परमेसन पनीर, सीज़र ड्रेसिंग' }, price: 49 },
-  { id: 'hm_sl3', categoryKey: 'Salads and Mezzeh', catName: { en: 'Salads and Mezzeh', ar: 'السلطات والمقبلات', hi: 'सलाद और मेज़ेह' }, name: { en: 'Shrimps Caesar Salad', ar: 'سلطة سيزر بالروبيان', hi: 'झींगा सीज़र सलाद' }, desc: { en: 'Lettuce, grilled shrimps, parmesan cheese, Caesar dressing, croutons', ar: 'خس، روبيان مشوي، جبنة بارميزان، صلصة سيزر، خبز محمص', hi: 'सलाद पत्ता, ग्रिल्ड झींगा, परमेसन पनीर, सीज़र ड्रेसिंग' }, price: 59 },
-  { id: 'hm_sl4', categoryKey: 'Salads and Mezzeh', catName: { en: 'Salads and Mezzeh', ar: 'السلطات والمقبلات', hi: 'सलाद और मेज़ेह' }, name: { en: 'Quinoa Salad', ar: 'سلطة الكينوا', hi: 'क्विनोआ सलाद' }, desc: { en: 'Quinoa combined with finely chopped parsley and tomato', ar: 'كينوا مع بقدونس وطماطم مفرومة ناعماً', hi: 'बारीक कटे अजमोद और टमाटर के साथ क्विनोआ' }, price: 40 },
-  { id: 'hm_sl5', categoryKey: 'Salads and Mezzeh', catName: { en: 'Salads and Mezzeh', ar: 'السلطات والمقبلات', hi: 'सलाद और मेज़ेह' }, name: { en: 'Fattoush', ar: 'فتوش', hi: 'फत्तूश सलाद' }, desc: { en: 'Lettuce, mint, zaatar, tomatoes, peppers, cucumber, onion, radish, olive oil, lemon juice, pomegranate molasses', ar: 'خس، نعناع، زعتر، طماطم، فلفل، خيار، بصل، فجل، زيت زيتون، عصير ليمون، دبس الرمان', hi: 'सलाद पत्ता, पुदीना, जतूर, टमाटर, शिमला मिर्च, ककड़ी, प्याज, मूली, जैतून का तेल' }, price: 40 },
-  { id: 'hm_sl6', categoryKey: 'Salads and Mezzeh', catName: { en: 'Salads and Mezzeh', ar: 'السلطات والمقبلات', hi: 'सलाद और मेज़ेह' }, name: { en: '(Warak Enab) Vine Leaves', ar: 'ورق عنب', hi: 'अंगूर के पत्ते (वारक एनाब)' }, desc: { en: 'Stuffed grape leaves with rice, herbs, and lemon', ar: 'ورق عنب محشو بالأرز والأعشاب والليمون', hi: 'चावल, जड़ी-बूटियों और नींबू के साथ भरे हुए अंगूर के पत्ते' }, price: 40 },
-
-  { id: 'hm_sw1', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Beef Burger', ar: 'برجر لحم بقري', hi: 'बीफ बर्गर' }, desc: { en: 'Juicy beef patty with mayonnaise, lettuce, tomato, gherkins, cheddar cheese, and caramelized onions, served with French fries', ar: 'برجر لحم بقري مع مايونيز، خس، طماطم، خيار مخلل، جبنة شيدر وبصل مكرمل، يقدم مع بطاطس مقلية', hi: 'मयोनीज़, सलाद पत्ता, टमाटर, चेडर पनीर और caramelized प्याज के साथ रसदार बीफ पैटी' }, price: 60 },
-  { id: 'hm_sw2', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Mac Beef Burger', ar: 'برجر لحم بقري ماك', hi: 'मैक बीफ बर्गर' }, desc: { en: 'Special beef patty with signature toppings, served with French fries', ar: 'برجر لحم بقري مميز مع مكونات خاصة، يقدم مع بطاطس مقلية', hi: 'French fries के साथ परोसा जाने वाला विशेष बीफ बर्गर' }, price: 65 },
-  { id: 'hm_sw3', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Grilled Chicken Burger', ar: 'برجر الدجاج المشوي', hi: 'ग्रिल्ड चिकन बर्गर' }, desc: { en: 'Juicy chicken patty with mayonnaise, tomato, jalapeño, lettuce, and mozzarella cheese, served with French fries', ar: 'برجر دجاج مع مايونيز، طماطم، هالابينو، خس وجبنة موزاريلا، يقدم مع بطاطس مقلية', hi: 'मयोनीज़, टमाटर, जलापीनो और मोज़ेरेला पनीर के साथ चिकन पैटी' }, price: 55 },
-  { id: 'hm_sw4', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Club Sandwich', ar: 'كلوب ساندويتش', hi: 'क्लब सैंडविच' }, desc: { en: 'Triple decker with turkey bacon, lettuce, tomato, chicken mousse, cheese, fried egg, cocktail sauce, served with French fries', ar: 'توست مع ثلاث طبقات من لحم ديك رومي مقدد، خس، طماطم، موس دجاج، جبنة، بيض مقلي، ووصوص كوكتيل، يقدم مع بطاطس مقلية', hi: 'टर्की बेकन, सलाद पत्ता, टमाटर, चिकन मूस और तले हुए अंडे के साथ ट्रिपल डेकर' }, price: 60 },
-  { id: 'hm_sw5', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Fish and Chips', ar: 'سمك مقلي مع بطاطس مقلية', hi: 'फिश एंड चिप्स' }, desc: { en: 'Crispy battered fried fish served with tartar sauce and French fries', ar: 'أصابع سمك مقلية مقرمشة تقدم مع صلصة التارتار والبطاطس المقلية', hi: 'टारटर सॉस और फ्रेंच फ्राइज़ के साथ परोसी जाने वाली कुरकुरी तली हुई मछली' }, price: 69 },
-  { id: 'hm_sw6', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Chicken Quesadilla', ar: 'كاساديا الدجاج', hi: 'चिकन कैसाडिला' }, desc: { en: 'Chicken with Mexican flavors, capsicum, chopped onions, peppers, tomatoes, and mixed cheese, served with tomato salsa, sour cream and avocado sauce', ar: 'دجاج بالنكهة المكسيكية مع فلفل رومي، بصل، طماطم، جبنة مشكلة، تقدم مع صلصة الطماطم، كريمة حامضة وصوص الأفوكادو', hi: 'मेक्सिकन स्वादों के साथ चिकन, शिमला मिर्च, प्याज, टमाटर और मिश्रित पनीर' }, price: 60 },
-  { id: 'hm_sw7', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Smoked Salmon Sandwich', ar: 'ساندويتش سلمون مدخن', hi: 'स्मोक्ड सैल्मन सैंडविच' }, desc: { en: 'Smoked salmon with cream cheese, capers, rocket leaves, and onion slices, served with French fries', ar: 'سلمون مدخن مع جبنة كريمية، كابر، أوراق جرجير وشرائح بصل، يقدم مع بطاطس مقلية', hi: 'क्रीम चीज़, केपर्स और रॉकेट पत्तियों के साथ स्मोक्ड सैल्मन' }, price: 55 },
-  { id: 'hm_sw8', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Cheese Sandwich', ar: 'ساندويتش الجبن', hi: 'चीज़ सैंडविच' }, desc: { en: 'Melted cheese on toasted bread with fresh vegetables, served with French fries', ar: 'جبن ذائب على خبز محمص مع خضار طازجة، يقدم مع بطاطس مقلية', hi: 'ताज़ी सब्जियों के साथ टोस्टेड ब्रेड पर पिघला हुआ पनीर' }, price: 45 },
-  { id: 'hm_sw9', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Chicken Steak Sandwich', ar: 'ساندويتش ستيك الدجاج', hi: 'चिकन स्टेक सैंडविच' }, desc: { en: 'Grilled chicken steak with sautéed vegetables, sauce, and mozzarella cheese, served with Cajun-spiced potato wedges', ar: 'ستيك دجاج مشوي مع خضار سوتيه وصوص وجبنة موزاريلا، يقدم مع بطاطس ويدجز متبلة بالكاجون', hi: 'सॉटे सब्जियों और मोज़ेरेला पनीर के साथ ग्रिल्ड चिकन स्टेक' }, price: 60 },
-  { id: 'hm_sw10', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Beef Steak Sandwich', ar: 'ساندويتش ستيك اللحم البقري', hi: 'बीफ स्टेक सैंडविच' }, desc: { en: 'Grilled beef steak with cheddar cheese, fresh vegetables, and sauce, served with French fries', ar: 'ستيك لحم بقري مشوي مع جبنة شيدر، خضار طازجة وصوص، يقدم مع بطاطس مقلية', hi: 'चेडर पनीर और ताज़ी सब्जियों के साथ ग्रिल्ड बीफ स्टेक' }, price: 65 },
-
-  { id: 'hm_pz1', categoryKey: 'Pizza', catName: { en: 'Pizza', ar: 'البيتزا', hi: 'पिज़्ज़ा' }, name: { en: 'Margherita', ar: 'مارغريتا', hi: 'मार्गेरिटा' }, desc: { en: 'Mozzarella cheese, tomato sauce, oregano', ar: 'جبن موزاريلا، صلصة الطماطم، أوريغانو', hi: 'मोज़ेरेला पनीर, टमाटर की चटनी, ओरेगानो' }, price: 49 },
-  { id: 'hm_pz2', categoryKey: 'Pizza', catName: { en: 'Pizza', ar: 'البيتزا', hi: 'पिज़्ज़ा' }, name: { en: 'Vadodara', ar: 'فادودارا', hi: 'वडोदरा पिज़्ज़ा' }, desc: { en: 'Grilled zucchini, eggplant, bell peppers, mushrooms, and sun-dried tomatoes with mozzarella cheese and tomato sauce', ar: 'كوسة مشوية، باذنجان مشوي، فلفل رومي، فطر، طماطم مجففة مع جبن موزاريلا وصلصة الطماطم', hi: 'ग्रिल्ड ज़ूचिनी, बैंगन, शिमला मिर्च, मशरूम और धूप में सूखे टमाटर' }, price: 59 },
-  { id: 'hm_pz3', categoryKey: 'Pizza', catName: { en: 'Pizza', ar: 'البيتزا', hi: 'पिज़्ज़ा' }, name: { en: 'Cajun Spiced Chicken', ar: 'دجاج متبل بالكاجون', hi: 'कॅजुन मसालेदार चिकन' }, desc: { en: 'Tomato sauce, mozzarella, basil, oregano, grilled Cajun-spiced chicken, roasted bell peppers, and rocket leaves', ar: 'صلصة الطماطم، جبن موزاريلا، ريحان، أوريغانو، دجاج مشوي متبل بالكاجون، فلفل رومي مشوي وأوراق الجرجير', hi: 'टमाटर की चटनी, मोज़ेरेला, तुलसी, ओरेगानो, ग्रिल्ड कैजुन-मसालेदार चिकन' }, price: 65 },
-  { id: 'hm_pz4', categoryKey: 'Pizza', catName: { en: 'Pizza', ar: 'البيتزا', hi: 'पिज़्ज़ा' }, name: { en: 'Polo', ar: 'بولو', hi: 'पोलो पिज़्ज़ा' }, desc: { en: 'Thinly sliced chicken and mushrooms on tomato sauce, finished with oregano', ar: 'شرائح دجاج رفيعة ومشروفر على صلصة الطماطم، مع لمسة من الأوريغانو', hi: 'टमाटर की चटनी पर पतले कटे चिकन और मशरूम' }, price: 60 },
-  { id: 'hm_pz5', categoryKey: 'Pizza', catName: { en: 'Pizza', ar: 'البيتزا', hi: 'पिज़्ज़ा' }, name: { en: 'Pepperoni', ar: 'بيبروني', hi: 'पेपरोनी पिज़्ज़ा' }, desc: { en: 'Mozzarella, beef pepperoni, tomato sauce', ar: 'جبن موزاريلا، بيبروني لحم بقري، صلصة الطماطم', hi: 'मोज़ेरेला, बीफ पेपरोनी, टमाटर की चटनी' }, price: 65 },
-  { id: 'hm_pz6', categoryKey: 'Pizza', catName: { en: 'Pizza', ar: 'البيتزا', hi: 'पिज़्ज़ा' }, name: { en: 'Gorgonzola', ar: 'غورغونزولا', hi: 'गॉरगॉन्ज़ोला पिज़्ज़ा' }, desc: { en: 'Gorgonzola and mozzarella cheese on tomato sauce, topped with oregano and pesto drizzle', ar: 'جبن غورغونزولا وموزاريلا على صلصة الطماطم، مع أوريغانو ولمسة من صلصة البيستو', hi: 'टमाटर की चटनी पर गॉरगॉन्ज़ोला और मोज़ेरेला पनीर' }, price: 69 },
-
-  { id: 'hm_pt1', categoryKey: 'Pasta', catName: { en: 'Pasta', ar: 'الباستا', hi: 'पास्ता' }, name: { en: 'Spaghetti Bolognese', ar: 'سباغيتي بولونيز', hi: 'स्पघेटी बोलोमीज़' }, desc: { en: 'Classic Italian pasta with rich tomato sauce, minced beef, garlic, and herbs', ar: 'سباغيتي إيطالية كلاسيكية بصلصة طماطم غنية مع لحم مفروم، ثوم وأعشاب', hi: 'समृद्ध टमाटर की चटनी, कीमा बनाया हुआ बीफ और लहसुन के साथ क्लासिक पास्ता' }, price: 56 },
-  { id: 'hm_pt2', categoryKey: 'Pasta', catName: { en: 'Pasta', ar: 'الباستا', hi: 'पास्ता' }, name: { en: 'Ravioli Pasta with Spinach & Ricotta', ar: 'رافيولي بالسبانخ والريكوتا', hi: 'पालक और रिकोटा के साथ रविoli' }, desc: { en: 'Pasta filled with ricotta, spinach, and Parmesan, served with light tomato or creamy onion sauce', ar: 'باستا محشوة بجبن الريكوتا والسبانخ والبارميزان، تقدم مع صلصة طماطم خفيفة أو صلصة بصل كريمية', hi: 'रिकोटा, पालक और परमेसन से भरा पास्ता' }, price: 69 },
-  { id: 'hm_pt3', categoryKey: 'Pasta', catName: { en: 'Pasta', ar: 'الباستا', hi: 'पास्ता' }, name: { en: 'Fettuccine Alfredo with Grilled Chicken', ar: 'فيتوتشيني ألفريدو مع دجاج مشوي', hi: 'ग्रिल्ड चिकन के साथ फेटुचिनी अल्फ्रेडो' }, desc: { en: 'Fettuccine in rich creamy Alfredo sauce topped with grilled chicken', ar: 'فيتوتشيني بصلصة ألفريدو كريمية غنية مع دجاج مشوي', hi: 'ग्रिल्ड चिकन के साथ समृद्ध मलाईदार अल्फ्रेडो सॉस में फेटुचिनी' }, price: 60 },
-  { id: 'hm_pt4', categoryKey: 'Pasta', catName: { en: 'Pasta', ar: 'الباستا', hi: 'पास्ता' }, name: { en: 'Tagliatelle with Shrimp & Spring Onion Sauce', ar: 'تالياتيلي بالروبيان وصلصة البصل الأخضر', hi: 'झींगा और स्प्रिंग अनियन सॉस के साथ टग्लियाटेले' }, desc: { en: 'Fresh tagliatelle with shrimp in a light spring onion cream sauce', ar: 'تالياتيلي طازجة مع روبيان بصلصة كريمية خفيفة بنكهة البصل الأخضر', hi: 'हल्के स्प्रिंग अनियन क्रीम सॉस में झींगा के साथ ताजा टग्लियाटेले' }, price: 60 },
-
-  { id: 'hm_mc1', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Lamb Machboos', ar: 'مجبوس لحم', hi: 'लैंब मचबूज़' }, desc: { en: 'Fragrant rice with tender lamb and Middle Eastern spices, served with tomato salsa', ar: 'أرز مندي مطبوخ مع لحم غنم طري وبهارات شرق أوسطية، يقدم مع صلصة الطماطم', hi: 'कोमल मेमने और मध्य पूर्वी मसालों के साथ सुगंधित चावल' }, price: 75 },
-  { id: 'hm_mc2', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Chicken Machboos', ar: 'مجبوس دجاج', hi: 'चिकन मचबूज़' }, desc: { en: 'Rice cooked with tender bone-in chicken', ar: 'أرز مطبوخ مع دجاج طري بالعظم', hi: 'कोमल हड्डी वाले चिकन के साथ पकाया गया चावल' }, price: 65 },
-  { id: 'hm_mc3', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Chicken Kabsa', ar: 'كبسة دجاج', hi: 'चिकन कब्सा' }, desc: { en: 'Traditional spiced rice with slow-cooked chicken', ar: 'أرز مندي تقليدي مع دجاج مطبوخ ببطء', hi: 'धीमी गति से पके हुए चिकन के साथ पारंपरिक मसालेदार चावल' }, price: 70 },
-  { id: 'hm_mc4', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Chicken Tikka Biryani', ar: 'برياني دجاج تيكا', hi: 'चिकन टिक्का बिरयानी' }, desc: { en: 'Basmati rice layered with marinated chicken tikka, served with raita, papad, and pickle', ar: 'أرز بسمتي مع دجاج تيكا متبل، يقدم مع رايتا، باباد ومخلل', hi: 'मैरीनेटेड चिकन टिक्का के साथ पकी बासमती चावल की बिरयानी' }, price: 65 },
-  { id: 'hm_mc5', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Lamb Biryani', ar: 'برياني لحم', hi: 'लैंब बिरयानी' }, desc: { en: 'Basmati rice with tender lamb, spices, and fried onions', ar: 'أرز بسمتي مع لحم غنم طري، بهارات، وبصل مقلي', hi: 'कोमल मेमने, मसालों और तले हुए प्याज के साथ बासमती चावल' }, price: 80 },
-  { id: 'hm_mc6', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Vegetable Biryani', ar: 'برياني خضار', hi: 'वेज बिरयानी' }, desc: { en: 'Served with papadum, raita, pickles, and mango chutney', ar: 'يقدم مع بابادوم، رايتا، مخللات وصلصة المانجو', hi: 'पापड़, रायता, अचार और आम की चटनी के साथ परोसा जाता है' }, price: 53 },
-  { id: 'hm_mc7', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Hammour Fish Curry', ar: 'كاري سمك الهامور', hi: 'हैमौर फिश करी' }, desc: { en: 'Fresh hammour fish in aromatic curry sauce with steamed rice', ar: 'سمك هامور طازج مطبوخ بصلصة كاري غنية ويقدم مع أرز أبيض', hi: 'उबले चावल के साथ सुगंधित करी सॉस में ताजी हैमौर मछली' }, price: 70 },
-  { id: 'hm_mc8', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Paneer Butter Masala', ar: 'بانير بتر ماسالا', hi: 'पनीर बटर मसाला' }, desc: { en: 'Paneer cubes in creamy tomato butter sauce', ar: 'مكعبات بانير مطهوة بصلصة طماطم كريمية بالزبدة', hi: 'मलाईदार टमाटर बटर सॉस में पनीर के टुकड़े' }, price: 60 },
-  { id: 'hm_mc9', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Gobi Masala', ar: 'قرنبيط ماسالا', hi: 'गोभी मसाला' }, desc: { en: 'Spiced cauliflower in tomato gravy', ar: 'قرنبيط مطهو بصلصة طماطم متبلة', hi: 'टमाटर की ग्रेवी में मसालेदार फूलगोभी' }, price: 60 },
-  { id: 'hm_mc10', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Vegetable Kurma', ar: 'كورما خضار', hi: 'वेजिटेबल कुरमा' }, desc: { en: 'Mixed vegetables in coconut-based curry', ar: 'خضار مشكلة مطهوة بصلصة كاري جوز الهند', hi: 'नारियल आधारित करी में मिश्रित सब्जियां' }, price: 60 },
-  { id: 'hm_mc11', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Butter Chicken Masala', ar: 'دجاج بتر ماسالا', hi: 'बटर चिकन मसाला' }, desc: { en: 'Chicken in rich tomato butter sauce', ar: 'دجاج مطهو بصلصة طماطم بالزبدة', hi: 'समृद्ध टमाटर बटर सॉस में चिकन' }, price: 65 },
-  { id: 'hm_mc12', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Kadai Paneer', ar: 'كاداي بانير', hi: 'कड़ाई पनीर' }, desc: { en: 'Paneer with bell peppers and onions in spiced tomato gravy', ar: 'بانير مع فلفل رومي وبصل بصلصة طماطم متبلة', hi: 'मसालेदार टमाटर की ग्रेवी में शिमला मिर्च और प्याज के साथ पनीर' }, price: 60 },
-  { id: 'hm_mc13', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Gobi Manchurian', ar: 'قرنبيط مانتشوريان', hi: 'गोभी मंचूरियन' }, desc: { en: 'Crispy cauliflower in Indo-Chinese sauce', ar: 'قرنبيط مقرمش بصلصة هندية صينية', hi: 'इंडो-चाइनीज सॉस में कुरकुरी गोभी' }, price: 60 },
-  { id: 'hm_mc14', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Grilled Salmon (200g)', ar: 'سلمون مشوي (200 جم)', hi: 'ग्रिल्ड सैल्मन (200 ग्राम)' }, desc: { en: 'Grilled salmon with lemon butter sauce', ar: 'سلمون مشوي يخدم مع صلصة الزبدة والليمون' }, price: 90 },
-  { id: 'hm_mc15', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Lamb Chops', ar: 'ريش لحم غنم', hi: 'लैंब चॉप्स' }, desc: { en: 'Grilled marinated lamb chops', ar: 'ريش لحم غنم متبلة ومشوية' }, price: 85 },
-  { id: 'hm_mc16', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Grilled Chicken Breast (200g)', ar: 'صدر دجاج مشوي (200 جم)', hi: 'ग्रिल्ड चिकन ब्रेस्ट (200 ग्राम)' }, desc: { en: 'With mushroom sauce and steamed vegetables', ar: 'يقدم مع صلصة الفطر وخضار مشوية مطهو على البخار' }, price: 70 },
-  { id: 'hm_mc17', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Fried Shrimp', ar: 'روبيان مقلي', hi: 'तले हुए झींगे' }, desc: { en: 'Breaded shrimp served with tartar sauce', ar: 'روبيان مقلي بالتشيبادا يقدم مع صلصة التارتار' }, price: 75 },
-  { id: 'hm_mc18', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Grilled Beef Tenderloin (200g)', ar: 'فيليه لحم بقري مشوي (200 جم)', hi: 'ग्रिल्ड बीफ टेंडरलोइन (200 ग्राम)' }, desc: { en: 'Juicy beef tenderloin grilled to perfection', ar: 'فيليه لحم بقري طري مشوي بإتقان' }, price: 85 },
-  { id: 'hm_mc19', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Nasi Goreng', ar: 'ناسي جورينغ', hi: 'नासी गोरेन्ग' }, desc: { en: 'Indonesian fried rice with vegetables, egg, and chicken', ar: 'أرز مقلي إندونيسي مع خضار وبيض ودجاج' }, price: 65 },
-  { id: 'hm_mc20', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Plain Fried Rice', ar: 'أرز مقلي عادي', hi: 'सादा फ्राइड राइस' }, desc: { en: 'Wok-fried rice with vegetables and chili soy sauce', ar: 'أرز مقلي مع خضار وصلصة الصويا' }, price: 35 },
-
-  { id: 'hm_hb1', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي', hi: 'गर्म पेय' }, name: { en: 'Espresso', ar: 'إسبريسو', hi: 'एस्प्रेसो' }, desc: { en: 'Rich & strong espresso shot', ar: 'إسبريسو غني وقوي' }, price: 16 },
-  { id: 'hm_hb2', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي', hi: 'गर्म पेय' }, name: { en: 'Double Espresso', ar: 'دبل إسبريسو', hi: 'डबल एस्प्रेसो' }, desc: { en: 'Double shot of rich espresso', ar: 'جرعة مضاعفة من الإسبريسو' }, price: 22 },
-  { id: 'hm_hb3', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي', hi: 'गर्म पेय' }, name: { en: 'Turkish Coffee', ar: 'قهوة تركية', hi: 'तुर्की कॉफी' }, desc: { en: 'Authentic traditional Turkish coffee', ar: 'قهوة تركية تقليدية أصيلة' }, price: 22 },
-  { id: 'hm_hb4', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي', hi: 'गर्म पेय' }, name: { en: 'Cappuccino', ar: 'كابتشينو', hi: 'कपुचिनो' }, desc: { en: 'Espresso with steamed milk and thick foam', ar: 'إسبريسو مع حليب مبشور ورغوة كثيفة' }, price: 27 },
-  { id: 'hm_hb5', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي', hi: 'गर्म पेय' }, name: { en: 'Caffè Latte', ar: 'لاتيه', hi: 'कैफे लाटे' }, desc: { en: 'Espresso with smooth creamy milk', ar: 'إسبريسو مع حليب كريمي ناعم' }, price: 27 },
-  { id: 'hm_hb6', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي', hi: 'गर्म पेय' }, name: { en: 'Hot Chocolate', ar: 'شوكولاتة ساخنة', hi: 'हॉट चॉकलेट' }, desc: { en: 'Rich and creamy hot chocolate', ar: 'شوكولاتة ساخنة غنية ولذيذة' }, price: 30 },
-  { id: 'hm_hb7', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي', hi: 'गर्म पेय' }, name: { en: 'Americano', ar: 'أمريكانو', hi: 'अमेरिकानो' }, desc: { en: 'Espresso diluted with hot water', ar: 'إسبريسو تخفيف بالماء الساخن' }, price: 20 },
-  { id: 'hm_hb8', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي', hi: 'गर्म पेय' }, name: { en: 'Iced Coffee', ar: 'قهوة مثلجة', hi: 'आइज्ड कॉफी' }, desc: { en: 'Refreshing iced coffee', ar: 'قهوة باردة منعشة' }, price: 22 },
-  { id: 'hm_hb9', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي', hi: 'गर्म पेय' }, name: { en: 'Tea', ar: 'شاي', hi: 'चाय' }, desc: { en: 'Selection of fine teas', ar: 'أنواع مختارة من الشاي الفاخر' }, price: 16 },
-
-  { id: 'hm_ms1', categoryKey: 'Milkshake', catName: { en: 'Milkshake', ar: 'ميلك شيك', hi: 'मिल्कशेेक' }, name: { en: 'Chocolate', ar: 'شوكولاتة', hi: 'चॉकलेट' }, desc: { en: 'Milk, chocolate ice cream, chocolate sauce, sugar', ar: 'حليب، آيس كريم شوكولاتة، صوص شوكولاتة، سكر' }, price: 33 },
-  { id: 'hm_ms2', categoryKey: 'Milkshake', catName: { en: 'Milkshake', ar: 'ميلك شيك', hi: 'मिल्कशेेक' }, name: { en: 'Vanilla', ar: 'فانيليا', hi: 'वैनिला' }, desc: { en: 'Milk, vanilla ice cream, sugar, vanilla', ar: 'حليب، آيس كريم فانيليا، سكر، فانيليا' }, price: 33 },
-  { id: 'hm_ms3', categoryKey: 'Milkshake', catName: { en: 'Milkshake', ar: 'ميلك شيك', hi: 'मिल्कशेेक' }, name: { en: 'Strawberry', ar: 'فراولة', hi: 'स्ट्रॉबेरी' }, desc: { en: 'Milk, strawberry ice cream, fresh strawberries, sugar', ar: 'حليب، آيس كريم فراولة، فراولة طازجة، سكر' }, price: 33 },
-
-  { id: 'hm_mk1', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोकटेल' }, name: { en: 'Fruity', ar: 'فروتي', hi: 'फ्रूटी' }, desc: { en: 'Fresh banana, strawberry, mango, orange juice', ar: 'موز طازج، فراولة، مانجو، عصير برتقال' }, price: 33 },
-  { id: 'hm_mk2', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'पिना कोलाडा' }, name: { en: 'Piña Colada', ar: 'بينا كولادا', hi: 'पिना कोलाडा' }, desc: { en: 'Pineapple juice, coconut cream', ar: 'عصير أناناس، كريمة جوز الهند' }, price: 33 },
-  { id: 'hm_mk3', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'स्ट्रॉबेरी मार्गारिटा' }, name: { en: 'Strawberry Margarita', ar: 'مارغريتا الفراولة', hi: 'स्ट्रॉबेरी मार्गारिटा' }, desc: { en: 'Fresh strawberries, lime juice, lime-flavored seltzer', ar: 'فراولة طازجة، عصير ليمون أخضر، صودا بنكهة الليمون' }, price: 33 },
-  { id: 'hm_mk4', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोहितो' }, name: { en: 'Mojito', ar: 'موهيتو', hi: 'मोहितो' }, desc: { en: 'Fresh mint leaves, lime, demerara sugar, soda water', ar: 'أوراق نعناع طازجة، ليمون أخضر، سكر ديميرارا، مياه صودا' }, price: 33 },
-  { id: 'hm_mk5', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोكتيل' }, name: { en: 'Mai Tai', ar: 'ماي تاي', hi: 'माई ताई' }, desc: { en: 'Lemon-lime soda, pineapple juice, orange juice, grenadine syrup', ar: 'مشروب صودا بالليمون، عصير أناناس، عصير برتقال، شراب الغرينادين' }, price: 33 },
-  { id: 'hm_mk6', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'नूटेला हॉट चॉकलेट' }, name: { en: 'Nutella Hot Chocolate', ar: 'شوكولاتة ساخنة مع نوتيلا', hi: 'नूटेला हॉट चॉकलेट' }, desc: { en: 'Milk, Nutella, cocoa', ar: 'حليب، نوتيلا، كاكاو' }, price: 33 },
-  { id: 'hm_mk7', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'बनाना मिल्क कॉफी' }, name: { en: 'Banana Milk Coffee', ar: 'قهوة مع حليب الموز', hi: 'बनाना मिल्क कॉफी' }, desc: { en: 'Ripe banana, coffee, milk, cinnamon', ar: 'موز ناضج، قهوة، حليب، قرفة' }, price: 33 },
-
-  { id: 'hm_b1', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Corona', ar: 'كورونا', hi: 'कोरोना' }, desc: { en: 'Mexican refreshing beer', ar: 'بيرة مكسيكية منعشة' }, price: 40 },
-  { id: 'hm_b2', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Stella', ar: 'ستيلا', hi: 'स्टेला' }, desc: { en: 'Classic European lager', ar: 'بيرة أوروبية كلاسيكية' }, price: 40 },
-  { id: 'hm_b3', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Heineken', ar: 'هاينكن', hi: 'हाइनेकेन' }, desc: { en: 'Premium quality Dutch beer', ar: 'بيرة هولندية فاخرة' }, price: 40 },
-  { id: 'hm_b4', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Budweiser', ar: 'بادفايزر', hi: 'बडवाइज़र' }, desc: { en: 'King of beers', ar: 'بيرة شهيرة' }, price: 40 },
-  { id: 'hm_b5', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Hoegaarden', ar: 'هوغاردن', hi: 'हूगार्डन' }, desc: { en: 'Belgian white wheat beer', ar: 'بيرة القمح البلجيكية البيضاء' }, price: 40 },
-  { id: 'hm_b6', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Guinness Stout', ar: 'غينيس ستوت', hi: 'गिनीज स्टाउट' }, desc: { en: 'Rich Irish dry stout', ar: 'بيرة إيرلندية غنية' }, price: 44 },
-  { id: 'hm_b7', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Bacardi Breezers', ar: 'بكاردي بريزرز', hi: 'बकार्डी ब्रीज़र' }, desc: { en: 'Fruit flavored alcoholic drink', ar: 'مشروب كحولي بنكهة الفواكه' }, price: 35 },
-  { id: 'hm_b8', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Strongbow Cider', ar: 'سترونغبو سايدر', hi: 'स्ट्रॉन्गबो साइडर' }, desc: { en: 'Crisp apple cider', ar: 'عصير التفاح المتخمر' }, price: 44 },
-  { id: 'hm_b9', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Soju', ar: 'سوجو', hi: 'सोजू' }, desc: { en: 'Traditional Korean spirit', ar: 'مشروب كوري تقليدي' }, price: 55 },
-
-  { id: 'hm_ck1', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Bloody Mary', ar: 'بلودي ماري', hi: 'ब्लडी मैरी' }, desc: { en: 'Vodka, tomato juice, lemon juice, spices', ar: 'فودكا، عصير طماطم، ليمون، بهارات' }, price: 44 },
-  { id: 'hm_ck2', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Cosmopolitan', ar: 'كوزموبوليتان', hi: 'कॉस्मॉपोलिटन' }, desc: { en: 'Vodka, triple sec, cranberry juice, lime', ar: 'فودكا، تريبل سيك، عصير التوت البري، ليمون' }, price: 44 },
-  { id: 'hm_ck3', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Margarita', ar: 'مارغريتا', hi: 'मार्गारिटा' }, desc: { en: 'Tequila, triple sec, lemon juice', ar: 'تكيلا، تريبل سيك، عصير ليمون' }, price: 44 },
-  { id: 'hm_ck4', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Piña Colada', ar: 'بينا كولادا', hi: 'पिना कोलाडा' }, desc: { en: 'Rum, Malibu, coconut syrup, pineapple juice', ar: 'روم، ماليبو، شراب جوز الهند، عصير أناناس' }, price: 44 },
-  { id: 'hm_ck5', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Negroni', ar: 'نيغروني', hi: 'नेग्रोनी' }, desc: { en: 'Gin, Campari and sweet vermouth', ar: 'جن، كامباري، فيرموث حلو' }, price: 44 },
-  { id: 'hm_ck6', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Martini', ar: 'مارتيني', hi: 'मार्टिनी' }, desc: { en: 'Gin, dry vermouth and olive', ar: 'جن، فيرموث جاف، زيتون' }, price: 44 },
-  { id: 'hm_ck7', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Bull Frog', ar: 'بول فروغ', hi: 'बुल फ्रॉग' }, desc: { en: 'Vodka, tequila, rum, gin, blue curaçao and Red Bull', ar: 'فودكا، تكيلا، روم، جن، بلو كوراساو، ريد بول' }, price: 65 },
-  { id: 'hm_ck8', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Long Island Tea', ar: 'لونغ آيلاند آيس تي', hi: 'लॉन्ग आइलैंड टी' }, desc: { en: 'Vodka, tequila, rum, gin, triple sec and Coke', ar: 'فودكا، تكيلا، روم، جن، تريبل سيك، كوكاكولا' }, price: 65 },
-  { id: 'hm_ck9', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Aperol Spritz', ar: 'أبيرول سبريتز', hi: 'एपेरोल स्प्रिट्ज़' }, desc: { en: 'Aperol, sparkling wine and soda', ar: 'أبيرول، نبيذ فوار، صودا' }, price: 65 },
-
-  { id: 'hm_wh1_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Jim Beam (Bourbon) - Glass', ar: 'جيم بيم (بوربون) - كاس', hi: 'जिम बीम - ग्लास' }, desc: { en: 'Standard glass serving', ar: 'تقديم بالكاس القياسي' }, price: 44 },
-  { id: 'hm_wh1_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Jim Beam (Bourbon) - Bottle', ar: 'جيم بيم (بوربون) - زجاجة', hi: 'जिम बीम - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة' }, price: 470 },
-  { id: 'hm_wh2_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Jack Daniel\'s - Glass', ar: 'جاك دانيالز - كاس', hi: 'जैक डैनियल - ग्लास' }, desc: { en: 'Standard glass serving', ar: 'تقديم بالكاس القياسي' }, price: 44 },
-  { id: 'hm_wh2_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Jack Daniel\'s - Bottle', ar: 'جاك دانيالز - زجاجة', hi: 'जैक डैनियल - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة' }, price: 470 },
-  { id: 'hm_wh3_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Jameson (Irish) - Glass', ar: 'جيميسون (إيرلندي) - كاس', hi: 'जेम्सन - ग्लास' }, desc: { en: 'Standard glass serving', ar: 'تقديم بالكاس القياسي' }, price: 44 },
-  { id: 'hm_wh3_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Jameson (Irish) - Bottle', ar: 'جيميسون (إيرلندي) - زجاجة', hi: 'जेम्सन - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة' }, price: 470 },
-  { id: 'hm_wh10_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Glenfiddich 12 Years - Glass', ar: 'غلينفيديخ 12 سنة - كاس', hi: 'ग्लेनफिडिच 12 वर्ष - ग्लास' }, desc: { en: 'Single malt standard glass', ar: 'كاس شعير مفرد' }, price: 55 },
-  { id: 'hm_wh10_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Glenfiddich 12 Years - Bottle', ar: 'غلينفيديخ 12 سنة - زجاجة', hi: 'ग्लेनफिडिच 12 वर्ष - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة' }, price: 795 },
-  
-  { id: 'hm_cg1_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Hennessy VSOP - Glass', ar: 'هينيسي في إس أو بي - كاس', hi: 'हेनेसियों VSOP - ग्लास' }, desc: { en: 'Cognac glass serving', ar: 'تقديم كاس كونياك' }, price: 55 },
-  { id: 'hm_cg1_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Hennessy VSOP - Bottle', ar: 'هينيسي في إس أو بي - زجاجة', hi: 'हेनेसियों VSOP - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة' }, price: 520 },
-  { id: 'hm_cg3_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Hennessy XO - Glass', ar: 'هينيسي إكس أو - كاس', hi: 'हेनेसियों XO - ग्लास' }, desc: { en: 'Premium cognac glass', ar: 'كاس كونياك فاخر' }, price: 100 },
-  { id: 'hm_cg3_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Hennessy XO - Bottle', ar: 'هينيسي إكس أو - زجاجة', hi: 'हेनेसियों XO - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة' }, price: 1600 },
-
-  { id: 'hm_ch1_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Champagne - Glass', ar: 'شامبانيا - كاس', hi: 'शैंपेन - ग्लास' }, desc: { en: 'Sparkling flute', ar: 'كاس نبيذ فوار' }, price: 80 },
-  { id: 'hm_ch1_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Champagne - Bottle', ar: 'شامبانيا - زجاجة', hi: 'शैंपेन - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة' }, price: 735 },
-
-  { id: 'hm_wn1_g', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'House Wine (Red/White/Rosé) - Glass', ar: 'نبيذ البيت (أحمر/أبيض/وردي) - كاس', hi: 'हाउस वाइन - ग्लास' }, desc: { en: 'Choice of glass', ar: 'اختيار الكاس' }, price: 38 },
-  { id: 'hm_wn1_b', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'House Wine (Red/White/Rosé) - Bottle', ar: 'نبيذ البيت (أحمر/أبيض/وردي) - زجاجة', hi: 'हाउस वाइन - बोतल' }, desc: { en: 'Choice of bottle', ar: 'اختيار الزجاجة' }, price: 190 }
+  { id: 'hm_bf4', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'International', ar: 'العالمي', hi: 'अंतर्राष्ट्रीय' }, desc: { en: 'Fresh bakery basket, Two eggs prepared to your liking, Chicken sausage, turkey bacon, and hash brown potatoes, Grilled tomatoes, sautéed mushrooms, and baked beans, Yogurt with dried fruits and nuts or mixed berries, Seasonal sliced fruits', ar: 'سلة مخبوزات طازجة، بيضتان تحضران حسب رغبتك، سقا دجاج، لحم ديك رومي مقدد، بطاطس هاش براون، طماطم مشوية، فطر سوتيه، فاصوليا مطبوخة، زبادي مع فواكه مجففة ومكسرات أو توت مشكل وفواكه موسمية مقطعة', hi: 'ताजा बेकरी बास्केट, आपकी पसंद के अनुसार दो अंडे, चिकन सॉसेज, टर्की बेकन' }, price: 61 }
 ];
 
 function enableAudioAlerts() {
@@ -211,7 +89,7 @@ const i18n = {
     lblRoom: "Room Number", placeholderRoom: "e.g., 104 or Villa 02", lblServiceType: "Service Type",
     lblDetails: "Additional Notes / Request Details", placeholderDetails: "Specify your request here...", btnSubmit: "Send Request to Reception",
     whatsappBtn: "WhatsApp Reception", successMsg: "Request submitted successfully!", chatWhatsapp: "💬 Chat on WhatsApp",
-    trackHeader: "📡 Track Active Requests", liveStatus: "Live Status (Optimistic)", trackEmpty: "Enter your room number above to track active requests in real time.",
+    trackHeader: "📡 Track Active Requests", liveStatus: "Live Status", trackEmpty: "Enter your room number above to track active requests in real time.",
     trackNoReq: "No active requests found for room ", loadingOffers: "Loading live offers...", noOffers: "No offers available in this category.",
     swipePhotos: "👈 Swipe or click arrows for photos 👉", bookInquiry: "Book / Inquiry →",
     faqHeaderTitle: "💡 Intelligent Assistant & FAQ", faqHeaderSub: "Instant answers to common hotel questions",
@@ -308,55 +186,6 @@ const facilitiesData = [
     title: { en: 'Luxury Hotel Villas', ar: 'الڤلل الفاخرة', hi: 'लक्जरी विला' }, 
     desc: { en: 'Private luxury villas offering supreme comfort, spacious living, and exclusive amenities.', ar: 'ڤلل فاخرة خاصة توفر أعلى مستويات الراحة والمساحات الواسعة.', hi: 'उत्कृष्ट आराम और विशाल रहने की जगह प्रदान करने वाले निजी लक्जरी विला।' }, 
     timing: { en: '24/7 Private Stay', ar: 'إقامة خاصة على مدار الساعة', hi: '24 घंटे निजी प्रवास' } 
-  },
-  { 
-    id: 'lobby', 
-    images: ['Lobby_1.jpg', 'Lobby_2.jpg', 'Lobby_3.jpg', 'Lobby_4.jpg'], 
-    title: { en: 'Main Lobby & Reception', ar: 'الردهة الرئيسية والاستقبال', hi: 'मुख्य लॉबी और रिसेप्शन' }, 
-    desc: { en: 'Our grand lobby welcoming guests with elegance and warm hospitality.', ar: 'ردهتنا الفاخرة ترحب بالنزلاء بكل أناقة وضيافة دافئة.', hi: 'हमारी भव्य लॉबी लालित्य और गर्म आतिथ्य के साथ मेहमानों का स्वागत करती है।' }, 
-    timing: { en: '24/7 Service', ar: 'خدمة على مدار الساعة', hi: '24 घंटे सेवा' } 
-  },
-  { 
-    id: 'pool', 
-    images: ['Pool.jpg'], 
-    title: { en: 'Al Waha Swimming Pool', ar: 'مسبح الواحة', hi: 'अल वाहा स्विमिंग पूल' }, 
-    desc: { en: 'Relax by our outdoor swimming pool with comfortable loungers.', ar: 'استرخِ بجانب المسبح الخارجي الجميل مع المشروبات المنعشة.', hi: 'हमारे बाहरी स्विमिंग पूल के पास आराम करें।' }, 
-    timing: { en: '07:00 AM - 08:00 PM', ar: '٠٧:٠٠ صباحاً - ٠٨:٠٠ مساءً', hi: 'सुबह 07:00 - रात 08:00' } 
-  },
-  { 
-    id: 'gym', 
-    images: ['Gym.jpg'], 
-    title: { en: 'Recreation & Fitness Gym', ar: 'مركز اللياقة والصالة الرياضية', hi: 'फिटनेस और जिम' }, 
-    desc: { en: 'Stay active with modern fitness equipment designed for your daily workouts.', ar: 'حافظ على نشاطك وصحتك مع أحدث معدات اللياقة البدنية.', hi: 'हमारे आधुनिक जिम उपकरणों के साथ फिट रहें।' }, 
-    timing: { en: '06:00 AM - 10:00 PM', ar: '٠٦:٠٠ صباحاً - ١٠:٠٠ مساءً', hi: 'सुबह 06:00 - रात 10:00' } 
-  },
-  { 
-    id: 'restaurant', 
-    images: ['Restaurant-1.jpg', 'Restaurant-2.jpg', 'Restaurant-3.jpg', 'Restaurant-4.jpg'], 
-    title: { en: 'Falaj Restaurant & Dining', ar: 'مطعم الفلج والوجبات', hi: 'फलज रेस्टोरेंट और भोजन' }, 
-    desc: { en: 'International buffet breakfast & fine dining options serving delicious global cuisines.', ar: 'بوفيه إفطار عالمي وتجربة طعام فاخرة تقدم أشهى المأكولات العالمية.', hi: 'अंतर्राष्ट्रीय बफ़े नाश्ता और स्वादिष्ट वैश्विक व्यंजन।' }, 
-    timing: { en: '06:30 AM - 11:00 PM', ar: '٠٦:٣٠ صباحاً - ١١:٠٠ مساءً', hi: 'सुबह 06:30 - रात 11:00' } 
-  },
-  { 
-    id: 'kids', 
-    images: ['Kid_club.jpg'], 
-    title: { en: 'Kids Club & Play Area', ar: 'نادي الأطفال ومنطقة الألعاب', hi: 'किड्स क्लब और प्ले एरिया' }, 
-    desc: { en: 'Fun and safe activities area for children and families.', ar: 'منطقة ألعاب آمنة وممتعة للأطفال والعائلات.', hi: 'बच्चों और परिवारों के लिए मजेदार और सुरक्षित क्षेत्र।' }, 
-    timing: { en: '09:00 AM - 07:00 PM', ar: '٠٩:٠٠ صباحاً - ٠٧:٠٠ مساءً', hi: 'सुबह 09:00 - शाम 07:00' } 
-  },
-  { 
-    id: 'rooms', 
-    images: ['Room1.jpg', 'Room2.jpg', 'Room3.jpg', 'Room4.jpg', 'Room5.jpg', 'Room6.jpg', 'Room7.jpg', 'Room8.jpg'], 
-    title: { en: 'Luxury Guest Rooms', ar: 'غرف النزلاء الفاخرة', hi: 'लक्जरी अतिथि कमरे' }, 
-    desc: { en: 'Spacious, modernly equipped rooms designed for maximum comfort and relaxation.', ar: 'غرف واسعة ومجهزة بأحدث وسائل الراحة المصممة لضمان أقصى درجات الاسترخاء.', hi: 'अधिकतम आराम और विश्राम के लिए डिज़ाइन किए गए विशाल कमरे।' }, 
-    timing: { en: 'Daily Housekeeping', ar: 'تنظيف يومي للغرف', hi: 'दैनिक सफाई' } 
-  },
-  { 
-    id: 'meeting', 
-    images: ['Meeting_room1.jpg', 'Meeting_room2.jpg', 'Meeting_room3.jpg', 'Meeting_room4.jpg'], 
-    title: { en: 'Meeting & Event Halls', ar: 'قاعات الاجتماعات والفعاليات', hi: 'मीटिंग और इवेंट हॉल' }, 
-    desc: { en: 'First-class venues featuring contemporary furnishings for conferences and business events.', ar: 'قاعات ممتازة مجهزة بأحدث التقنيات لعقد المؤتمرات والاجتماعات.', hi: 'सम्मेलनों और व्यावसायिक आयोजनों के लिए प्रथम श्रेणी के स्थान।' }, 
-    timing: { en: 'By Reservation', ar: 'حسب الحجز', hi: 'आरक्षण द्वारा' } 
   }
 ];
 
@@ -446,7 +275,7 @@ function setupRealtimeSubscriptions() {
 }
 
 function updateRequestsUIState() {
-  const pendingRequests = cachedRequests.filter(r => r.status === 'Pending' || !r.status);
+  const pendingRequests = cachedRequests.filter(r => r.status === 'Pending' || r.status === 'collected' || !r.status);
   if (pendingRequests.length > previousPendingCount) {
     playNotificationSound();
   }
@@ -898,15 +727,7 @@ function renderFacilities() {
             </div>
           `).join('')}
         </div>
-
-        ${hasMultiple ? `
-          <button type="button" onclick="scrollCarousel('${idx}', -1)" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white w-8 h-8 rounded-full flex items-center justify-center text-xs backdrop-blur-sm z-10 shadow">❮</button>
-          <button type="button" onclick="scrollCarousel('${idx}', 1)" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white w-8 h-8 rounded-full flex items-center justify-center text-xs backdrop-blur-sm z-10 shadow">❯</button>
-        ` : ''}
       </div>
-
-      ${hasMultiple ? `<p class="text-[10px] text-stone-400 text-center pt-2 font-semibold tracking-wide">${t.swipePhotos}</p>` : ''}
-      
       <div class="p-5 space-y-2">
         <h4 class="text-base font-serif-luxury font-bold text-stone-900">${titleText}</h4>
         <p class="text-xs text-stone-600 leading-relaxed">${descText}</p>
@@ -935,13 +756,6 @@ function renderAnnouncement() {
   } else banner.classList.add('hidden');
 }
 
-async function saveAnnouncement(isActive) {
-  const newAnn = { message: { en: document.getElementById('ann_en').value, ar: document.getElementById('ann_ar').value, hi: document.getElementById('ann_hi').value }, is_active: isActive };
-  await supabaseClient.from('announcements').insert([newAnn]);
-  alert("Announcement updated!");
-  await fetchAnnouncementFromCloud();
-}
-
 async function fetchOffersFromCloud() {
   const { data } = await supabaseClient
     .from('offers')
@@ -963,7 +777,7 @@ async function fetchRequestsFromCloud() {
     
   if (generalError) console.error("Erreur requests:", generalError);
 
-  // 2. Récupérer les bulletins de blanchisserie depuis la table "laundry_slips"
+  // 2. Récupérer les commandes de blanchisserie depuis la table "laundry_slips"
   const { data: laundryData, error: laundryError } = await supabaseClient
     .from('laundry_slips')
     .select('*')
@@ -972,13 +786,13 @@ async function fetchRequestsFromCloud() {
 
   if (laundryError) console.error("Erreur laundry_slips:", laundryError);
 
-  // Normaliser les données de laundry_slips pour qu'elles s'affichent correctement
+  // Normaliser les données de laundry_slips pour qu'elles s'affichent correctement comme les autres requêtes
   const formattedLaundry = (laundryData || []).map(item => ({
     id: 'laundry-' + item.id,
     room: item.room || item.room_number || 'N/A',
     service: 'Laundry',
-    details: item.details || item.notes || JSON.stringify(item),
-    status: item.status || 'Pending'
+    details: item.details || item.notes || 'Standard laundry service',
+    status: item.status || 'collected'
   }));
 
   // Combiner les deux listes
@@ -988,16 +802,9 @@ async function fetchRequestsFromCloud() {
   renderLiveLaundryOrders(formattedLaundry);
 }
 
+// Affichage spécifique pour la Laundry avec la bannière rouge des instructions client et le workflow 4 étapes
 function renderLiveLaundryOrders(laundryData) {
   let container = document.getElementById('liveLaundryOrdersContainer') || document.getElementById('adminLaundryContainer');
-  
-  if (!container) {
-    const headings = Array.from(document.querySelectorAll('h3, h4, div')).filter(el => el.textContent.includes('Live Laundry Orders'));
-    if (headings.length > 0) {
-      container = headings[0].nextElementSibling;
-    }
-  }
-
   if (!container) return;
 
   if (!laundryData || laundryData.length === 0) {
@@ -1005,22 +812,55 @@ function renderLiveLaundryOrders(laundryData) {
     return;
   }
 
-  container.innerHTML = laundryData.map(order => `
-    <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 text-xs space-y-2 mb-3 shadow-sm">
-      <div class="flex justify-between items-center">
-        <span class="font-bold text-stone-900 text-sm">Room / Villa: ${order.room || 'N/A'}</span>
-        <span class="bg-amber-100 text-amber-800 font-bold px-2.5 py-1 rounded-full text-[10px]">${order.status || 'Pending'}</span>
+  container.innerHTML = laundryData.map(order => {
+    const clientNote = order.details ? order.details : "Aucune instruction particulière.";
+    const currentStatus = order.status || 'collected';
+
+    return `
+    <div class="p-5 bg-white rounded-3xl border border-stone-200 shadow-sm space-y-4 mb-4">
+      <!-- Bannière rouge d'alerte avec la note laissée par le client -->
+      <div class="bg-rose-50 border-l-4 border-rose-600 p-3 rounded-r-xl text-rose-900 text-xs space-y-1">
+        <p class="font-bold uppercase tracking-wider">🚨 Note / Instruction du Client (Chambre ${order.room || 'N/A'}):</p>
+        <p class="font-medium italic">${clientNote}</p>
       </div>
-      <p class="text-stone-600 bg-white p-2.5 rounded-xl border border-stone-100 whitespace-pre-line">
-        ${order.details || 'No details'}
-      </p>
+
+      <div class="flex justify-between items-center text-xs">
+        <span class="font-bold text-stone-900 text-sm">Chambre / Villa : ${order.room || 'N/A'}</span>
+        <span class="bg-amber-100 text-amber-800 font-bold px-3 py-1 rounded-full uppercase text-[10px]">Statut : ${currentStatus}</span>
+      </div>
+
+      <!-- Boutons de gestion des 4 statuts exclusifs Laundry -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2 pt-2 border-t border-stone-100">
+        <button onclick="updateLaundryStatus('${order.id}', 'collected')" class="py-2 px-3 rounded-xl font-bold text-xs transition ${currentStatus === 'collected' ? 'bg-amber-600 text-white' : 'bg-amber-50 text-amber-800 hover:bg-amber-100'}">📦 Collected</button>
+        <button onclick="updateLaundryStatus('${order.id}', 'washing')" class="py-2 px-3 rounded-xl font-bold text-xs transition ${currentStatus === 'washing' ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-800 hover:bg-blue-100'}">🧼 Washing</button>
+        <button onclick="updateLaundryStatus('${order.id}', 'ready')" class="py-2 px-3 rounded-xl font-bold text-xs transition ${currentStatus === 'ready' ? 'bg-purple-600 text-white' : 'bg-purple-50 text-purple-800 hover:bg-purple-100'}">✨ Ready</button>
+        <button onclick="updateLaundryStatus('${order.id}', 'delivered')" class="py-2 px-3 rounded-xl font-bold text-xs transition ${currentStatus === 'delivered' ? 'bg-emerald-600 text-white' : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100'}">🚀 Delivered</button>
+      </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
+}
+
+async function updateLaundryStatus(id, newStatus) {
+  const strId = String(id);
+  const actualId = strId.startsWith('laundry-') ? strId.replace('laundry-', '') : strId;
+
+  // Mise à jour de la table dédiée laundry_slips dans Supabase
+  const { error } = await supabaseClient
+    .from('laundry_slips')
+    .update({ status: newStatus })
+    .eq('id', actualId);
+
+  if (error) {
+    console.error("Erreur mise à jour statut laundry:", error);
+  } else {
+    await fetchRequestsFromCloud();
+  }
 }
 
 function renderAnalyticsData() {
   const totalReq = cachedRequests.length;
-  const completedReq = cachedRequests.filter(r => r.status === 'Completed').length;
+  const completedReq = cachedRequests.filter(r => r.status === 'Completed' || r.status === 'delivered').length;
   const resolutionRate = totalReq > 0 ? Math.round((completedReq / totalReq) * 100) : 0;
 
   let totalRevenue = 0;
@@ -1047,16 +887,6 @@ function renderAnalyticsData() {
   for (const [srv, count] of Object.entries(serviceCounts)) {
     analyticsHtml += `<div class="flex justify-between items-center text-sm border-b border-stone-200 pb-2"><span>${srv}</span><span class="font-bold bg-white px-3 py-1 rounded border">${count}</span></div>`;
   }
-  analyticsHtml += `</div>`;
-
-  const pendingCount = cachedRequests.filter(r => r.status === 'Pending' || !r.status).length;
-  const progressCount = cachedRequests.filter(r => r.status === 'In Progress').length;
-  
-  analyticsHtml += `<div class="bg-stone-50 p-6 rounded-2xl border border-stone-200 space-y-3">`;
-  analyticsHtml += `<p class="font-bold text-stone-800 uppercase text-xs tracking-wider">Current Pipeline Status</p>`;
-  analyticsHtml += `<div class="flex justify-between items-center text-sm border-b border-stone-200 pb-2"><span>Pending Requests</span><span class="font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded border border-amber-200">${pendingCount}</span></div>`;
-  analyticsHtml += `<div class="flex justify-between items-center text-sm border-b border-stone-200 pb-2"><span>In Progress</span><span class="font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded border border-blue-200">${progressCount}</span></div>`;
-  analyticsHtml += `<div class="flex justify-between items-center text-sm border-b border-stone-200 pb-2"><span>Completed</span><span class="font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded border border-emerald-200">${completedCount}</span></div>`;
   analyticsHtml += `</div>`;
 
   analyticsHtml += `</div>`;
@@ -1086,26 +916,23 @@ function renderClientTracker() {
     let statusText = req.status || 'Pending';
     let progressWidth = "w-1/3";
 
-    if (req.status === 'In Progress') {
-      statusBadgeClass = "bg-blue-100 text-blue-800";
-      progressWidth = "w-2/3";
-    } else if (req.status === 'Completed') {
-      statusBadgeClass = "bg-emerald-100 text-emerald-800";
-      progressWidth = "w-full";
+    if (req.service === 'Laundry') {
+      if (statusText === 'washing') { progressWidth = "w-2/4"; }
+      else if (statusText === 'ready') { progressWidth = "w-3/4"; }
+      else if (statusText === 'delivered') { progressWidth = "w-full"; statusBadgeClass = "bg-emerald-100 text-emerald-800"; }
+    } else {
+      if (req.status === 'In Progress') { progressWidth = "w-2/3"; statusBadgeClass = "bg-blue-100 text-blue-800"; }
+      else if (req.status === 'Completed') { progressWidth = "w-full"; statusBadgeClass = "bg-emerald-100 text-emerald-800"; }
     }
 
     return `
     <div class="p-3.5 bg-stone-50 rounded-2xl border border-stone-200 text-xs space-y-2.5">
       <div class="flex justify-between items-center">
         <span class="font-bold text-stone-900">${req.service}</span>
-        <span class="${statusBadgeClass} text-[10px] font-bold px-2.5 py-1 rounded-full">${statusText}</span>
+        <span class="${statusBadgeClass} text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">${statusText}</span>
       </div>
-      <p class="text-stone-600 bg-white p-2.5 rounded-xl border border-stone-100">${req.details}</p>
+      <p class="text-stone-600 bg-white p-2.5 rounded-xl border border-stone-100 whitespace-pre-line">${req.details}</p>
       <div class="space-y-1 pt-1">
-        <div class="flex justify-between text-[10px] text-stone-400 font-semibold">
-          <span>Status Timeline</span>
-          <span>${req.status === 'Completed' ? 'Delivered' : req.status === 'In Progress' ? 'Preparing (~20m)' : 'Received (~30m)'}</span>
-        </div>
         <div class="w-full bg-stone-200 h-1.5 rounded-full overflow-hidden">
           <div class="bg-remal-sand h-full transition-all duration-500 ${progressWidth}"></div>
         </div>
@@ -1157,7 +984,11 @@ function renderAdminList() {
 function renderAdminRequests() {
   const container = document.getElementById('adminRequestsContainer');
   if (cachedRequests.length === 0) { container.innerHTML = `<p class="text-sm text-stone-400 text-center py-6 col-span-2">No active requests.</p>`; return; }
-  container.innerHTML = cachedRequests.map(req => `
+  
+  container.innerHTML = cachedRequests.map(req => {
+    const isLaundry = req.service === 'Laundry';
+    
+    return `
     <div class="p-6 bg-stone-50 rounded-3xl border border-stone-200 text-sm space-y-4 flex flex-col justify-between shadow-sm">
       <div class="space-y-3">
         <div class="flex justify-between items-start">
@@ -1165,218 +996,61 @@ function renderAdminRequests() {
             <span class="font-bold text-stone-900 text-base">Room / Villa: ${req.room || 'N/A'}</span>
             <p class="text-remal-sand font-bold text-xs uppercase tracking-wide mt-0.5">${req.service}</p>
           </div>
-          <span class="text-xs font-bold px-3 py-1 rounded-full ${req.status === 'Completed' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${req.status || 'Pending'}</span>
+          <span class="text-xs font-bold px-3 py-1 rounded-full uppercase ${req.status === 'Completed' || req.status === 'delivered' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${req.status || 'Pending'}</span>
         </div>
         <p class="text-stone-700 bg-white p-4 rounded-2xl border border-stone-200 leading-relaxed whitespace-pre-line">${req.details}</p>
       </div>
       <div class="flex justify-between items-center pt-3 border-t border-stone-200 text-xs">
         <div class="space-x-1.5">
-          <button onclick="updateRequestStatus('${req.id}', 'Pending')" class="px-3 py-1.5 bg-amber-100 text-amber-800 hover:bg-amber-200 rounded-lg font-bold transition">Pending</button>
-          <button onclick="updateRequestStatus('${req.id}', 'In Progress')" class="px-3 py-1.5 bg-blue-100 text-blue-800 hover:bg-blue-200 rounded-lg font-bold transition">In Progress</button>
-          <button onclick="updateRequestStatus('${req.id}', 'Completed')" class="px-3 py-1.5 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 rounded-lg font-bold transition">Completed</button>
+          ${isLaundry ? `
+            <span class="text-[11px] text-stone-500 font-bold italic">Managed via Laundry plant interface</span>
+          ` : `
+            <button onclick="updateRequestStatus('${req.id}', 'Pending')" class="px-3 py-1.5 bg-amber-100 text-amber-800 rounded-lg font-bold">Pending</button>
+            <button onclick="updateRequestStatus('${req.id}', 'In Progress')" class="px-3 py-1.5 bg-blue-100 text-blue-800 rounded-lg font-bold">In Progress</button>
+            <button onclick="updateRequestStatus('${req.id}', 'Completed')" class="px-3 py-1.5 bg-emerald-100 text-emerald-800 rounded-lg font-bold">Completed</button>
+          `}
         </div>
         <div class="flex items-center space-x-2">
-          <button onclick="printRequestTicket('${req.id}')" class="bg-stone-900 hover:bg-stone-800 text-white px-3.5 py-2 rounded-xl font-bold shadow transition">🖨️ Print Ticket</button>
-          <button onclick="deleteRequest('${req.id}')" class="text-rose-600 font-bold p-2 hover:bg-rose-50 rounded-xl transition">🗑️</button>
+          <button onclick="printRequestTicket('${req.id}')" class="bg-stone-900 text-white px-3.5 py-2 rounded-xl font-bold shadow">🖨️ Print</button>
+          <button onclick="deleteRequest('${req.id}')" class="text-rose-600 font-bold p-2">🗑️</button>
         </div>
       </div>
     </div>
-  `).join('');
-}
-
-function printRequestTicket(reqId) {
-  const req = cachedRequests.find(r => String(r.id) === String(reqId));
-  if (!req) return;
-
-  let statusBg = '#E2B383';
-  if (req.status === 'In Progress') statusBg = '#2563EB';
-  if (req.status === 'Completed') statusBg = '#059669';
-
-  const printFolio = document.getElementById('printFolioSection');
-  const printTicket = document.getElementById('printTicketSection');
-
-  printFolio.classList.add('hidden');
-  printTicket.classList.remove('hidden');
-
-  printTicket.innerHTML = `
-    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #E2B383; padding-bottom: 12px; margin-bottom: 15px;">
-      <div>
-        <h1 style="font-size: 20px; font-weight: bold; font-family: 'Playfair Display', serif; margin: 0; color: #111;">REMAL HOTEL & VILLAS</h1>
-        <p style="font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin: 2px 0 0 0;">Al Dhannah City • Guest Hub Service Ticket</p>
-      </div>
-      <div style="text-align: right; font-size: 11px; color: #444;">
-        <div><strong>Ticket ID:</strong> #${req.id}</div>
-        <div style="font-size: 10px; color: #666; margin-top: 1px;">${new Date().toLocaleString()}</div>
-      </div>
-    </div>
-
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #F9F9F9; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #EEE;">
-      <div>
-        <span style="font-size: 10px; color: #777; text-transform: uppercase; font-weight: bold;">Room / Villa</span>
-        <div style="font-size: 15px; font-weight: bold; color: #111; margin-top: 2px;">${req.room || 'N/A'}</div>
-      </div>
-      <div>
-        <span style="font-size: 10px; color: #777; text-transform: uppercase; font-weight: bold;">Service Type</span>
-        <div style="font-size: 15px; font-weight: bold; color: #DCA773; margin-top: 2px;">${req.service || 'General Service'}</div>
-      </div>
-    </div>
-
-    <div style="margin-bottom: 20px;">
-      <h3 style="font-size: 12px; font-weight: bold; text-transform: uppercase; color: #444; margin-bottom: 6px;">Request Details / Order Summary</h3>
-      <div style="background: #FFF; border: 1px solid #DDD; padding: 12px; border-radius: 8px; font-size: 13px; white-space: pre-wrap; line-height: 1.5; color: #222; min-height: 80px;">${req.details || 'No additional details provided.'}</div>
-    </div>
-
-    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #EEE; padding-top: 12px; margin-top: 20px;">
-      <div>
-        <span style="font-size: 10px; color: #777; text-transform: uppercase; font-weight: bold;">Current Status:</span>
-        <span style="display: inline-block; margin-left: 6px; padding: 3px 10px; background: ${statusBg}; color: #FFF; font-weight: bold; font-size: 11px; border-radius: 20px;">${req.status || 'Pending'}</span>
-      </div>
-      <div style="font-size: 10px; color: #888; text-align: right;">
-        Authorized Guest Hub Document<br>Remal Hotel Operations
-      </div>
-    </div>
   `;
-
-  setTimeout(() => { 
-    window.print(); 
-    printTicket.classList.add('hidden');
-  }, 200);
+  }).join('');
 }
 
-function generateRoomFolio() {
-  const roomNum = document.getElementById('req_room')?.value?.trim();
-  if (!roomNum || !validateRoomNumber(roomNum)) {
-    alert("Please enter a valid Room Number first.");
-    return;
+async function updateRequestStatus(id, newStatus) {
+  const strId = String(id);
+  const req = cachedRequests.find(r => String(r.id) === strId);
+  if (req) { req.status = newStatus; }
+  updateRequestsUIState();
+
+  if (!strId.startsWith('temp-')) {
+    await supabaseClient.from('requests').update({ status: newStatus }).eq('id', id);
   }
+  await fetchRequestsFromCloud();
+}
 
-  const roomReqs = cachedRequests.filter(r => String(r.room).trim().toLowerCase() === roomNum.toLowerCase());
-  let totalSpent = 0;
-  let rowsHtml = '';
+async function deleteRequest(id) { 
+  if (confirm('Voulez-vous vraiment supprimer cette demande ?')) { 
+    const strId = String(id);
+    cachedRequests = cachedRequests.filter(r => String(r.id) !== strId);
+    updateRequestsUIState();
 
-  roomReqs.forEach(req => {
-    let amount = 0;
-    if (req.details && req.details.includes('AED')) {
-      const match = req.details.match(/AED\s+([0-9]+(?:\.[0-9]+)?)/);
-      if (match) amount = parseFloat(match[1]);
+    if (!strId.startsWith('temp-')) {
+      if (strId.startsWith('laundry-')) {
+        const actualId = strId.replace('laundry-', '');
+        await supabaseClient.from('laundry_slips').delete().eq('id', actualId);
+      } else {
+        await supabaseClient.from('requests').delete().eq('id', id);
+      }
     }
-    totalSpent += amount;
-    rowsHtml += `
-      <tr style="border-bottom: 1px solid #EEE;">
-        <td style="padding: 8px; font-size: 11px;">#${req.id}</td>
-        <td style="padding: 8px; font-size: 11px; font-weight: bold;">${req.service}</td>
-        <td style="padding: 8px; font-size: 10px; color: #555; max-width: 200px; white-space: pre-wrap;">${req.details}</td>
-        <td style="padding: 8px; font-size: 11px; text-align: right; font-weight: bold;">AED ${amount}</td>
-      </tr>
-    `;
-  });
-
-  if (rowsHtml === '') {
-    rowsHtml = `<tr><td colspan="4" style="text-align: center; padding: 20px; color: #777; font-style: italic;">No charges recorded for this room yet.</td></tr>`;
-  }
-
-  const printTicket = document.getElementById('printTicketSection');
-  const printFolio = document.getElementById('printFolioSection');
-
-  printTicket.classList.add('hidden');
-  printFolio.classList.remove('hidden');
-
-  printFolio.innerHTML = `
-    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #E2B383; padding-bottom: 12px; margin-bottom: 15px;">
-      <div>
-        <h1 style="font-size: 20px; font-weight: bold; font-family: 'Playfair Display', serif; margin: 0; color: #111;">REMAL HOTEL & VILLAS</h1>
-        <p style="font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin: 2px 0 0 0;">Al Dhannah City • Official Room Folio Statement</p>
-      </div>
-      <div style="text-align: right; font-size: 11px; color: #444;">
-        <div><strong>Room / Villa:</strong> ${roomNum}</div>
-        <div style="font-size: 10px; color: #666; margin-top: 1px;">Date: ${new Date().toLocaleDateString()}</div>
-      </div>
-    </div>
-
-    <div style="margin-bottom: 15px;">
-      <h3 style="font-size: 12px; font-weight: bold; text-transform: uppercase; color: #444; margin-bottom: 6px;">Stay Charges & Services Breakdown</h3>
-      <table style="width: 100%; border-collapse: collapse; text-align: left;">
-        <thead>
-          <tr style="background: #F4F4F4; border-bottom: 2px solid #DDD;">
-            <th style="padding: 8px; font-size: 10px; text-transform: uppercase;">ID</th>
-            <th style="padding: 8px; font-size: 10px; text-transform: uppercase;">Service</th>
-            <th style="padding: 8px; font-size: 10px; text-transform: uppercase;">Details</th>
-            <th style="padding: 8px; font-size: 10px; text-transform: uppercase; text-align: right;">Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${rowsHtml}
-        </tbody>
-      </table>
-    </div>
-
-    <div style="background: #F9F9F9; padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #EEE; margin-bottom: 20px;">
-      <div>
-        <span style="font-size: 11px; font-weight: bold; color: #333;">Total Balance Due:</span>
-        <div style="font-size: 9px; color: #666;">All local taxes and service charges included</div>
-      </div>
-      <div style="font-size: 18px; font-weight: bold; font-family: 'Playfair Display', serif; color: #DCA773;">
-        AED ${totalSpent}
-      </div>
-    </div>
-
-    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #EEE; padding-top: 12px; margin-top: 20px;">
-      <div style="font-size: 10px; color: #555;">
-        Guest Signature: _______________________
-      </div>
-      <div style="font-size: 10px; color: #888; text-align: right;">
-        Remal Hotel & Villas Management<br>Authorized Billing Document
-      </div>
-    </div>
-  `;
-
-  setTimeout(() => { 
-    window.print(); 
-    printFolio.classList.add('hidden');
-  }, 200);
+    await fetchRequestsFromCloud();
+  } 
 }
 
-function previewPromoImage(event) {
-  const file = event.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      currentPromoImageData = e.target.result;
-      const img = document.getElementById('promoImagePreview');
-      img.src = currentPromoImageData;
-      img.classList.remove('hidden');
-    };
-    reader.readAsDataURL(file);
-  }
-}
-
-async function saveAdminData() {
-  if (!currentPromoImageData) { 
-    alert("Please select an image."); 
-    return; 
-  }
-  const newItem = { 
-    category: document.getElementById('adm_category').value, 
-    price: document.getElementById('adm_price').value, 
-    image: currentPromoImageData, 
-    title: { 
-      en: document.getElementById('adm_title_en').value, 
-      ar: document.getElementById('adm_title_ar').value, 
-      hi: document.getElementById('adm_title_hi').value 
-    }, 
-    timing: { 
-      en: document.getElementById('adm_timing_en').value, 
-      ar: document.getElementById('adm_timing_ar').value, 
-      hi: document.getElementById('adm_timing_hi').value 
-    } 
-  };
-  await supabaseClient.from('offers').insert([newItem]);
-  alert('Offer published!');
-  document.getElementById('adminForm').reset();
-  currentPromoImageData = null;
-  document.getElementById('promoImagePreview').classList.add('hidden');
-  await fetchOffersFromCloud();
-}
+async function deleteOffer(id) { if (confirm('Delete?')) { await supabaseClient.from('offers').delete().eq('id', id); await fetchOffersFromCloud(); } }
 
 async function submitGuestRequest() {
   const room = document.getElementById('req_room').value.trim();
@@ -1400,23 +1074,11 @@ async function submitGuestRequest() {
       }
     });
     details = `🛒 ORDER: ${orderSummary.join(', ')}\n💰 Total: AED ${total}\n🕒 Time: ${deliveryTime}\n📝 Notes: ${details || 'None'}`;
-  } else if (service === 'Late Check-out Request') {
-    const checkoutTime = document.getElementById('late_checkout_time').value;
-    details = `⏱️ REQUESTED CHECK-OUT TIME: ${checkoutTime}\n📝 Notes: ${details || 'No additional comments'}`;
-  } else if (service === 'Wake-up Call Request') {
-    const wakeupTime = document.getElementById('wakeup_time').value;
-    details = `⏰ WAKE-UP ALARM TIME: ${wakeupTime}\n📝 Notes: ${details || 'No additional comments'}`;
-  } else if (service === 'Table / Spa Reservation') {
-    const venue = document.getElementById('booking_venue').value;
-    const guests = document.getElementById('booking_guests').value;
-    const bDate = document.getElementById('booking_date').value;
-    const bTime = document.getElementById('booking_time').value;
-    details = `📅 BOOKING VENUE: ${venue}\n👥 Guests: ${guests}\n📅 Date: ${bDate} at ${bTime}\n📝 Notes: ${details || 'No additional comments'}`;
   } else if (service === 'Laundry') {
-    details = `🧺 LAUNDRY REQUEST\n📝 Details: ${details || 'Standard laundry service requested'}`;
+    details = `${details || 'Standard laundry service requested'}`;
   }
 
-  const optimisticReq = { id: 'temp-' + Date.now(), room, service, details, status: 'Pending' };
+  const optimisticReq = { id: 'temp-' + Date.now(), room, service, details, status: service === 'Laundry' ? 'collected' : 'Pending' };
   cachedRequests.unshift(optimisticReq);
   updateRequestsUIState();
 
@@ -1430,58 +1092,13 @@ async function submitGuestRequest() {
   calculateCartTotal();
 
   if (service === 'Laundry') {
-    await supabaseClient.from('laundry_slips').insert([{ room: room, details: details, status: 'Pending' }]);
+    await supabaseClient.from('laundry_slips').insert([{ room: room, details: details, status: 'collected' }]);
   } else {
     await supabaseClient.from('requests').insert([{ room, service, details, status: 'Pending' }]);
   }
 
   await fetchRequestsFromCloud();
 }
-
-async function updateRequestStatus(id, newStatus) {
-  const strId = String(id);
-  const req = cachedRequests.find(r => String(r.id) === strId);
-  if (req) {
-    req.status = newStatus;
-  }
-  updateRequestsUIState();
-
-  if (!strId.startsWith('temp-')) {
-    if (strId.startsWith('laundry-')) {
-      const actualId = strId.replace('laundry-', '');
-      const { error } = await supabaseClient.from('laundry_slips').update({ status: newStatus }).eq('id', actualId);
-      if (error) console.error("Erreur mise à jour laundry_slips:", error);
-    } else {
-      const { error } = await supabaseClient.from('requests').update({ status: newStatus }).eq('id', id);
-      if (error) console.error("Erreur mise à jour requests:", error);
-    }
-  }
-  
-  await fetchRequestsFromCloud();
-}
-
-async function deleteRequest(id) { 
-  if (confirm('Voulez-vous vraiment supprimer cette demande ?')) { 
-    const strId = String(id);
-    cachedRequests = cachedRequests.filter(r => String(r.id) !== strId);
-    updateRequestsUIState();
-
-    if (!strId.startsWith('temp-')) {
-      if (strId.startsWith('laundry-')) {
-        const actualId = strId.replace('laundry-', '');
-        const { error } = await supabaseClient.from('laundry_slips').delete().eq('id', actualId);
-        if (error) console.error("Erreur suppression laundry_slips:", error);
-      } else {
-        const { error } = await supabaseClient.from('requests').delete().eq('id', id);
-        if (error) console.error("Erreur suppression requests:", error);
-      }
-    }
-    
-    await fetchRequestsFromCloud();
-  } 
-}
-
-async function deleteOffer(id) { if (confirm('Delete?')) { await supabaseClient.from('offers').delete().eq('id', id); await fetchOffersFromCloud(); } }
 
 function switchGuestTab(tab) {
   ['guestOffersSection', 'guestFacilitiesSection', 'guestFaqSection', 'guestRequestSection'].forEach(s => document.getElementById(s).classList.add('hidden'));
@@ -1518,21 +1135,6 @@ function switchAdminTab(tab) {
   } else if (tab === 'banner') {
     document.getElementById('adminBannerPanel').classList.remove('hidden');
     document.getElementById('admTabBanner').className = "px-5 py-3 rounded-xl bg-stone-900 text-white whitespace-nowrap shadow-sm transition";
-  }
-}
-
-function switchAdminSubTab(subTab) {
-  if (subTab === 'offersList') { 
-    document.getElementById('adminOffersSubSection').classList.remove('hidden'); 
-    document.getElementById('adminMenuSubSection').classList.add('hidden'); 
-    document.getElementById('btnSubOffers').className = "px-5 py-2.5 rounded-xl bg-stone-900 text-white shadow-sm";
-    document.getElementById('btnSubMenu').className = "px-5 py-2.5 rounded-xl bg-stone-100 text-stone-700 hover:bg-stone-200";
-  } else { 
-    document.getElementById('adminMenuSubSection').classList.remove('hidden'); 
-    document.getElementById('adminOffersSubSection').classList.add('hidden'); 
-    document.getElementById('btnSubMenu').className = "px-5 py-2.5 rounded-xl bg-stone-900 text-white shadow-sm";
-    document.getElementById('btnSubOffers').className = "px-5 py-2.5 rounded-xl bg-stone-100 text-stone-700 hover:bg-stone-200";
-    renderAdminMenuList(); 
   }
 }
 
