@@ -22,35 +22,21 @@
     }
     .pulse-notification { animation: pulse-red 1.5s infinite; }
 
-    /* CORRECTION IMPRESSION : FORMAT A4 DYNAMIQUE */
     @media print {
-      body * {
-        visibility: hidden !important;
-      }
+      body * { visibility: hidden !important; }
       #printTicketSection, #printTicketSection *, 
-      #printFolioSection, #printFolioSection * {
-        visibility: visible !important;
-      }
+      #printFolioSection, #printFolioSection * { visibility: visible !important; }
       #printTicketSection, #printFolioSection {
-        display: block !important;
-        position: absolute !important;
-        left: 0 !important;
-        top: 0 !important;
-        width: 100% !important;
-        padding: 20px !important;
-        box-sizing: border-box !important;
-        background: #ffffff !important;
+        display: block !important; position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; padding: 20px !important; box-sizing: border-box !important; background: #ffffff !important;
       }
     }
   </style>
 </head>
 <body class="min-h-screen pb-20">
 
-  <!-- ZONE CACHÉE POUR L'IMPRESSION A4 -->
   <div id="printTicketSection" class="hidden"></div>
   <div id="printFolioSection" class="hidden"></div>
 
-  <!-- HEADER -->
   <header class="bg-white sticky top-0 z-50 border-b border-stone-200 shadow-sm">
     <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
       <div class="flex items-center space-x-3">
@@ -73,12 +59,10 @@
     </div>
   </header>
 
-  <!-- BANNIÈRE -->
   <div id="announcementBanner" class="hidden bg-remal-sand text-white px-4 py-3 text-center text-sm font-medium tracking-wide shadow-sm">
     <span id="announcementText">📢 Special Announcement</span>
   </div>
 
-  <!-- 1. GUEST VIEW -->
   <div id="clientView" class="max-w-md mx-auto px-4 py-6 space-y-6">
     <div class="relative rounded-3xl overflow-hidden shadow-xl p-6 text-white space-y-6 bg-cover bg-center bg-no-repeat bg-stone-900" style="background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.65)), url('Remal_exterior_view2.jpg');">
       <div class="text-center space-y-1">
@@ -86,7 +70,6 @@
         <p class="text-[10px] text-stone-200 uppercase tracking-widest font-semibold drop-shadow" id="roomIndicator">Al Dhannah City • Guest Hub</p>
       </div>
 
-      <!-- ONGLETS DE NAVIGATION -->
       <div class="flex bg-black/40 backdrop-blur-md p-1.5 rounded-2xl text-[11px] font-medium border border-white/25 overflow-x-auto scrollbar-none">
         <button onclick="switchGuestTab('request')" id="tabRequestBtn" class="flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap">🔔 <span id="lblTabRequest">Service</span></button>
         <button onclick="switchGuestTab('offers')" id="tabOffersBtn" class="flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap">🏷️ <span id="lblTabOffers">Offers</span></button>
@@ -95,7 +78,6 @@
       </div>
     </div>
 
-    <!-- SECTION OFFRES -->
     <div id="guestOffersSection" class="hidden space-y-5">
       <div id="categoryFilters" class="flex space-x-2 overflow-x-auto pb-1 text-xs font-semibold scrollbar-none"></div>
       <div id="cardsContainer" class="space-y-5">
@@ -103,7 +85,6 @@
       </div>
     </div>
 
-    <!-- SECTION FACILITIES -->
     <div id="guestFacilitiesSection" class="hidden space-y-5">
       <div class="text-center border-b border-stone-200 pb-3">
         <h3 class="text-lg font-serif-luxury font-bold text-stone-900" id="facHeader">Hotel Facilities & Amenities</h3>
@@ -112,7 +93,6 @@
       <div id="facilitiesContainer" class="space-y-6"></div>
     </div>
 
-    <!-- SECTION FAQ -->
     <div id="guestFaqSection" class="hidden space-y-5">
       <div class="text-center border-b border-stone-200 pb-3">
         <h3 class="text-lg font-serif-luxury font-bold text-stone-900" id="faqHeaderTitle">💡 Intelligent Assistant & FAQ</h3>
@@ -124,9 +104,7 @@
       </div>
     </div>
 
-    <!-- SECTION DEMANDES & ROOM SERVICE -->
     <div id="guestRequestSection" class="space-y-6">
-      
       <div class="remal-card p-6 rounded-3xl space-y-5">
         <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-3" id="reqHeader">Request Guest Service</h2>
         <form id="guestRequestForm" class="space-y-4">
@@ -140,7 +118,6 @@
             <select id="req_service" onchange="toggleServiceDynamicFields()" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 outline-none"></select>
           </div>
 
-          <!-- MODULE RÉSERVATION DE TABLE / SPA -->
           <div id="bookingBlock" class="hidden space-y-3 bg-emerald-50/60 p-4 rounded-2xl border border-emerald-200">
             <div class="flex items-center space-x-2 text-emerald-900 font-bold text-xs">
               <span>📅</span><span id="lblBookingTitle">Table / Spa Reservation Details</span>
@@ -178,7 +155,6 @@
             </div>
           </div>
 
-          <!-- MODULE WAKE-UP CALL -->
           <div id="wakeupCallBlock" class="hidden space-y-3 bg-blue-50/60 p-4 rounded-2xl border border-blue-200">
             <div class="flex items-center space-x-2 text-blue-900 font-bold text-xs">
               <span>⏰</span><span id="lblWakeupTitle">Wake-Up Call Scheduler</span>
@@ -189,7 +165,6 @@
             </div>
           </div>
 
-          <!-- MODULE LATE CHECK-OUT -->
           <div id="lateCheckoutBlock" class="hidden space-y-3 bg-amber-50/60 p-4 rounded-2xl border border-amber-200">
             <div class="flex items-center space-x-2 text-amber-900 font-bold text-xs">
               <span>⏱️</span><span id="lblLateTitle">Late Check-Out Request</span>
@@ -205,7 +180,6 @@
             </div>
           </div>
 
-          <!-- MODULE ROOM SERVICE -->
           <div id="roomServiceMenuBlock" class="hidden space-y-4 bg-stone-50 p-4 rounded-2xl border border-stone-200">
             <div class="flex justify-between items-center border-b border-stone-200 pb-2">
               <span class="text-xs font-bold text-stone-800" id="lblMenuHeader">🍽️ Select Menu Items</span>
@@ -248,16 +222,14 @@
         </div>
       </div>
 
-      <!-- TRACK ACTIVE REQUESTS -->
       <div class="remal-card p-6 rounded-3xl space-y-4">
         <div class="flex justify-between items-center border-b border-stone-100 pb-3">
           <h3 class="text-sm font-serif-luxury font-bold text-stone-900" id="lblTrackHeader">📡 Track Active Requests</h3>
-          <span class="text-[10px] bg-stone-100 text-stone-600 font-semibold px-2.5 py-1 rounded-full" id="lblLiveStatus">Live Status</span>
+          <span class="text-[10px] bg-stone-100 text-stone-600 font-semibold px-2.5 py-1 rounded-full" id="lblLiveStatus">Live Status (Realtime)</span>
         </div>
         <div id="clientTrackerContainer" class="space-y-3"><p class="text-center text-xs text-stone-400 py-3" id="lblTrackEmpty">Enter your room number above to track active requests in real time.</p></div>
       </div>
 
-      <!-- ROOM FOLIO & BILLING -->
       <div class="remal-card p-5 rounded-3xl space-y-3 bg-gradient-to-br from-amber-50/50 to-white">
         <div class="flex justify-between items-center border-b border-stone-100 pb-2">
           <span class="text-xs font-serif-luxury font-bold text-stone-900" id="lblFolioTitle">📄 My Room Folio & Charges</span>
@@ -268,7 +240,6 @@
         </div>
       </div>
 
-      <!-- MODULE FEEDBACK -->
       <div class="remal-card p-5 rounded-3xl space-y-3 bg-gradient-to-br from-emerald-50/40 to-white">
         <div class="border-b border-stone-100 pb-2">
           <span class="text-xs font-serif-luxury font-bold text-stone-900" id="lblFeedbackTitle">⭐ Stay Feedback & Experience Rating</span>
@@ -292,7 +263,6 @@
         </form>
       </div>
 
-      <!-- FAVORIS ET HISTORIQUE -->
       <div id="guestHistoryBlock" class="remal-card p-5 rounded-3xl space-y-3">
         <div class="flex justify-between items-center border-b border-stone-100 pb-2">
           <span class="text-xs font-serif-luxury font-bold text-stone-900" id="lblFavTitle">⭐ My Favorites & Recent Orders</span>
@@ -305,14 +275,12 @@
     </div>
   </div>
 
-  <!-- BOUTON WHATSAPP -->
   <div id="whatsappContainer" class="fixed bottom-5 right-5 z-50">
     <a href="https://wa.me/971526966865?text=Hello%2C%20I%20am%20contacting%20from%20Remal%20Hotel%20Guest%20Hub." target="_blank" class="flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 rounded-full shadow-2xl transition transform hover:scale-105 border border-emerald-500 font-semibold text-xs">
       <span class="text-lg">💬</span><span id="whatsappText">WhatsApp Reception</span>
     </a>
   </div>
 
-  <!-- MODAL AUTH ADMIN -->
   <div id="authModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-5 border border-stone-100">
       <div class="text-center space-y-1">
@@ -335,7 +303,6 @@
     </div>
   </div>
 
-  <!-- 2. ADMIN VIEW (AGRANDIE, LARGE ET FLUIDE POUR ORDINATEUR DE BUREAU) -->
   <div id="adminView" class="hidden max-w-7xl mx-auto px-6 py-8 space-y-8">
     <div class="flex justify-between items-center bg-white p-3 rounded-2xl border border-stone-200 shadow-sm text-sm font-bold overflow-x-auto scrollbar-none">
       <div class="flex space-x-3 w-full md:w-auto">
@@ -353,7 +320,6 @@
       </div>
     </div>
 
-    <!-- ADMIN OFFRES ET MENU -->
     <div id="adminOffersPanel" class="space-y-6">
       <div class="flex space-x-3 border-b border-stone-200 pb-3 text-sm font-bold">
         <button onclick="switchAdminSubTab('offersList')" id="btnSubOffers" class="px-5 py-2.5 rounded-xl bg-stone-900 text-white shadow-sm">Promotions & Events</button>
@@ -433,13 +399,12 @@
       </div>
     </div>
 
-    <!-- ADMIN DEMANDES -->
     <div id="adminRequestsPanel" class="hidden space-y-6">
       <div class="bg-white rounded-3xl p-8 shadow-sm border border-stone-200 space-y-6">
         <div class="flex justify-between items-center border-b border-stone-100 pb-4">
           <div>
             <h2 class="text-xl font-serif-luxury font-bold text-stone-900">Live Service Requests</h2>
-            <p class="text-xs text-stone-500">Real-time room service and guest requests stream</p>
+            <p class="text-xs text-stone-500">Real-time WebSockets room service and guest requests stream</p>
           </div>
           <div class="flex items-center space-x-3">
             <button onclick="enableAudioAlerts()" id="btnAudioEnable" class="text-xs bg-amber-50 text-amber-800 hover:bg-amber-100 px-4 py-2.5 rounded-xl font-bold border border-amber-200 shadow-sm transition">
@@ -452,7 +417,6 @@
       </div>
     </div>
 
-    <!-- ADMIN AVIS / FEEDBACK -->
     <div id="adminFeedbackPanel" class="hidden space-y-6">
       <div class="bg-white rounded-3xl p-8 shadow-sm border border-stone-200 space-y-6">
         <h2 class="text-xl font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-4">Guest Feedback & Ratings</h2>
@@ -462,7 +426,6 @@
       </div>
     </div>
 
-    <!-- ADMIN ANALYTICS -->
     <div id="adminAnalyticsPanel" class="hidden space-y-8">
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-2">
@@ -487,7 +450,6 @@
       </div>
     </div>
 
-    <!-- ADMIN BANNIÈRE -->
     <div id="adminBannerPanel" class="hidden space-y-6 max-w-3xl mx-auto">
       <div class="bg-white rounded-3xl p-8 shadow-sm border border-stone-200 space-y-6">
         <h2 class="text-xl font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-4">Banner Management</h2>
@@ -631,12 +593,12 @@
       { id: 'hm_ms3', categoryKey: 'Milkshake', catName: { en: 'Milkshake', ar: 'ميلك شيك', hi: 'मिल्कशेेक' }, name: { en: 'Strawberry', ar: 'فراولة', hi: 'स्ट्रॉबेरी' }, desc: { en: 'Milk, strawberry ice cream, fresh strawberries, sugar', ar: 'حليب، آيس كريم فراولة، فراولة طازجة، سكر' }, price: 33 },
 
       { id: 'hm_mk1', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोकटेल' }, name: { en: 'Fruity', ar: 'فروتي', hi: 'फ्रूटी' }, desc: { en: 'Fresh banana, strawberry, mango, orange juice', ar: 'موز طازج، فراولة، مانجو، عصير برتقال' }, price: 33 },
-      { id: 'hm_mk2', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोكتيل' }, name: { en: 'Piña Colada', ar: 'بينا كولادا', hi: 'पिना कोलाडा' }, desc: { en: 'Pineapple juice, coconut cream', ar: 'عصير أناناس، كريمة جوز الهند' }, price: 33 },
-      { id: 'hm_mk3', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोكتيل' }, name: { en: 'Strawberry Margarita', ar: 'مارغريتا الفراولة', hi: 'स्ट्रॉबेरी मार्गारिटा' }, desc: { en: 'Fresh strawberries, lime juice, lime-flavored seltzer', ar: 'فراولة طازجة، عصير ليمون أخضر، صودا بنكهة الليمون' }, price: 33 },
-      { id: 'hm_mk4', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोكتيل' }, name: { en: 'Mojito', ar: 'موهيتو', hi: 'मोहितो' }, desc: { en: 'Fresh mint leaves, lime, demerara sugar, soda water', ar: 'أوراق نعناع طازجة، ليمون أخضر، سكر ديميرارا، مياه صودا' }, price: 33 },
+      { id: 'hm_mk2', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'पिना कोलाडा' }, name: { en: 'Piña Colada', ar: 'بينا كولادا', hi: 'पिना कोलाडा' }, desc: { en: 'Pineapple juice, coconut cream', ar: 'عصير أناناس، كريمة جوز الهند' }, price: 33 },
+      { id: 'hm_mk3', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'स्ट्रॉबेरी मार्गारिटा' }, name: { en: 'Strawberry Margarita', ar: 'مارغريتا الفراولة', hi: 'स्ट्रॉबेरी मार्गारिटा' }, desc: { en: 'Fresh strawberries, lime juice, lime-flavored seltzer', ar: 'فراولة طازجة، عصير ليمون أخضر، صودا بنكهة الليمون' }, price: 33 },
+      { id: 'hm_mk4', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोहितो' }, name: { en: 'Mojito', ar: 'موهيتو', hi: 'मोहितो' }, desc: { en: 'Fresh mint leaves, lime, demerara sugar, soda water', ar: 'أوراق نعناع طازجة، ليمون أخضر، سكر ديميرارا، مياه صودا' }, price: 33 },
       { id: 'hm_mk5', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोكتيل' }, name: { en: 'Mai Tai', ar: 'ماي تاي', hi: 'माई ताई' }, desc: { en: 'Lemon-lime soda, pineapple juice, orange juice, grenadine syrup', ar: 'مشروب صودا بالليمون، عصير أناناس، عصير برتقال، شراب الغرينادين' }, price: 33 },
-      { id: 'hm_mk6', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोكتيل' }, name: { en: 'Nutella Hot Chocolate', ar: 'شوكولاتة ساخنة مع نوتيلا', hi: 'नूटेला हॉट चॉकलेट' }, desc: { en: 'Milk, Nutella, cocoa', ar: 'حليب، نوتيلا، كاكاو' }, price: 33 },
-      { id: 'hm_mk7', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोكتيل' }, name: { en: 'Banana Milk Coffee', ar: 'قهوة مع حليب الموز', hi: 'बनाना मिल्क कॉफी' }, desc: { en: 'Ripe banana, coffee, milk, cinnamon', ar: 'موز ناضج، قهوة، حليب، قرفة' }, price: 33 },
+      { id: 'hm_mk6', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'नूटेला हॉट चॉकलेट' }, name: { en: 'Nutella Hot Chocolate', ar: 'شوكولاتة ساخنة مع نوتيلا', hi: 'नूटेला हॉट चॉकलेट' }, desc: { en: 'Milk, Nutella, cocoa', ar: 'حليب، نوتيلا، كاكاو' }, price: 33 },
+      { id: 'hm_mk7', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'बनाना मिल्क कॉफी' }, name: { en: 'Banana Milk Coffee', ar: 'قهوة مع حليب الموز', hi: 'बनाना मिल्क कॉफी' }, desc: { en: 'Ripe banana, coffee, milk, cinnamon', ar: 'موز ناضج، قهوة، حليب، قرفة' }, price: 33 },
 
       { id: 'hm_b1', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Corona', ar: 'كورونا', hi: 'कोरोना' }, desc: { en: 'Mexican refreshing beer', ar: 'بيرة مكسيكية منعشة' }, price: 40 },
       { id: 'hm_b2', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Stella', ar: 'ستيلا', hi: 'स्टेला' }, desc: { en: 'Classic European lager', ar: 'بيرة أوروبية كلاسيكية' }, price: 40 },
@@ -894,11 +856,9 @@
       const room = urlParams.get('room');
       const adminParam = urlParams.get('admin');
 
-      if (room) {
-        if (validateRoomNumber(room)) {
-          document.getElementById('roomIndicator').innerText = `Room/Villa: ${room} • Remal Hotel`;
-          document.getElementById('req_room').value = room;
-        }
+      if (room && validateRoomNumber(room)) {
+        document.getElementById('roomIndicator').innerText = `Room/Villa: ${room} • Remal Hotel`;
+        document.getElementById('req_room').value = room;
       }
 
       if (adminParam === 'true') {
@@ -917,14 +877,34 @@
       setLang('en');
       renderFacilities();
       renderFaqList();
+      
+      // Chargement initial ultra-rapide
       await fetchMenuItemsFromCloud();
       await fetchOffersFromCloud();
       await fetchAnnouncementFromCloud();
       await fetchRequestsFromCloud();
       await fetchFeedbackFromCloud();
+      
       renderClientFavoritesAndHistory();
       renderRoomFolioWidget();
-      setInterval(fetchRequestsFromCloud, 5000);
+
+      // ACTIVATION DU TEMPS RÉEL SUPABASE (Remplace le setInterval lent)
+      setupRealtimeSubscriptions();
+    }
+
+    function setupRealtimeSubscriptions() {
+      supabaseClient
+        .channel('public-db-changes')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'requests' }, payload => {
+          fetchRequestsFromCloud();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'offers' }, payload => {
+          fetchOffersFromCloud();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'feedback' }, payload => {
+          fetchFeedbackFromCloud();
+        })
+        .subscribe();
     }
 
     function handleAdminAccess() {
@@ -1001,7 +981,11 @@
     }
 
     async function fetchFeedbackFromCloud() {
-      const { data } = await supabaseClient.from('feedback').select('*').order('id', { ascending: false });
+      const { data } = await supabaseClient
+        .from('feedback')
+        .select('id, room, rating, comment')
+        .order('id', { ascending: false })
+        .limit(30);
       cachedFeedback = data || [];
       if (currentView === 'admin') renderAdminFeedback();
     }
@@ -1347,12 +1331,7 @@
             <div id="carousel-${idx}" class="flex overflow-x-auto snap-x snap-mandatory scrollbar-none h-56 bg-stone-100">
               ${item.images.map(img => `
                 <div class="min-w-full w-full h-full flex-shrink-0 snap-center relative">
-                  <img 
-                    src="${img}" 
-                    class="w-full h-full object-cover" 
-                    loading="lazy" 
-                    onerror="this.onerror=null; this.src='logo.png';"
-                  >
+                  <img src="${img}" class="w-full h-full object-cover" loading="lazy" onerror="this.onerror=null; this.src='logo.png';">
                 </div>
               `).join('')}
             </div>
@@ -1401,14 +1380,23 @@
     }
 
     async function fetchOffersFromCloud() {
-      const { data } = await supabaseClient.from('offers').select('*').order('id', { ascending: false });
+      const { data } = await supabaseClient
+        .from('offers')
+        .select('id, category, price, title, timing, image')
+        .order('id', { ascending: false })
+        .limit(30);
       cachedOffers = data || [];
       renderClientCards();
       if (currentView === 'admin') renderAdminList();
     }
 
     async function fetchRequestsFromCloud() {
-      const { data, error } = await supabaseClient.from('requests').select('*').order('id', { ascending: false });
+      const { data, error } = await supabaseClient
+        .from('requests')
+        .select('id, room, service, status, details')
+        .order('id', { ascending: false })
+        .limit(50);
+        
       if (error) return;
       cachedRequests = data || [];
       const pendingRequests = cachedRequests.filter(r => r.status === 'Pending' || !r.status);
@@ -1789,7 +1777,7 @@
       let details = document.getElementById('req_details').value;
 
       if (!room || !validateRoomNumber(room)) {
-        alert("❌ Erreur : Veuillez entrer un numéro de chambre أو de villa valide.");
+        alert("❌ Erreur : Veuillez entrer un numéro de chambre ou de villa valide.");
         document.getElementById('req_room').focus();
         return;
       }
