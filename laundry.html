@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Remal Hotel & Villas - Front Desk & Laundry Management</title>
+    <title>Remal Hotel & Villas - Laundry Service</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -32,15 +32,12 @@
         <source src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg" type="audio/ogg">
     </audio>
 
-    <!-- HEADER REMAL HOTEL -->
+    <!-- HEADER LAUNDRY SERVICE -->
     <header class="bg-white sticky top-0 z-50 border-b border-stone-200 shadow-sm">
         <div class="max-w-3xl mx-auto px-5 py-3 flex justify-between items-center">
             <div class="flex items-center space-x-2">
-                <img src="logo.png" alt="Remal Hotel & Villas" class="h-10 sm:h-12 object-contain" onerror="this.style.display='none'; document.getElementById('textLogo').classList.remove('hidden');">
-                <div id="textLogo" class="hidden">
-                    <h1 class="text-sm font-serif-luxury text-stone-900 font-bold tracking-widest">REMAL</h1>
-                    <p class="text-[8px] text-stone-500 uppercase tracking-wider">Hotel & Villas</p>
-                </div>
+                <h1 class="text-sm font-serif-luxury text-stone-900 font-bold tracking-widest">REMAL</h1>
+                <p id="headerSubtitle" class="text-[8px] text-stone-500 uppercase tracking-wider">Laundry Service Hub</p>
             </div>
             
             <div class="flex items-center space-x-3">
@@ -49,12 +46,12 @@
                     <button onclick="setLang('ar')" id="btn-lang-ar" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">العربية</button>
                     <button onclick="setLang('hi')" id="btn-lang-hi" class="px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900">हिन्दी</button>
                 </div>
-                <span class="text-xs font-bold bg-stone-900 text-white px-3 py-1.5 rounded-full shadow hidden sm:inline">🛎️ Reception & Maid</span>
+                <span id="roleBadge" class="text-xs font-bold bg-stone-900 text-white px-3 py-1.5 rounded-full shadow hidden sm:inline">👔 Laundry Service</span>
             </div>
         </div>
     </header>
 
-    <!-- BANNIÈRE ROUGE D'ALERTE AVEC NOTE DU CLIENT -->
+    <!-- BANNIÈRE ROUGE D'ALERTE (ADMIN ONLY) -->
     <div id="laundryPlantAlert" class="hidden bg-rose-600 text-white px-4 py-3 text-center text-xs font-bold tracking-wide shadow-md pulse-notification flex items-center justify-between gap-2">
         <div class="flex items-center gap-2 text-left">
             <span>🚨</span>
@@ -68,29 +65,15 @@
 
     <div class="max-w-2xl mx-auto px-4 py-4 space-y-4">
 
-        <!-- 4 SECTIONS DE NAVIGATION EN HAUT -->
-        <div class="grid grid-cols-4 gap-1.5 pt-1 text-[11px] font-bold">
-            <button onclick="switchMainSection('newRecord')" id="navBtnNewRecord" class="py-2.5 px-1 rounded-2xl bg-remal-sand text-white shadow-md transition flex flex-col items-center justify-center gap-0.5">
-                <span>➕</span> <span id="txtBtnNewRecord">New</span>
-            </button>
-            <button onclick="switchMainSection('liveRecord')" id="navBtnLiveRecord" class="py-2.5 px-1 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 transition flex flex-col items-center justify-center gap-0.5">
-                <span>🔴</span> <span id="txtBtnLiveRecord">Live</span>
-            </button>
-            <button onclick="switchMainSection('pdfList')" id="navBtnPdfList" class="py-2.5 px-1 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 transition flex flex-col items-center justify-center gap-0.5">
-                <span>📋</span> <span id="txtBtnPdfList">PDF</span>
-            </button>
-            <button onclick="switchMainSection('dashboard')" id="navBtnDashboard" class="py-2.5 px-1 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 transition flex flex-col items-center justify-center gap-0.5">
-                <span>📈</span> <span id="txtBtnDashboard">Chart</span>
-            </button>
-        </div>
+        <!-- NAVIGATION DYNAMIQUE (CHANGELOG SELON LE MODE GUEST OU ADMIN) -->
+        <div id="navContainer" class="grid gap-1 pt-1 text-[10px] font-bold"></div>
 
-        <!-- SECTION 1: FORMULAIRE NEW RECORD -->
+        <!-- SECTION 1: FORMULAIRE NEW RECORD (GUEST & ADMIN) -->
         <div id="sectionNewRecord" class="space-y-4">
             <div class="remal-card p-6 rounded-3xl space-y-5 relative">
                 
                 <div class="flex justify-between items-center border-b border-stone-100 pb-3">
-                    <h2 class="text-lg font-serif-luxury font-bold text-stone-900" id="lblFormTitle">New Record</h2>
-                    <button onclick="switchMainSection('pdfList')" class="text-stone-400 hover:text-stone-700 font-bold text-xl px-2">✕</button>
+                    <h2 class="text-lg font-serif-luxury font-bold text-stone-900" id="lblFormTitle">New Laundry Request</h2>
                 </div>
 
                 <input type="hidden" id="editingRecordId" value="">
@@ -143,27 +126,30 @@
                 <input type="file" id="photoInput" class="hidden" accept="image/*" capture="environment" onchange="previewImage(event)">
                 <img id="imagePreview" class="hidden w-full max-h-48 object-cover rounded-2xl mt-2 border border-stone-200" alt="Preuve">
 
-                <button onclick="sauvegarderBordereauToCloud()" id="btnSaveRecord" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-bold py-3.5 rounded-xl text-sm shadow-lg transition tracking-wider">💾 Save Record</button>
+                <button onclick="sauvegarderBordereauToCloud()" id="btnSaveRecord" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-bold py-3.5 rounded-xl text-sm shadow-lg transition tracking-wider">💾 Send Request / Save Record</button>
             </div>
         </div>
 
-        <!-- SECTION 2: LIVE ORDERS -->
+        <!-- SECTION 2: LIVE ORDERS (ADMIN ONLY) -->
         <div id="sectionLiveRecord" class="hidden space-y-4">
             <div class="remal-card p-6 rounded-3xl space-y-4">
                 <div class="flex justify-between items-center border-b border-stone-100 pb-3">
                     <h3 class="text-sm font-serif-luxury font-bold text-stone-900">🔴 Live Laundry Orders</h3>
-                    <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2.5 py-1 rounded-full">Reception & Maid View</span>
+                    <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2.5 py-1 rounded-full">Plant & Admin View</span>
                 </div>
                 <div id="liveOrdersList" class="space-y-3 pt-2"><p class="text-xs text-stone-400 text-center py-4">Loading live orders...</p></div>
             </div>
         </div>
 
-        <!-- SECTION 3: PDF LIST & ARCHIVES -->
+        <!-- SECTION 3: PDF LIST & ARCHIVES (ADMIN ONLY) -->
         <div id="sectionPdfList" class="hidden space-y-4">
             <div class="remal-card p-6 rounded-3xl space-y-4">
                 <div class="flex justify-between items-center border-b border-stone-100 pb-3">
                     <h3 class="text-sm font-serif-luxury font-bold text-stone-900" id="lblArchiveTitle">PDF List & Records</h3>
-                    <span class="text-[10px] bg-stone-100 text-stone-600 font-bold px-2.5 py-1 rounded-full" id="lblAutoArchive">Auto-Archive at 00:00</span>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="reinitialiserTouteLaListe()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 text-[10px] font-bold px-2.5 py-1 rounded-full border border-rose-200 transition" title="Reset / Delete all records">🗑️ Reset All</button>
+                        <span class="text-[10px] bg-stone-100 text-stone-600 font-bold px-2.5 py-1 rounded-full" id="lblAutoArchive">Auto-Archive at 00:00</span>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-stone-50 p-3 rounded-2xl border border-stone-200">
@@ -181,11 +167,78 @@
             </div>
         </div>
 
-        <!-- SECTION 4: MANAGEMENT BUSINESS CHART & ANALYTICS -->
+        <!-- SECTION 4: FACILITIES (GUEST & ADMIN) -->
+        <div id="sectionFacilities" class="hidden space-y-4">
+            <div class="remal-card p-6 rounded-3xl space-y-4">
+                <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+                    <h3 class="text-sm font-serif-luxury font-bold text-stone-900">ℹ️ Laundry Service Facilities & Info</h3>
+                    <span class="text-[10px] bg-remal-sand text-white font-bold px-2.5 py-1 rounded-full">Remal Hotel & Villas</span>
+                </div>
+                
+                <div class="space-y-3 text-xs text-stone-700 leading-relaxed pt-2">
+                    <div class="bg-stone-50 p-4 rounded-2xl border border-stone-200 space-y-2">
+                        <h4 class="font-bold text-stone-900 text-sm">🕒 Operating Hours & Express Service</h4>
+                        <p>Standard laundry and dry cleaning services are available daily from <strong>07:00 AM to 10:00 PM</strong>.</p>
+                        <p><strong>Express Service:</strong> Same-day express delivery is available for items submitted before 10:00 AM (50% surcharge applies).</p>
+                    </div>
+
+                    <div class="bg-stone-50 p-4 rounded-2xl border border-stone-200 space-y-2">
+                        <h4 class="font-bold text-stone-900 text-sm">🧺 Services Provided</h4>
+                        <ul class="list-disc pl-4 space-y-1">
+                            <li><strong>Hotel Count (Free):</strong> Complimentary hotel linen & standard garments processing.</li>
+                            <li><strong>Guest Count (Paid):</strong> Full premium washing, dry cleaning, and delicate pressing with 5% VAT.</li>
+                            <li><strong>Packaging Options:</strong> Custom folding, hanger/folding, or single packaging.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-stone-50 p-4 rounded-2xl border border-stone-200 space-y-2">
+                        <h4 class="font-bold text-stone-900 text-sm">📞 Direct Assistance</h4>
+                        <p>For special garments, heavy items, or urgent inquiries, please dial <strong>Extension 0</strong> or contact the Laundry Plant directly.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 5: REVIEWS (GUEST & ADMIN VIEW) -->
+        <div id="sectionReviews" class="hidden space-y-4">
+            <div class="remal-card p-6 rounded-3xl space-y-4">
+                <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+                    <h3 class="text-sm font-serif-luxury font-bold text-stone-900">⭐ Laundry Service Guest Reviews</h3>
+                    <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2.5 py-1 rounded-full">Feedback</span>
+                </div>
+
+                <!-- Formulaire pour laisser un avis (Guest) -->
+                <div class="bg-stone-50 p-4 rounded-2xl border border-stone-200 space-y-3">
+                    <h4 class="font-bold text-stone-900 text-xs">Leave your feedback on our laundry service:</h4>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" id="reviewRoom" placeholder="Room Number (e.g. 223)" class="border border-stone-200 rounded-xl p-2 text-xs bg-white outline-none font-bold">
+                        <select id="reviewRating" class="border border-stone-200 rounded-xl p-2 text-xs bg-white outline-none font-bold">
+                            <option value="5">⭐⭐⭐⭐⭐ (5/5 Excellent)</option>
+                            <option value="4">⭐⭐⭐⭐ (4/5 Good)</option>
+                            <option value="3">⭐⭐⭐ (3/5 Average)</option>
+                            <option value="2">⭐⭐ (2/5 Fair)</option>
+                            <option value="1">⭐ (1/5 Poor)</option>
+                        </select>
+                    </div>
+                    <textarea id="reviewComment" placeholder="Write your comments here..." rows="2" class="w-full border border-stone-200 rounded-xl p-2.5 text-xs bg-white outline-none"></textarea>
+                    <button onclick="soumettreAvisClient()" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-bold py-2.5 rounded-xl text-xs transition">Submit Review</button>
+                </div>
+
+                <!-- Liste des avis visibles par tous / Admin -->
+                <div class="space-y-2 pt-2">
+                    <h4 class="font-bold text-stone-800 text-xs uppercase tracking-wide">All Submitted Reviews:</h4>
+                    <div id="reviewsListContainer" class="space-y-2.5 max-h-72 overflow-y-auto pr-1 scrollbar-none">
+                        <p class="text-xs text-stone-400 text-center py-4">Loading reviews...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 6: MANAGEMENT BUSINESS CHART & ANALYTICS (ADMIN ONLY) -->
         <div id="sectionDashboard" class="hidden space-y-4">
             <div class="remal-card p-6 rounded-3xl space-y-5">
                 <div class="flex justify-between items-center border-b border-stone-100 pb-3">
-                    <h3 class="text-sm font-serif-luxury font-bold text-stone-900">📈 Reception & Management Analytics</h3>
+                    <h3 class="text-sm font-serif-luxury font-bold text-stone-900">📈 Laundry Service Analytics</h3>
                     <span class="text-[10px] bg-amber-100 text-amber-800 font-bold px-2.5 py-1 rounded-full">Executive Overview</span>
                 </div>
 
@@ -233,14 +286,14 @@
                 <div class="text-center border-b border-stone-100 pb-3 relative">
                     <button onclick="fermerModal()" class="absolute right-0 top-0 text-stone-400 text-xl font-bold hover:text-stone-700">✕</button>
                     <h2 class="text-lg font-serif-luxury font-bold text-stone-900 tracking-wider">REMAL HOTEL</h2>
-                    <p class="text-[9px] text-stone-500 uppercase tracking-widest">Al Ruwais City, Abu Dhabi – UAE</p>
-                    <p class="text-xs font-bold text-remal-sand mt-1 uppercase tracking-wide">LAUNDRY SERVICE</p>
+                    <p class="text-[9px] text-stone-500 uppercase tracking-widest">Al Dhannah City, Abu Dhabi – UAE</p>
+                    <p class="text-xs font-bold text-remal-sand mt-1 uppercase tracking-wide">LAUNDRY SERVICE SLIP</p>
                 </div>
 
                 <div class="bg-stone-50 p-3.5 rounded-2xl border border-stone-200 flex justify-between items-center">
                     <div>
                         <span class="text-xs text-stone-500 font-semibold">Room:</span>
-                        <span id="modalRoomNumDisplay" class="text-xl font-serif-luxury font-bold text-stone-900 ml-1">223</span>
+                        <input type="text" id="modalRoomInput" onchange="modifierNumeroChambreDepuisModal(this.value)" class="w-16 border border-stone-300 rounded-lg px-2 py-1 text-base font-serif-luxury font-bold bg-white text-stone-900 outline-none text-center inline-block ml-1" title="Cliquer pour modifier le numéro de chambre">
                     </div>
                     <div class="text-right">
                         <p id="modalDate" class="text-[10px] text-stone-500 font-bold"></p>
@@ -298,34 +351,35 @@
         let cachedSlips = [];
         let doughnutChartInstance = null;
         let barChartInstance = null;
+        let userMode = 'guest'; // 'guest' ou 'admin'
 
         const i18n = {
             en: {
-                txtBtnNewRecord: "New", txtBtnLiveRecord: "Live", txtBtnPdfList: "PDF", txtBtnDashboard: "Chart",
-                lblFormTitle: "New Record", lblRoomNum: "Room Number",
+                txtBtnNewRecord: "Request", txtBtnLiveRecord: "Live", txtBtnPdfList: "PDF", txtBtnFacilities: "Facilities", txtBtnReviews: "Reviews", txtBtnDashboard: "Chart",
+                lblFormTitle: "New Laundry Request", lblRoomNum: "Room Number",
                 lblSelectedGarments: "Total Garments:", lblSubTotal: "Subtotal:",
                 lblVat: "VAT (5%):", lblGrandTotal: "Grand Total:", btnPhotoProof: "📷 Proof Photo (Optional)",
-                btnSaveRecord: "💾 Save Record", lblArchiveTitle: "PDF List & Records",
+                btnSaveRecord: "💾 Send Laundry Request", lblArchiveTitle: "PDF List & Records",
                 lblAutoArchive: "Auto-Archive at 00:00", lblSearchRoom: "Search Room", lblSearchDate: "Search Date",
                 lblLoadingRecords: "Loading records...", noRecords: "No laundry records found.",
                 lblRoomError: "Invalid room number! Allowed ranges: 103-144, 201-246, 301-348, 401-448, 501-520, 601-608."
             },
             ar: {
-                txtBtnNewRecord: "سجل", txtBtnLiveRecord: "الحي", txtBtnPdfList: "PDF", txtBtnDashboard: "رسم بياني",
-                lblFormTitle: "سجل جديد", lblRoomNum: "رقم الغرفة",
+                txtBtnNewRecord: "طلب", txtBtnLiveRecord: "الحي", txtBtnPdfList: "PDF", txtBtnFacilities: "المرافق", txtBtnReviews: "التقييمات", txtBtnDashboard: "رسم بياني",
+                lblFormTitle: "طلب غسيل جديد", lblRoomNum: "رقم الغرفة",
                 lblSelectedGarments: "مجموع الملابس:", lblSubTotal: "المجموع الفرعي:",
                 lblVat: "ضريبة القيمة المضافة (٥٪):", lblGrandTotal: "المجموع الإجمالي:", btnPhotoProof: "📷 صورة إثبات (اختياري)",
-                btnSaveRecord: "💾 حفظ السجل", lblArchiveTitle: "قائمة PDF والسجلات",
+                btnSaveRecord: "💾 إرسال طلب الغسيل", lblArchiveTitle: "قائمة PDF والسجلات",
                 lblAutoArchive: "أرشفة تلقائية ٠٠:٠٠", lblSearchRoom: "بحث برقم الغرفة", lblSearchDate: "بحث بالتاريخ",
                 lblLoadingRecords: "جاري تحميل السجلات...", noRecords: "لا توجد سجلات.",
                 lblRoomError: "رقم الغرفة غير صحيح! النطاقات المسموحة: 103-144، 201-246، 301-348، 401-448، 501-520، 601-608."
             },
             hi: {
-                txtBtnNewRecord: "नया", txtBtnLiveRecord: "लाइव", txtBtnPdfList: "पीडीएफ", txtBtnDashboard: "चार्ट",
-                lblFormTitle: "नया रिकॉर्ड", lblRoomNum: "कमरा नंबर",
+                txtBtnNewRecord: "अनुरोध", txtBtnLiveRecord: "लाइव", txtBtnPdfList: "पीडीएफ", txtBtnFacilities: "सुविधाएं", txtBtnReviews: "समीक्षा", txtBtnDashboard: "चार्ट",
+                lblFormTitle: "नया लॉन्ड्री अनुरोध", lblRoomNum: "कमरा नंबर",
                 lblSelectedGarments: "कुल कपड़े:", lblSubTotal: "उप-कुल:",
                 lblVat: "जीएसटी/वैट (5%):", lblGrandTotal: "कुल योग:", btnPhotoProof: "📷 प्रमाण फोटो (वैकल्पिक)",
-                btnSaveRecord: "💾 रिकॉर्ड सुरक्षित करें", lblArchiveTitle: "पीडीएफ सूची और रिकॉर्ड",
+                btnSaveRecord: "💾 लॉन्ड्री अनुरोध भेजें", lblArchiveTitle: "पीडीएफ सूची और रिकॉर्ड",
                 lblAutoArchive: "00:00 बजे ऑटो-संग्रह", lblSearchRoom: "कमरा खोजें", lblSearchDate: "तारीख खोजें",
                 lblLoadingRecords: "रिकॉर्ड लोड हो रहे हैं...", noRecords: "कोई रिकॉर्ड नहीं मिला।",
                 lblRoomError: "अमान्य कमरा नंबर! केवल ये नंबर मान्य हैं: 103-144, 201-246, 301-348, 401-448, 501-520, 601-608."
@@ -391,14 +445,63 @@
         let selectedIdForModal = null;
 
         document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            userMode = urlParams.get('mode') === 'admin' ? 'admin' : 'guest';
+
+            setupNavigationMode();
             setLang('en');
             selectCountType('hotel');
             renderItems();
             fetchInitialData();
             
-            checkIncomingLaundryRequests();
-            setInterval(checkIncomingLaundryRequests, 5000);
+            if (userMode === 'admin') {
+                checkIncomingLaundryRequests();
+                setInterval(checkIncomingLaundryRequests, 5000);
+            }
         });
+
+        function setupNavigationMode() {
+            const navContainer = document.getElementById('navContainer');
+            const roleBadge = document.getElementById('roleBadge');
+            const headerSubtitle = document.getElementById('headerSubtitle');
+
+            if (userMode === 'admin') {
+                roleBadge.innerText = "🏭 Laundry Plant Admin";
+                headerSubtitle.innerText = "Laundry Plant Management Hub";
+                navContainer.className = "grid grid-cols-4 gap-1.5 pt-1 text-[11px] font-bold";
+                navContainer.innerHTML = `
+                    <button onclick="switchMainSection('liveRecord')" id="navBtnLiveRecord" class="py-2.5 px-1 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 transition flex flex-col items-center justify-center gap-0.5">
+                        <span>🔴</span> <span id="txtBtnLiveRecord">Live</span>
+                    </button>
+                    <button onclick="switchMainSection('pdfList')" id="navBtnPdfList" class="py-2.5 px-1 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 transition flex flex-col items-center justify-center gap-0.5">
+                        <span>📋</span> <span id="txtBtnPdfList">PDF</span>
+                    </button>
+                    <button onclick="switchMainSection('facilities')" id="navBtnFacilities" class="py-2.5 px-1 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 transition flex flex-col items-center justify-center gap-0.5">
+                        <span>ℹ️</span> <span id="txtBtnFacilities">Facilities</span>
+                    </button>
+                    <button onclick="switchMainSection('dashboard')" id="navBtnDashboard" class="py-2.5 px-1 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 transition flex flex-col items-center justify-center gap-0.5">
+                        <span>📈</span> <span id="txtBtnDashboard">Chart</span>
+                    </button>
+                `;
+                switchMainSection('liveRecord');
+            } else {
+                roleBadge.innerText = "👔 Laundry Service (Guest)";
+                headerSubtitle.innerText = "Laundry Room Service Hub";
+                navContainer.className = "grid grid-cols-3 gap-2 pt-1 text-xs font-bold";
+                navContainer.innerHTML = `
+                    <button onclick="switchMainSection('newRecord')" id="navBtnNewRecord" class="py-2.5 px-1 rounded-2xl bg-remal-sand text-white shadow-md transition flex flex-col items-center justify-center gap-0.5">
+                        <span>➕</span> <span id="txtBtnNewRecord">Request Laundry</span>
+                    </button>
+                    <button onclick="switchMainSection('facilities')" id="navBtnFacilities" class="py-2.5 px-1 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 transition flex flex-col items-center justify-center gap-0.5">
+                        <span>ℹ️</span> <span id="txtBtnFacilities">Facilities</span>
+                    </button>
+                    <button onclick="switchMainSection('reviews')" id="navBtnReviews" class="py-2.5 px-1 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 transition flex flex-col items-center justify-center gap-0.5">
+                        <span>⭐</span> <span id="txtBtnReviews">Reviews</span>
+                    </button>
+                `;
+                switchMainSection('newRecord');
+            }
+        }
 
         async function fetchInitialData() {
             const { data } = await supabaseClient.from('laundry_slips').select('*');
@@ -451,6 +554,7 @@
         let latestRoomNum = '';
 
         async function checkIncomingLaundryRequests() {
+            if (userMode !== 'admin') return;
             try {
                 const { data } = await supabaseClient
                     .from('requests')
@@ -536,10 +640,13 @@
                 else btn.className = "px-2.5 py-1 rounded-full text-stone-600 hover:text-stone-900";
             });
 
-            document.getElementById('txtBtnNewRecord').innerText = t.txtBtnNewRecord;
-            document.getElementById('txtBtnLiveRecord').innerText = t.txtBtnLiveRecord;
-            document.getElementById('txtBtnPdfList').innerText = t.txtBtnPdfList;
-            document.getElementById('txtBtnDashboard').innerText = t.txtBtnDashboard;
+            if (document.getElementById('txtBtnNewRecord')) document.getElementById('txtBtnNewRecord').innerText = t.txtBtnNewRecord;
+            if (document.getElementById('txtBtnLiveRecord')) document.getElementById('txtBtnLiveRecord').innerText = t.txtBtnLiveRecord;
+            if (document.getElementById('txtBtnPdfList')) document.getElementById('txtBtnPdfList').innerText = t.txtBtnPdfList;
+            if (document.getElementById('txtBtnFacilities')) document.getElementById('txtBtnFacilities').innerText = t.txtBtnFacilities;
+            if (document.getElementById('txtBtnReviews')) document.getElementById('txtBtnReviews').innerText = t.txtBtnReviews;
+            if (document.getElementById('txtBtnDashboard')) document.getElementById('txtBtnDashboard').innerText = t.txtBtnDashboard;
+            
             document.getElementById('lblFormTitle').innerText = t.lblFormTitle;
             document.getElementById('lblRoomNum').innerText = t.lblRoomNum;
             document.getElementById('lblSelectedGarments').innerText = t.lblSelectedGarments;
@@ -548,30 +655,38 @@
             document.getElementById('lblGrandTotal').innerText = t.lblGrandTotal;
             document.getElementById('btnPhotoProof').innerText = t.btnPhotoProof;
             document.getElementById('btnSaveRecord').innerText = t.btnSaveRecord;
-            document.getElementById('lblArchiveTitle').innerText = t.lblArchiveTitle;
-            document.getElementById('lblAutoArchive').innerText = t.lblAutoArchive;
-            document.getElementById('lblSearchRoom').innerText = t.lblSearchRoom;
-            document.getElementById('lblSearchDate').innerText = t.lblSearchDate;
+            if (document.getElementById('lblArchiveTitle')) document.getElementById('lblArchiveTitle').innerText = t.lblArchiveTitle;
+            if (document.getElementById('lblAutoArchive')) document.getElementById('lblAutoArchive').innerText = t.lblAutoArchive;
+            if (document.getElementById('lblSearchRoom')) document.getElementById('lblSearchRoom').innerText = t.lblSearchRoom;
+            if (document.getElementById('lblSearchDate')) document.getElementById('lblSearchDate').innerText = t.lblSearchDate;
             document.getElementById('lblRoomError').innerText = t.lblRoomError;
 
             renderItems();
         }
 
         function switchMainSection(section) {
-            ['newRecord', 'liveRecord', 'pdfList', 'dashboard'].forEach(sec => {
-                document.getElementById(`section${sec.charAt(0).toUpperCase() + sec.slice(1)}`).classList.add('hidden');
+            const sections = ['newRecord', 'liveRecord', 'pdfList', 'facilities', 'reviews', 'dashboard'];
+            sections.forEach(sec => {
+                const el = document.getElementById(`section${sec.charAt(0).toUpperCase() + sec.slice(1)}`);
+                if (el) el.classList.add('hidden');
             });
-            ['newRecord', 'liveRecord', 'pdfList', 'dashboard'].forEach(sec => {
-                document.getElementById(`navBtn${sec.charAt(0).toUpperCase() + sec.slice(1)}`).className = "py-2.5 px-1 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 transition flex flex-col items-center justify-center gap-0.5 font-bold";
+            sections.forEach(sec => {
+                const btn = document.getElementById(`navBtn${sec.charAt(0).toUpperCase() + sec.slice(1)}`);
+                if (btn) btn.className = "py-2.5 px-1 rounded-2xl bg-stone-100 border border-stone-200 text-stone-700 transition flex flex-col items-center justify-center gap-0.5 font-bold";
             });
 
-            document.getElementById(`section${section.charAt(0).toUpperCase() + section.slice(1)}`).classList.remove('hidden');
-            document.getElementById(`navBtn${section.charAt(0).toUpperCase() + section.slice(1)}`).className = "py-2.5 px-1 rounded-2xl bg-remal-sand text-white shadow-md transition flex flex-col items-center justify-center gap-0.5 font-bold";
+            const activeSec = document.getElementById(`section${section.charAt(0).toUpperCase() + section.slice(1)}`);
+            const activeBtn = document.getElementById(`navBtn${section.charAt(0).toUpperCase() + section.slice(1)}`);
+            
+            if (activeSec) activeSec.classList.remove('hidden');
+            if (activeBtn) activeBtn.className = "py-2.5 px-1 rounded-2xl bg-remal-sand text-white shadow-md transition flex flex-col items-center justify-center gap-0.5 font-bold";
 
             if (section === 'liveRecord') {
                 chargerLiveOrders();
             } else if (section === 'pdfList') {
                 afficherListeBordereauxFromCloud();
+            } else if (section === 'reviews') {
+                chargerAvisClients();
             } else if (section === 'dashboard') {
                 renderManagementDashboard();
             }
@@ -689,11 +804,21 @@
                 alert(`Record for Room ${roomNum} updated successfully!`);
             } else {
                 await supabaseClient.from('laundry_slips').insert([payload]);
-                alert(`Record for Room ${roomNum} saved!`);
+                
+                // Envoi automatique dans requests pour déclencher l'alerte admin
+                let detailsStr = `👕 LAUNDRY TYPE: ${currentService.toUpperCase()}\n📦 Style: ${selectedOption}\n`;
+                Object.values(cart).forEach(i => { detailsStr += `- ${i.name} x${i.qty}\n`; });
+                await supabaseClient.from('requests').insert([{
+                    room: roomNum,
+                    service: 'Laundry Service',
+                    details: detailsStr,
+                    status: 'Pending'
+                }]);
+
+                alert(`Laundry request sent successfully from Room ${roomNum}!`);
             }
 
             reinitialiserFormulaire();
-            switchMainSection('liveRecord');
         }
 
         function reinitialiserFormulaire() {
@@ -706,6 +831,7 @@
         }
 
         async function chargerLiveOrders() {
+            if (userMode !== 'admin') return;
             const container = document.getElementById('liveOrdersList');
             const { data } = await supabaseClient.from('laundry_slips').select('*');
             
@@ -731,10 +857,12 @@
                 if (status === 'Delivered') statusBg = 'bg-emerald-100 text-emerald-800';
 
                 itemDiv.innerHTML = `
-                    <div class="flex justify-between items-center cursor-pointer" onclick="ouvrirModalDetails(${entry.id})">
-                        <div>
-                            <span class="font-serif-luxury font-bold text-stone-900 text-sm">Room ${entry.room}</span>
-                            <span class="ml-2 text-[10px] font-bold px-2 py-0.5 rounded-full ${isHotel ? 'bg-amber-100 text-amber-800' : 'bg-stone-200 text-stone-800'}">${isHotel ? 'Hotel' : 'Guest'}</span>
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center space-x-2">
+                            <button onclick="ouvrirModalDetails(${entry.id})" class="font-serif-luxury font-bold text-stone-900 text-base bg-amber-50 hover:bg-amber-100 text-amber-900 px-3 py-1 rounded-xl border border-amber-200 transition shadow-sm" title="Cliquer pour afficher le reçu flottant">
+                                Room ${entry.room} 🖨️
+                            </button>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${isHotel ? 'bg-amber-100 text-amber-800' : 'bg-stone-200 text-stone-800'}">${isHotel ? 'Hotel' : 'Guest'}</span>
                         </div>
                         <div class="text-right font-bold text-stone-900">
                             <span class="text-remal-sand font-serif-luxury text-sm">${entry.total.toFixed(2)} AED</span>
@@ -767,6 +895,7 @@
         }
 
         async function afficherListeBordereauxFromCloud() {
+            if (userMode !== 'admin') return;
             const container = document.getElementById('laundryList');
             const { data } = await supabaseClient.from('laundry_slips').select('*');
             
@@ -776,6 +905,7 @@
         }
 
         function filtrerListeCloud() {
+            if (userMode !== 'admin') return;
             const container = document.getElementById('laundryList');
             const searchRoomVal = document.getElementById('searchRoom').value.toLowerCase().trim();
             const searchDateVal = document.getElementById('searchDate').value;
@@ -798,18 +928,19 @@
             container.innerHTML = '';
             filtered.forEach(entry => {
                 const itemDiv = document.createElement('div');
-                itemDiv.className = 'p-3.5 bg-stone-50 rounded-2xl border border-stone-200 text-xs flex justify-between items-center cursor-pointer hover:bg-stone-100 transition'; 
-                itemDiv.onclick = () => ouvrirModalDetails(entry.id);
+                itemDiv.className = 'p-3.5 bg-stone-50 rounded-2xl border border-stone-200 text-xs flex justify-between items-center'; 
                 const isHotel = entry.count_type === 'hotel';
                 const styleOpt = entry.options?.service_style || 'F — Folding';
 
                 itemDiv.innerHTML = `
-                    <div>
-                        <span class="font-serif-luxury font-bold text-stone-900 text-sm">Room ${entry.room}</span>
-                        <span class="ml-2 text-[10px] font-bold px-2 py-0.5 rounded-full ${isHotel ? 'bg-amber-100 text-amber-800' : 'bg-stone-200 text-stone-800'}">${isHotel ? 'Hotel Count' : 'Guest Count'}</span>
-                        <div class="text-[10px] text-stone-500 font-semibold mt-0.5">Style: ${styleOpt} | Status: ${entry.status || 'Collected'}</div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="ouvrirModalDetails(${entry.id})" class="font-serif-luxury font-bold text-stone-900 text-sm bg-amber-50 hover:bg-amber-100 text-amber-900 px-3 py-1 rounded-xl border border-amber-200 transition shadow-sm" title="Cliquer pour afficher le reçu flottant">
+                            Room ${entry.room} 🖨️
+                        </button>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${isHotel ? 'bg-amber-100 text-amber-800' : 'bg-stone-200 text-stone-800'}">${isHotel ? 'Hotel' : 'Guest'}</span>
+                        <span class="text-[10px] text-stone-500 font-semibold ml-1">Style: ${styleOpt}</span>
                     </div>
-                    <div class="text-right font-bold text-stone-900">
+                    <div class="text-right font-bold text-stone-900 cursor-pointer" onclick="ouvrirModalDetails(${entry.id})">
                         <small class="text-stone-400 font-normal">(${entry.total_clothes} pcs)</small> <span class="text-remal-sand font-serif-luxury text-sm">${entry.total.toFixed(2)} AED</span> ${entry.photo ? '📸' : ''}
                     </div>
                 `;
@@ -817,7 +948,96 @@
             });
         }
 
+        async function soumettreAvisClient() {
+            const room = document.getElementById('reviewRoom').value.trim();
+            const rating = document.getElementById('reviewRating').value;
+            const comment = document.getElementById('reviewComment').value.trim();
+
+            if (!room || !comment) {
+                alert("Please enter your room number and comments.");
+                return;
+            }
+
+            const { error } = await supabaseClient.from('laundry_reviews').insert([{
+                room: room,
+                rating: parseInt(rating),
+                comment: comment
+            }]);
+
+            if (!error) {
+                alert("Thank you! Your laundry review has been submitted successfully.");
+                document.getElementById('reviewRoom').value = '';
+                document.getElementById('reviewComment').value = '';
+                chargerAvisClients();
+            } else {
+                alert("Error submitting review. Please try again.");
+            }
+        }
+
+        async function chargerAvisClients() {
+            const container = document.getElementById('reviewsListContainer');
+            const { data } = await supabaseClient.from('laundry_reviews').select('*').order('created_at', { ascending: false });
+
+            if (!data || data.length === 0) {
+                container.innerHTML = `<p class="text-xs text-stone-400 text-center py-4">No reviews submitted yet.</p>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            data.forEach(rev => {
+                const stars = '⭐'.repeat(rev.rating || 5);
+                const dateStr = new Date(rev.created_at).toLocaleDateString('en-GB');
+                const div = document.createElement('div');
+                div.className = 'p-3 bg-stone-50 rounded-xl border border-stone-200 text-xs space-y-1';
+                div.innerHTML = `
+                    <div class="flex justify-between items-center font-bold text-stone-900">
+                        <span>Room ${rev.room}</span>
+                        <span class="text-[10px] text-stone-400">${dateStr}</span>
+                    </div>
+                    <div class="text-amber-500 text-[11px]">${stars}</div>
+                    <p class="text-stone-700 italic">"${rev.comment}"</p>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        async function modifierNumeroChambreDepuisModal(nouveauNumero) {
+            if (!selectedIdForModal) return;
+            const cleanRoom = nouveauNumero.trim();
+            if (!cleanRoom) {
+                alert("Le numéro de chambre ne peut pas être vide.");
+                return;
+            }
+            const { error } = await supabaseClient.from('laundry_slips').update({ room: cleanRoom }).eq('id', selectedIdForModal);
+            if (!error) {
+                await fetchInitialData();
+                const entry = cachedSlips.find(e => e.id === selectedIdForModal);
+                if (entry) {
+                    document.getElementById('modalRoomInput').value = entry.room;
+                }
+                alert(`Numéro de chambre mis à jour avec succès : ${cleanRoom}`);
+            } else {
+                alert("Erreur lors de la mise à jour du numéro de chambre.");
+            }
+        }
+
+        async function reinitialiserTouteLaListe() {
+            if (userMode !== 'admin') return;
+            if (confirm("⚠️ ATTENTION : Voulez-vous vraiment supprimer et réinitialiser TOUS les bordereaux de la liste ? Cette action est irréversible.")) {
+                if (confirm("Dernière confirmation pour vider toute la base de données Laundry Slips ?")) {
+                    const { error } = await supabaseClient.from('laundry_slips').delete().neq('id', 0);
+                    if (!error) {
+                        alert("La liste a été entièrement réinitialisée.");
+                        await afficherListeBordereauxFromCloud();
+                    } else {
+                        alert("Erreur lors de la réinitialisation.");
+                    }
+                }
+            }
+        }
+
         async function renderManagementDashboard() {
+            if (userMode !== 'admin') return;
             const { data } = await supabaseClient.from('laundry_slips').select('*');
             cachedSlips = data || [];
 
@@ -895,12 +1115,13 @@
         }
 
         function ouvrirModalDetails(id) {
+            if (userMode !== 'admin') return;
             selectedIdForModal = id;
             const entry = cachedSlips.find(e => e.id === id);
             if (!entry) return;
 
             const isHotel = entry.count_type === 'hotel';
-            document.getElementById('modalRoomNumDisplay').innerText = entry.room;
+            document.getElementById('modalRoomInput').value = entry.room;
             document.getElementById('modalDate').innerText = `Date: ${new Date(entry.created_at).toLocaleDateString('fr-FR')}`;
             document.getElementById('modalTypeBadgeInline').innerText = isHotel ? 'Hotel Count (Free)' : 'Guest Count';
             document.getElementById('modalPackagingStyle').innerText = entry.options?.service_style || 'F — Folding';
@@ -921,13 +1142,14 @@
             const pContainer = document.getElementById('modalPhotoContainer');
             pContainer.innerHTML = entry.photo ? `<p class="font-bold text-xs mt-2">Proof Photo:</p><img src="${entry.photo}" class="w-full rounded-2xl border border-stone-200 mt-1">` : '';
 
-            const whatsappMsg = encodeURIComponent(`*REMAL HOTEL - LAUNDRY SLIP*\n*Room:* ${entry.room}\n*Status:* ${entry.status || 'Collected'}\n*Total Garments:* ${entry.total_clothes} pcs\n*Grand Total:* ${entry.total.toFixed(2)} AED`);
+            const whatsappMsg = encodeURIComponent(`*REMAL HOTEL - LAUNDRY SERVICE SLIP*\n*Room:* ${entry.room}\n*Status:* ${entry.status || 'Collected'}\n*Total Garments:* ${entry.total_clothes} pcs\n*Grand Total:* ${entry.total.toFixed(2)} AED`);
             document.getElementById('btnWhatsappShare').href = `https://wa.me/?text=${whatsappMsg}`;
 
             document.getElementById('detailModal').classList.remove('hidden');
         }
 
         function editerBordereauActuel() {
+            if (userMode !== 'admin') return;
             if (!selectedIdForModal) return;
             const entry = cachedSlips.find(e => e.id === selectedIdForModal);
             if (!entry) return;
@@ -949,10 +1171,10 @@
 
         function genererPDF() {
             const element = document.getElementById('pdfExportArea');
-            const roomVal = document.getElementById('modalRoomNumDisplay').innerText;
+            const roomVal = document.getElementById('modalRoomInput').value;
             const opt = {
                 margin:       8,
-                filename:     `Laundry_Slip_Room_${roomVal}.pdf`,
+                filename:     `Laundry_Service_Room_${roomVal}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -963,6 +1185,7 @@
         function fermerModal() { document.getElementById('detailModal').classList.add('hidden'); selectedIdForModal = null; }
 
         async function supprimerBordereauActuel() {
+            if (userMode !== 'admin') return;
             if (!selectedIdForModal) return;
             if (confirm(`Delete this record?`)) {
                 await supabaseClient.from('laundry_slips').delete().eq('id', selectedIdForModal);
