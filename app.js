@@ -216,7 +216,7 @@ const i18n = {
     swipePhotos: "👈 Swipe or click arrows for photos 👉", bookInquiry: "Book / Inquiry →",
     faqHeaderTitle: "💡 Intelligent Assistant & FAQ", faqHeaderSub: "Instant answers to common hotel questions",
     folioTitle: "📄 My Room Folio & Charges", btnPrtFolio: "🖨️ Print Folio", folioPlaceholder: "Enter your room number above to view your live billing summary.",
-    feedbackTitle: "⭐ Stay Feedback & Experience Rating", feedbackSub: "Share your thoughts to help us improve our services", ratingText: "Rating:", btnSubmitReview: "Submit Review",
+    feedbackTitle: "⭐ Stay Experience Rating", feedbackSub: "Share your thoughts to help us improve our services", ratingText: "Rating:", btnSubmitReview: "Submit Review",
     favTitle: "⭐ My Favorites & Recent Orders", favBadge: "Quick Access", favEmpty: "No starred favorite dishes yet.",
     menuHeader: "🍽️ Select Menu Items", menuBadge: "In-Room Dining", totalAmt: "Total Amount:", delivTime: "Preferred Delivery Time",
     bookingTitle: "Table / Spa Reservation Details", lblVenue: "Venue / Service", lblGuests: "Guests Count", lblBDate: "Reservation Date", lblBTime: "Preferred Time",
@@ -276,7 +276,7 @@ const i18n = {
     folioTitle: "📄 मेरा कमरा फोलियो और शुल्क", btnPrtFolio: "🖨️ फोलियो प्रिंट करें", folioPlaceholder: "अपना लाइव बिलिंग सारांश देखने के लिए ऊपर अपना कमरा नंबर दर्ज करें।",
     feedbackTitle: "⭐ ठहरने की प्रतिक्रिया और रेटिंग", feedbackSub: "अपनी सेवाएं सुधारने में हमारी मदद करें", ratingText: "रेटिंग:", btnSubmitReview: "समीक्षा जमा करें",
     favTitle: "⭐ मेरे पसंदीदा और हाल के ऑर्डर", favBadge: "त्वरित पहुंच", favEmpty: "अभी तक कोई पसंदीदा व्यंजन नहीं है।",
-    menuHeader: "🍽️ मेनू आइटम चुनें", menuBadge: "इन-रूम डाइनिंग", totalAmt: "कुल राशि:", delivTime: "पसंदीदा डिलीवरी का समय",
+    menuHeader: "🍽️ मेनू आइटम चुनें", menuBadge: "इन-ルーム डाइनिंग", totalAmt: "कुल राशि:", delivTime: "पसंदीदा डिलीवरी का समय",
     bookingTitle: "टेबल / स्पा बुकिंग विवरण", lblVenue: "स्थान / सेवा", lblGuests: "मेहमानों की संख्या", lblBDate: "बुकिंग की तारीख", lblBTime: "पसंदीदा समय",
     wakeupTitle: "वेक-अप कॉल शेड्यूलर", wakeupLabel: "अलार्म का समय चुनें",
     lateTitle: "देर से चेक-आउट अनुरोध", lateLabel: "अनुरोधित प्रस्थान समय",
@@ -425,15 +425,11 @@ function setupRealtimeSubscriptions() {
   supabaseClient
     .channel('public-db-changes-instant')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'requests' }, payload => {
-      if (payload.eventType === 'INSERT') {
-        cachedRequests.unshift(payload.new);
-      } else if (payload.eventType === 'UPDATE') {
-        const index = cachedRequests.findIndex(r => r.id === payload.new.id);
-        if (index !== -1) cachedRequests[index] = payload.new;
-      } else if (payload.eventType === 'DELETE') {
-        cachedRequests = cachedRequests.filter(r => r.id !== payload.old.id);
-      }
-      updateRequestsUIState();
+      fetchRequestsFromCloud();
+    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'laundry_orders' }, payload => {
+      fetchRequestsFromCloud();
+      if (typeof fetchLaundryOrdersFromCloud === 'function') fetchLaundryOrdersFromCloud();
     })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'offers' }, payload => {
       fetchOffersFromCloud();
@@ -446,9 +442,6 @@ function setupRealtimeSubscriptions() {
     })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'announcements' }, payload => {
       fetchAnnouncementFromCloud();
-    })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'laundry_orders' }, payload => {
-      if (typeof fetchLaundryOrdersFromCloud === 'function') fetchLaundryOrdersFromCloud();
     })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'laundry_slips' }, payload => {
       if (typeof fetchLaundrySlipsFromCloud === 'function') fetchLaundrySlipsFromCloud();
@@ -965,14 +958,31 @@ async function fetchOffersFromCloud() {
 }
 
 async function fetchRequestsFromCloud() {
-  const { data, error } = await supabaseClient
+  const { data: generalData, error: generalError } = await supabaseClient
     .from('requests')
     .select('id, room, service, status, details')
     .order('id', { ascending: false })
     .limit(30);
     
-  if (error) return;
-  cachedRequests = data || [];
+  if (generalError) console.error("Erreur requests:", generalError);
+
+  const { data: laundryData, error: laundryError } = await supabaseClient
+    .from('laundry_orders')
+    .select('id, room, status, items, notes, created_at')
+    .order('id', { ascending: false })
+    .limit(30);
+
+  if (laundryError) console.error("Erreur laundry_orders:", laundryError);
+
+  const formattedLaundry = (laundryData || []).map(order => ({
+    id: 'laundry-' + order.id,
+    room: order.room,
+    service: 'Laundry',
+    status: order.status || 'Pending',
+    details: `🧺 LAUNDRY ORDER\nItems: ${JSON.stringify(order.items || {})}\n📝 Notes: ${order.notes || 'None'}`
+  }));
+
+  cachedRequests = [...(generalData || []), ...formattedLaundry];
   updateRequestsUIState();
 }
 
@@ -1129,13 +1139,13 @@ function renderAdminRequests() {
       </div>
       <div class="flex justify-between items-center pt-3 border-t border-stone-200 text-xs">
         <div class="space-x-1.5">
-          <button onclick="updateRequestStatus(${req.id}, 'Pending')" class="px-3 py-1.5 bg-amber-100 text-amber-800 hover:bg-amber-200 rounded-lg font-bold transition">Pending</button>
-          <button onclick="updateRequestStatus(${req.id}, 'In Progress')" class="px-3 py-1.5 bg-blue-100 text-blue-800 hover:bg-blue-200 rounded-lg font-bold transition">In Progress</button>
-          <button onclick="updateRequestStatus(${req.id}, 'Completed')" class="px-3 py-1.5 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 rounded-lg font-bold transition">Completed</button>
+          <button onclick="updateRequestStatus('${req.id}', 'Pending')" class="px-3 py-1.5 bg-amber-100 text-amber-800 hover:bg-amber-200 rounded-lg font-bold transition">Pending</button>
+          <button onclick="updateRequestStatus('${req.id}', 'In Progress')" class="px-3 py-1.5 bg-blue-100 text-blue-800 hover:bg-blue-200 rounded-lg font-bold transition">In Progress</button>
+          <button onclick="updateRequestStatus('${req.id}', 'Completed')" class="px-3 py-1.5 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 rounded-lg font-bold transition">Completed</button>
         </div>
         <div class="flex items-center space-x-2">
-          <button onclick="printRequestTicket(${req.id})" class="bg-stone-900 hover:bg-stone-800 text-white px-3.5 py-2 rounded-xl font-bold shadow transition">🖨️ Print Ticket</button>
-          <button onclick="deleteRequest(${req.id})" class="text-rose-600 font-bold p-2 hover:bg-rose-50 rounded-xl transition">🗑️</button>
+          <button onclick="printRequestTicket('${req.id}')" class="bg-stone-900 hover:bg-stone-800 text-white px-3.5 py-2 rounded-xl font-bold shadow transition">🖨️ Print Ticket</button>
+          <button onclick="deleteRequest('${req.id}')" class="text-rose-600 font-bold p-2 hover:bg-rose-50 rounded-xl transition">🗑️</button>
         </div>
       </div>
     </div>
@@ -1143,7 +1153,7 @@ function renderAdminRequests() {
 }
 
 function printRequestTicket(reqId) {
-  const req = cachedRequests.find(r => r.id === reqId);
+  const req = cachedRequests.find(r => String(r.id) === String(reqId));
   if (!req) return;
 
   let statusBg = '#E2B383';
@@ -1392,33 +1402,41 @@ async function submitGuestRequest() {
 }
 
 async function updateRequestStatus(id, newStatus) {
-  const req = cachedRequests.find(r => r.id === id);
+  const strId = String(id);
+  const req = cachedRequests.find(r => String(r.id) === strId);
   if (req) {
     req.status = newStatus;
   }
   updateRequestsUIState();
 
-  const { error } = await supabaseClient.from('requests').update({ status: newStatus }).eq('id', id);
-  
-  if (error) {
-    console.error("Erreur lors de la mise à jour du statut :", error);
-  } else {
-    await fetchRequestsFromCloud();
+  if (strId.startsWith('laundry-')) {
+    const realLaundryId = strId.replace('laundry-', '');
+    const { error } = await supabaseClient.from('laundry_orders').update({ status: newStatus }).eq('id', realLaundryId);
+    if (error) console.error("Erreur mise à jour laundry_orders:", error);
+  } else if (!strId.startsWith('temp-')) {
+    const { error } = await supabaseClient.from('requests').update({ status: newStatus }).eq('id', id);
+    if (error) console.error("Erreur mise à jour requests:", error);
   }
+  
+  await fetchRequestsFromCloud();
 }
 
 async function deleteRequest(id) { 
   if (confirm('Voulez-vous vraiment supprimer cette demande ?')) { 
-    cachedRequests = cachedRequests.filter(r => r.id !== id);
+    const strId = String(id);
+    cachedRequests = cachedRequests.filter(r => String(r.id) !== strId);
     updateRequestsUIState();
 
-    const { error } = await supabaseClient.from('requests').delete().eq('id', id);
-    
-    if (error) {
-      console.error("Erreur lors de la suppression :", error);
-    } else {
-      await fetchRequestsFromCloud();
+    if (strId.startsWith('laundry-')) {
+      const realLaundryId = strId.replace('laundry-', '');
+      const { error } = await supabaseClient.from('laundry_orders').delete().eq('id', realLaundryId);
+      if (error) console.error("Erreur suppression laundry_orders:", error);
+    } else if (!strId.startsWith('temp-')) {
+      const { error } = await supabaseClient.from('requests').delete().eq('id', id);
+      if (error) console.error("Erreur suppression requests:", error);
     }
+    
+    await fetchRequestsFromCloud();
   } 
 }
 
