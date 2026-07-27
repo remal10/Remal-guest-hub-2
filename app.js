@@ -1333,7 +1333,7 @@ async function submitGuestRequest() {
   let details = document.getElementById('req_details').value;
 
   if (!room || !validateRoomNumber(room)) {
-    alert("❌ Erreur : Veuillez entrer عun numéro de chambre أو de villa valide.");
+    alert("❌ Erreur : Veuillez entrer un numéro de chambre ou de villa valide.");
     document.getElementById('req_room').focus();
     return;
   }
@@ -1382,17 +1382,32 @@ async function submitGuestRequest() {
 
 async function updateRequestStatus(id, newStatus) {
   const req = cachedRequests.find(r => r.id === id);
-  if (req) req.status = newStatus;
+  if (req) {
+    req.status = newStatus;
+  }
   updateRequestsUIState();
 
-  await supabaseClient.from('requests').update({ status: newStatus }).eq('id', id);
+  const { error } = await supabaseClient.from('requests').update({ status: newStatus }).eq('id', id);
+  
+  if (error) {
+    console.error("Erreur lors de la mise à jour du statut :", error);
+  } else {
+    await fetchRequestsFromCloud();
+  }
 }
 
 async function deleteRequest(id) { 
-  if (confirm('Delete?')) { 
+  if (confirm('Voulez-vous vraiment supprimer cette demande ?')) { 
     cachedRequests = cachedRequests.filter(r => r.id !== id);
     updateRequestsUIState();
-    await supabaseClient.from('requests').delete().eq('id', id); 
+
+    const { error } = await supabaseClient.from('requests').delete().eq('id', id);
+    
+    if (error) {
+      console.error("Erreur lors de la suppression :", error);
+    } else {
+      await fetchRequestsFromCloud();
+    }
   } 
 }
 
@@ -1503,7 +1518,7 @@ function setLang(lang) {
   document.getElementById('lblWakeupTitle').innerText = t.wakeupTitle;
   document.getElementById('lblWakeupLabel').innerText = t.wakeupLabel;
   document.getElementById('lblLateTitle').innerText = t.lateTitle;
-  document.getElementById('lblLateLabel').innerText = t.lateLabel;
+  document.getElementById('lblLateLabel').innerText = t.lblLateLabel;
 
   const selectService = document.getElementById('req_service');
   selectService.innerHTML = t.services.map(s => `<option value="${s.val}">${s.text}</option>`).join('');
