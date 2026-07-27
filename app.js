@@ -961,11 +961,12 @@ async function fetchRequestsFromCloud() {
 
   cachedRequests = generalData || [];
   updateRequestsUIState();
-  renderLiveLaundryOrders(cachedRequests.filter(r => r.service === 'Laundry'));
+  
+  // Correction ici : détection insensible à la casse et élargie pour "laundry"
+  renderLiveLaundryOrders(cachedRequests.filter(r => r.service && r.service.toLowerCase().includes('laundry')));
 }
 
 function renderLiveLaundryOrders(laundryData) {
-  // Recherche universelle et robuste du conteneur de blanchisserie
   let container = document.getElementById('liveLaundryOrdersContainer') || document.getElementById('adminLaundryContainer');
   
   if (!container) {
