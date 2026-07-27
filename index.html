@@ -22,7 +22,6 @@
     }
     .pulse-notification { animation: pulse-red 1.5s infinite; }
 
-    /* CORRECTION IMPRESSION : FORMAT A4 DYNAMIQUE */
     @media print {
       body * {
         visibility: hidden !important;
@@ -47,7 +46,6 @@
 </head>
 <body class="min-h-screen pb-20">
 
-  <!-- ZONE CACHÉE POUR IMPRESSION / PDF -->
   <div id="printTicketSection" class="hidden"></div>
   <div id="printFolioSection" class="hidden"></div>
   <div id="printDailyReportSection" class="hidden"></div>
@@ -88,7 +86,6 @@
         <p class="text-[10px] text-stone-200 uppercase tracking-widest font-semibold drop-shadow" id="roomIndicator">Al Dhannah City • Guest Hub</p>
       </div>
 
-      <!-- ONGLETS DE NAVIGATION -->
       <div class="flex bg-black/40 backdrop-blur-md p-1.5 rounded-2xl text-[11px] font-medium border border-white/25 overflow-x-auto scrollbar-none">
         <button onclick="switchGuestTab('request')" id="tabRequestBtn" class="flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap">🔔 <span id="lblTabRequest">Service</span></button>
         <button onclick="switchGuestTab('offers')" id="tabOffersBtn" class="flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap">🏷️ <span id="lblTabOffers">Offers</span></button>
@@ -128,7 +125,6 @@
 
     <!-- SECTION DEMANDES & ROOM SERVICE -->
     <div id="guestRequestSection" class="space-y-6">
-      
       <div class="remal-card p-6 rounded-3xl space-y-5">
         <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-3" id="reqHeader">Request Guest Service</h2>
         <form id="guestRequestForm" class="space-y-4">
@@ -142,7 +138,6 @@
             <select id="req_service" onchange="toggleServiceDynamicFields()" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 outline-none"></select>
           </div>
 
-          <!-- MODULE RÉSERVATION -->
           <div id="bookingBlock" class="hidden space-y-3 bg-emerald-50/60 p-4 rounded-2xl border border-emerald-200">
             <div class="flex items-center space-x-2 text-emerald-900 font-bold text-xs">
               <span>📅</span><span id="lblBookingTitle">Table / Spa Reservation Details</span>
@@ -180,7 +175,6 @@
             </div>
           </div>
 
-          <!-- MODULE WAKE-UP -->
           <div id="wakeupCallBlock" class="hidden space-y-3 bg-blue-50/60 p-4 rounded-2xl border border-blue-200">
             <div class="flex items-center space-x-2 text-blue-900 font-bold text-xs">
               <span>⏰</span><span id="lblWakeupTitle">Wake-Up Call Scheduler</span>
@@ -191,7 +185,6 @@
             </div>
           </div>
 
-          <!-- MODULE LATE CHECK-OUT -->
           <div id="lateCheckoutBlock" class="hidden space-y-3 bg-amber-50/60 p-4 rounded-2xl border border-amber-200">
             <div class="flex items-center space-x-2 text-amber-900 font-bold text-xs">
               <span>⏱️</span><span id="lblLateTitle">Late Check-Out Request</span>
@@ -207,7 +200,6 @@
             </div>
           </div>
 
-          <!-- MODULE ROOM SERVICE -->
           <div id="roomServiceMenuBlock" class="hidden space-y-4 bg-stone-50 p-4 rounded-2xl border border-stone-200">
             <div class="flex justify-between items-center border-b border-stone-200 pb-2">
               <span class="text-xs font-bold text-stone-800" id="lblMenuHeader">🍽️ Select Menu Items</span>
@@ -250,7 +242,6 @@
         </div>
       </div>
 
-      <!-- TRACK ACTIVE REQUESTS -->
       <div class="remal-card p-6 rounded-3xl space-y-4">
         <div class="flex justify-between items-center border-b border-stone-100 pb-3">
           <h3 class="text-sm font-serif-luxury font-bold text-stone-900" id="lblTrackHeader">📡 Track Active Requests</h3>
@@ -259,7 +250,6 @@
         <div id="clientTrackerContainer" class="space-y-3"><p class="text-center text-xs text-stone-400 py-3" id="lblTrackEmpty">Enter your room number above to track active requests in real time.</p></div>
       </div>
 
-      <!-- ROOM FOLIO & BILLING -->
       <div class="remal-card p-5 rounded-3xl space-y-3 bg-gradient-to-br from-amber-50/50 to-white">
         <div class="flex justify-between items-center border-b border-stone-100 pb-2">
           <span class="text-xs font-serif-luxury font-bold text-stone-900" id="lblFolioTitle">📄 My Room Folio & Charges</span>
@@ -270,7 +260,6 @@
         </div>
       </div>
 
-      <!-- MODULE FEEDBACK -->
       <div class="remal-card p-5 rounded-3xl space-y-3 bg-gradient-to-br from-emerald-50/40 to-white">
         <div class="border-b border-stone-100 pb-2">
           <span class="text-xs font-serif-luxury font-bold text-stone-900" id="lblFeedbackTitle">⭐ Stay Feedback & Experience Rating</span>
@@ -294,7 +283,6 @@
         </form>
       </div>
 
-      <!-- FAVORIS ET HISTORIQUE -->
       <div id="guestHistoryBlock" class="remal-card p-5 rounded-3xl space-y-3">
         <div class="flex justify-between items-center border-b border-stone-100 pb-2">
           <span class="text-xs font-serif-luxury font-bold text-stone-900" id="lblFavTitle">⭐ My Favorites & Recent Orders</span>
@@ -307,14 +295,12 @@
     </div>
   </div>
 
-  <!-- BOUTON WHATSAPP -->
   <div id="whatsappContainer" class="fixed bottom-5 right-5 z-50">
     <a href="https://wa.me/971526966865?text=Hello%2C%20I%20am%20contacting%20from%20Remal%20Hotel%20Guest%20Hub." target="_blank" class="flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 rounded-full shadow-2xl transition transform hover:scale-105 border border-emerald-500 font-semibold text-xs">
       <span class="text-lg">💬</span><span id="whatsappText">WhatsApp Reception</span>
     </a>
   </div>
 
-  <!-- MODAL AUTH ADMIN -->
   <div id="authModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-5 border border-stone-100">
       <div class="text-center space-y-1">
@@ -438,6 +424,19 @@
     <!-- ADMIN DEMANDES -->
     <div id="adminRequestsPanel" class="hidden space-y-6">
       <div class="bg-white rounded-3xl p-8 shadow-sm border border-stone-200 space-y-6">
+        
+        <!-- BANNIÈRE D'ALERTE ROUGE STRICTEMENT DANS LA SECTION LAUNDRY / PLANT -->
+        <div id="laundryAlertBanner" class="hidden bg-rose-600 text-white p-4 rounded-2xl flex justify-between items-center shadow-lg pulse-notification">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🚨</span>
+            <div>
+              <p class="font-bold text-sm">Nouvelle demande Laundry reçue !</p>
+              <p class="text-xs text-rose-100">Une requête de blanchisserie nécessite l'attention immédiate de l'usine/réception.</p>
+            </div>
+          </div>
+          <button onclick="document.getElementById('laundryAlertBanner').classList.add('hidden')" class="bg-white text-rose-700 px-3 py-1 rounded-xl text-xs font-bold">Fermer</button>
+        </div>
+
         <div class="flex justify-between items-center border-b border-stone-100 pb-4">
           <div>
             <h2 class="text-xl font-serif-luxury font-bold text-stone-900">Live Service Requests</h2>
@@ -697,7 +696,7 @@
       },
       { 
         id: 'villas', 
-        images: ['villa.jpg', 'villa-1.jpg', 'Villa1.jpg', 'Villa2.jpg', 'Villa3.jpg', 'villa4.jpg', 'Villa5.jpg', 'villa2.jpg', 'villa3.jpg'], 
+        images: ['villa.jpg', 'villa-1.jpg', 'Villa1.jpg', 'Villa2.jpg', 'Villa3.jpg', 'villa4.jpg', 'villa5.jpg', 'villa2.jpg', 'villa3.jpg'], 
         title: { en: 'Luxury Hotel Villas', ar: 'الڤلل الفاخرة', hi: 'लक्जरी विला' }, 
         desc: { en: 'Private luxury villas offering supreme comfort, spacious living, and exclusive amenities.', ar: 'ڤلل فاخرة خاصة توفر أعلى مستويات الراحة والمساحات الواسعة.', hi: 'उत्कृष्ट आराम और विशाल रहने की जगह प्रदान करने वाले निजी लक्जरी विला।' }, 
         timing: { en: '24/7 Private Stay', ar: 'إقامة خاصة على مدار الساعة', hi: '24 घंटे निजी प्रवास' } 
@@ -1308,6 +1307,12 @@
       
       if (pendingRequests.length > previousPendingCount) {
         playNotificationSound();
+        // VÉRIFICATION STRICTE : Affichage de la bannière rouge UNIQUEMENT pour Laundry dans la section Live Requests / Plant
+        const hasNewLaundry = pendingRequests.some(r => r.service && r.service.toLowerCase().includes('laundry'));
+        if (hasNewLaundry) {
+          const laundryBanner = document.getElementById('laundryAlertBanner');
+          if (laundryBanner) laundryBanner.classList.remove('hidden');
+        }
       }
       previousPendingCount = pendingRequests.length;
 
