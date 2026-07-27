@@ -332,6 +332,10 @@
           🔔 <span id="admTabReqLbl">Live Requests</span>
           <span id="requestBadge" class="hidden absolute -top-1 -right-1 bg-rose-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full pulse-notification">0</span>
         </button>
+        <button onclick="switchAdminTab('falaj')" id="admTabFalaj" class="px-5 py-3 rounded-xl bg-stone-100 text-stone-700 hover:bg-stone-200 relative whitespace-nowrap transition">
+          🍽️ <span id="admTabFalajLbl">Falaj Kitchen</span>
+          <span id="falajBadge" class="hidden absolute -top-1 -right-1 bg-amber-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full">0</span>
+        </button>
         <button onclick="switchAdminTab('laundry')" id="admTabLaundry" class="px-5 py-3 rounded-xl bg-stone-100 text-stone-700 hover:bg-stone-200 relative whitespace-nowrap transition">
           🧺 <span id="admTabLaundryLbl">Laundry Plant</span>
           <span id="laundryBadge" class="hidden absolute -top-1 -right-1 bg-indigo-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full">0</span>
@@ -444,6 +448,32 @@
           </div>
         </div>
         <div id="adminRequestsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 max-h-[750px] overflow-y-auto pr-2"></div>
+      </div>
+    </div>
+
+    <!-- ADMIN FALAJ KITCHEN (DÉDIÉ RESTAURANT / ROOM SERVICE) -->
+    <div id="adminFalajPanel" class="hidden space-y-6">
+      <div class="bg-white rounded-3xl p-8 shadow-sm border border-stone-200 space-y-6">
+        <div id="falajAlertBanner" class="hidden bg-amber-600 text-white p-4 rounded-2xl flex justify-between items-center shadow-lg pulse-notification">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🚨</span>
+            <div>
+              <p id="falajAlertTitle" class="font-bold text-sm">Nouvelle commande Room Service reçue !</p>
+              <p id="falajAlertSub" class="text-xs text-amber-100">Une commande de nourriture nécessite l'attention immédiate de la cuisine Falaj.</p>
+            </div>
+          </div>
+          <button onclick="document.getElementById('falajAlertBanner').classList.add('hidden')" id="falajAlertClose" class="bg-white text-amber-700 px-3 py-1 rounded-xl text-xs font-bold">Fermer</button>
+        </div>
+
+        <div class="flex justify-between items-center border-b border-stone-100 pb-4">
+          <div>
+            <h2 id="falajMgmtTitle" class="text-xl font-serif-luxury font-bold text-stone-900">🍽️ Falaj Kitchen & Room Service Management</h2>
+            <p id="falajMgmtSub" class="text-xs text-stone-500">Gérez la préparation des repas (New ➔ Preparing ➔ Out for Delivery ➔ Completed)</p>
+          </div>
+          <button onclick="fetchRequestsFromCloud()" id="falajRefreshBtn" class="text-xs bg-stone-100 text-stone-700 hover:bg-stone-200 px-4 py-2.5 rounded-xl font-semibold border border-stone-200 transition">🔄 Actualiser</button>
+        </div>
+
+        <div id="adminFalajContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[750px] overflow-y-auto pr-2"></div>
       </div>
     </div>
 
@@ -632,11 +662,13 @@
         wakeupTitle: "Wake-Up Call Scheduler", wakeupLabel: "Select Alarm Time",
         lateTitle: "Late Check-Out Request", lateLabel: "Requested Departure Time",
         staffPanel: "⚙️ Staff Panel", clientViewBtn: "📱 Client View", logoutStaff: "🚪 Logout Staff",
-        admOffers: "Content & Menu", admReq: "Live Requests", admLaundry: "Laundry Plant", admFb: "Guest Reviews", admAna: "Analytics & Performance", admBan: "Announcement",
+        admOffers: "Content & Menu", admReq: "Live Requests", admFalaj: "Falaj Kitchen", admLaundry: "Laundry Plant", admFb: "Guest Reviews", admAna: "Analytics & Performance", admBan: "Announcement",
         subOffers: "Promotions & Events", subMenu: "Room Service Menu Editor",
         newOffer: "New Cloud Offer", categoryLbl: "Category", priceLbl: "Price / Rate (e.g., AED 75)", imgLbl: "Offer Image", pubOfferBtn: "Publish Offer", actOffers: "Active Offers",
         newDish: "Add New Menu Dish", addDishBtn: "➕ Add Dish", liveMenu: "Live Menu Items",
         liveReqTitle: "Live Service Requests", liveReqSub: "Real-time room service and guest requests stream", dailyRepBtn: "🖨️ Daily Report & PDF", refreshBtn: "🔄 Refresh Stream",
+        falajAlertTitle: "Nouvelle commande Room Service reçue !", falajAlertSub: "Une commande de nourriture nécessite l'attention immédiate de la cuisine Falaj.", falajAlertClose: "Fermer",
+        falajMgmtTitle: "🍽️ Falaj Kitchen & Room Service Management", falajMgmtSub: "Gérez la préparation des repas (New ➔ Preparing ➔ Out for Delivery ➔ Completed)", falajRefreshBtn: "🔄 Actualiser",
         laundryAlertTitle: "Nouvelle demande Laundry reçue !", laundryAlertSub: "Une requête de blanchisserie nécessite l'attention immédiate de l'usine.", laundryAlertClose: "Fermer",
         laundryMgmtTitle: "🧺 Laundry Plant Management", laundryMgmtSub: "Gérez le cycle de vie du linge (Collected ➔ Washing ➔ Ready ➔ Delivered)", laundryRefreshBtn: "🔄 Actualiser",
         admFbTitle: "Guest Feedback & Ratings",
@@ -673,11 +705,13 @@
         wakeupTitle: "جدولة خدمة الإيقاظ", wakeupLabel: "اختر وقت التنبيه",
         lateTitle: "طلب مغادرة متأخرة", lateLabel: "وقت المغادرة المطلوب",
         staffPanel: "⚙️ لوحة التحكم", clientViewBtn: "📱 عرض النزيل", logoutStaff: "🚪 تسجيل خروج الموظف",
-        admOffers: "المحتوى والقائمة", admReq: "الطلبات الحالية", admLaundry: "قسم الغسيل (Laundry)", admFb: "تقييمات النزلاء", admAna: "الإحصائيات والأداء", admBan: "الإعلانات",
+        admOffers: "المحتوى والقائمة", admReq: "الطلبات الحالية", admFalaj: "مطبخ الفلج (Falaj Kitchen)", admLaundry: "قسم الغسيل (Laundry)", admFb: "تقييمات النزلاء", admAna: "الإحصائيات والأداء", admBan: "الإعلانات",
         subOffers: "العروض والفعاليات", subMenu: "محرر قائمة خدمة الغرف",
         newOffer: "عرض جديد للسحابة", categoryLbl: "الفئة", priceLbl: "السعر / السعر (مثال: 75 درهم)", imgLbl: "صورة العرض", pubOfferBtn: "نشر العرض", actOffers: "العروض النشطة",
         newDish: "إضافة طبق جديد للقائمة", addDishBtn: "➕ إضافة الطبق", liveMenu: "أصناف القائمة الحالية",
         liveReqTitle: "طلبات الخدمة الحالية", liveReqSub: "بث مباشر لطلبات خدمة الغرف والنزلاء", dailyRepBtn: "🖨️ التقرير اليومي وبي دي إف", refreshBtn: "🔄 تحديث البث",
+        falajAlertTitle: "Nouvelle commande Room Service reçue !", falajAlertSub: "Une commande de nourriture nécessite l'attention immédiate de la cuisine Falaj.", falajAlertClose: "Fermer",
+        falajMgmtTitle: "🍽️ إدارة مطبخ الفلج (Falaj Kitchen)", falajMgmtSub: "إدارة إعداد الطعام (New ➔ Preparing ➔ Out for Delivery ➔ Completed)", falajRefreshBtn: "🔄 تحديث",
         laundryAlertTitle: "Nouvelle demande Laundry reçue !", laundryAlertSub: "Une requête de blanchisserie nécessite l'attention immédiate de l'usine.", laundryAlertClose: "Fermer",
         laundryMgmtTitle: "🧺 إدارة مغسلة الفندق (Laundry Plant)", laundryMgmtSub: "إدارة دورة حياة الغسيل (Collected ➔ Washing ➔ Ready ➔ Delivered)", laundryRefreshBtn: "🔄 تحديث",
         admFbTitle: "تقييمات وآراء النزلاء",
@@ -714,11 +748,13 @@
         wakeupTitle: "वेक-अप कॉल शेड्यूलर", wakeupLabel: "अलार्म का समय चुनें",
         lateTitle: "देर से चेक-आउट अनुरोध", lateLabel: "अनुरोधित प्रस्थान समय",
         staffPanel: "⚙️ स्टाफ पैनल", clientViewBtn: "📱 क्लाइंट व्यू", logoutStaff: "🚪 स्टाफ लॉगout",
-        admOffers: "सामग्री और मेनू", admReq: "लाइव अनुरोध", admLaundry: "लॉन्ड्ररी प्लांट", admFb: "अतिथि समीक्षा", admAna: "विश्लेषिकी", admBan: "घोषणा",
+        admOffers: "सामग्री और मेनू", admReq: "लाइव अनुरोध", admFalaj: "फलज किचन", admLaundry: "लॉन्ड्ररी प्लांट", admFb: "अतिथि समीक्षा", admAna: "विश्लेषिकी", admBan: "घोषणा",
         subOffers: "प्रोमोशन और इवेंट्स", subMenu: "रूम सर्विस मेनू एडिटर",
         newOffer: "नया क्लाउड ऑफ़र", categoryLbl: "श्रेणी", priceLbl: "मूल्य / दर (उदा., AED 75)", imgLbl: "ऑफ़र छवि", pubOfferBtn: "ऑफ़र प्रकाशित करें", actOffers: "सक्रिय ऑफ़र",
         newDish: "नया मेनू डिश जोड़ें", addDishBtn: "➕ डिश जोड़ें", liveMenu: "लाइव मेनू आइटम",
         liveReqTitle: "लाइव सेवा अनुरोध", liveReqSub: "वास्तविक समय रूम सर्विस स्ट्रीम", dailyRepBtn: "🖨️ दैनिक रिपोर्ट और PDF", refreshBtn: "🔄 रिफ्रेश करें",
+        falajAlertTitle: "Nouvelle commande Room Service reçue !", falajAlertSub: "Une commande de nourriture nécessite l'attention immédiate de la cuisine Falaj.", falajAlertClose: "Fermer",
+        falajMgmtTitle: "🍽️ फलज किचन प्रबंधन", falajMgmtSub: "भोजन की तैयारी का प्रबंधन करें (New ➔ Preparing ➔ Out for Delivery ➔ Completed)", falajRefreshBtn: "🔄 रिफ्रेश करें",
         laundryAlertTitle: "Nouvelle demande Laundry reçue !", laundryAlertSub: "Une requête de blanchisserie nécessite l'attention immédiate de l'usine.", laundryAlertClose: "Fermer",
         laundryMgmtTitle: "🧺 लॉन्ड्ररी प्लांट प्रबंधन", laundryMgmtSub: "कपड़े धोने के चक्र का प्रबंधन करें (Collected ➔ Washing ➔ Ready ➔ Delivered)", laundryRefreshBtn: "🔄 रिफ्रेश करें",
         admFbTitle: "अतिथि प्रतिक्रिया और रेटिंग",
@@ -1366,12 +1402,22 @@
           const laundryBanner = document.getElementById('laundryAlertBanner');
           if (laundryBanner) laundryBanner.classList.remove('hidden');
         }
+        const hasNewFalaj = pendingRequests.some(r => r.service && r.service.toLowerCase().includes('room service'));
+        if (hasNewFalaj) {
+          const falajBanner = document.getElementById('falajAlertBanner');
+          if (falajBanner) falajBanner.classList.remove('hidden');
+        }
       }
       previousPendingCount = pendingRequests.length;
 
       const badge = document.getElementById('requestBadge');
       if (pendingRequests.length > 0) { badge.innerText = pendingRequests.length; badge.classList.remove('hidden'); }
       else badge.classList.add('hidden');
+
+      const falajRequests = cachedRequests.filter(r => r.service && r.service.toLowerCase().includes('room service') && r.status !== 'Completed');
+      const falajBadge = document.getElementById('falajBadge');
+      if (falajRequests.length > 0) { falajBadge.innerText = falajRequests.length; falajBadge.classList.remove('hidden'); }
+      else falajBadge.classList.add('hidden');
 
       const laundryRequests = cachedRequests.filter(r => r.service && r.service.toLowerCase().includes('laundry') && r.status !== 'Delivered');
       const laundryBadge = document.getElementById('laundryBadge');
@@ -1380,6 +1426,7 @@
 
       if (currentView === 'admin') {
         renderAdminRequests();
+        renderAdminFalaj();
         renderAdminLaundry();
         renderAnalyticsData();
       }
@@ -1420,7 +1467,7 @@
       analyticsHtml += `</div>`;
 
       const pendingCount = cachedRequests.filter(r => r.status === 'Pending' || !r.status).length;
-      const progressCount = cachedRequests.filter(r => r.status === 'In Progress' || r.status === 'Washing' || r.status === 'Collected').length;
+      const progressCount = cachedRequests.filter(r => r.status === 'In Progress' || r.status === 'Washing' || r.status === 'Collected' || r.status === 'Preparing' || r.status === 'Out for Delivery').length;
       
       analyticsHtml += `<div class="bg-stone-50 p-6 rounded-2xl border border-stone-200 space-y-3">`;
       analyticsHtml += `<p class="font-bold text-stone-800 uppercase text-xs tracking-wider">Current Pipeline Status</p>`;
@@ -1448,8 +1495,8 @@
         let statusText = req.status || 'Pending';
         let progressWidth = "w-1/4";
 
-        if (req.status === 'Collected') { progressWidth = "w-2/4"; statusBadgeClass = "bg-blue-100 text-blue-800"; }
-        else if (req.status === 'Washing') { progressWidth = "w-3/4"; statusBadgeClass = "bg-indigo-100 text-indigo-800"; }
+        if (req.status === 'Collected' || req.status === 'Preparing') { progressWidth = "w-2/4"; statusBadgeClass = "bg-blue-100 text-blue-800"; }
+        else if (req.status === 'Washing' || req.status === 'Out for Delivery') { progressWidth = "w-3/4"; statusBadgeClass = "bg-indigo-100 text-indigo-800"; }
         else if (req.status === 'Ready' || req.status === 'Completed') { progressWidth = "w-11/12"; statusBadgeClass = "bg-teal-100 text-teal-800"; }
         else if (req.status === 'Delivered') { progressWidth = "w-full"; statusBadgeClass = "bg-emerald-100 text-emerald-800"; }
 
@@ -1543,6 +1590,42 @@
       `).join('');
     }
 
+    function renderAdminFalaj() {
+      const container = document.getElementById('adminFalajContainer');
+      if (!container) return;
+      const falajReqs = cachedRequests.filter(r => r.service && r.service.toLowerCase().includes('room service'));
+
+      if (falajReqs.length === 0) {
+        container.innerHTML = `<p class="text-xs text-stone-400 col-span-2 text-center py-6">Aucune commande de Room Service / Dining en cours.</p>`;
+        return;
+      }
+
+      container.innerHTML = falajReqs.map(req => {
+        const status = req.status || 'Pending';
+        return `
+          <div class="p-6 bg-stone-50 rounded-3xl border border-stone-200 space-y-4 shadow-sm">
+            <div class="flex justify-between items-center">
+              <div>
+                <span class="font-bold text-stone-900 text-base">Room / Villa: ${req.room}</span>
+                <p class="text-xs text-stone-500">ID #${req.id} • Falaj Room Service</p>
+              </div>
+              <span class="text-xs font-bold px-3 py-1 rounded-full bg-amber-100 text-amber-800">${status}</span>
+            </div>
+            <p class="text-stone-700 bg-white p-3 rounded-xl border text-xs whitespace-pre-line">${req.details}</p>
+            <div class="space-y-2 pt-2 border-t border-stone-200">
+              <p class="text-[10px] font-bold text-stone-500 uppercase">Processus Falaj Kitchen :</p>
+              <div class="grid grid-cols-4 gap-1 text-[10px] font-bold">
+                <button onclick="updateRequestStatus(${req.id}, 'Pending')" class="py-2 px-1 rounded-lg ${status === 'Pending' ? 'bg-amber-600 text-white' : 'bg-white text-stone-700 border'}">🔔 New</button>
+                <button onclick="updateRequestStatus(${req.id}, 'Preparing')" class="py-2 px-1 rounded-lg ${status === 'Preparing' ? 'bg-blue-600 text-white' : 'bg-white text-stone-700 border'}">🍳 Preparing</button>
+                <button onclick="updateRequestStatus(${req.id}, 'Out for Delivery')" class="py-2 px-1 rounded-lg ${status === 'Out for Delivery' ? 'bg-indigo-600 text-white' : 'bg-white text-stone-700 border'}">🚀 Delivery</button>
+                <button onclick="updateRequestStatus(${req.id}, 'Completed')" class="py-2 px-1 rounded-lg ${status === 'Completed' ? 'bg-emerald-600 text-white' : 'bg-white text-stone-700 border'}">✅ Completed</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
     function renderAdminLaundry() {
       const container = document.getElementById('adminLaundryContainer');
       if (!container) return;
@@ -1584,7 +1667,7 @@
       if (!req) return;
 
       let statusBg = '#E2B383';
-      if (req.status === 'In Progress') statusBg = '#2563EB';
+      if (req.status === 'In Progress' || req.status === 'Preparing' || req.status === 'Out for Delivery') statusBg = '#2563EB';
       if (req.status === 'Completed' || req.status === 'Delivered') statusBg = '#059669';
 
       const printFolio = document.getElementById('printFolioSection');
@@ -1644,7 +1727,7 @@
       const totalReq = cachedRequests.length;
       const completedReq = cachedRequests.filter(r => r.status === 'Completed' || r.status === 'Delivered').length;
       const pendingReq = cachedRequests.filter(r => r.status === 'Pending' || !r.status).length;
-      const progressReq = cachedRequests.filter(r => r.status === 'In Progress' || r.status === 'Washing' || r.status === 'Collected').length;
+      const progressReq = cachedRequests.filter(r => r.status === 'In Progress' || r.status === 'Washing' || r.status === 'Collected' || r.status === 'Preparing' || r.status === 'Out for Delivery').length;
       const resolutionRate = totalReq > 0 ? Math.round((completedReq / totalReq) * 100) : 0;
 
       let totalRevenue = 0;
@@ -1946,8 +2029,8 @@
     }
 
     function switchAdminTab(tab) {
-      ['adminOffersPanel', 'adminRequestsPanel', 'adminLaundryPanel', 'adminFeedbackPanel', 'adminAnalyticsPanel', 'adminBannerPanel'].forEach(p => document.getElementById(p).classList.add('hidden'));
-      ['admTabOffers', 'admTabRequests', 'admTabLaundry', 'admTabFeedback', 'admTabAnalytics', 'admTabBanner'].forEach(id => {
+      ['adminOffersPanel', 'adminRequestsPanel', 'adminFalajPanel', 'adminLaundryPanel', 'adminFeedbackPanel', 'adminAnalyticsPanel', 'adminBannerPanel'].forEach(p => document.getElementById(p).classList.add('hidden'));
+      ['admTabOffers', 'admTabRequests', 'admTabFalaj', 'admTabLaundry', 'admTabFeedback', 'admTabAnalytics', 'admTabBanner'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.className = "px-5 py-3 rounded-xl bg-stone-100 text-stone-700 hover:bg-stone-200 whitespace-nowrap transition";
       });
@@ -1959,6 +2042,10 @@
         document.getElementById('adminRequestsPanel').classList.remove('hidden'); 
         document.getElementById('admTabRequests').className = "px-5 py-3 rounded-xl bg-stone-900 text-white whitespace-nowrap shadow-sm transition relative";
         fetchRequestsFromCloud(); 
+      } else if (tab === 'falaj') {
+        document.getElementById('adminFalajPanel').classList.remove('hidden');
+        document.getElementById('admTabFalaj').className = "px-5 py-3 rounded-xl bg-stone-900 text-white whitespace-nowrap shadow-sm transition relative";
+        renderAdminFalaj();
       } else if (tab === 'laundry') {
         document.getElementById('adminLaundryPanel').classList.remove('hidden');
         document.getElementById('admTabLaundry').className = "px-5 py-3 rounded-xl bg-stone-900 text-white whitespace-nowrap shadow-sm transition relative";
@@ -2050,6 +2137,7 @@
       document.getElementById('lblStaffPanel').innerText = t.staffPanel;
       document.getElementById('admTabOffersLbl').innerText = t.admOffers;
       document.getElementById('admTabReqLbl').innerText = t.admReq;
+      document.getElementById('admTabFalajLbl').innerText = t.admFalaj;
       document.getElementById('admTabLaundryLbl').innerText = t.admLaundry;
       document.getElementById('admTabFbLbl').innerText = t.admFb;
       document.getElementById('admTabAnaLbl').innerText = t.admAna;
@@ -2073,6 +2161,13 @@
       document.getElementById('liveReqSub').innerText = t.liveReqSub;
       document.getElementById('dailyRepBtn').innerText = t.dailyRepBtn;
       document.getElementById('refreshBtn').innerText = t.refreshBtn;
+
+      document.getElementById('falajAlertTitle').innerText = t.falajAlertTitle;
+      document.getElementById('falajAlertSub').innerText = t.falajAlertSub;
+      document.getElementById('falajAlertClose').innerText = t.falajAlertClose;
+      document.getElementById('falajMgmtTitle').innerText = t.falajMgmtTitle;
+      document.getElementById('falajMgmtSub').innerText = t.falajMgmtSub;
+      document.getElementById('falajRefreshBtn').innerText = t.falajRefreshBtn;
 
       document.getElementById('laundryAlertTitle').innerText = t.laundryAlertTitle;
       document.getElementById('laundryAlertSub').innerText = t.laundryAlertSub;
