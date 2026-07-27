@@ -49,7 +49,7 @@ const HARDCODED_MENU = [
   { id: 'hm_bf3', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Arabic Breakfast', ar: 'فطور عربي', hi: 'अरबी नाश्ता' }, desc: { en: 'Hummus, Falafel, Foul Medames, Labneh, Halloumi White Cheese, Fried Egg, Assorted Vegetables, Olives, Mixed Pickles, and Seasonal Fruits', ar: 'حمص، فلافل، فول مدمس، لبنة، جبنة حلومي، بيض مقلي، تشكيلة من الخضروات، زيتون، مخللات مشكلة، وفواكه موسمية', hi: 'हम्मुस, फलाफेल, फुल मेदमेस, लाबनेह, हलोमी सफेद पनीर, तला हुआ अंडा, मिश्रित सब्जियां' }, price: 59 },
   { id: 'hm_bf4', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'International', ar: 'العالمي', hi: 'अंतर्राष्ट्रीय' }, desc: { en: 'Fresh bakery basket, Two eggs prepared to your liking, Chicken sausage, turkey bacon, and hash brown potatoes, Grilled tomatoes, sautéed mushrooms, and baked beans, Yogurt with dried fruits and nuts or mixed berries, Seasonal sliced fruits', ar: 'سلة مخبوزات طازجة، بيضتان تحضران حسب رغبتك، سقا دجاج، لحم ديك رومي مقدد، بطاطس هاش براون، طماطم مشوية، فطر سوتيه، فاصوليا مطبوخة، زبادي مع فواكه مجففة ومكسرات أو توت مشكل وفواكه موسمية مقطعة', hi: 'ताजा बेकरी बास्केट, आपकी पसंद के अनुसार दो अंडे, चिकन सॉसेज, टर्की बेकन' }, price: 61 },
   { id: 'hm_bf5', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Choice of Eggs', ar: 'اختيارات من البيض', hi: 'अंडे की पसंद' }, desc: { en: 'Scrambled Eggs, Fried Eggs, Boiled Eggs, Plain Omelette, Vegetable Omelette, Cheese Omelette, Poached Eggs, Sunny Side Up Eggs', ar: 'بيض مخفوق، بيض مقلي، بيض مسلوق، أومليت سادة، أومليت بالخضار، أومليت بالجبن، بيض مسلوق (بوشيه)، بيض عيون', hi: 'स्क्रैम्बल अंडे, तले हुए अंडे, उबले हुए अंडे, सादा आमलेट, सब्जी आमलेट, पनीर आमलेट' }, price: 25 },
-  { id: 'hm_bf6', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Shakshuka', ar: 'شكشوكة', hi: 'शक्शुका' }, desc: { en: 'Poached eggs in a spicy tomato and bell pepper sauce, seasoned with garlic and onions. Served with Arabic bread.', ar: 'بيض مسلوق بطريقة بوشيه في صلصة طماطم حارة مع الفلفل، متبل بالثوم والبصل، يقدم مع الخبز العربي', hi: ' मसालेदार टमाटर और शिमला मिर्च की चटनी में उबले हुए अंडे। अरबी ब्रेड के साथ परोसा जाता है।' }, price: 30 },
+  { id: 'hm_bf6', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'ناश्ता' }, name: { en: 'Shakshuka', ar: 'شكشوكة', hi: 'शक्शुका' }, desc: { en: 'Poached eggs in a spicy tomato and bell pepper sauce, seasoned with garlic and onions. Served with Arabic bread.', ar: 'بيض مسلوق بطريقة بوشيه في صلصة طماطم حارة مع الفلفل، متبل بالثوم والبصل، يقدم مع الخبز العربي', hi: ' मसालेदार टमाटर और शिमला मिर्च की चटनी में उबले हुए अंडे। अरबी ब्रेड के साथ परोसा जाता है।' }, price: 30 },
   { id: 'hm_bf7', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Eggs Benedict with Turkey Ham', ar: 'بيض بندكت مع ديك رومي', hi: 'टर्की हैम के साथ अंडे बेनेडिक्ट' }, desc: { en: 'Poached eggs and turkey ham on a toasted English muffin, topped with rich Hollandaise sauce.', ar: 'بيض مسلوق (بوشيه) مع هام ديك رومي، يقدم على مافن إنجليزي محمص، مع صلصة الهولنديز', hi: 'टोस्टेड इंग्लिश मफिन पर उबले अंडे और टर्की हैम, समृद्ध होलांडाइज सॉस के साथ।' }, price: 30 },
   { id: 'hm_bf8', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Eggs Benedict with Smoked Salmon', ar: 'بيض بندكت مع سلمون مدخن', hi: 'स्मोक्ड सैल्मन के साथ अंडे बेनेडिक्ट' }, desc: { en: 'Poached eggs and smoked salmon on a toasted English muffin, topped with creamy Hollandaise sauce.', ar: 'بيض مسلوق (بوشيه) مع سلمون مدخن، يقدم على مافن إنجليزي محمص، مع صلصة الهولنديز الكريمية', hi: 'टोस्टेड इंग्लिश मफिन पर उबले अंडे और स्मोक्ड सैल्मन, मलाईदार होलांडाइज सॉस के साथ।' }, price: 35 },
 
@@ -968,7 +968,7 @@ async function fetchRequestsFromCloud() {
 
   const { data: laundryData, error: laundryError } = await supabaseClient
     .from('laundry_orders')
-    .select('id, room, status, items, notes, created_at')
+    .select('*')
     .order('id', { ascending: false })
     .limit(30);
 
@@ -979,11 +979,45 @@ async function fetchRequestsFromCloud() {
     room: order.room,
     service: 'Laundry',
     status: order.status || 'Pending',
-    details: `🧺 LAUNDRY ORDER\nItems: ${JSON.stringify(order.items || {})}\n📝 Notes: ${order.notes || 'None'}`
+    details: `🧺 LAUNDRY ORDER\nItems: ${JSON.stringify(order.items || order.details || {})}\n📝 Notes: ${order.notes || 'None'}`
   }));
 
   cachedRequests = [...(generalData || []), ...formattedLaundry];
   updateRequestsUIState();
+  
+  // Met à jour la liste dédiée "Live Laundry Orders"
+  renderLiveLaundryOrders(laundryData || []);
+}
+
+function renderLiveLaundryOrders(laundryData) {
+  let container = document.getElementById('liveLaundryOrdersContainer') || document.getElementById('adminLaundryContainer');
+  
+  if (!container) {
+    const headings = Array.from(document.querySelectorAll('h3, h4, div')).filter(el => el.textContent.includes('Live Laundry Orders'));
+    if (headings.length > 0) {
+      container = headings[0].nextElementSibling;
+    }
+  }
+
+  if (!container) return;
+
+  if (!laundryData || laundryData.length === 0) {
+    container.innerHTML = `<p class="text-center text-xs text-stone-400 py-6">No live laundry orders.</p>`;
+    return;
+  }
+
+  container.innerHTML = laundryData.map(order => `
+    <div class="p-4 bg-stone-50 rounded-2xl border border-stone-200 text-xs space-y-2 mb-3 shadow-sm">
+      <div class="flex justify-between items-center">
+        <span class="font-bold text-stone-900 text-sm">Room / Villa: ${order.room || 'N/A'}</span>
+        <span class="bg-amber-100 text-amber-800 font-bold px-2.5 py-1 rounded-full text-[10px]">${order.status || 'Pending'}</span>
+      </div>
+      <p class="text-stone-600 bg-white p-2.5 rounded-xl border border-stone-100 whitespace-pre-line">
+        <strong>Items:</strong> ${JSON.stringify(order.items || order.details || {})}<br>
+        <strong>Notes:</strong> ${order.notes || 'None'}
+      </p>
+    </div>
+  `).join('');
 }
 
 function renderAnalyticsData() {
@@ -1545,7 +1579,7 @@ function setLang(lang) {
   document.getElementById('lblBTime').innerText = t.lblBTime;
 
   document.getElementById('lblWakeupTitle').innerText = t.wakeupTitle;
-  document.getElementById('lblWakeupLabel').innerText = t.wakeupLabel;
+  document.getElementById('lblWakeupLabel').innerText = t.lblWakeupLabel;
   document.getElementById('lblLateTitle').innerText = t.lateTitle;
   document.getElementById('lblLateLabel').innerText = t.lblLateLabel;
 
