@@ -965,7 +965,7 @@ async function fetchRequestsFromCloud() {
 }
 
 function renderLiveLaundryOrders(laundryData) {
-  // Recherche robuste du conteneur dans l'interface active (Live View / Staff Panel)
+  // Recherche universelle et robuste du conteneur de blanchisserie
   let container = document.getElementById('liveLaundryOrdersContainer') || document.getElementById('adminLaundryContainer');
   
   if (!container) {
@@ -975,7 +975,6 @@ function renderLiveLaundryOrders(laundryData) {
     }
   }
 
-  // S'il n'y a pas de conteneur affiché à l'écran, on évite l'erreur
   if (!container) return;
 
   if (!laundryData || laundryData.length === 0) {
