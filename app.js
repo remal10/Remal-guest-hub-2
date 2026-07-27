@@ -45,132 +45,8 @@ const FAQ_DATA = [
 
 const HARDCODED_MENU = [
   { id: 'hm_bf1', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Continental', ar: 'كونتيننتال', hi: 'महाद्वीपीय' }, desc: { en: 'Croissant, Muffin, Danish and Seasonal Sliced Fruits', ar: 'تشكيلة من الكرواسون والمفن والدانش، وفواكه موسمية مقطعة', hi: 'क्रॉसेंट, मफिन, दानिश और मौसमी कटे हुए फल' }, price: 49 },
-  { id: 'hm_bf2', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Emirati Flavors', ar: 'الفطور بالطعم الإماراتي', hi: 'अमीराती स्वाद' }, desc: { en: 'Harees, Chebab, Balaleet, Arabic Cheese, Labneh, Olives, Cucumber, Tomatoes, Foul Medames, Egg Shakshuka, Kuboos, and Seasonal Sliced Fruits', ar: 'هريس، جباب، بالاليط، جبن عريج، لبنة، زيتون، خيار، طماطم، فول مدمس، شكشوكة البيض، خبز، وفواكه موسمية مقطعة', hi: 'हरीस, चेबाब, बलालीट, अरबी पनीर, लाबनेह, जैतून, ककड़ी, टमाटर, फुल मेदमेस, अंडा शक्शुका' }, price: 59 },
-  { id: 'hm_bf3', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Arabic Breakfast', ar: 'فطور عربي', hi: 'अरबी नाश्ता' }, desc: { en: 'Hummus, Falafel, Foul Medames, Labneh, Halloumi White Cheese, Fried Egg, Assorted Vegetables, Olives, Mixed Pickles, and Seasonal Fruits', ar: 'حمص، فلافل، فول مدمس، لبنة، جبنة حلومي، بيض مقلي، تشكيلة من الخضروات، زيتون، مخللات مشكلة، وفواكه موسمية', hi: 'हम्मुस, फलाफेल, फुल मेदमेस, लाबनेह, हलोमी सफेद पनीर, तला हुआ अंडा, मिश्रित सब्जियां' }, price: 59 },
-  { id: 'hm_bf4', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'International', ar: 'العالمي', hi: 'अंतर्राष्ट्रीय' }, desc: { en: 'Fresh bakery basket, Two eggs prepared to your liking, Chicken sausage, turkey bacon, and hash brown potatoes, Grilled tomatoes, sautéed mushrooms, and baked beans, Yogurt with dried fruits and nuts or mixed berries, Seasonal sliced fruits', ar: 'سلة مخبوزات طازجة، بيضتان تحضران حسب رغبتك، سقا دجاج، لحم ديك رومي مقدد، بطاطس هاش براون، طماطم مشوية، فطر سوتيه، فاصوليا مطبوخة، زبادي مع فواكه مجففة ومكسرات أو توت مشكل وفواكه موسمية مقطعة', hi: 'ताजा बेकरी बास्केट, आपकी पसंद के अनुसार दो अंडे, चिकन सॉसेज, टर्की बेकन' }, price: 61 }
+  { id: 'hm_bf2', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Emirati Flavors', ar: 'الفطور بالطعم الإماراتي', hi: 'अमीराती स्वाद' }, desc: { en: 'Harees, Chebab, Balaleet, Arabic Cheese, Labneh, Olives, Cucumber, Tomatoes, Foul Medames, Egg Shakshuka, Kuboos, and Seasonal Sliced Fruits', ar: 'هريس، جباب، بالاليط، جبن عريج، لبنة، زيتون، خيار، طماطم، فول مدمس، شكشوكة البيض، خبز، وفواكه موسمية مقطعة', hi: 'हरीस, चेबाब, बलालीट, अरबी पनीर, लाबनेह, जैतून, ककड़ी, टमाटर, फुल मेदमेस, अंडा शक्शुका' }, price: 59 }
 ];
-
-function enableAudioAlerts() {
-  try {
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    audioContext.resume().then(() => {
-      audioEnabled = true;
-      playNotificationSound();
-      const btn = document.getElementById('btnAudioEnable');
-      if (btn) {
-        btn.className = "text-xs bg-emerald-100 text-emerald-800 px-4 py-2.5 rounded-xl font-bold border border-emerald-300 shadow-sm";
-        btn.innerText = "🔊 Sound Alerts Active";
-      }
-    });
-  } catch (e) { console.error("Audio Error:", e); }
-}
-
-function playNotificationSound() {
-  if (!audioEnabled || !audioContext) return;
-  try {
-    const osc = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(587.33, audioContext.currentTime);
-    osc.frequency.setValueAtTime(880, audioContext.currentTime + 0.15);
-    gain.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-    osc.connect(gain);
-    gain.connect(audioContext.destination);
-    osc.start();
-    osc.stop(audioContext.currentTime + 0.5);
-  } catch (e) { console.error(e); }
-}
-
-const i18n = {
-  en: {
-    welcome: "Welcome to Remal Hotel & Villas", lblOffers: "Offers", lblFacilities: "Facilities", lblService: "Service", lblFaq: "FAQ",
-    facHeader: "Hotel Facilities & Amenities", facSub: "Explore our premium venues and spaces", reqHeader: "Request Guest Service",
-    lblRoom: "Room Number", placeholderRoom: "e.g., 104 or Villa 02", lblServiceType: "Service Type",
-    lblDetails: "Additional Notes / Request Details", placeholderDetails: "Specify your request here...", btnSubmit: "Send Request to Reception",
-    whatsappBtn: "WhatsApp Reception", successMsg: "Request submitted successfully!", chatWhatsapp: "💬 Chat on WhatsApp",
-    trackHeader: "📡 Track Active Requests", liveStatus: "Live Status", trackEmpty: "Enter your room number above to track active requests in real time.",
-    trackNoReq: "No active requests found for room ", loadingOffers: "Loading live offers...", noOffers: "No offers available in this category.",
-    swipePhotos: "👈 Swipe or click arrows for photos 👉", bookInquiry: "Book / Inquiry →",
-    faqHeaderTitle: "💡 Intelligent Assistant & FAQ", faqHeaderSub: "Instant answers to common hotel questions",
-    folioTitle: "📄 My Room Folio & Charges", btnPrtFolio: "🖨️ Print Folio", folioPlaceholder: "Enter your room number above to view your live billing summary.",
-    feedbackTitle: "⭐ Stay Experience Rating", feedbackSub: "Share your thoughts to help us improve our services", ratingText: "Rating:", btnSubmitReview: "Submit Review",
-    favTitle: "⭐ My Favorites & Recent Orders", favBadge: "Quick Access", favEmpty: "No starred favorite dishes yet.",
-    menuHeader: "🍽️ Select Menu Items", menuBadge: "In-Room Dining", totalAmt: "Total Amount:", delivTime: "Preferred Delivery Time",
-    bookingTitle: "Table / Spa Reservation Details", lblVenue: "Venue / Service", lblGuests: "Guests Count", lblBDate: "Reservation Date", lblBTime: "Preferred Time",
-    wakeupTitle: "Wake-Up Call Scheduler", wakeupLabel: "Select Alarm Time",
-    lateTitle: "Late Check-Out Request", lateLabel: "Requested Departure Time",
-    services: [
-      { val: "Table / Spa Reservation", text: "Table / Spa Reservation" },
-      { val: "Wake-up Call Request", text: "Wake-up Call / Alarm Service" },
-      { val: "Late Check-out Request", text: "Late Check-out / Extension" },
-      { val: "Housekeeping", text: "Housekeeping / Room Cleaning" },
-      { val: "Front Desk Inquiry", text: "Front Desk Inquiry" }, 
-      { val: "Luggage Assistance", text: "Luggage Assistance" },
-      { val: "Room Service / Dining", text: "Room Service / Order Food" }, 
-      { val: "Maintenance / Technical Support", text: "Maintenance / Technical Support" },
-      { val: "Laundry", text: "Laundry" }
-    ]
-  },
-  ar: {
-    welcome: "مرحباً بكم في فندق وڤلل رمال", lblOffers: "العروض", lblFacilities: "المرافق والخدمات", lblService: "طلب خدمة", lblFaq: "الأسئلة الشائعة",
-    facHeader: "مرافق الفندق والخدمات", facSub: "استكشف أرقى مرافقنا وخدماتنا المميزة", reqHeader: "طلب خدمة النزلاء",
-    lblRoom: "رقم الغرفة", placeholderRoom: "مثال: 104 أو فيلا 02", lblServiceType: "نوع الخدمة",
-    lblDetails: "ملاحظات إضافية / تفاصيل الطلب", placeholderDetails: "اكتب تفاصيل طلبك هنا...", btnSubmit: "إرسال الطلب إلى الاستقبال",
-    whatsappBtn: "واتساب الاستقبال", successMsg: "تم إرسال طلبك بنجاح!", chatWhatsapp: "💬 التحدث عبر واتساب",
-    trackHeader: "📡 متابعة الطلبات الحالية", liveStatus: "حالة مباشرة", trackEmpty: "أدخل رقم الغرفة أعلاه لمتابعة طلباتك في الوقت الفعلي.",
-    trackNoReq: "لا توجد طلبات مسجلة للغرفة ", loadingOffers: "جاري تحميل العروض المباشرة...", noOffers: "لا توجد عروض متاحة في هذه الفئة.",
-    swipePhotos: "👈 اسحب أو اضغط الأسهم للصور 👉", bookInquiry: "حجز / استفسار ←",
-    faqHeaderTitle: "💡 المساعد الذكي والأسئلة الشائعة", faqHeaderSub: "إجابات فورية على الأسئلة الشائعة في الفندق",
-    folioTitle: "📄 كشف الحساب والمصاريف", btnPrtFolio: "🖨️ طباعة الكشف", folioPlaceholder: "أدخل رقم غرفتك أعلاه لعرض ملخص فواتيرك.",
-    feedbackTitle: "⭐ تقييم الإقامة والخدمة", feedbackSub: "شارعنا رأيك لمساعدتنا على تحسين خدماتنا", ratingText: "التقييم:", btnSubmitReview: "إرسال التقييم",
-    favTitle: "⭐ المفضلة والطلبات الأخيرة", favBadge: "وصول سريع", favEmpty: "لا توجد أطباق مفضلة حتى الآن.",
-    menuHeader: "🍽️ اختر أصناف القائمة", menuBadge: "خدمة الغرف", totalAmt: "المبلغ الإجمالي:", delivTime: "وقت التوصيل المفضل",
-    bookingTitle: "تفاصيل حجز الطاولة أو السبا", lblVenue: "المكان / الخدمة", lblGuests: "عدد الضيوف", lblBDate: "تاريخ الحجز", lblBTime: "الوقت المفضل",
-    wakeupTitle: "جدولة خدمة الإيقاظ", wakeupLabel: "اختر وقت التنبيه",
-    lateTitle: "طلب مغادرة متأخرة", lateLabel: "وقت المغادرة المطلوب",
-    services: [
-      { val: "Table / Spa Reservation", text: "حجز طاولة مطعم أو موعد سبا" },
-      { val: "Wake-up Call Request", text: "خدمة الإيقاظ / التنبيه الصباحي" },
-      { val: "Late Check-out Request", text: "طلب مغادرة متأخرة / تمديد الإقامة" },
-      { val: "Housekeeping", text: "خدمة الغرف / تنظيف الغرفة (Housekeeping)" },
-      { val: "Front Desk Inquiry", text: "استفسار الاستقبال" }, 
-      { val: "Luggage Assistance", text: "مساعدة في الأمتعة" },
-      { val: "Room Service / Dining", text: "خدمة الغرف / طلب طعام" }, 
-      { val: "Maintenance / Technical Support", text: "الصيانة / الدعم الفني" },
-      { val: "Laundry", text: "خدمة الغسيل (Laundry)" }
-    ]
-  },
-  hi: {
-    welcome: "रेमल होटल एंड विला में आपका स्वागत है", lblOffers: "विशेष ऑफ़र", lblFacilities: "सुविधाएं", lblService: "सेवा अनुरोध", lblFaq: "सामान्य प्रश्न",
-    facHeader: "होटल सुविधाएं", facSub: "हमारे प्रीमियम स्थानों और सेवाओं का अन्वेषण करें", reqHeader: "अतिथि सेवा का अनुरोध करें",
-    lblRoom: "कमरा संख्या", placeholderRoom: "उदा., 104 या विला 02", lblServiceType: "सेवा का प्रकार",
-    lblDetails: "अतिरिक्त विवरण / अनुरोध", placeholderDetails: "अपना अनुरोध यहां दर्ज करें...", btnSubmit: "रिसेप्शन को अनुरोध भेजें",
-    whatsappBtn: "व्हाट्सएप रिसेप्शन", successMsg: "आपका अनुरोध सफलतापूर्वक भेजा गया!", chatWhatsapp: "💬 व्हाट्सएप पर चैट करें",
-    trackHeader: "📡 सक्रिय अनुरोध ट्रैकिंग", liveStatus: "लाइव स्थिति", trackEmpty: "वास्तविक समय में अनुरोध ट्रैक करने के लिए ऊपर कमरा नंबर दर्ज करें।",
-    trackNoReq: "कमरा नंबर के लिए कोई अनुरोध नहीं मिला ", loadingOffers: "ऑफ़र लोड हो रहे हैं...", noOffers: "इस श्रेणी में कोई ऑफ़र उपलब्ध नहीं है।",
-    swipePhotos: "👈 स्वाइप करें या फ़ोटो के लिए तीर दबाएं 👉", bookInquiry: "बुक / पूछताछ →",
-    faqHeaderTitle: "💡 बुद्धिमान सहायक और सामान्य प्रश्न", faqHeaderSub: "आम होटल के सवालों के त्वरित जवाब",
-    folioTitle: "📄 मेरा कमरा फोलियो और शुल्क", btnPrtFolio: "🖨️ फोलियो प्रिंट करें", folioPlaceholder: "अपना लाइव बिलिंग सारांश देखने के लिए ऊपर अपना कमरा नंबर दर्ज करें।",
-    feedbackTitle: "⭐ ठहरने की प्रतिक्रिया और रेटिंग", feedbackSub: "अपनी सेवाएं सुधारने में हमारी मदद करें", ratingText: "रेटिंग:", btnSubmitReview: "समीक्षा जमा करें",
-    favTitle: "⭐ मेरे पसंदीदा और हाल के ऑर्डर", favBadge: "त्वरित पहुंच", favEmpty: "अभी तक कोई पसंदीदा व्यंजन नहीं है।",
-    menuHeader: "🍽️ मेनू आइटम चुनें", menuBadge: "इन-ルーム डाइनिंग", totalAmt: "कुल राशि:", delivTime: "पसंदीदा डिलीवरी का समय",
-    bookingTitle: "टेबल / स्पा बुकिंग विवरण", lblVenue: "स्थान / सेवा", lblGuests: "मेहमानों की संख्या", lblBDate: "बुकिंग की तारीख", lblBTime: "पसंदीदा समय",
-    wakeupTitle: "वेक-अप कॉल शेड्यूलर", wakeupLabel: "अलार्म का समय चुनें",
-    lateTitle: "देर से चेक-आउट अनुरोध", lateLabel: "अनुरोधित प्रस्थान समय",
-    services: [
-      { val: "Table / Spa Reservation", text: "टेबल या स्पा बुकिंग" },
-      { val: "Wake-up Call Request", text: "वेक-अप कॉल / सुबह की अलार्म सेवा" },
-      { val: "Late Check-out Request", text: "देर से चेक-आउट / समय बढ़ाना" },
-      { val: "Housekeeping", text: "हाउसकीपिंग / कमरे की सफाई" },
-      { val: "Front Desk Inquiry", text: "फ्रंट डेस्क पूछताछ" }, 
-      { val: "Luggage Assistance", text: "सामान सहायता" },
-      { val: "Room Service / Dining", text: "रूम सर्विस / खाना ऑर्डर करें" }, 
-      { val: "Maintenance / Technical Support", text: "रखरखाव / तकनीकी सहायता" },
-      { val: "Laundry", text: "लॉन्ड्ररी (कपड़े धोने की सेवा)" }
-    ]
-  }
-};
 
 const facilitiesData = [
   { 
@@ -253,22 +129,22 @@ async function init() {
 function setupRealtimeSubscriptions() {
   supabaseClient
     .channel('public-db-changes-instant')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'requests' }, payload => {
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'requests' }, () => {
       fetchRequestsFromCloud();
     })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'laundry_slips' }, payload => {
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'laundry_slips' }, () => {
       fetchRequestsFromCloud();
     })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'offers' }, payload => {
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'offers' }, () => {
       fetchOffersFromCloud();
     })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'feedback' }, payload => {
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'feedback' }, () => {
       fetchFeedbackFromCloud();
     })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'menu_items' }, payload => {
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'menu_items' }, () => {
       fetchMenuItemsFromCloud();
     })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'announcements' }, payload => {
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'announcements' }, () => {
       fetchAnnouncementFromCloud();
     })
     .subscribe();
@@ -282,11 +158,13 @@ function updateRequestsUIState() {
   previousPendingCount = pendingRequests.length;
 
   const badge = document.getElementById('requestBadge');
-  if (pendingRequests.length > 0) { 
-    badge.innerText = pendingRequests.length; 
-    badge.classList.remove('hidden'); 
-  } else {
-    badge.classList.add('hidden');
+  if (badge) {
+    if (pendingRequests.length > 0) { 
+      badge.innerText = pendingRequests.length; 
+      badge.classList.remove('hidden'); 
+    } else {
+      badge.classList.add('hidden');
+    }
   }
 
   if (currentView === 'admin') {
@@ -354,8 +232,10 @@ function setFeedbackRating(rating) {
   currentFeedbackRating = rating;
   for (let i = 1; i <= 5; i++) {
     const star = document.getElementById(`star-${i}`);
-    if (i <= rating) star.className = "text-amber-400";
-    else star.className = "text-stone-300";
+    if (star) {
+      if (i <= rating) star.className = "text-amber-400";
+      else star.className = "text-stone-300";
+    }
   }
 }
 
@@ -474,6 +354,7 @@ async function deleteMenuItem(id) {
 
 function renderAdminMenuList() {
   const container = document.getElementById('adminMenuListContainer');
+  if (!container) return;
   if (roomServiceMenu.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400">No dishes.</p>`; return; }
   
   const grouped = {};
@@ -512,18 +393,18 @@ function toggleServiceDynamicFields() {
   const wakeupCallBlock = document.getElementById('wakeupCallBlock');
   const bookingBlock = document.getElementById('bookingBlock');
 
-  roomServiceBlock.classList.add('hidden');
-  lateCheckoutBlock.classList.add('hidden');
-  wakeupCallBlock.classList.add('hidden');
-  bookingBlock.classList.add('hidden');
+  if (roomServiceBlock) roomServiceBlock.classList.add('hidden');
+  if (lateCheckoutBlock) lateCheckoutBlock.classList.add('hidden');
+  if (wakeupCallBlock) wakeupCallBlock.classList.add('hidden');
+  if (bookingBlock) bookingBlock.classList.add('hidden');
 
-  if (selectedService === 'Room Service / Dining') {
+  if (selectedService === 'Room Service / Dining' && roomServiceBlock) {
     roomServiceBlock.classList.remove('hidden');
-  } else if (selectedService === 'Late Check-out Request') {
+  } else if (selectedService === 'Late Check-out Request' && lateCheckoutBlock) {
     lateCheckoutBlock.classList.remove('hidden');
-  } else if (selectedService === 'Wake-up Call Request') {
+  } else if (selectedService === 'Wake-up Call Request' && wakeupCallBlock) {
     wakeupCallBlock.classList.remove('hidden');
-  } else if (selectedService === 'Table / Spa Reservation') {
+  } else if (selectedService === 'Table / Spa Reservation' && bookingBlock) {
     bookingBlock.classList.remove('hidden');
   }
 }
@@ -668,14 +549,14 @@ function onRoomNumberChange() {
   const val = roomInput.value.trim();
 
   if (val === '') {
-    roomError.classList.add('hidden');
-    roomInput.classList.remove('border-rose-500');
+    if (roomError) roomError.classList.add('hidden');
+    if (roomInput) roomInput.classList.remove('border-rose-500');
   } else if (!validateRoomNumber(val)) {
-    roomError.classList.remove('hidden');
-    roomInput.classList.add('border-rose-500');
+    if (roomError) roomError.classList.remove('hidden');
+    if (roomInput) roomInput.classList.add('border-rose-500');
   } else {
-    roomError.classList.add('hidden');
-    roomInput.classList.remove('border-rose-500');
+    if (roomError) roomError.classList.add('hidden');
+    if (roomInput) roomInput.classList.remove('border-rose-500');
   }
 
   renderClientTracker();
@@ -699,34 +580,20 @@ function calculateCartTotal() {
   return total;
 }
 
-function scrollCarousel(idx, direction) {
-  const carousel = document.getElementById(`carousel-${idx}`);
-  if (carousel) {
-    carousel.scrollBy({ left: direction * carousel.clientWidth, behavior: 'smooth' });
-  }
-}
-
 function renderFacilities() {
   const container = document.getElementById('facilitiesContainer');
   if (!container) return;
   const t = i18n[currentLang];
 
-  container.innerHTML = facilitiesData.map((item, idx) => {
+  container.innerHTML = facilitiesData.map((item) => {
     const titleText = (item.title && item.title[currentLang]) ? item.title[currentLang] : (item.title?.en || '');
     const descText = (item.desc && item.desc[currentLang]) ? item.desc[currentLang] : (item.desc?.en || '');
     const timingText = (item.timing && item.timing[currentLang]) ? item.timing[currentLang] : (item.timing?.en || '');
-    const hasMultiple = item.images && item.images.length > 1;
 
     return `
-    <div class="remal-card rounded-3xl overflow-hidden shadow-sm">
-      <div class="relative group">
-        <div id="carousel-${idx}" class="flex overflow-x-auto snap-x snap-mandatory scrollbar-none h-56 bg-stone-100">
-          ${item.images.map(img => `
-            <div class="min-w-full w-full h-full flex-shrink-0 snap-center relative">
-              <img src="${img}" class="w-full h-full object-cover" loading="lazy" onerror="this.onerror=null; this.src='logo.png';">
-            </div>
-          `).join('')}
-        </div>
+    <div class="remal-card rounded-3xl overflow-hidden shadow-sm bg-white border border-stone-200">
+      <div class="h-56 bg-stone-100 relative">
+        <img src="${item.images[0]}" class="w-full h-full object-cover" loading="lazy" onerror="this.onerror=null; this.src='logo.png';">
       </div>
       <div class="p-5 space-y-2">
         <h4 class="text-base font-serif-luxury font-bold text-stone-900">${titleText}</h4>
@@ -750,6 +617,7 @@ async function fetchAnnouncementFromCloud() {
 function renderAnnouncement() {
   const banner = document.getElementById('announcementBanner');
   const textEl = document.getElementById('announcementText');
+  if (!banner || !textEl) return;
   if (activeAnnouncement && activeAnnouncement.is_active) {
     textEl.innerText = `📢 ${activeAnnouncement.message[currentLang]}`;
     banner.classList.remove('hidden');
@@ -757,18 +625,22 @@ function renderAnnouncement() {
 }
 
 async function fetchOffersFromCloud() {
-  const { data } = await supabaseClient
+  const { data, error } = await supabaseClient
     .from('offers')
     .select('id, category, price, title, timing, image')
-    .order('id', { ascending: false })
-    .limit(20);
+    .order('id', { ascending: false });
+  
+  if (error) {
+    console.error("Erreur chargement offers:", error);
+    return;
+  }
+  
   cachedOffers = data || [];
   renderClientCards();
   if (currentView === 'admin') renderAdminList();
 }
 
 async function fetchRequestsFromCloud() {
-  // 1. Récupérer les requêtes générales
   const { data: generalData, error: generalError } = await supabaseClient
     .from('requests')
     .select('*')
@@ -777,7 +649,6 @@ async function fetchRequestsFromCloud() {
     
   if (generalError) console.error("Erreur requests:", generalError);
 
-  // 2. Récupérer les commandes de blanchisserie depuis la table "laundry_slips"
   const { data: laundryData, error: laundryError } = await supabaseClient
     .from('laundry_slips')
     .select('*')
@@ -786,55 +657,67 @@ async function fetchRequestsFromCloud() {
 
   if (laundryError) console.error("Erreur laundry_slips:", laundryError);
 
-  // Normaliser les données de laundry_slips pour qu'elles s'affichent correctement comme les autres requêtes
   const formattedLaundry = (laundryData || []).map(item => ({
     id: 'laundry-' + item.id,
     room: item.room || item.room_number || 'N/A',
     service: 'Laundry',
-    details: item.details || item.notes || 'Standard laundry service',
+    details: item.details || item.notes || 'Standard laundry service requested',
     status: item.status || 'collected'
   }));
 
-  // Combiner les deux listes
   cachedRequests = [...(generalData || []), ...formattedLaundry];
   
   updateRequestsUIState();
   renderLiveLaundryOrders(formattedLaundry);
 }
 
-// Affichage spécifique pour la Laundry avec la bannière rouge des instructions client et le workflow 4 étapes
+// Gestion des ordres de blanchisserie avec affichage de la consigne client en bannière rouge d'alerte
 function renderLiveLaundryOrders(laundryData) {
   let container = document.getElementById('liveLaundryOrdersContainer') || document.getElementById('adminLaundryContainer');
+  
+  if (!container) {
+    const adminPanel = document.getElementById('adminRequestsPanel');
+    if (adminPanel && !document.getElementById('dynamicLaundryBox')) {
+      const box = document.createElement('div');
+      box.id = 'dynamicLaundryBox';
+      box.className = 'mb-6 space-y-4';
+      adminPanel.prepend(box);
+      container = box;
+    } else {
+      container = document.getElementById('dynamicLaundryBox');
+    }
+  }
+
   if (!container) return;
 
   if (!laundryData || laundryData.length === 0) {
-    container.innerHTML = `<p class="text-center text-xs text-stone-400 py-6">No live laundry orders.</p>`;
+    container.innerHTML = `<div class="p-4 bg-stone-50 rounded-2xl text-center text-xs text-stone-400">No active laundry plant orders.</div>`;
     return;
   }
 
   container.innerHTML = laundryData.map(order => {
-    const clientNote = order.details ? order.details : "Aucune instruction particulière.";
+    const clientNote = order.details ? order.details : "Standard laundry service requested.";
     const currentStatus = order.status || 'collected';
 
     return `
-    <div class="p-5 bg-white rounded-3xl border border-stone-200 shadow-sm space-y-4 mb-4">
-      <!-- Bannière rouge d'alerte avec la note laissée par le client -->
-      <div class="bg-rose-50 border-l-4 border-rose-600 p-3 rounded-r-xl text-rose-900 text-xs space-y-1">
-        <p class="font-bold uppercase tracking-wider">🚨 Note / Instruction du Client (Chambre ${order.room || 'N/A'}):</p>
-        <p class="font-medium italic">${clientNote}</p>
+    <div class="p-5 bg-white rounded-3xl border-2 border-rose-200 shadow-md space-y-4 mb-4">
+      <!-- Bannière rouge d'alerte critique avec les instructions du client -->
+      <div class="bg-rose-50 border-l-4 border-rose-600 p-3.5 rounded-r-2xl text-rose-900 text-xs space-y-1 shadow-inner">
+        <p class="font-bold uppercase tracking-wider flex items-center text-rose-700">🚨 ALERTE LAUNDRY PLANT — Chambre ${order.room || 'N/A'}</p>
+        <p class="font-semibold italic text-stone-900 text-sm">"${clientNote}"</p>
       </div>
 
-      <div class="flex justify-between items-center text-xs">
+      <div class="flex justify-between items-center text-xs px-1">
         <span class="font-bold text-stone-900 text-sm">Chambre / Villa : ${order.room || 'N/A'}</span>
-        <span class="bg-amber-100 text-amber-800 font-bold px-3 py-1 rounded-full uppercase text-[10px]">Statut : ${currentStatus}</span>
+        <span class="bg-amber-100 text-amber-900 font-bold px-3 py-1 rounded-full uppercase text-[10px]">Statut : ${currentStatus}</span>
       </div>
 
-      <!-- Boutons de gestion des 4 statuts exclusifs Laundry -->
+      <!-- Boutons du workflow 4 étapes Laundry -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-2 pt-2 border-t border-stone-100">
-        <button onclick="updateLaundryStatus('${order.id}', 'collected')" class="py-2 px-3 rounded-xl font-bold text-xs transition ${currentStatus === 'collected' ? 'bg-amber-600 text-white' : 'bg-amber-50 text-amber-800 hover:bg-amber-100'}">📦 Collected</button>
-        <button onclick="updateLaundryStatus('${order.id}', 'washing')" class="py-2 px-3 rounded-xl font-bold text-xs transition ${currentStatus === 'washing' ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-800 hover:bg-blue-100'}">🧼 Washing</button>
-        <button onclick="updateLaundryStatus('${order.id}', 'ready')" class="py-2 px-3 rounded-xl font-bold text-xs transition ${currentStatus === 'ready' ? 'bg-purple-600 text-white' : 'bg-purple-50 text-purple-800 hover:bg-purple-100'}">✨ Ready</button>
-        <button onclick="updateLaundryStatus('${order.id}', 'delivered')" class="py-2 px-3 rounded-xl font-bold text-xs transition ${currentStatus === 'delivered' ? 'bg-emerald-600 text-white' : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100'}">🚀 Delivered</button>
+        <button onclick="updateLaundryStatus('${order.id}', 'collected')" class="py-2.5 px-3 rounded-xl font-bold text-xs transition ${currentStatus === 'collected' ? 'bg-amber-600 text-white shadow' : 'bg-amber-50 text-amber-800 hover:bg-amber-100'}">📦 Collected</button>
+        <button onclick="updateLaundryStatus('${order.id}', 'washing')" class="py-2.5 px-3 rounded-xl font-bold text-xs transition ${currentStatus === 'washing' ? 'bg-blue-600 text-white shadow' : 'bg-blue-50 text-blue-800 hover:bg-blue-100'}">🧼 Washing</button>
+        <button onclick="updateLaundryStatus('${order.id}', 'ready')" class="py-2.5 px-3 rounded-xl font-bold text-xs transition ${currentStatus === 'ready' ? 'bg-purple-600 text-white shadow' : 'bg-purple-50 text-purple-800 hover:bg-purple-100'}">✨ Ready</button>
+        <button onclick="updateLaundryStatus('${order.id}', 'delivered')" class="py-2.5 px-3 rounded-xl font-bold text-xs transition ${currentStatus === 'delivered' ? 'bg-emerald-600 text-white shadow' : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100'}">🚀 Delivered</button>
       </div>
     </div>
   `;
@@ -845,7 +728,6 @@ async function updateLaundryStatus(id, newStatus) {
   const strId = String(id);
   const actualId = strId.startsWith('laundry-') ? strId.replace('laundry-', '') : strId;
 
-  // Mise à jour de la table dédiée laundry_slips dans Supabase
   const { error } = await supabaseClient
     .from('laundry_slips')
     .update({ status: newStatus })
@@ -876,21 +758,25 @@ function renderAnalyticsData() {
     }
   });
 
-  document.getElementById('statTotalReq').innerText = totalReq;
-  document.getElementById('statResolutionRate').innerText = `${resolutionRate}%`;
-  document.getElementById('statRevenue').innerText = `AED ${totalRevenue}`;
+  const statTotalReq = document.getElementById('statTotalReq');
+  const statResolutionRate = document.getElementById('statResolutionRate');
+  const statRevenue = document.getElementById('statRevenue');
+
+  if (statTotalReq) statTotalReq.innerText = totalReq;
+  if (statResolutionRate) statResolutionRate.innerText = `${resolutionRate}%`;
+  if (statRevenue) statRevenue.innerText = `AED ${totalRevenue}`;
+
+  const container = document.getElementById('analyticsContentContainer');
+  if (!container) return;
 
   let analyticsHtml = `<div class="grid grid-cols-1 md:grid-cols-2 gap-6">`;
-  
   analyticsHtml += `<div class="bg-stone-50 p-6 rounded-2xl border border-stone-200 space-y-3">`;
   analyticsHtml += `<p class="font-bold text-stone-800 uppercase text-xs tracking-wider">Requests by Department</p>`;
   for (const [srv, count] of Object.entries(serviceCounts)) {
     analyticsHtml += `<div class="flex justify-between items-center text-sm border-b border-stone-200 pb-2"><span>${srv}</span><span class="font-bold bg-white px-3 py-1 rounded border">${count}</span></div>`;
   }
-  analyticsHtml += `</div>`;
-
-  analyticsHtml += `</div>`;
-  document.getElementById('analyticsContentContainer').innerHTML = analyticsHtml;
+  analyticsHtml += `</div></div>`;
+  container.innerHTML = analyticsHtml;
 }
 
 function renderClientTracker() {
@@ -944,38 +830,51 @@ function renderClientTracker() {
 
 function renderCategoryFilters() {
   const container = document.getElementById('categoryFilters');
+  if (!container) return;
   const cats = ['All', 'Falaj Restaurant', 'Sarab', 'Al Waha Pool', 'The Spa'];
   container.innerHTML = cats.map(cat => `<button onclick="filterCategory('${cat}')" class="px-4 py-2 rounded-full whitespace-nowrap text-xs font-semibold ${currentCategory === cat ? 'bg-remal-sand text-white' : 'bg-white text-stone-600 border'}">${categoriesTranslations[currentLang][cat] || cat}</button>`).join('');
 }
 
 function renderClientCards() {
   const container = document.getElementById('cardsContainer');
-  container.innerHTML = '';
+  if (!container) return;
+  
   const t = i18n[currentLang];
-  const filtered = currentCategory === 'All' ? cachedOffers : cachedOffers.filter(item => item.category === currentCategory);
+  const filtered = currentCategory === 'All' 
+    ? cachedOffers 
+    : cachedOffers.filter(item => String(item.category).trim().toLowerCase() === String(currentCategory).trim().toLowerCase());
 
-  if (filtered.length === 0) { container.innerHTML = `<p class="text-center text-xs text-stone-400 py-8">${t.noOffers}</p>`; return; }
-  filtered.forEach(item => {
+  if (filtered.length === 0) { 
+    container.innerHTML = `<p class="text-center text-xs text-stone-400 py-8">${t.noOffers}</p>`; 
+    return; 
+  }
+
+  container.innerHTML = filtered.map(item => {
     const titleText = (item.title && item.title[currentLang]) ? item.title[currentLang] : (item.title?.en || item.title || '');
     const timingText = (item.timing && item.timing[currentLang]) ? item.timing[currentLang] : (item.timing?.en || item.timing || '');
-    container.innerHTML += `
-      <div class="remal-card rounded-3xl overflow-hidden">
+    
+    return `
+      <div class="remal-card rounded-3xl overflow-hidden bg-white shadow-sm border border-stone-200">
         <img src="${item.image}" class="w-full h-48 object-cover" onerror="this.onerror=null; this.src='logo.png';">
         <div class="p-5 space-y-3">
           <h3 class="text-lg font-serif-luxury font-bold text-stone-900">${titleText}</h3>
-          <div class="flex justify-between items-center pt-3 border-t text-xs"><span class="text-stone-500">🕒 ${timingText}</span><span class="text-remal-sand font-bold">${item.price}</span></div>
+          <div class="flex justify-between items-center pt-3 border-t text-xs">
+            <span class="text-stone-500">🕒 ${timingText}</span>
+            <span class="text-remal-sand font-bold">AED ${item.price}</span>
+          </div>
         </div>
       </div>
     `;
-  });
+  }).join('');
 }
 
 function renderAdminList() {
   const container = document.getElementById('adminListContainer');
+  if (!container) return;
   if (cachedOffers.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400">No active offers.</p>`; return; }
   container.innerHTML = cachedOffers.map(item => `
     <div class="flex items-center justify-between p-4 bg-stone-50 rounded-2xl border text-sm">
-      <div class="flex items-center space-x-4"><img src="${item.image}" class="w-16 h-16 object-cover rounded-xl shadow-sm" onerror="this.onerror=null; this.src='logo.png';"><div><p class="font-bold text-stone-900">${item.title.en}</p><p class="text-remal-sand text-xs font-semibold mt-0.5">${item.category} • ${item.price}</p></div></div>
+      <div class="flex items-center space-x-4"><img src="${item.image}" class="w-16 h-16 object-cover rounded-xl shadow-sm" onerror="this.onerror=null; this.src='logo.png';"><div><p class="font-bold text-stone-900">${item.title?.en || item.title}</p><p class="text-remal-sand text-xs font-semibold mt-0.5">${item.category} • ${item.price}</p></div></div>
       <button onclick="deleteOffer(${item.id})" class="text-rose-600 font-bold p-2 hover:bg-rose-50 rounded-xl transition">🗑️ Delete</button>
     </div>
   `).join('');
@@ -983,6 +882,7 @@ function renderAdminList() {
 
 function renderAdminRequests() {
   const container = document.getElementById('adminRequestsContainer');
+  if (!container) return;
   if (cachedRequests.length === 0) { container.innerHTML = `<p class="text-sm text-stone-400 text-center py-6 col-span-2">No active requests.</p>`; return; }
   
   container.innerHTML = cachedRequests.map(req => {
@@ -1083,9 +983,13 @@ async function submitGuestRequest() {
   updateRequestsUIState();
 
   const textMessage = encodeURIComponent(`Hello Remal Reception,\nI submitted a request for Room/Villa ${room}.\n\n*Service:* ${service}\n*Details:*\n${details}`);
-  document.getElementById('btnWhatsappDirect').href = `https://wa.me/971526966865?text=${textMessage}`;
-  document.getElementById('whatsappConfirmation').classList.remove('hidden');
-  document.getElementById('req_details').value = '';
+  const whatsappBtn = document.getElementById('btnWhatsappDirect');
+  if (whatsappBtn) whatsappBtn.href = `https://wa.me/971526966865?text=${textMessage}`;
+  const whatsappConf = document.getElementById('whatsappConfirmation');
+  if (whatsappConf) whatsappConf.classList.remove('hidden');
+  
+  const reqDetailsEl = document.getElementById('req_details');
+  if (reqDetailsEl) reqDetailsEl.value = '';
   
   cartState = {};
   renderRoomServiceMenu();
@@ -1101,40 +1005,72 @@ async function submitGuestRequest() {
 }
 
 function switchGuestTab(tab) {
-  ['guestOffersSection', 'guestFacilitiesSection', 'guestFaqSection', 'guestRequestSection'].forEach(s => document.getElementById(s).classList.add('hidden'));
-  ['tabOffersBtn', 'tabFacilitiesBtn', 'tabFaqBtn', 'tabRequestBtn'].forEach(b => document.getElementById(b).className = "flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap");
+  ['guestOffersSection', 'guestFacilitiesSection', 'guestFaqSection', 'guestRequestSection'].forEach(s => {
+    const el = document.getElementById(s);
+    if (el) el.classList.add('hidden');
+  });
+  ['tabOffersBtn', 'tabFacilitiesBtn', 'tabFaqBtn', 'tabRequestBtn'].forEach(b => {
+    const el = document.getElementById(b);
+    if (el) el.className = "flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap";
+  });
 
-  if (tab === 'offers') { document.getElementById('guestOffersSection').classList.remove('hidden'); document.getElementById('tabOffersBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; }
-  else if (tab === 'facilities') { document.getElementById('guestFacilitiesSection').classList.remove('hidden'); document.getElementById('tabFacilitiesBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; }
-  else if (tab === 'faq') { document.getElementById('guestFaqSection').classList.remove('hidden'); document.getElementById('tabFaqBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; renderFaqList(); }
-  else if (tab === 'request') { document.getElementById('guestRequestSection').classList.remove('hidden'); document.getElementById('tabRequestBtn').className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; toggleServiceDynamicFields(); renderClientTracker(); renderClientFavoritesAndHistory(); renderRoomFolioWidget(); }
+  if (tab === 'offers') { 
+    document.getElementById('guestOffersSection')?.classList.remove('hidden'); 
+    const b = document.getElementById('tabOffersBtn');
+    if (b) b.className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; 
+  } else if (tab === 'facilities') { 
+    document.getElementById('guestFacilitiesSection')?.classList.remove('hidden'); 
+    const b = document.getElementById('tabFacilitiesBtn');
+    if (b) b.className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; 
+  } else if (tab === 'faq') { 
+    document.getElementById('guestFaqSection')?.classList.remove('hidden'); 
+    const b = document.getElementById('tabFaqBtn');
+    if (b) b.className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; 
+    renderFaqList(); 
+  } else if (tab === 'request') { 
+    document.getElementById('guestRequestSection')?.classList.remove('hidden'); 
+    const b = document.getElementById('tabRequestBtn');
+    if (b) b.className = "flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap"; 
+    toggleServiceDynamicFields(); 
+    renderClientTracker(); 
+    renderClientFavoritesAndHistory(); 
+    renderRoomFolioWidget(); 
+  }
 }
 
 function switchAdminTab(tab) {
-  ['adminOffersPanel', 'adminRequestsPanel', 'adminFeedbackPanel', 'adminAnalyticsPanel', 'adminBannerPanel'].forEach(p => document.getElementById(p).classList.add('hidden'));
+  ['adminOffersPanel', 'adminRequestsPanel', 'adminFeedbackPanel', 'adminAnalyticsPanel', 'adminBannerPanel'].forEach(p => {
+    const el = document.getElementById(p);
+    if (el) el.classList.add('hidden');
+  });
   ['admTabOffers', 'admTabRequests', 'admTabFeedback', 'admTabAnalytics', 'admTabBanner'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.className = "px-5 py-3 rounded-xl bg-stone-100 text-stone-700 hover:bg-stone-200 whitespace-nowrap transition";
   });
 
   if (tab === 'offers') {
-    document.getElementById('adminOffersPanel').classList.remove('hidden');
-    document.getElementById('admTabOffers').className = "px-5 py-3 rounded-xl bg-stone-900 text-white whitespace-nowrap shadow-sm transition";
+    document.getElementById('adminOffersPanel')?.classList.remove('hidden');
+    const el = document.getElementById('admTabOffers');
+    if (el) el.className = "px-5 py-3 rounded-xl bg-stone-900 text-white whitespace-nowrap shadow-sm transition";
   } else if (tab === 'requests') { 
-    document.getElementById('adminRequestsPanel').classList.remove('hidden'); 
-    document.getElementById('admTabRequests').className = "px-5 py-3 rounded-xl bg-stone-900 text-white whitespace-nowrap shadow-sm transition relative";
+    document.getElementById('adminRequestsPanel')?.classList.remove('hidden'); 
+    const el = document.getElementById('admTabRequests');
+    if (el) el.className = "px-5 py-3 rounded-xl bg-stone-900 text-white whitespace-nowrap shadow-sm transition relative";
     fetchRequestsFromCloud(); 
   } else if (tab === 'feedback') {
-    document.getElementById('adminFeedbackPanel').classList.remove('hidden');
-    document.getElementById('admTabFeedback').className = "px-5 py-3 rounded-xl bg-stone-900 text-white whitespace-nowrap shadow-sm transition";
+    document.getElementById('adminFeedbackPanel')?.classList.remove('hidden');
+    const el = document.getElementById('admTabFeedback');
+    if (el) el.className = "px-5 py-3 rounded-xl bg-stone-900 text-white whitespace-nowrap shadow-sm transition";
     fetchFeedbackFromCloud();
   } else if (tab === 'analytics') {
-    document.getElementById('adminAnalyticsPanel').classList.remove('hidden');
-    document.getElementById('admTabAnalytics').className = "px-5 py-3 rounded-xl bg-stone-900 text-white whitespace-nowrap shadow-sm transition";
+    document.getElementById('adminAnalyticsPanel')?.classList.remove('hidden');
+    const el = document.getElementById('admTabAnalytics');
+    if (el) el.className = "px-5 py-3 rounded-xl bg-stone-900 text-white whitespace-nowrap shadow-sm transition";
     renderAnalyticsData();
   } else if (tab === 'banner') {
-    document.getElementById('adminBannerPanel').classList.remove('hidden');
-    document.getElementById('admTabBanner').className = "px-5 py-3 rounded-xl bg-stone-900 text-white whitespace-nowrap shadow-sm transition";
+    document.getElementById('adminBannerPanel')?.classList.remove('hidden');
+    const el = document.getElementById('admTabBanner');
+    if (el) el.className = "px-5 py-3 rounded-xl bg-stone-900 text-white whitespace-nowrap shadow-sm transition";
   }
 }
 
@@ -1144,56 +1080,64 @@ function setLang(lang) {
 
   ['en', 'ar', 'hi'].forEach(l => {
     const btn = document.getElementById(`btn-${l}`);
-    if (l === lang) {
-      btn.className = "px-3 py-1.5 rounded-full bg-remal-sand text-white shadow-sm";
-    } else {
-      btn.className = "px-3 py-1.5 rounded-full text-stone-600 hover:text-stone-900";
+    if (btn) {
+      if (l === lang) {
+        btn.className = "px-3 py-1.5 rounded-full bg-remal-sand text-white shadow-sm";
+      } else {
+        btn.className = "px-3 py-1.5 rounded-full text-stone-600 hover:text-stone-900";
+      }
     }
   });
 
-  document.getElementById('htmlRoot').setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
-  document.getElementById('welcomeMsg').innerText = t.welcome;
-  document.getElementById('lblTabOffers').innerText = t.lblOffers;
-  document.getElementById('lblTabFacilities').innerText = t.lblFacilities;
-  document.getElementById('lblTabFaq').innerText = t.lblFaq;
-  document.getElementById('lblTabRequest').innerText = t.lblService;
-  document.getElementById('reqHeader').innerText = t.reqHeader;
-  document.getElementById('btnSubmitReq').innerText = t.btnSubmit;
+  const root = document.getElementById('htmlRoot');
+  if (root) root.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+  
+  const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
 
-  document.getElementById('facHeader').innerText = t.facHeader;
-  document.getElementById('facSub').innerText = t.facSub;
-  document.getElementById('faqHeaderTitle').innerText = t.faqHeaderTitle;
-  document.getElementById('faqHeaderSub').innerText = t.faqHeaderSub;
+  setTxt('welcomeMsg', t.welcome);
+  setTxt('lblTabOffers', t.lblOffers);
+  setTxt('lblTabFacilities', t.lblFacilities);
+  setTxt('lblTabFaq', t.lblFaq);
+  setTxt('lblTabRequest', t.lblService);
+  setTxt('reqHeader', t.reqHeader);
+  setTxt('btnSubmitReq', t.btnSubmit);
 
-  document.getElementById('lblFolioTitle').innerText = t.folioTitle;
-  document.getElementById('btnPrtFolio').innerText = t.btnPrtFolio;
-  document.getElementById('lblFeedbackTitle').innerText = t.feedbackTitle;
-  document.getElementById('lblFeedbackSub').innerText = t.feedbackSub;
-  document.getElementById('lblRatingText').innerText = t.ratingText;
-  document.getElementById('btnSubmitReview').innerText = t.btnSubmitReview;
-  document.getElementById('lblFavTitle').innerText = t.favTitle;
-  document.getElementById('lblFavBadge').innerText = t.favBadge;
-  document.getElementById('lblTrackHeader').innerText = t.trackHeader;
-  document.getElementById('lblLiveStatus').innerText = t.liveStatus;
+  setTxt('facHeader', t.facHeader);
+  setTxt('facSub', t.facSub);
+  setTxt('faqHeaderTitle', t.faqHeaderTitle);
+  setTxt('faqHeaderSub', t.faqHeaderSub);
 
-  document.getElementById('lblMenuHeader').innerText = t.menuHeader;
-  document.getElementById('lblMenuBadge').innerText = t.menuBadge;
-  document.getElementById('lblTotalAmt').innerText = t.totalAmt;
-  document.getElementById('lblDelivTime').innerText = t.delivTime;
+  setTxt('lblFolioTitle', t.folioTitle);
+  setTxt('btnPrtFolio', t.btnPrtFolio);
+  setTxt('lblFeedbackTitle', t.feedbackTitle);
+  setTxt('lblFeedbackSub', t.feedbackSub);
+  setTxt('lblRatingText', t.ratingText);
+  setTxt('btnSubmitReview', t.btnSubmitReview);
+  setTxt('lblFavTitle', t.favTitle);
+  setTxt('lblFavBadge', t.lblFavBadge);
+  setTxt('lblTrackHeader', t.trackHeader);
+  setTxt('lblLiveStatus', t.liveStatus);
 
-  document.getElementById('lblBookingTitle').innerText = t.bookingTitle;
-  document.getElementById('lblVenue').innerText = t.lblVenue;
-  document.getElementById('lblGuests').innerText = t.lblGuests;
-  document.getElementById('lblBDate').innerText = t.lblBDate;
-  document.getElementById('lblBTime').innerText = t.lblBTime;
+  setTxt('lblMenuHeader', t.menuHeader);
+  setTxt('lblMenuBadge', t.menuBadge);
+  setTxt('lblTotalAmt', t.totalAmt);
+  setTxt('lblDelivTime', t.delivTime);
 
-  document.getElementById('lblWakeupTitle').innerText = t.wakeupTitle;
-  document.getElementById('lblWakeupLabel').innerText = t.wakeupLabel;
-  document.getElementById('lblLateTitle').innerText = t.lateTitle;
-  document.getElementById('lblLateLabel').innerText = t.lateLabel;
+  setTxt('lblBookingTitle', t.bookingTitle);
+  setTxt('lblVenue', t.lblVenue);
+  setTxt('lblGuests', t.lblGuests);
+  setTxt('lblBDate', t.lblBDate);
+  setTxt('lblBTime', t.lblBTime);
+
+  setTxt('lblWakeupTitle', t.wakeupTitle);
+  setTxt('lblWakeupLabel', t.wakeupLabel);
+  setTxt('lblLateTitle', t.lateTitle);
+  setTxt('lblLateLabel', t.lateLabel);
 
   const selectService = document.getElementById('req_service');
-  selectService.innerHTML = t.services.map(s => `<option value="${s.val}">${s.text}</option>`).join('');
+  if (selectService) {
+    selectService.innerHTML = t.services.map(s => `<option value="${s.val}">${s.text}</option>`).join('');
+  }
 
   renderCategoryFilters(); 
   renderClientCards(); 
