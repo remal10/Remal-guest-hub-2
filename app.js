@@ -1022,14 +1022,22 @@ function renderAnalyticsData() {
 }
 
 function renderClientTracker() {
-  const roomNum = document.getElementById('req_room')?.value?.trim();
+  const roomNum = document.getElementById('req_room')?.value?.trim().toLowerCase();
   const container = document.getElementById('clientTrackerContainer');
   if (!container) return;
   const t = i18n[currentLang];
 
-  if (!roomNum || !validateRoomNumber(roomNum)) { container.innerHTML = `<p class="text-center text-xs text-stone-400 py-3">${t.trackEmpty}</p>`; return; }
-  const myRequests = cachedRequests.filter(r => String(r.room).trim().toLowerCase() === roomNum.toLowerCase());
-  if (myRequests.length === 0) { container.innerHTML = `<p class="text-center text-xs text-stone-400 py-3">${t.trackNoReq} ${roomNum}.</p>`; return; }
+  if (!roomNum || !validateRoomNumber(roomNum)) { 
+    container.innerHTML = `<p class="text-center text-xs text-stone-400 py-3">${t.trackEmpty}</p>`; 
+    return; 
+  }
+
+  const myRequests = cachedRequests.filter(r => String(r.room || '').trim().toLowerCase() === roomNum);
+  
+  if (myRequests.length === 0) { 
+    container.innerHTML = `<p class="text-center text-xs text-stone-400 py-3">${t.trackNoReq} ${roomNum}.</p>`; 
+    return; 
+  }
 
   container.innerHTML = myRequests.map(req => {
     let statusBadgeClass = "bg-amber-100 text-amber-800";
@@ -1362,6 +1370,8 @@ async function submitGuestRequest() {
     const bDate = document.getElementById('booking_date').value;
     const bTime = document.getElementById('booking_time').value;
     details = `📅 BOOKING VENUE: ${venue}\n👥 Guests: ${guests}\n📅 Date: ${bDate} at ${bTime}\n📝 Notes: ${details || 'No additional comments'}`;
+  } else if (service === 'Laundry') {
+    details = `🧺 LAUNDRY REQUEST\n📝 Notes: ${details || 'Standard laundry service requested'}`;
   }
 
   const optimisticReq = { id: 'temp-' + Date.now(), room, service, details, status: 'Pending' };
