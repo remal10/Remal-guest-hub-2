@@ -1,448 +1,503 @@
 <!DOCTYPE html>
 <html lang="en" id="htmlRoot" dir="ltr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Remal Hotel & Villas - Guest Hub & Admin</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remal Hotel & Villas - Room Service</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Client Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FAFAFA; color: #222; }
+        .font-serif-luxury { font-family: 'Playfair Display', serif; }
+        .scrollbar-none::-webkit-scrollbar { display: none; }
+        .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </head>
-<body class="min-h-screen pb-20">
+<body class="pb-32">
 
-  <div id="printTicketSection" class="hidden"></div>
-  <div id="printFolioSection" class="hidden"></div>
-
-  <header class="bg-white sticky top-0 z-50 border-b border-stone-200 shadow-sm">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-      <div class="flex items-center space-x-3">
-        <img src="logo.png" alt="Remal Hotel & Villas" class="h-12 object-contain" onerror="this.style.display='none'; document.getElementById('textLogo').classList.remove('hidden');">
-        <div id="textLogo" class="hidden">
-          <h1 class="text-sm font-serif-luxury text-stone-900 font-bold tracking-widest">REMAL</h1>
-          <p class="text-[8px] text-stone-500 uppercase tracking-wider">Hotel & Villas</p>
-        </div>
-      </div>
-      <div class="flex items-center space-x-3">
-        <div id="langSelector" class="flex bg-stone-100 p-1.5 rounded-full border border-stone-200 text-xs font-semibold">
-          <button onclick="setLang('en')" id="btn-en" class="px-3 py-1.5 rounded-full bg-remal-sand text-white shadow-sm">EN</button>
-          <button onclick="setLang('ar')" id="btn-ar" class="px-3 py-1.5 rounded-full text-stone-600 hover:text-stone-900">العربية</button>
-          <button onclick="setLang('hi')" id="btn-hi" class="px-3 py-1.5 rounded-full text-stone-600 hover:text-stone-900">हिन्दी</button>
-        </div>
-        <button onclick="handleAdminAccess()" id="viewToggleBtn" class="hidden bg-stone-900 text-white px-4 py-2 rounded-full text-xs font-semibold shadow relative hover:bg-stone-800 transition">
-          ⚙️ Staff Panel
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <div id="announcementBanner" class="hidden bg-remal-sand text-white px-4 py-3 text-center text-sm font-medium tracking-wide shadow-sm">
-    <span id="announcementText">📢 Special Announcement</span>
-  </div>
-
-  <div id="clientView" class="max-w-md mx-auto px-4 py-6 space-y-6">
-    <div class="relative rounded-3xl overflow-hidden shadow-xl p-6 text-white space-y-6 bg-cover bg-center bg-no-repeat bg-stone-900" style="background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.65)), url('Remal_exterior_view2.jpg');">
-      <div class="text-center space-y-1">
-        <h2 class="text-2xl font-serif-luxury text-white font-normal tracking-wide drop-shadow-md" id="welcomeMsg">Welcome to Remal Hotel & Villas</h2>
-        <p class="text-[10px] text-stone-200 uppercase tracking-widest font-semibold drop-shadow" id="roomIndicator">Al Dhannah City • Guest Hub</p>
-      </div>
-
-      <div class="flex bg-black/40 backdrop-blur-md p-1.5 rounded-2xl text-[11px] font-medium border border-white/25 overflow-x-auto scrollbar-none">
-        <button onclick="switchGuestTab('request')" id="tabRequestBtn" class="flex-1 py-2.5 px-3 rounded-xl bg-white text-stone-900 font-bold shadow-md whitespace-nowrap">🔔 <span id="lblTabRequest">Service</span></button>
-        <button onclick="switchGuestTab('offers')" id="tabOffersBtn" class="flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap">🏷️ <span id="lblTabOffers">Offers</span></button>
-        <button onclick="switchGuestTab('facilities')" id="tabFacilitiesBtn" class="flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap">🏛️ <span id="lblTabFacilities">Facilities</span></button>
-        <button onclick="switchGuestTab('faq')" id="tabFaqBtn" class="flex-1 py-2.5 px-3 rounded-xl text-stone-200 hover:text-white whitespace-nowrap">❓ <span id="lblTabFaq">FAQ</span></button>
-      </div>
-    </div>
-
-    <div id="guestOffersSection" class="hidden space-y-5">
-      <div id="categoryFilters" class="flex space-x-2 overflow-x-auto pb-1 text-xs font-semibold scrollbar-none"></div>
-      <div id="cardsContainer" class="space-y-5">
-        <p class="text-center text-xs text-stone-400 py-8" id="lblLoadingOffers">Loading live offers...</p>
-      </div>
-    </div>
-
-    <div id="guestFacilitiesSection" class="hidden space-y-5">
-      <div class="text-center border-b border-stone-200 pb-3">
-        <h3 class="text-lg font-serif-luxury font-bold text-stone-900" id="facHeader">Hotel Facilities & Amenities</h3>
-        <p class="text-xs text-stone-500" id="facSub">Explore our premium venues and spaces</p>
-      </div>
-      <div id="facilitiesContainer" class="space-y-6"></div>
-    </div>
-
-    <div id="guestFaqSection" class="hidden space-y-5">
-      <div class="text-center border-b border-stone-200 pb-3">
-        <h3 class="text-lg font-serif-luxury font-bold text-stone-900" id="faqHeaderTitle">💡 Intelligent Assistant & FAQ</h3>
-        <p class="text-xs text-stone-500" id="faqHeaderSub">Instant answers to common hotel questions</p>
-      </div>
-      <div class="remal-card p-5 rounded-3xl space-y-4">
-        <input type="text" id="faqSearchInput" placeholder="🔍 Search question..." onkeyup="filterFaq()" class="w-full border border-stone-200 rounded-xl p-3 text-xs bg-stone-50 outline-none">
-        <div id="faqContainer" class="space-y-3 max-h-[450px] overflow-y-auto pr-1"></div>
-      </div>
-    </div>
-
-    <div id="guestRequestSection" class="space-y-6">
-      <div class="remal-card p-6 rounded-3xl space-y-5">
-        <h2 class="text-base font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-3" id="reqHeader">Request Guest Service</h2>
-        <form id="guestRequestForm" class="space-y-4">
-          <div>
-            <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblRoom">Room Number</label>
-            <input type="text" id="req_room" placeholder="e.g., 104, 201 or 601" onkeyup="onRoomNumberChange()" onchange="onRoomNumberChange()" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/55 outline-none" required>
-            <p id="roomErrorMsg" class="text-rose-600 text-[11px] font-bold mt-1 hidden">❌ Erreur de numéro : Numéro de chambre ou de villa invalide.</p>
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblService">Service Type</label>
-            <select id="req_service" onchange="toggleServiceDynamicFields()" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 outline-none"></select>
-          </div>
-
-          <div id="bookingBlock" class="hidden space-y-3 bg-emerald-50/60 p-4 rounded-2xl border border-emerald-200">
-            <div class="flex items-center space-x-2 text-emerald-900 font-bold text-xs">
-              <span>📅</span><span id="lblBookingTitle">Table / Spa Reservation Details</span>
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-[10px] font-bold text-stone-700 mb-1" id="lblVenue">Venue / Service</label>
-                <select id="booking_venue" class="w-full border border-stone-200 rounded-xl p-2.5 text-xs bg-white outline-none">
-                  <option value="Falaj Restaurant" id="optFalaj">🍽️ Falaj Restaurant</option>
-                  <option value="Sarab Bar" id="optSarab">🍸 Sarab Bar & Lounge</option>
-                  <option value="The Spa" id="optSpa">💆 The Spa & Wellness</option>
-                  <option value="Al Waha Pool Cabana" id="optCabana">🏖️ Al Waha Cabana</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-[10px] font-bold text-stone-700 mb-1" id="lblGuests">Guests Count</label>
-                <select id="booking_guests" class="w-full border border-stone-200 rounded-xl p-2.5 text-xs bg-white outline-none">
-                  <option value="1 Person" id="optG1">1 Person</option>
-                  <option value="2 Persons" selected id="optG2">2 Persons</option>
-                  <option value="3 Persons" id="optG3">3 Persons</option>
-                  <option value="4 Persons" id="optG4">4 Persons</option>
-                  <option value="5+ Persons" id="optG5">5+ Persons (Group)</option>
-                </select>
-              </div>
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-[10px] font-bold text-stone-700 mb-1" id="lblBDate">Reservation Date</label>
-                <input type="date" id="booking_date" class="w-full border border-stone-200 rounded-xl p-2 text-xs bg-white outline-none">
-              </div>
-              <div>
-                <label class="block text-[10px] font-bold text-stone-700 mb-1" id="lblBTime">Preferred Time</label>
-                <input type="time" id="booking_time" class="w-full border border-stone-200 rounded-xl p-2 text-xs bg-white outline-none" value="19:30">
-              </div>
-            </div>
-          </div>
-
-          <div id="wakeupCallBlock" class="hidden space-y-3 bg-blue-50/60 p-4 rounded-2xl border border-blue-200">
-            <div class="flex items-center space-x-2 text-blue-900 font-bold text-xs">
-              <span>⏰</span><span id="lblWakeupTitle">Wake-Up Call Scheduler</span>
-            </div>
-            <div>
-              <label class="block text-[11px] font-bold text-stone-700 mb-1" id="lblWakeupLabel">Select Alarm Time</label>
-              <input type="time" id="wakeup_time" class="w-full border border-stone-200 rounded-xl p-2.5 text-xs bg-white outline-none" value="07:00">
-            </div>
-          </div>
-
-          <div id="lateCheckoutBlock" class="hidden space-y-3 bg-amber-50/60 p-4 rounded-2xl border border-amber-200">
-            <div class="flex items-center space-x-2 text-amber-900 font-bold text-xs">
-              <span>⏱️</span><span id="lblLateTitle">Late Check-Out Request</span>
-            </div>
-            <div>
-              <label class="block text-[11px] font-bold text-stone-700 mb-1" id="lblLateLabel">Requested Departure Time</label>
-              <select id="late_checkout_time" class="w-full border border-stone-200 rounded-xl p-2.5 text-xs bg-white outline-none">
-                <option value="13:00 PM (1:00 PM)">13:00 PM (1:00 PM)</option>
-                <option value="14:00 PM (2:00 PM)">14:00 PM (2:00 PM)</option>
-                <option value="15:00 PM (3:00 PM)">15:00 PM (3:00 PM)</option>
-                <option value="16:00 PM (4:00 PM)">16:00 PM (4:00 PM - Max)</option>
-              </select>
-            </div>
-          </div>
-
-          <div id="roomServiceMenuBlock" class="hidden space-y-4 bg-stone-50 p-4 rounded-2xl border border-stone-200">
-            <div class="flex justify-between items-center border-b border-stone-200 pb-2">
-              <span class="text-xs font-bold text-stone-800" id="lblMenuHeader">🍽️ Select Menu Items</span>
-              <span class="text-[10px] bg-remal-sand text-white font-bold px-2 py-0.5 rounded-full" id="lblMenuBadge">In-Room Dining</span>
-            </div>
-            <div id="foodItemsContainer" class="space-y-3 max-h-[500px] overflow-y-auto pr-1"><p class="text-center text-xs text-stone-400">Loading menu...</p></div>
-            <div class="pt-2 border-t border-stone-200 space-y-2">
-              <div class="flex justify-between text-xs font-bold text-stone-900">
-                <span id="lblTotalAmt">Total Amount:</span>
-                <span id="cartTotalDisplay" class="text-remal-sand font-serif-luxury text-sm">AED 0</span>
-              </div>
-              <div>
-                <label class="block text-[11px] font-bold text-stone-600 mb-1" id="lblDelivTime">Preferred Delivery Time</label>
-                <select id="delivery_time" class="w-full border border-stone-200 rounded-xl p-2.5 text-xs bg-white outline-none">
-                  <option value="As soon as possible" id="deliv1">⚡ As soon as possible (~30 min)</option>
-                  <option value="In 45 minutes" id="deliv2">🕒 In 45 minutes</option>
-                  <option value="In 1 hour" id="deliv3">🕒 In 1 hour</option>
-                  <option value="Scheduled Breakfast (07:00 AM - 08:00 AM)" id="deliv4">🥐 Scheduled Breakfast (07:00 AM - 08:00 AM)</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblDetails">Additional Notes / Request Details</label>
-            <textarea id="req_details" rows="3" placeholder="Specify request details..." class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/50 outline-none" required></textarea>
-          </div>
-          <button type="button" onclick="submitGuestRequest()" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-bold py-3.5 rounded-xl shadow-lg transition text-sm tracking-wider">
-            <span id="btnSubmitReq">Send Request to Reception</span>
-          </button>
-        </form>
-
-        <div id="whatsappConfirmation" class="hidden bg-emerald-50 border border-emerald-200 p-4 rounded-2xl space-y-3">
-          <div class="flex items-center space-x-2 text-emerald-900 font-bold text-xs">
-            <span>✅</span><span id="lblSuccessMsg">Request submitted successfully!</span>
-          </div>
-          <a id="btnWhatsappDirect" href="#" target="_blank" class="flex items-center justify-center space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 px-4 rounded-xl font-bold text-xs shadow-md transition">
-            <span id="lblChatWhatsapp">💬 Chat on WhatsApp</span>
-          </a>
-        </div>
-      </div>
-
-      <div class="remal-card p-6 rounded-3xl space-y-4">
-        <div class="flex justify-between items-center border-b border-stone-100 pb-3">
-          <h3 class="text-sm font-serif-luxury font-bold text-stone-900" id="lblTrackHeader">📡 Track Active Requests</h3>
-          <span class="text-[10px] bg-stone-100 text-stone-600 font-semibold px-2.5 py-1 rounded-full" id="lblLiveStatus">Live Status (Optimistic)</span>
-        </div>
-        <div id="clientTrackerContainer" class="space-y-3"><p class="text-center text-xs text-stone-400 py-3" id="lblTrackEmpty">Enter your room number above to track active requests in real time.</p></div>
-      </div>
-
-      <div class="remal-card p-5 rounded-3xl space-y-3 bg-gradient-to-br from-amber-50/50 to-white">
-        <div class="flex justify-between items-center border-b border-stone-100 pb-2">
-          <span class="text-xs font-serif-luxury font-bold text-stone-900" id="lblFolioTitle">📄 My Room Folio & Charges</span>
-          <button type="button" onclick="generateRoomFolio()" class="bg-stone-900 text-white px-3 py-1.5 rounded-xl font-bold text-[10px] shadow" id="btnPrtFolio">🖨️ Print Folio</button>
-        </div>
-        <div id="clientRoomFolioContainer" class="space-y-2 text-xs">
-          <p class="text-[11px] text-stone-400 italic" id="lblFolioPlaceholder">Enter your room number above to view your live billing summary.</p>
-        </div>
-      </div>
-
-      <div class="remal-card p-5 rounded-3xl space-y-3 bg-gradient-to-br from-emerald-50/40 to-white">
-        <div class="border-b border-stone-100 pb-2">
-          <span class="text-xs font-serif-luxury font-bold text-stone-900" id="lblFeedbackTitle">⭐ Stay Feedback & Experience Rating</span>
-          <p class="text-[10px] text-stone-500" id="lblFeedbackSub">Share your thoughts to help us improve our services</p>
-        </div>
-        <form id="feedbackForm" onsubmit="submitGuestFeedback(event)" class="space-y-3">
-          <div class="flex items-center justify-center space-x-2 py-1">
-            <span class="text-xs font-bold text-stone-700" id="lblRatingText">Rating:</span>
-            <div id="starRatingContainer" class="flex space-x-1 text-xl cursor-pointer">
-              <span onclick="setFeedbackRating(1)" id="star-1" class="text-amber-400">★</span>
-              <span onclick="setFeedbackRating(2)" id="star-2" class="text-amber-400">★</span>
-              <span onclick="setFeedbackRating(3)" id="star-3" class="text-amber-400">★</span>
-              <span onclick="setFeedbackRating(4)" id="star-4" class="text-amber-400">★</span>
-              <span onclick="setFeedbackRating(5)" id="star-5" class="text-amber-400">★</span>
-            </div>
-          </div>
-          <div>
-            <textarea id="feedback_comment" rows="2" placeholder="Tell us about your stay, room cleanliness, or dining experience..." class="w-full border border-stone-200 rounded-xl p-2.5 text-xs bg-white outline-none" required></textarea>
-          </div>
-          <button type="submit" id="btnSubmitReview" class="w-full bg-remal-sand hover:bg-amber-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-sm">Submit Review</button>
-        </form>
-      </div>
-
-      <div id="guestHistoryBlock" class="remal-card p-5 rounded-3xl space-y-3">
-        <div class="flex justify-between items-center border-b border-stone-100 pb-2">
-          <span class="text-xs font-serif-luxury font-bold text-stone-900" id="lblFavTitle">⭐ My Favorites & Recent Orders</span>
-          <span class="text-[9px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full" id="lblFavBadge">Quick Access</span>
-        </div>
-        <div id="clientFavoritesContainer" class="space-y-2">
-          <p class="text-[11px] text-stone-400 italic" id="lblFavEmpty">No starred favorite dishes yet.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="whatsappContainer" class="fixed bottom-5 right-5 z-50">
-    <a href="https://wa.me/971526966865?text=Hello%2C%20I%20am%20contacting%20from%20Remal%20Hotel%20Guest%20Hub." target="_blank" class="flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 rounded-full shadow-2xl transition transform hover:scale-105 border border-emerald-500 font-semibold text-xs">
-      <span class="text-lg">💬</span><span id="whatsappText">WhatsApp Reception</span>
-    </a>
-  </div>
-
-  <div id="authModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-5 border border-stone-100">
-      <div class="text-center space-y-1">
-        <h3 class="text-lg font-serif-luxury font-bold text-stone-900">Admin Authentication</h3>
-        <p class="text-xs text-stone-500">Enter staff credentials to manage Guest Hub</p>
-      </div>
-      <form id="loginForm" onsubmit="loginAdmin(event)" class="space-y-4">
+    <!-- En-tête -->
+    <header class="bg-white sticky top-0 z-50 border-b border-stone-200 px-6 py-4 flex justify-between items-center shadow-xs">
         <div>
-          <label class="block text-[11px] font-bold text-stone-600 uppercase mb-1">Email Address</label>
-          <input type="email" id="loginEmail" placeholder="admin@remalhotel.com" class="w-full border border-stone-200 rounded-xl p-3 text-xs bg-stone-50 outline-none" required>
+            <h1 class="text-sm font-serif-luxury font-bold tracking-widest text-stone-900">REMAL</h1>
+            <p class="text-[8px] text-stone-500 uppercase tracking-wider">Hotel & Villas</p>
         </div>
-        <div>
-          <label class="block text-[11px] font-bold text-stone-600 uppercase mb-1">Password</label>
-          <input type="password" id="loginPassword" placeholder="••••••••" class="w-full border border-stone-200 rounded-xl p-3 text-xs bg-stone-50 outline-none" required>
+        
+        <div class="flex items-center space-x-3">
+            <!-- Sélecteur de Langue -->
+            <div class="flex bg-stone-100 p-1 rounded-full border border-stone-200 text-xs font-semibold">
+                <button onclick="setLang('en')" id="btn-en" class="px-2.5 py-1 rounded-full bg-stone-900 text-white shadow-xs">EN</button>
+                <button onclick="setLang('ar')" id="btn-ar" class="px-2.5 py-1 rounded-full text-stone-600">عربي</button>
+                <button onclick="setLang('hi')" id="btn-hi" class="px-2.5 py-1 rounded-full text-stone-600">हिन्दी</button>
+            </div>
+            <div class="bg-amber-100 text-amber-900 text-xs font-bold px-3 py-1 rounded-full">
+                <span id="lblRoomTitle">Room</span>: <span id="lbl-room">...</span>
+            </div>
         </div>
-        <p id="authErrorMsg" class="text-rose-600 text-[11px] font-semibold text-center hidden"></p>
-        <button type="submit" id="btnLoginSubmit" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-bold py-3 rounded-xl text-xs transition shadow-md">🔐 Unlock Staff Panel</button>
-      </form>
-      <button onclick="closeAuthModal()" class="w-full text-stone-400 hover:text-stone-600 text-xs text-center font-medium">Cancel and Return</button>
-    </div>
-  </div>
+    </header>
 
-  <div id="adminView" class="hidden max-w-7xl mx-auto px-6 py-8 space-y-8">
-    <div class="flex justify-between items-center bg-white p-3 rounded-2xl border border-stone-200 shadow-sm text-sm font-bold overflow-x-auto scrollbar-none">
-      <div class="flex space-x-3 w-full md:w-auto">
-        <button onclick="switchAdminTab('offers')" id="admTabOffers" class="px-5 py-3 rounded-xl bg-stone-900 text-white whitespace-nowrap shadow-sm transition">🏷️ Content & Menu</button>
-        <button onclick="switchAdminTab('requests')" id="admTabRequests" class="px-5 py-3 rounded-xl bg-stone-100 text-stone-700 hover:bg-stone-200 relative whitespace-nowrap transition">
-          🔔 Live Requests
-          <span id="requestBadge" class="hidden absolute -top-1 -right-1 bg-rose-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full pulse-notification">0</span>
-        </button>
-        <button onclick="switchAdminTab('feedback')" id="admTabFeedback" class="px-5 py-3 rounded-xl bg-stone-100 text-stone-700 hover:bg-stone-200 whitespace-nowrap transition">⭐ Guest Reviews</button>
-        <button onclick="switchAdminTab('analytics')" id="admTabAnalytics" class="px-5 py-3 rounded-xl bg-stone-100 text-stone-700 hover:bg-stone-200 whitespace-nowrap transition">📊 Analytics & Performance</button>
-        <button onclick="switchAdminTab('banner')" id="admTabBanner" class="px-5 py-3 rounded-xl bg-stone-100 text-stone-700 hover:bg-stone-200 whitespace-nowrap transition">📢 Announcement</button>
-      </div>
-      <div class="flex items-center space-x-3 pl-3">
-        <button onclick="logoutAdmin()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 px-4 py-3 rounded-xl text-xs font-bold border border-rose-200 transition whitespace-nowrap">🚪 Logout Staff</button>
-      </div>
-    </div>
+    <!-- Contenu Principal -->
+    <main class="max-w-md mx-auto px-4 py-6 space-y-6">
+        
+        <!-- Carte d'accueil -->
+        <div class="bg-stone-900 text-white p-6 rounded-3xl shadow-lg space-y-2 text-center">
+            <h2 id="heroTitle" class="text-xl font-serif-luxury">In-Room Dining</h2>
+            <p id="heroSub" class="text-xs text-stone-300">Order food and beverages directly from your room</p>
+        </div>
 
-    <div id="adminOffersPanel" class="space-y-6">
-      <div class="flex space-x-3 border-b border-stone-200 pb-3 text-sm font-bold">
-        <button onclick="switchAdminSubTab('offersList')" id="btnSubOffers" class="px-5 py-2.5 rounded-xl bg-stone-900 text-white shadow-sm">Promotions & Events</button>
-        <button onclick="switchAdminSubTab('menuList')" id="btnSubMenu" class="px-5 py-2.5 rounded-xl bg-stone-100 text-stone-700 hover:bg-stone-200">🍔 Room Service Menu Editor</button>
-      </div>
+        <!-- Sélection de la Chambre -->
+        <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-xs space-y-2">
+            <label id="lblRoomInput" class="block text-xs font-bold text-stone-700">Room or Villa Number:</label>
+            <input type="text" id="input-room" placeholder="e.g. 204 or Villa 02" onchange="saveRoom(this.value)" class="w-full border border-stone-300 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-amber-700">
+        </div>
 
-      <div id="adminOffersSubSection" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <div class="lg:col-span-5 bg-white rounded-3xl p-8 shadow-sm border border-stone-200 space-y-5 h-fit">
-          <h2 class="text-lg font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-3">New Cloud Offer</h2>
-          <form id="adminForm" class="space-y-5">
+        <!-- Filtres par Catégorie -->
+        <div id="category-filters" class="flex space-x-2 overflow-x-auto pb-1 text-xs font-semibold scrollbar-none">
+            <!-- Généré dynamiquement -->
+        </div>
+
+        <!-- Liste du Menu -->
+        <div class="space-y-4">
+            <h3 id="current-category-title" class="font-serif-luxury text-base font-bold text-stone-900 border-b border-stone-200 pb-2">All Dishes</h3>
+            <div id="menu-list" class="space-y-3">
+                <!-- Les plats s'affichent ici dynamiquement -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Barre Flottante du Panier -->
+    <div id="cart-bar" class="fixed bottom-0 left-0 right-0 bg-stone-900 text-white p-4 shadow-2xl transition-transform duration-300 transform translate-y-full z-40">
+        <div class="max-w-md mx-auto flex justify-between items-center">
             <div>
-              <label class="block text-xs font-bold text-stone-600 uppercase mb-1.5">Category</label>
-              <select id="adm_category" class="w-full border border-stone-200 rounded-xl p-3.5 bg-stone-50 text-sm outline-none font-medium">
-                <option value="Falaj Restaurant">Falaj Restaurant</option>
-                <option value="Sarab">Sarab Bar & Lounge</option>
-                <option value="Al Waha Pool">Al Waha Pool</option>
-                <option value="The Spa">The Spa</option>
-              </select>
+                <p class="text-[10px] text-stone-400"><span id="cart-count">0</span> <span id="lblItemsText">item(s)</span></p>
+                <p class="font-serif-luxury text-lg text-amber-200"><span id="cart-total">0</span> AED</p>
             </div>
-            <div>
-              <label class="block text-xs font-bold text-stone-600 uppercase mb-1.5">Price / Rate (e.g., AED 75)</label>
-              <input type="text" id="adm_price" placeholder="AED 75" class="w-full border border-stone-200 rounded-xl p-3.5 text-sm bg-stone-50 outline-none" required>
-            </div>
-            <div class="p-5 bg-stone-50 rounded-2xl border border-stone-200 space-y-3">
-              <input type="text" id="adm_title_en" placeholder="Title (English)" class="w-full border border-stone-200 rounded-xl p-3 text-sm outline-none" required>
-              <input type="text" id="adm_title_ar" placeholder="العنوان (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-xl p-3 text-sm outline-none" required>
-              <input type="text" id="adm_title_hi" placeholder="शीर्षक (हिंदी)" class="w-full border border-stone-200 rounded-xl p-3 text-sm outline-none" required>
-            </div>
-            <div class="p-5 bg-stone-50 rounded-2xl border border-stone-200 space-y-3">
-              <input type="text" id="adm_timing_en" placeholder="Timings (English)" class="w-full border border-stone-200 rounded-xl p-3 text-sm outline-none" required>
-              <input type="text" id="adm_timing_ar" placeholder="الأوقات (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-xl p-3 text-sm outline-none" required>
-              <input type="text" id="adm_timing_hi" placeholder="समय (हिंदी)" class="w-full border border-stone-200 rounded-xl p-3 text-sm outline-none" required>
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-stone-600 uppercase mb-1.5">Offer Image</label>
-              <input type="file" id="imageFileInput" accept="image/*" onchange="previewPromoImage(event)" class="w-full text-xs text-stone-500 mb-2" />
-              <img id="promoImagePreview" class="hidden w-full h-40 object-cover rounded-xl mt-2 border border-stone-200" alt="Preview">
-            </div>
-            <button type="button" onclick="saveAdminData()" class="w-full bg-remal-sand hover:bg-amber-700 text-white font-bold py-4 rounded-xl shadow-md transition text-sm tracking-wide">Publish Offer</button>
-          </form>
-        </div>
-        <div class="lg:col-span-7 bg-white rounded-3xl p-8 shadow-sm border border-stone-200 space-y-5">
-          <h3 class="text-xs font-bold text-stone-500 uppercase tracking-widest border-b border-stone-100 pb-3">Active Offers</h3>
-          <div id="adminListContainer" class="grid grid-cols-1 gap-4 max-h-[700px] overflow-y-auto pr-2"></div>
-        </div>
-      </div>
-
-      <div id="adminMenuSubSection" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <div class="lg:col-span-5 bg-white rounded-3xl p-8 shadow-sm border border-stone-200 space-y-5 h-fit">
-          <h2 class="text-lg font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-3">Add New Menu Dish</h2>
-          <form id="foodMenuForm" onsubmit="addMenuItem(event)" class="space-y-4">
-            <input type="text" id="food_name_en" placeholder="Item Name (English)" class="w-full border border-stone-200 rounded-xl p-3.5 text-sm bg-stone-50 outline-none" required>
-            <input type="text" id="food_name_ar" placeholder="اسم الوجبة (عربي)" dir="rtl" class="w-full border border-stone-200 rounded-xl p-3.5 text-sm bg-stone-50 outline-none" required>
-            <input type="text" id="food_desc_en" placeholder="Description / Ingredients (English)" class="w-full border border-stone-200 rounded-xl p-3.5 text-sm bg-stone-50 outline-none">
-            <input type="text" id="food_desc_ar" placeholder="المكونات والتفاصيل (عربي)" dir="rtl" class="w-full border border-stone-200 rounded-xl p-3.5 text-sm bg-stone-50 outline-none">
-            <input type="number" id="food_price" placeholder="Price (AED)" class="w-full border border-stone-200 rounded-xl p-3.5 text-sm bg-stone-50 outline-none" required>
-            <select id="food_category" class="w-full border border-stone-200 rounded-xl p-3.5 bg-stone-50 text-sm outline-none font-medium">
-              <option value="Breakfast">Breakfast | وجبة الإفطار</option>
-              <option value="Soup">Soup | الشوربة</option>
-              <option value="Salads and Mezzeh">Salads and Mezzeh | السلطات والمقبلات</option>
-              <option value="Sandwich and Burger">Sandwich and Burger | الساندويش والبرجر</option>
-              <option value="Pizza">Pizza | البيتزا</option>
-              <option value="Pasta">Pasta | الباستا</option>
-              <option value="Main Course">Main Course | الأطباق الرئيسية</option>
-              <option value="Hot Beverage">Hot Beverage | القهوة/ الشاي</option>
-              <option value="Milkshake">Milkshake | ميلك شيك</option>
-              <option value="Mocktail">Mocktail | الموكتيل</option>
-              <option value="Alcoholic Beverages">Alcoholic Beverages</option>
-            </select>
-            <button type="submit" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-bold py-4 rounded-xl text-sm shadow-md transition">➕ Add Dish</button>
-          </form>
-        </div>
-        <div class="lg:col-span-7 bg-white rounded-3xl p-8 shadow-sm border border-stone-200 space-y-5">
-          <h3 class="text-xs font-bold text-stone-500 uppercase tracking-widest border-b border-stone-100 pb-3">Live Menu Items</h3>
-          <div id="adminMenuListContainer" class="space-y-4 max-h-[700px] overflow-y-auto pr-2"></div>
-        </div>
-      </div>
-    </div>
-
-    <div id="adminRequestsPanel" class="hidden space-y-6">
-      <div class="bg-white rounded-3xl p-8 shadow-sm border border-stone-200 space-y-6">
-        <div class="flex justify-between items-center border-b border-stone-100 pb-4">
-          <div>
-            <h2 class="text-xl font-serif-luxury font-bold text-stone-900">Live Service Requests</h2>
-            <p class="text-xs text-stone-500">Real-time WebSockets room service and guest requests stream</p>
-          </div>
-          <div class="flex items-center space-x-3">
-            <button onclick="enableAudioAlerts()" id="btnAudioEnable" class="text-xs bg-amber-50 text-amber-800 hover:bg-amber-100 px-4 py-2.5 rounded-xl font-bold border border-amber-200 shadow-sm transition">
-              🔔 Enable Sound Alerts
+            <button onclick="sendOrderSupabaseAndWhatsApp()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-md transition flex items-center space-x-2">
+                <span id="lblWhatsappBtn">💬 Order via WhatsApp</span>
             </button>
-            <button onclick="fetchRequestsFromCloud()" class="text-xs bg-stone-100 text-stone-700 hover:bg-stone-200 px-4 py-2.5 rounded-xl font-semibold border border-stone-200 transition">🔄 Refresh Stream</button>
-          </div>
         </div>
-        <div id="adminRequestsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 max-h-[750px] overflow-y-auto pr-2"></div>
-      </div>
     </div>
 
-    <div id="adminFeedbackPanel" class="hidden space-y-6">
-      <div class="bg-white rounded-3xl p-8 shadow-sm border border-stone-200 space-y-6">
-        <h2 class="text-xl font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-4">Guest Feedback & Ratings</h2>
-        <div id="adminFeedbackContainer" class="space-y-4 max-h-[700px] overflow-y-auto pr-2">
-          <p class="text-xs text-stone-400">Loading reviews...</p>
-        </div>
-      </div>
-    </div>
+    <script>
+        // Configuration Supabase intégrée (Remal Guest Hub)
+        const SUPABASE_URL = 'https://bqusphztkwacczqeiuo.supabase.co';
+        const SUPABASE_ANON_KEY = 'Sb_publishable_sPe-QbVM2c1i8zAsanhmXg_wg_chDen'; 
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    <div id="adminAnalyticsPanel" class="hidden space-y-8">
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-2">
-          <p class="text-xs text-stone-500 font-bold uppercase tracking-wider">Total Requests</p>
-          <h3 id="statTotalReq" class="text-3xl font-serif-luxury font-bold text-stone-900">0</h3>
-        </div>
-        <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-2">
-          <p class="text-xs text-stone-500 font-bold uppercase tracking-wider">Resolution Rate</p>
-          <h3 id="statResolutionRate" class="text-3xl font-serif-luxury font-bold text-emerald-600">0%</h3>
-        </div>
-        <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-2">
-          <p class="text-xs text-stone-500 font-bold uppercase tracking-wider">Room Service Revenue</p>
-          <h3 id="statRevenue" class="text-3xl font-serif-luxury font-bold text-remal-sand">AED 0</h3>
-        </div>
-      </div>
+        const i18n = {
+            en: {
+                roomTitle: "Room",
+                heroTitle: "In-Room Dining",
+                heroSub: "Order food and beverages directly from your room",
+                lblRoomInput: "Room or Villa Number:",
+                placeholderRoom: "e.g. 204 or Villa 02",
+                allDishes: "All Dishes",
+                itemsText: "item(s)",
+                whatsappBtn: "💬 Order via WhatsApp",
+                alertRoom: "Please enter your room or villa number first.",
+                catAll: "All",
+                categories: {
+                    "Breakfast": "Breakfast",
+                    "Soups": "Soups",
+                    "Salads & Mezze": "Salads & Mezze",
+                    "Burgers & Sandwiches": "Burgers & Sandwiches",
+                    "Pizzas": "Pizzas",
+                    "Pasta": "Pasta",
+                    "Main Courses": "Main Courses",
+                    "Hot Beverages": "Hot Beverages",
+                    "Milkshakes": "Milkshakes",
+                    "Mocktails": "Mocktails",
+                    "Whiskey": "Whiskey",
+                    "Cognac & Liqueurs": "Cognac & Liqueurs",
+                    "Wines & Champagne": "Wines & Champagne",
+                    "Beers & Cocktails": "Beers & Cocktails"
+                }
+            },
+            ar: {
+                roomTitle: "الغرفة",
+                heroTitle: "خدمة طعام الغرف",
+                heroSub: "اطلب المأكولات والمشروبات مباشرة من غرفتك",
+                lblRoomInput: "رقم الغرفة أو الفيلا:",
+                placeholderRoom: "مثال: 204 أو فيلا 02",
+                allDishes: "جميع الأطباق",
+                itemsText: "عنصر (عناصر)",
+                whatsappBtn: "💬 اطلب عبر واتساب",
+                alertRoom: "الرجاء إدخال رقم الغرفة أو الفيلا أولاً.",
+                catAll: "الكل",
+                categories: {
+                    "Breakfast": "الإفطار",
+                    "Soups": "الشوربات",
+                    "Salads & Mezze": "السلطات والمقبلات",
+                    "Burgers & Sandwiches": "البرجر والساندويتش",
+                    "Pizzas": "البيتزا",
+                    "Pasta": "المعكرونة",
+                    "Main Courses": "الأطباق الرئيسية",
+                    "Hot Beverages": "المشروبات الساخنة",
+                    "Milkshakes": "ميلك شيك",
+                    "Mocktails": "موهيتو وموكتيل",
+                    "Whiskey": "الويسكي",
+                    "Cognac & Liqueurs": "كونياك ومشروبات روحية",
+                    "Wines & Champagne": "النبيذ والشامبانيا",
+                    "Beers & Cocktails": "البيرا والكوكتيلات"
+                }
+            },
+            hi: {
+                roomTitle: "कमरा",
+                heroTitle: "इन-रूम डाइनिंग",
+                heroSub: "अपने कमरे से सीधे खाना और पेय पदार्थ ऑर्डर करें",
+                lblRoomInput: "कमरा या विला नंबर:",
+                placeholderRoom: "उदा. 204 या विला 02",
+                allDishes: "सभी व्यंजन",
+                itemsText: "आइटम",
+                whatsappBtn: "💬 व्हाट्सएप के ذریعے ऑर्डर करें",
+                alertRoom: "कृपया पहले अपना कमरा या विला नंबर दर्ज करें।",
+                catAll: "सभी",
+                categories: {
+                    "Breakfast": "नाश्ता",
+                    "Soups": "सूप",
+                    "Salads & Mezze": "सलाद और मेजे",
+                    "Burgers & Sandwiches": "बर्गर और सैंडविच",
+                    "Pizzas": "पिज़्ज़ा",
+                    "Pasta": "पास्ता",
+                    "Main Courses": "मुख्य पाठ्यक्रम",
+                    "Hot Beverages": "गर्म पेय",
+                    "Milkshakes": "मिल्कशेेक",
+                    "Mocktails": "मोकटेल",
+                    "Whiskey": "व्हिस्की",
+                    "Cognac & Liqueurs": "कग्नेक और लिकर",
+                    "Wines & Champagne": "वाइन और शैंपेन",
+                    "Beers & Cocktails": "बीयर और कॉकटेल"
+                }
+            }
+        };
 
-      <div class="bg-white rounded-3xl p-8 shadow-sm border border-stone-200 space-y-6">
-        <h3 class="text-lg font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-3">📈 Service Breakdown & Performance</h3>
-        <div id="analyticsContentContainer" class="space-y-4 text-sm text-stone-600">
-          <p class="text-stone-400 italic">Calculating live metrics...</p>
-        </div>
-      </div>
-    </div>
+        const menuItems = [
+            // PETITS-DÉJEUNERS (Breakfast)
+            { id: 'bf1', category: 'Breakfast', name: { en: 'Continental Breakfast', ar: 'كونتيننتال', hi: 'महाद्वीपीय नाश्ता' }, desc: { en: 'Croissant, Muffin, Danish and Sliced Fruits', ar: 'تشكيلة من الكرواسون والمفن والدانش، وفواكه موسمية مقطعة', hi: 'क्रॉसेंट, मफिन, दानिश और मौसमी कटे हुए फल' }, price: 49 },
+            { id: 'bf2', category: 'Breakfast', name: { en: 'Emirati Flavors Breakfast', ar: 'الفطور بالطعم الإماراتي', hi: 'अमीराती स्वाद का नाश्ता' }, desc: { en: 'Harees, Chebab, Balaleet, Arabic Cheese, Labneh, Olives, Cucumber, Tomatoes, Foul Medames, Egg Shakshuka, Kuboos, Fruits', ar: 'هريس، جباب، بالاليط، جبن عريج، لبنة، زيتون، خيار، طماطم، فول مدمس، شكشوكة البيض، خبز، فواكه', hi: 'हरीस, चेबाब, बलालीट, पनीर, लाबनेह, जैतून, ककड़ी, टमाटर, फुल मेदमेस, शक्शुका, कुबूज़, फल' }, price: 59 },
+            { id: 'bf3', category: 'Breakfast', name: { en: 'Arabic Breakfast', ar: 'فطور عربي', hi: 'अरबी नाश्ता' }, desc: { en: 'Hummus, Falafel, Foul Medames, Labneh, Halloumi, Fried Egg, Assorted Vegetables, Olives, Mixed Pickles, Seasonal Fruits', ar: 'حمص، فلافل، فول مدمس، لبنة، جبنة حلومي، بيض مقلي، خضار مشكلة، زيتون، مخللات، فواكه موسمية', hi: 'हम्मुस, फलाफेल, फुल मेदमेस, लाबनेह, हलोमी, तला हुआ अंडा, मिश्रित सब्जियां, जैतून, अचार, मौसमी फल' }, price: 59 },
+            { id: 'bf4', category: 'Breakfast', name: { en: 'International Breakfast', ar: 'العالمي', hi: 'अंतर्राष्ट्रीय नाश्ता' }, desc: { en: 'Fresh bakery basket, two eggs to your liking, chicken sausage, turkey bacon, hash brown potatoes, grilled tomatoes, sautéed mushrooms, and baked beans, yogurt with dried fruits and nuts or mixed berries, seasonal sliced fruits', ar: 'سلة مخبوزات طازجة، بيضتان حسب رغبتك، سقا دجاج، لحم ديك رومي مقدد، بطاطس هاش براون، طماطم مشوية، فطر سوتيه، فاصوليا مطهوة، زبادي مع فواكه مجففة ومكسرات أو توت مشكل، فواكه موسمية مقطعة', hi: 'ताजा बेकरी बास्केट, आपकी पसंद के दो अंडे, चिकन सॉसेज, टर्की बेकन, हैश ब्राउन आलू, ग्रिल्ड टमाटर, सॉटे मशरूम और पकी हुई बीन्स, सूखे मेवों और नट्स या मिश्रित जामुन के साथ दही, मौसमी कटे हुए फल' }, price: 61 },
+            { id: 'bf5', category: 'Breakfast', name: { en: 'Choice of Eggs', ar: 'اختيارات من البيض', hi: 'अंडे की पसंद' }, desc: { en: 'Scrambled Eggs, Fried Eggs, Boiled Eggs, Plain Omelette, Vegetable Omelette, Cheese Omelette, Poached Eggs, Sunny Side Up Eggs', ar: 'بيض مخفوق، بيض مقلي، بيض مسلوق، أومليت سادة، أومليت بالخضار، أومليت بالجبن، بيض مسلوق (بوشيه)، بيض عيون', hi: 'स्क्रैम्बल अंडे, तले हुए अंडे, उबले अंडे, सादा आमलेट, सब्जी आमलेट, पनीर आमलेट, पोच्ड अंडे, सनी साइड अप अंडे' }, price: 25 },
+            { id: 'bf6', category: 'Breakfast', name: { en: 'Shakshuka', ar: 'شكشوكة', hi: 'शक्शुका' }, desc: { en: 'Poached eggs in a spicy tomato and bell pepper sauce, seasoned with garlic and onions. Served with Arabic bread.', ar: 'بيض مسلوق بطريقة بوشيه في صلصة طماطم حارة مع الفلفل، متبل بالثوم والبصل يقدم مع الخبز العربي', hi: 'लहसुन और प्याज के साथ मसालेदार टमाटर और शिमला मिर्च की चटनी में पोच्ड अंडे। अरबी ब्रेड के साथ परोसा जाता है।' }, price: 30 },
+            { id: 'bf7', category: 'Breakfast', name: { en: 'Eggs Benedict with Turkey Ham', ar: 'بيض بندكت مع ديك رومي', hi: 'टर्की हैम के साथ अंडे बेनेडिक्ट' }, desc: { en: 'Poached eggs (poached) with ham turkey, on toasted English muffin, topped with rich Hollandaise sauce.', ar: 'بيض مسلوق (بوشيه) مع هام ديك رومي، يقدم على مافن إنجليزي محمص مع صلصة الهولنديز', hi: 'टोस्टेड इंग्लिश मफिन पर टर्की हैम के साथ पोच्ड अंडे, ऊपर से रिच हॉलैंडाइज सॉस।' }, price: 30 },
+            { id: 'bf8', category: 'Breakfast', name: { en: 'Eggs Benedict with Smoked Salmon', ar: 'بيض بندكت مع سلمون مدخن', hi: 'स्मोक्ड सैल्मन के साथ अंडे बेनेडिक्ट' }, desc: { en: 'Poached eggs (poached) with smoked salmon, on toasted English muffin, topped with creamy Hollandaise sauce.', ar: 'بيض مسلوق (بوشيه) مع سلمون مدخن، يقدم على مافن إنجليزي محمص مع صلصة الهولنديز', hi: 'टोस्टेड इंग्लिश मफिन पर स्मोक्ड सैल्मन के साथ पोच्ड अंडे, ऊपर से मलाईदार हॉलैंडाइज सॉस।' }, price: 35 },
 
-    <div id="adminBannerPanel" class="hidden space-y-6 max-w-3xl mx-auto">
-      <div class="bg-white rounded-3xl p-8 shadow-sm border border-stone-200 space-y-6">
-        <h2 class="text-xl font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-4">Banner Management</h2>
-        <div class="p-5 bg-stone-50 rounded-2xl border border-stone-200 space-y-3">
-          <input type="text" id="ann_en" placeholder="Announcement (English)" class="w-full border border-stone-200 rounded-xl p-3.5 text-sm outline-none">
-          <input type="text" id="ann_ar" placeholder="الإعلان (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-xl p-3.5 text-sm outline-none">
-          <input type="text" id="ann_hi" placeholder="घोषणा (हिंदी)" class="w-full border border-stone-200 rounded-xl p-3.5 text-sm outline-none">
-        </div>
-        <div class="flex space-x-4">
-          <button onclick="saveAnnouncement(true)" class="flex-1 bg-remal-sand hover:bg-amber-700 text-white font-bold py-3.5 rounded-xl text-sm transition">📢 Publish Announcement</button>
-          <button onclick="saveAnnouncement(false)" class="flex-1 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold py-3.5 rounded-xl text-sm transition">🚫 Hide Announcement</button>
-        </div>
-      </div>
-    </div>
-  </div>
+            // SOUPES (Soups)
+            { id: 'sp1', category: 'Soups', name: { en: 'Traditional Lentil Soup', ar: 'شوربة العدس', hi: 'पारंपरिक दाल का सूप' }, desc: { en: 'With roasted cumin, fresh lemon and crispy pita bread', ar: 'تقدم مع كمون محمص، ليمون طازج وخبر بيتا مقرمش', hi: 'भुना हुआ जीरा, ताज़ा नींबू और कुरकुरी पिटा ब्रेड के साथ' }, price: 25 },
+            { id: 'sp2', category: 'Soups', name: { en: 'Minestrone Soup', ar: 'شوربة المينستروني', hi: 'मिनस्ट्रोनी सूप' }, desc: { en: 'Classic Italian vegetable soup with pasta and herbs', ar: 'شوربة إيطالية كلاسيكية من الخضار مع المعكرونة والأعشاب', hi: 'पास्ता और जड़ी-बूटियों के साथ क्लासिक इतालवी सब्जी सूप' }, price: 25 },
+            { id: 'sp3', category: 'Soups', name: { en: 'Harira Soup', ar: 'شوربة الحريرة', hi: 'हरीरा सूप' }, desc: { en: 'Moroccan spiced soup made with lentils, chickpeas and tomatoes', ar: 'شوربة مغربية متبلة من العدس والحمص والطماطم', hi: 'दाल, छोले और टमाटर से बना मोरक्कन मसालेदार सूप' }, price: 25 },
+            { id: 'sp4', category: 'Soups', name: { en: 'Soup of the Day', ar: 'شوربة اليوم', hi: 'दिन का सूप' }, desc: { en: 'Chef\'s daily special, freshly prepared with seasonal ingredients', ar: 'الشوربة اليومية المميزة من إعداد الشيف، تحضر طازجة باستخدام مكونات موسمية مختارة', hi: 'शेफ की दैनिक विशेष डिश, मौसमी सामग्री के साथ ताज़ा तैयार की गई' }, price: 25 },
 
-  <script src="app.js"></script>
+            // SALADES & MEZZE (Salads & Mezze)
+            { id: 'sl1', category: 'Salads & Mezze', name: { en: 'Classic Caesar Salad', ar: 'سلطة سيزر الكلاسيكية', hi: 'क्लासिक सीज़र सलाद' }, desc: { en: 'Lettuce, shaved parmesan cheese, Caesar dressing, croutons', ar: 'خس، جبنة بارميزان مبشورة، صلصة سيزر، خبز محمص', hi: 'सलाद पत्ता, कद्दूकस किया हुआ परमेसन पनीर, सीज़र ड्रेसिंग, क्रौटन' }, price: 45 },
+            { id: 'sl2', category: 'Salads & Mezze', name: { en: 'Chicken Caesar Salad', ar: 'سلطة سيزر مع الدجاج', hi: 'चिकन सीज़र सलाद' }, desc: { en: 'Lettuce, chicken, beef bacon, shaved parmesan cheese, Caesar dressing, croutons', ar: 'خس، دجاج، لحم بقري مقدد، جبنة بارميزان مبشورة، صلصة سيزر، خبز محمص', hi: 'सलाद पत्ता, चिकन, बीफ बेकन, कद्दूकस किया हुआ परमेसन पनीर, सीज़र ड्रेसिंग, क्रौटन' }, price: 49 },
+            { id: 'sl3', category: 'Salads & Mezze', name: { en: 'Shrimps Caesar Salad', ar: 'سلطة سيزر بالروبيان', hi: 'झींगा सीज़र सलाद' }, desc: { en: 'Lettuce, grilled shrimps, parmesan cheese, Caesar dressing, croutons', ar: 'خس، روبيان مشوي، جبنة بارميزان، صلصة سيزر، خبز محمص', hi: 'सलाद पत्ता, ग्रिल्ड झींगा, परमेसन पनीर, सीज़र ड्रेसिंग, क्रौटन' }, price: 59 },
+            { id: 'sl4', category: 'Salads & Mezze', name: { en: 'Quinoa Salad', ar: 'سلطة الكينوا', hi: 'क्विनोआ सलाद' }, desc: { en: 'Quinoa combined with finely chopped parsley and tomato', ar: 'كينوا مع بقدونس وطماطم مفرومة ناعماً', hi: 'बारीक कटे अजमोद और टमाटर के साथ मिश्रित क्विनोआ' }, price: 40 },
+            { id: 'sl5', category: 'Salads & Mezze', name: { en: 'Fattoush', ar: 'فتوش', hi: 'फत्तूश सलाद' }, desc: { en: 'Lettuce, mint, zaatar, tomatoes, peppers, cucumber, onion, radish, olive oil, lemon juice, pomegranate molasses', ar: 'خس، نعناع، زعتر، طماطم، فلفل، خيار، بصل، فجل، زيت زيتون، عصير ليمون، دبس الرمان', hi: 'सलाद पत्ता, पुदीना, ज़ातर, टमाटर, शिमला मिर्च, ककड़ी, प्याज, मूली, जैतून का तेल, नींबू का रस, अनार का शीरा' }, price: 40 },
+            { id: 'sl6', category: 'Salads & Mezze', name: { en: 'Vine Leaves (Warak Enab)', ar: 'ورق عنب', hi: 'अंगूर के पत्ते (वारक एनाब)' }, desc: { en: 'Stuffed grape leaves with rice, herbs, and lemon', ar: 'ورق عنب محشو بالأرز والأعشاب والليمون', hi: 'चावल, जड़ी-बूटियों और नींबू के साथ भरे हुए अंगूर के पत्ते' }, price: 40 },
+
+            // BURGERS & SANDWICHS (Burgers & Sandwiches)
+            { id: 'sw1', category: 'Burgers & Sandwiches', name: { en: 'Beef Burger', ar: 'برجر لحم بقري', hi: 'बीफ बर्गर' }, desc: { en: 'Juicy beef patty with mayonnaise, lettuce, tomato, gherkins, cheddar cheese, and caramelized onions, served with French fries', ar: 'برجر لحم بقري مع مايونيز، خس، طماطم، خيار مخلل، جبنة شيدر وبصل مكرمل، يقدم مع بطاطس مقلية', hi: 'मयोनीज़, सलाद पत्ता, टमाटर, गर्किन, चेडर पनीर और caramelized प्याज के साथ रसदार बीफ पैटी, फ्रेंच फ्राइज़ के साथ परोसी जाती है' }, price: 60 },
+            { id: 'sw2', category: 'Burgers & Sandwiches', name: { en: 'Mac Beef Burger', ar: 'برجر لحم بقري ماك', hi: 'मैक बीफ बर्गर' }, desc: { en: 'Special beef patty with signature toppings, served with French fries', ar: 'برجر لحم بقري مميز مع مكونات خاصة، يقدم مع بطاطس مقلية', hi: 'हस्ताक्षर टॉपिंग के साथ विशेष बीफ पैटी, फ्रेंच फ्राइज़ के साथ परोसी जाती है' }, price: 65 },
+            { id: 'sw3', category: 'Burgers & Sandwiches', name: { en: 'Grilled Chicken Burger', ar: 'برجر الدجاج المشوي', hi: 'ग्रिल्ड चिकन बर्गर' }, desc: { en: 'Juicy chicken patty with mayonnaise, tomato, jalapeño, lettuce, and mozzarella cheese, served with French fries', ar: 'برجر دجاج مع مايونيز، طماطم، هالابينو، خس وجبنة موزاريلا، يقدم مع بطاطس مقلية', hi: 'मयोनीज़, टमाटर, जलापीनो, सलाद पत्ता और मोज़ेरेला पनीर के साथ रसदार चिकन पैटी, फ्रेंच फ्राइज़ के साथ' }, price: 55 },
+            { id: 'sw4', category: 'Burgers & Sandwiches', name: { en: 'Club Sandwich', ar: 'كلوب ساندويتش', hi: 'क्लब सैंडविच' }, desc: { en: 'Triple decker with turkey bacon, lettuce, tomato, chicken mousse, cheese, fried egg, cocktail sauce, served with French fries', ar: 'توست ثلاثي مع لحم ديك رومي مقدد، خس، طماطم، موس دجاج، جبنة، بيض مقلي، صوص كوكتيل، يقدم مع بطاطس مقلية', hi: 'टर्की बेकन, सलाद पत्ता, टमाटर, चिकन मूस, पनीर, तला हुआ अंडा, कॉकटेल सॉस के साथ ट्रिपल डेकर, फ्रेंच फ्राइज़ के साथ' }, price: 60 },
+            { id: 'sw5', category: 'Burgers & Sandwiches', name: { en: 'Fish and Chips', ar: 'سمك مقلي مع بطاطس مقلية', hi: 'फिश एंड चिप्स' }, desc: { en: 'Crispy battered fried fish served with tartar sauce and French fries', ar: 'أصابع سمك مقلية مقرمشة تقدم مع صلصة التارتار والبطاطس المقلية', hi: 'टारटर सॉस और फ्रेंच फ्राइज़ के साथ परोसी जाने वाली कुरकुरी तली हुई मछली' }, price: 69 },
+            { id: 'sw6', category: 'Burgers & Sandwiches', name: { en: 'Chicken Quesadilla', ar: 'كاساديا الدجاج', hi: 'चिकन कैसाडिला' }, desc: { en: 'Chicken with Mexican flavors, capsicum, onions, peppers, tomatoes, and mixed cheese, served with tomato salsa, sour cream and avocado sauce', ar: 'دجاج بالنكهة المكسيكية مع فلفل رومي، بصل، طماطم، جبنة مشكلة، تقدم مع صلصة الطماطم، كريمة حامضة وصوص الأفوكادو', hi: 'मेक्सिकन स्वादों के साथ चिकन, शिमला मिर्च, प्याज, टमाटर और मिश्रित पनीर, टमाटर साल्सा, खट्टा क्रीम और avocado सॉस के साथ' }, price: 60 },
+            { id: 'sw7', category: 'Burgers & Sandwiches', name: { en: 'Smoked Salmon Sandwich', ar: 'ساندويتش سلمون مدخن', hi: 'स्मोक्ड सैल्मन सैंडविच' }, desc: { en: 'Smoked salmon with cream cheese, capers, rocket leaves, and onion slices, served with French fries', ar: 'سلمون مدخن مع جبنة كريمية، كابر، أوراق جرجير وشرائح بصل، يقدم مع بطاطس مقلية', hi: 'क्रीम चीज़, केपर्स, रॉकेट पत्तियों और प्याज के स्लाइस के साथ स्मोक्ड सैल्मन, फ्रेंच फ्राइज़ के साथ' }, price: 55 },
+            { id: 'sw8', category: 'Burgers & Sandwiches', name: { en: 'Cheese Sandwich', ar: 'ساندويتش الجبن', hi: 'चीज़ सैंडविच' }, desc: { en: 'Melted cheese on toasted bread with fresh vegetables, served with French fries', ar: 'جبن ذائب على خبز محمص مع خضار طازجة، يقدم مع بطاطس مقلية', hi: 'ताज़ी सब्जियों के साथ टोस्टेड ब्रेड पर पिघला हुआ पनीर, फ्रेंच फ्राइज़ के साथ' }, price: 45 },
+            { id: 'sw9', category: 'Burgers & Sandwiches', name: { en: 'Chicken Steak Sandwich', ar: 'ساندويتش ستيك الدجاج', hi: 'चिकन स्टेक सैंडविच' }, desc: { en: 'Grilled chicken steak with sautéed vegetables, sauce, and mozzarella cheese, served with Cajun-spiced potato wedges', ar: 'ستيك دجاج مشوي مع خضار سوتيه وصوص وجبنة موزاريلا، يقدم مع بطاطس ويدجز بالكاجون', hi: 'सॉटे सब्जियों, सॉस और मोज़ेरेला पनीर के साथ ग्रिल्ड चिकन स्टेक, कैजुन-मसालेदार आलू वेजेज के साथ' }, price: 60 },
+            { id: 'sw10', category: 'Burgers & Sandwiches', name: { en: 'Beef Steak Sandwich', ar: 'ساندويتش ستيك اللحم البقري', hi: 'बीफ स्टेक सैंडविच' }, desc: { en: 'Grilled beef steak with cheddar cheese, fresh vegetables, and sauce, served with French fries', ar: 'ستيك لحم بقري مشوي مع جبنة شيدر، خضار طازجة وصوص، يقدم مع بطاطس مقلية', hi: 'चेडर पनीर, ताज़ी सब्जियों और सॉस के साथ ग्रिल्ड बीफ स्टेक, फ्रेंच फ्राइज़ के साथ' }, price: 65 },
+
+            // PIZZAS (Pizzas)
+            { id: 'pz1', category: 'Pizzas', name: { en: 'Margherita Pizza', ar: 'بيتزا مارغريتا', hi: 'मार्गेरिटा पिज़्ज़ा' }, desc: { en: 'Mozzarella cheese, tomato sauce, oregano', ar: 'جبن موزاريلا، صلصة الطماطم، أوريغانو', hi: 'मोज़ेरेला पनीर, टमाटर की चटनी, ओरेगानो' }, price: 49 },
+            { id: 'pz2', category: 'Pizzas', name: { en: 'Vadodara Vegetable Pizza', ar: 'بيتزا فادودارا بالخضار', hi: 'वडोदरा वेजीटेबल पिज़्ज़ा' }, desc: { en: 'Grilled zucchini, eggplant, bell peppers, mushrooms, and sun-dried tomatoes with mozzarella cheese and tomato sauce', ar: 'كوسة مشوية، باذنجان، فلفل رومي، فطر، طماطم مجففة مع جبن موزاريلا وصلصة الطماطم', hi: 'ग्रिल्ड ज़ूचिनी, बैंगन, शिमला मिर्च, मशरूम और धूप में सूखे टमाटर, मोज़ेरेला पनीर और टमाटर की चटनी के साथ' }, price: 59 },
+            { id: 'pz3', category: 'Pizzas', name: { en: 'Cajun Spiced Chicken Pizza', ar: 'بيتزا دجاج متبل بالكاجون', hi: 'कैजुन मसालेदार चिकन पिज़्ज़ा' }, desc: { en: 'Tomato sauce, mozzarella, basil, oregano, grilled Cajun-spiced chicken, roasted bell peppers, and rocket leaves', ar: 'صلصة طماطم، موزاريلا، ريحان، أوريغانو، دجاج كاجون مشوي، فلفل رومي وجرجير', hi: 'टमाटर की चटनी, मोज़ेरेला, तुलसी, ओरेगानो, ग्रिल्ड कैजुन-मसालेदार चिकन, भुनी हुई शिमला मिर्च और रॉकेट पत्तियां' }, price: 65 },
+            { id: 'pz4', category: 'Pizzas', name: { en: 'Polo Pizza', ar: 'بيتزا بولو', hi: 'पोलो पिज़्ज़ा' }, desc: { en: 'Thinly sliced chicken and mushrooms on tomato sauce, finished with oregano', ar: 'شرائح دجاج رفيعة ومشروفر على صلصة الطماطم، مع أوريغانو', hi: 'टमाटर की चटनी पर पतले कटे चिकन और मशरूम, ओरेगानो के साथ' }, price: 60 },
+            { id: 'pz5', category: 'Pizzas', name: { en: 'Pepperoni Pizza', ar: 'بيتزا بيبروني', hi: 'पेपरोनी पिज़्ज़ा' }, desc: { en: 'Mozzarella, beef pepperoni, tomato sauce', ar: 'جبن موزاريلا، بيبروني لحم بقري، صلصة الطماطم', hi: 'मोज़ेरेला, बीफ पेपरोनी, टमाटर की चटनी' }, price: 65 },
+            { id: 'pz6', category: 'Pizzas', name: { en: 'Gorgonzola Pizza', ar: 'بيتزا غورغونزولا', hi: 'गॉरगॉन्ज़ोला पिज़्ज़ा' }, desc: { en: 'Gorgonzola and mozzarella cheese on tomato sauce, topped with oregano and pesto drizzle', ar: 'جبن غورغونزولا وموزاريلا على صلصة الطماطم، مع أوريغانو وبيستو', hi: 'टमाटर की चटनी पर गॉरगॉन्ज़ोला और मोज़ेरेला पनीर, ओरेगानो और पेस्टो के साथ' }, price: 69 },
+
+            // PÂTES (Pasta)
+            { id: 'pt1', category: 'Pasta', name: { en: 'Spaghetti Bolognese', ar: 'سباغيتي بولونيز', hi: 'स्पघेटी बोलोमीज़' }, desc: { en: 'Classic Italian pasta with rich tomato sauce, minced beef, garlic, and herbs', ar: 'سباغيتي إيطالية بصلصة طماطم غنية مع لحم مفروم وثوم وأعشاب', hi: 'समृद्ध टमाटर की चटनी, कीमा बनाया हुआ बीफ, लहसुन और जड़ी-बूटियों के साथ क्लासिक इतालवी पास्ता' }, price: 56 },
+            { id: 'pt2', category: 'Pasta', name: { en: 'Ravioli Pasta with Spinach & Ricotta', ar: 'رافيولي بالسبانخ والريكوتا', hi: 'पालक और रिकोटा के साथ रविoli पास्ता' }, desc: { en: 'Pasta filled with ricotta, spinach, and Parmesan, served with light tomato or creamy onion sauce', ar: 'باستا محشوة بجبن الريكوتا والسبانخ والبارميزان، تقدم مع صلصة طماطم أو كريمة', hi: 'रिकोटा, पालक और परमेसन से भरा पास्ता, हल्के टमाटर या मलाईदार प्याज सॉस के साथ' }, price: 69 },
+            { id: 'pt3', category: 'Pasta', name: { en: 'Fettuccine Alfredo with Grilled Chicken', ar: 'فيتوتشيني ألفريدو مع دجاج مشوي', hi: 'ग्रिल्ड चिकन के साथ फेटुचिनी अल्फ्रेडो' }, desc: { en: 'Fettuccine in rich creamy Alfredo sauce topped with grilled chicken', ar: 'فيتوتشيني بصلصة ألفريدو كريمية غنية مع دجاج مشوي', hi: 'ग्रिल्ड चिकन के साथ समृद्ध मलाईदार अल्फ्रेडो सॉस में फेटुचिनी' }, price: 60 },
+            { id: 'pt4', category: 'Pasta', name: { en: 'Tagliatelle with Shrimp & Spring Onion Sauce', ar: 'تالياتيلي بالروبيان وصلصة البصل الأخضر', hi: 'झींगा और स्प्रिंग अनियन सॉस के साथ टग्लियाटेले' }, desc: { en: 'Fresh tagliatelle with shrimp in a light spring onion cream sauce', ar: 'تالياتيلي طازجة مع روبيان بصلصة كريمية خفيفة بنكهة البصل الأخضر', hi: 'हल्के स्प्रिंग अनियन क्रीम सॉस में झींगा के साथ ताजा टग्लियाटेले' }, price: 60 },
+
+            // PLATS PRINCIPAUX (Main Courses)
+            { id: 'mc1', category: 'Main Courses', name: { en: 'Lamb Machboos', ar: 'مجبوس لحم', hi: 'लैंब मचबूज़' }, desc: { en: 'Fragrant rice with tender lamb and Middle Eastern spices, served with tomato salsa', ar: 'أرز مندي مع لحم غنم طري وبهارات شرق أوسطية، يقدم مع صلصة الطماطم', hi: 'कोमल मेमने और मध्य पूर्वी मसालों के साथ सुगंधित चावल, टमाटर साल्सा के साथ' }, price: 75 },
+            { id: 'mc2', category: 'Main Courses', name: { en: 'Chicken Machboos', ar: 'مجبوس دجاج', hi: 'चिकन मचबूज़' }, desc: { en: 'Rice cooked with tender bone-in chicken', ar: 'أرز مطبوخ مع دجاج طري بالعظم', hi: 'कोमल हड्डी वाले चिकन के साथ पकाया गया चावल' }, price: 65 },
+            { id: 'mc3', category: 'Main Courses', name: { en: 'Chicken Kabsa', ar: 'كبسة دجاج', hi: 'चिकन कब्सा' }, desc: { en: 'Traditional spiced rice with slow-cooked chicken', ar: 'أرز مندي تقليدي مع دجاج مطبوخ ببطء', hi: 'धीमी गति से पके हुए चिकन के साथ पारंपरिक मसालेदार चावल' }, price: 70 },
+            { id: 'mc4', category: 'Main Courses', name: { en: 'Chicken Tikka Biryani', ar: 'برياني دجاج تيكا', hi: 'चिकन टिक्का बिरयानी' }, desc: { en: 'Basmati rice layered with marinated chicken tikka, served with raita, papad, and pickle', ar: 'أرز بسمتي مع دجاج تيكا متبل، يقدم مع رايتا، باباد ومخلل', hi: 'रायता, पापड़ और अचार के साथ मैरीनेटेड चिकन टिक्का के साथ बासमती चावल' }, price: 65 },
+            { id: 'mc5', category: 'Main Courses', name: { en: 'Lamb Biryani', ar: 'برياني لحم', hi: 'लैंब बिरयानी' }, desc: { en: 'Basmati rice with tender lamb, spices, and fried onions', ar: 'أرز بسمتي مع لحم غنم طري، بهارات، وبصل مقلي', hi: 'कोमल मेमने, मसालों और तले हुए प्याज के साथ बासमती चावल' }, price: 80 },
+            { id: 'mc6', category: 'Main Courses', name: { en: 'Vegetable Biryani', ar: 'برياني خضار', hi: 'वेज बिरयानी' }, desc: { en: 'Served with papadum, raita, pickles, and mango chutney', ar: 'يقدم مع بابادوم، رايتا، مخللات وصلصة المانجو', hi: 'पापड़, रायता, अचार और आम की चटनी के साथ परोसा जाता है' }, price: 53 },
+            { id: 'mc7', category: 'Main Courses', name: { en: 'Hammour Fish Curry', ar: 'كاري سمك الهامور', hi: 'हैमौर फिश करी' }, desc: { en: 'Fresh hammour fish in aromatic curry sauce with steamed rice', ar: 'سمك هامور طازج مطبوخ بصلصة كاري غنية ويقدم مع أرز أبيض', hi: 'उबले चावल के साथ सुगंधित करी सॉस में ताजी हैमौर मछली' }, price: 70 },
+            { id: 'mc8', category: 'Main Courses', name: { en: 'Paneer Butter Masala', ar: 'بانير بتر ماسالا', hi: 'पनीर बटर मसाला' }, desc: { en: 'Paneer cubes in creamy tomato butter sauce', ar: 'مكعبات بانير مطهوة بصلصة طماطم كريمية بالزبدة', hi: 'मलाईदार टमाटर बटर सॉस में पनीर के टुकड़े' }, price: 60 },
+            { id: 'mc9', category: 'Main Courses', name: { en: 'Gobi Masala', ar: 'قرنبيط ماسالا', hi: 'गोभी मसाला' }, desc: { en: 'Spiced cauliflower in tomato gravy', ar: 'قرنبيط مطهو بصلصة طماطم متبلة', hi: 'टमाटर की ग्रेवी में मसालेदार फूलगोभी' }, price: 60 },
+            { id: 'mc10', category: 'Main Courses', name: { en: 'Vegetable Kurma', ar: 'كورما خضار', hi: 'वेजिटेबल कुरमा' }, desc: { en: 'Mixed vegetables in coconut-based curry', ar: 'خضار مشكلة مطهوة بصلصة كاري جوز الهند', hi: 'नारियल आधारित करी में मिश्रित सब्जियां' }, price: 60 },
+            { id: 'mc11', category: 'Main Courses', name: { en: 'Butter Chicken Masala', ar: 'دجاج بتر ماسالا', hi: 'बटर चिकन मसाला' }, desc: { en: 'Chicken in rich tomato butter sauce', ar: 'دجاج مطهو بصلصة طماطم بالزبدة', hi: 'समृद्ध टमाटर बटर सॉस में चिकन' }, price: 65 },
+            { id: 'mc12', category: 'Main Courses', name: { en: 'Kadai Paneer', ar: 'كاداي بانير', hi: 'कड़ाई पनीर' }, desc: { en: 'Paneer with bell peppers and onions in spiced tomato gravy', ar: 'بانير مع فلفل رومي وبصل بصلصة طماطم متبلة', hi: 'मसालेदार टमाटर की ग्रेवी में शिमला मिर्च और प्याज के साथ पनीर' }, price: 60 },
+            { id: 'mc13', category: 'Main Courses', name: { en: 'Gobi Manchurian', ar: 'قرنبيط مانتشوريان', hi: 'गोभी मंचूरियन' }, desc: { en: 'Crispy cauliflower in Indo-Chinese sauce', ar: 'قرنبيط مقرمش بصلصة هندية صينية', hi: 'इंडो-चाइनीज सॉस में कुरकुरी गोभी' }, price: 60 },
+            { id: 'mc14', category: 'Main Courses', name: { en: 'Grilled Salmon (200g)', ar: 'سلمون مشوي (200 جم)', hi: 'ग्रिल्ड सैल्मन (200 ग्राम)' }, desc: { en: 'Grilled salmon with lemon butter sauce', ar: 'سلمون مشوي يخدم مع صلصة الزبدة والليمون', hi: 'नींबू बटर सॉस के साथ ग्रिल्ड सैल्मन' }, price: 90 },
+            { id: 'mc15', category: 'Main Courses', name: { en: 'Lamb Chops', ar: 'ريش لحم غنم', hi: 'लैंब चॉप्स' }, desc: { en: 'Grilled marinated lamb chops', ar: 'ريش لحم غنم متبلة ومشوية', hi: 'मैरीनेटेड ग्रिल्ड लैंब चॉप्स' }, price: 85 },
+            { id: 'mc16', category: 'Main Courses', name: { en: 'Grilled Chicken Breast (200g)', ar: 'صدر دجاج مشوي (200 جم)', hi: 'ग्रिल्ड चिकन ब्रेस्ट (200 ग्राम)' }, desc: { en: 'With mushroom sauce and steamed vegetables', ar: 'يقدم مع صلصة الفطر وخضار مشوية مطهو على البخار', hi: 'मशरूम सॉस और उबली हुई सब्जियों के साथ' }, price: 70 },
+            { id: 'mc17', category: 'Main Courses', name: { en: 'Fried Shrimp', ar: 'روبيان مقلي', hi: 'तले हुए झींगे' }, desc: { en: 'Breaded shrimp served with tartar sauce', ar: 'روبيان مقلي بالتشيبادا يقدم مع صلصة التارتار', hi: 'टारटर सॉस के साथ परोसे जाने वाले ब्रेडेड झींगे' }, price: 75 },
+            { id: 'mc18', category: 'Main Courses', name: { en: 'Grilled Beef Tenderloin (200g)', ar: 'فيليه لحم بقري مشوي (200 جم)', hi: 'ग्रिल्ड बीफ टेंडरलोइन (200 ग्राम)' }, desc: { en: 'Juicy beef tenderloin grilled to perfection', ar: 'فيليه لحم بقري طري مشوي بإتقان', hi: 'उत्कृष्ट रूप से ग्रिल्ड रसदार बीफ टेंडरलोइन' }, price: 85 },
+            { id: 'mc19', category: 'Main Courses', name: { en: 'Nasi Goreng', ar: 'ناسي جورينغ', hi: 'नासी गोरेन्ग' }, desc: { en: 'Indonesian fried rice with vegetables, egg, and chicken', ar: 'أرز مقلي إندونيسي مع خضار وبيض ودجاج', hi: 'सब्जियों, अंडे और चिकन के साथ इंडोनेशियन फ्राइड राइस' }, price: 65 },
+            { id: 'mc20', category: 'Main Courses', name: { en: 'Plain Fried Rice', ar: 'أرز مقلي عادي', hi: 'सादा फ्राइड राइस' }, desc: { en: 'Wok-fried rice with vegetables and chili soy sauce', ar: 'أرز مقلي مع خضار وصلصة الصويا', hi: 'सब्जियों और चिली सोया सॉस के साथ वॉक-फ्राइड राइस' }, price: 35 },
+
+            // BOISSONS CHAUDES (Hot Beverages)
+            { id: 'hb1', category: 'Hot Beverages', name: { en: 'Espresso', ar: 'إسبريسو', hi: 'एस्प्रेसो' }, desc: { en: 'Rich & strong espresso shot', ar: 'إسبريسو غني وقوي', hi: 'रिच और स्ट्रॉंग एस्प्रेसो शॉट' }, price: 16 },
+            { id: 'hb2', category: 'Hot Beverages', name: { en: 'Double Espresso', ar: 'دبل إسبريسو', hi: 'डबल एस्प्रेसो' }, desc: { en: 'Double shot of rich espresso', ar: 'جرعة مضاعفة من الإسبريسو', hi: 'रिच एस्प्रेसो का डबल शॉट' }, price: 22 },
+            { id: 'hb3', category: 'Hot Beverages', name: { en: 'Turkish Coffee', ar: 'قهوة تركية', hi: 'तुर्की कॉफी' }, desc: { en: 'Authentic traditional Turkish coffee', ar: 'قهوة تركية تقليدية أصيلة', hi: 'प्रामाणिक पारंपरिक तुर्की कॉफी' }, price: 22 },
+            { id: 'hb4', category: 'Hot Beverages', name: { en: 'Cappuccino', ar: 'كابتشينو', hi: 'कपुचिनो' }, desc: { en: 'Espresso with steamed milk and thick foam', ar: 'إسبريسو مع حليب مبشور ورغوة كثيفة', hi: 'भाप वाले दूध और गाढ़े झाग के साथ एस्प्रेसो' }, price: 27 },
+            { id: 'hb5', category: 'Hot Beverages', name: { en: 'Caffè Latte', ar: 'لاتيه', hi: 'कैफे लाटे' }, desc: { en: 'Espresso with smooth creamy milk', ar: 'إسبريسو مع حليب كريمي ناعم', hi: 'चिकने मलाईदार दूध के साथ एस्प्रेसो' }, price: 27 },
+            { id: 'hb6', category: 'Hot Beverages', name: { en: 'Hot Chocolate', ar: 'شوكولاتة ساخنة', hi: 'हॉट चॉकलेट' }, desc: { en: 'Rich and creamy hot chocolate', ar: 'شوكولاتة ساخنة غنية ولذيذة', hi: 'समृद्ध और मलाईदार हॉट चॉकलेट' }, price: 30 },
+            { id: 'hb7', category: 'Hot Beverages', name: { en: 'Americano', ar: 'أمريكانو', hi: 'अमेरिकानो' }, desc: { en: 'Espresso diluted with hot water', ar: 'إسبريسو مخفف بالماء الساخن', hi: 'गर्म पानी के साथ एस्प्रेसो' }, price: 20 },
+            { id: 'hb8', category: 'Hot Beverages', name: { en: 'Iced Coffee', ar: 'قهوة مثلجة', hi: 'आइज्ड कॉफी' }, desc: { en: 'Refreshing iced coffee', ar: 'قهوة باردة منعشة', hi: 'ताज़ा करने वाली ठंडी कॉफी' }, price: 22 },
+            { id: 'hb9', category: 'Hot Beverages', name: { en: 'Tea', ar: 'شاي', hi: 'चाय' }, desc: { en: 'Selection of fine teas', ar: 'أنواع مختارة من الشاي الفاخر', hi: 'बढ़िया चाय का चयन' }, price: 16 },
+
+            // MILKSHAKES
+            { id: 'ms1', category: 'Milkshakes', name: { en: 'Chocolate Milkshake', ar: 'ميلك شيك شوكولاتة', hi: 'चॉकलेट मिल्कशेेक' }, desc: { en: 'Milk, chocolate ice cream, chocolate sauce, sugar', ar: 'حليب، آيس كريم شوكولاتة، صوص شوكولاتة، سكر', hi: 'दूध, चॉकलेट आइसक्रीम, चॉकलेट सॉस, चीनी' }, price: 33 },
+            { id: 'ms2', category: 'Milkshakes', name: { en: 'Vanilla Milkshake', ar: 'ميلك شيك فانيليا', hi: 'वैनिला मिल्कशेेक' }, desc: { en: 'Milk, vanilla ice cream, sugar, vanilla', ar: 'حليب، آيس كريم فانيليا، سكر، فانيليا', hi: 'दूध, वैनिला आइसक्रीम, चीनी, वैनिला' }, price: 33 },
+            { id: 'ms3', category: 'Milkshakes', name: { en: 'Strawberry Milkshake', ar: 'ميلك شيك فراولة', hi: 'स्ट्रॉबेरी मिल्कशेेक' }, desc: { en: 'Milk, strawberry ice cream, fresh strawberries, sugar', ar: 'حليب، آيس كريم فراولة، فراولة طازجة، سكر', hi: 'दूध, स्ट्रॉबेरी आइसक्रीम, ताजी स्ट्रॉबेरी, चीनी' }, price: 33 },
+
+            // MOCKTAILS
+            { id: 'mk1', category: 'Mocktails', name: { en: 'Fruity Mocktail', ar: 'موكتيل فروتي', hi: 'फ्रूटी मोकटेल' }, desc: { en: 'Fresh banana, strawberry, mango, orange juice', ar: 'موز طازج، فراولة، مانجو، عصير برتقال', hi: 'ताजा केला, स्ट्रॉबेरी, आम, संतरे का रस' }, price: 33 },
+            { id: 'mk2', category: 'Mocktails', name: { en: 'Piña Colada', ar: 'بينا كولادا', hi: 'पिना कोलाडा' }, desc: { en: 'Pineapple juice, coconut cream', ar: 'عصير أناناس، كريمة جوز الهند', hi: 'अनानास का रस, नारियल की मलाई' }, price: 33 },
+            { id: 'mk3', category: 'Mocktails', name: { en: 'Strawberry Margarita', ar: 'مارغريتا الفراولة', hi: 'स्ट्रॉबेरी मार्गारिटा' }, desc: { en: 'Fresh strawberries, lime juice, lime-flavored seltzer', ar: 'فراولة طازجة، عصير ليمون أخضر، صودا بنكهة الليمون', hi: 'ताजी स्ट्रॉबेरी, नीम्बू का रस, लाइम-फ्लेवर सेल्टज़र' }, price: 33 },
+            { id: 'mk4', category: 'Mocktails', name: { en: 'Mojito', ar: 'موهيتو', hi: 'मोहितो' }, desc: { en: 'Fresh mint leaves, lime, demerara sugar, soda water', ar: 'أوراق نعناع طازجة، ليمون أخضر، سكر ديميرارا، مياه صودا', hi: 'ताज़ी पुदीने की पत्तियां, नीम्बू, डेमेरारा चीनी, सोडा वाटर' }, price: 33 },
+            { id: 'mk5', category: 'Mocktails', name: { en: 'Mai Tai', ar: 'ماي تاي', hi: 'माई ताई' }, desc: { en: 'Lemon-lime soda, pineapple juice, orange juice, grenadine syrup', ar: 'مشروب صودا بالليمون، عصير أناناس، عصير برتقال، شراب الغرينادين', hi: 'लेमन-लाइम सोडा, अनानास का रस, संतरे का रस, ग्रेनाडाइन सिरप' }, price: 33 },
+            { id: 'mk6', category: 'Mocktails', name: { en: 'Nutella Hot Chocolate', ar: 'شوكولاتة ساخنة مع نوتيلا', hi: 'नूटेला हॉट चॉकलेट' }, desc: { en: 'Milk, Nutella, cocoa', ar: 'حليب، نوتيلا، كاكاو', hi: 'दूध, नूटेला, कोको' }, price: 33 },
+            { id: 'mk7', category: 'Mocktails', name: { en: 'Banana Milk Coffee', ar: 'قهوة مع حليب الموز', hi: 'बनाना मिल्क कॉफी' }, desc: { en: 'Ripe banana, coffee, milk, cinnamon', ar: 'موز ناضج، قهوة، حليب، قرفة', hi: 'पका केला, कॉफी, दूध, दालचीनी' }, price: 33 },
+
+            // WHISKEY
+            { id: 'wh1', category: 'Whiskey', name: { en: 'Jim Beam (Bourbon) - Glass', ar: 'جيم بيم (بوربون) - كاس', hi: 'जिम बीम - ग्लास' }, desc: { en: 'Standard glass serving', ar: 'تقديم بالكاس القياسي', hi: 'स्टैंडर्ड ग्लास सर्विंग' }, price: 44 },
+            { id: 'wh2', category: 'Whiskey', name: { en: 'Jim Beam (Bourbon) - Bottle', ar: 'جيم بيم (بوربون) - زجاجة', hi: 'जिम बीम - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة', hi: 'पूरी बोतल सेवा' }, price: 470 },
+            { id: 'wh3', category: 'Whiskey', name: { en: 'Jack Daniel\'s - Glass', ar: 'جاك دانيالز - كاس', hi: 'जैक डैनियल - ग्लास' }, desc: { en: 'Standard glass serving', ar: 'تقديم بالكاس القياسي', hi: 'स्टैंडर्ड ग्लास सर्विंग' }, price: 44 },
+            { id: 'wh4', category: 'Whiskey', name: { en: 'Jack Daniel\'s - Bottle', ar: 'جاك دانيالز - زجاجة', hi: 'जैक डैनियल - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة', hi: 'पूरी बोतल सेवा' }, price: 470 },
+            { id: 'wh5', category: 'Whiskey', name: { en: 'Jameson (Irish) - Glass', ar: 'جيميسون - كاس', hi: 'जेम्सन - ग्लास' }, desc: { en: 'Standard glass serving', ar: 'تقديم بالكاس القياسي', hi: 'स्टैंडर्ड ग्लास सर्विंग' }, price: 44 },
+            { id: 'wh6', category: 'Whiskey', name: { en: 'Jameson (Irish) - Bottle', ar: 'جيميسون - زجاجة', hi: 'जेम्सन - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة', hi: 'पूरी बोतल सेवा' }, price: 470 },
+            { id: 'wh7', category: 'Whiskey', name: { en: 'Ballantine\'s (Scotch) - Glass', ar: 'بالانتاينز - كاس', hi: 'बैलेंटाइन - ग्लास' }, desc: { en: 'Standard glass serving', ar: 'تقديم بالكاس القياسي', hi: 'स्टैंडर्ड ग्लास सर्विंग' }, price: 44 },
+            { id: 'wh8', category: 'Whiskey', name: { en: 'Ballantine\'s (Scotch) - Bottle', ar: 'بالانتاينز - زجاجة', hi: 'बैलेंटाइन - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة', hi: 'पूरी बोतल सेवा' }, price: 470 },
+            { id: 'wh9', category: 'Whiskey', name: { en: 'Johnnie Walker Red Label - Glass', ar: 'جوني ووكر ريد ليبل - كاس', hi: 'जॉनी वॉकर रेड लेबल - ग्लास' }, desc: { en: 'Standard glass serving', ar: 'تقديم بالكاس القياسي', hi: 'स्टैंडर्ड ग्लास सर्विंग' }, price: 44 },
+            { id: 'wh10', category: 'Whiskey', name: { en: 'Johnnie Walker Red Label - Bottle', ar: 'جوني ووكر ريد ليبل - زجاجة', hi: 'जॉनी वॉकर रेड लेबल - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة', hi: 'पूरी बोतल सेवा' }, price: 470 },
+            { id: 'wh11', category: 'Whiskey', name: { en: 'Johnnie Walker Black Label - Glass', ar: 'جوني ووكر بلاك ليبل - كاس', hi: 'जॉनी वॉकर ब्लैक लेबल - ग्लास' }, desc: { en: 'Standard glass serving', ar: 'تقديم بالكاس القياسي', hi: 'स्टैंडर्ड ग्लास सर्विंग' }, price: 44 },
+            { id: 'wh12', category: 'Whiskey', name: { en: 'Johnnie Walker Black Label - Bottle', ar: 'جوني ووكر بلاك ليبل - زجاجة', hi: 'जॉनी वॉकर ब्लैक लेबल - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة', hi: 'पूरी बोतल सेवा' }, price: 470 },
+            { id: 'wh13', category: 'Whiskey', name: { en: 'Chivas Regal 12 YO - Glass', ar: 'شيفاس ريغال 12 سنة - كاس', hi: 'चिवास रीगल 12 वर्ष - ग्लास' }, desc: { en: 'Standard glass serving', ar: 'تقديم بالكاس القياسي', hi: 'स्टैंडर्ड ग्लास सर्विंग' }, price: 44 },
+            { id: 'wh14', category: 'Whiskey', name: { en: 'Chivas Regal 12 YO - Bottle', ar: 'شيفاس ريغال 12 سنة - زجاجة', hi: 'चिवास रीगल 12 वर्ष - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة', hi: 'पूरी बोतल सेवा' }, price: 470 },
+            { id: 'wh15', category: 'Whiskey', name: { en: 'Glenmorangie 10 YO - Glass', ar: 'غلينمورانغي 10 سنوات - كاس', hi: 'ग्लेनमोरंगी 10 वर्ष - ग्लास' }, desc: { en: 'Single malt glass serving', ar: 'كاس شعير مفرد', hi: 'सिंगल माल्ट ग्लास' }, price: 44 },
+            { id: 'wh16', category: 'Whiskey', name: { en: 'Glenmorangie 10 YO - Bottle', ar: 'غلينمورانغي 10 سنوات - زجاجة', hi: 'ग्लेनमोरंगी 10 वर्ष - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة', hi: 'पूरी बोतल सेवा' }, price: 470 },
+            { id: 'wh17', category: 'Whiskey', name: { en: 'Canadian Club - Glass', ar: 'كاناديان كلوب - كاس', hi: 'कैनेडियन क्लब - ग्लास' }, desc: { en: 'Standard glass serving', ar: 'تقديم بالكاس القياسي', hi: 'स्टैंडर्ड ग्लास सर्विंग' }, price: 44 },
+            { id: 'wh18', category: 'Whiskey', name: { en: 'Canadian Club - Bottle', ar: 'كاناديان كلوب - زجاجة', hi: 'कैनेडियन क्लब - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة', hi: 'पूरी बोतल सेवा' }, price: 470 },
+            { id: 'wh19', category: 'Whiskey', name: { en: 'Glenfiddich 12 Years - Glass', ar: 'غلينفيديخ 12 سنة - كاس', hi: 'ग्लेनफिडिच 12 वर्ष - ग्लास' }, desc: { en: 'Single malt glass serving', ar: 'كاس شعير مفرد', hi: 'सिंगल माल्ट ग्लास' }, price: 55 },
+            { id: 'wh20', category: 'Whiskey', name: { en: 'Glenfiddich 12 Years - Bottle', ar: 'غلينفيديخ 12 سنة - زجاجة', hi: 'ग्लेनफिडिच 12 वर्ष - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة', hi: 'पूरी बोतल सेवा' }, price: 795 },
+            { id: 'wh21', category: 'Whiskey', name: { en: 'Maker\'s Mark - Glass', ar: 'ماكرز مارك - كاس', hi: 'मेकर्स मार्क - ग्लास' }, desc: { en: 'Premium bourbon glass', ar: 'كاس بوربون فاخر', hi: 'प्रीमियम बॉर्बन ग्लास' }, price: 57 },
+            { id: 'wh22', category: 'Whiskey', name: { en: 'Maker\'s Mark - Bottle', ar: 'ماكرز مارك - زجاجة', hi: 'मेकर्स मार्क - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة', hi: 'पूरी बोतल सेवा' }, price: 1038 },
+            { id: 'wh23', category: 'Whiskey', name: { en: 'Macallan 12 YO - Glass', ar: 'ماكالان 12 سنة - كاس', hi: 'मैкаल्लन 12 वर्ष - ग्लास' }, desc: { en: 'Exclusive single malt glass', ar: 'كاس شعير حصري', hi: 'विशेष सिंगल माल्ट ग्लास' }, price: 66 },
+            { id: 'wh24', category: 'Whiskey', name: { en: 'Macallan 12 YO - Bottle', ar: 'ماكالان 12 سنة - زجاجة', hi: 'मैкаल्लन 12 वर्ष - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة', hi: 'पूरी बोतल सेवा' }, price: 1060 },
+
+            // COGNAC & LIQUEURS
+            { id: 'cg1', category: 'Cognac & Liqueurs', name: { en: 'Hennessy VSOP - Glass', ar: 'هينيسي في إس أو بي - كاس', hi: 'हेनेसियों VSOP - ग्लास' }, desc: { en: 'Cognac glass serving', ar: 'كاس كونياك', hi: 'कग्नेक ग्लास सर्विंग' }, price: 55 },
+            { id: 'cg2', category: 'Cognac & Liqueurs', name: { en: 'Hennessy VSOP - Bottle', ar: 'هينيسي في إس أو بي - زجاجة', hi: 'हेनेसियों VSOP - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة', hi: 'पूरी बोतल सेवा' }, price: 520 },
+            { id: 'cg3', category: 'Cognac & Liqueurs', name: { en: 'Rémy Martin VSOP - Glass', ar: 'ريمي مارتن في إس أو بي - كاس', hi: 'रेमी मार्टिन VSOP - ग्लास' }, desc: { en: 'Cognac glass serving', ar: 'كاس كونياك', hi: 'कग्नेक ग्लास सर्विंग' }, price: 55 },
+            { id: 'cg4', category: 'Cognac & Liqueurs', name: { en: 'Rémy Martin VSOP - Bottle', ar: 'ريمي مارتن في إس أو بي - زجاجة', hi: 'रेमी मार्टिन VSOP - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة', hi: 'पूरी बोतल सेवा' }, price: 520 },
+            { id: 'cg5', category: 'Cognac & Liqueurs', name: { en: 'Hennessy XO - Glass', ar: 'هينيسي إكس أو - كاس', hi: 'हेनेसियों XO - ग्लास' }, desc: { en: 'Premium cognac glass', ar: 'كاس كونياك فاخر', hi: 'प्रीमियम कग्नेक ग्लास' }, price: 100 },
+            { id: 'cg6', category: 'Cognac & Liqueurs', name: { en: 'Hennessy XO - Bottle', ar: 'هينيسي إكس أو - زجاجة', hi: 'हेनेसियों XO - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة الزجاجة الكاملة', hi: 'पूरी बोतल सेवा' }, price: 1600 },
+            { id: 'lq1', category: 'Cognac & Liqueurs', name: { en: 'Sambuca / Amaretto / Jägermeister / Baileys / Pimm\'s / Campari / Malibu / Cointreau', ar: 'سامبوكا / أماريتو / ييغermeister / بيليز / بيمز / كامباري / ماليبو / كوانترو', hi: 'सैम्uca / अमा-रेटो / जैगरmeister / बेइलीज / कैंपारी' }, desc: { en: 'Standard liqueur serving glass', ar: 'تقديم كاس مسكرات قياسي', hi: 'स्टैंडर्ड लिकर ग्लास सर्विंग' }, price: 38 },
+
+            // WINES & CHAMPAGNE
+            { id: 'ch1', category: 'Wines & Champagne', name: { en: 'Champagne - Glass', ar: 'شامبانيا - كاس', hi: 'शैंपेन - ग्लास' }, desc: { en: 'Sparkling flute serving', ar: 'كاس نبيذ فوار', hi: 'स्पार्कलिंग शैंपेन ग्लास' }, price: 80 },
+            { id: 'ch2', category: 'Wines & Champagne', name: { en: 'Champagne - Bottle', ar: 'شامبانيا - زجاجة', hi: 'शैंपेन - बोतल' }, desc: { en: 'Full bottle service', ar: 'خدمة زجاجة الشامبانيا الكاملة', hi: 'पूरी शैंपेन बोतल सेवा' }, price: 735 },
+            { id: 'wn1', category: 'Wines & Champagne', name: { en: 'Wines / White / Chardonnay / Sauvignon Blanc / Red / Cabernet Sauvignon / Merlot / Rosé / Sparkling - Glass', ar: 'نبيذ (أبيض، شاردونيه، سوبرويون، أحمر، كاببرنيه، ميرلو، وردي، فوار) - كاس', hi: 'वाइन (सफेद, रेड, रोज़े, स्पार्कलिंग) - ग्लास' }, desc: { en: 'Choice of glass wine', ar: 'اختيار كاس النبيذ المفضّل', hi: 'पसंद की वाइन ग्लास' }, price: 38 },
+            { id: 'wn2', category: 'Wines & Champagne', name: { en: 'Wines / White / Chardonnay / Sauvignon Blanc / Red / Cabernet Sauvignon / Merlot / Rosé / Sparkling - Bottle', ar: 'نبيذ (أبيض، شاردونيه، سوبرويون، أحمر، كاببرنيه، ميرلو، وردي، فوار) - زجاجة', hi: 'वाइन (सफेद, रेड, रोज़े, स्पार्कलिंग) - बोतल' }, desc: { en: 'Choice of bottle wine', ar: 'اختيار زجاجة النبيذ الكاملة', hi: 'पसंद की वाइन बोतल' }, price: 190 },
+
+            // BEERS & COCKTAILS
+            { id: 'bc1', category: 'Beers & Cocktails', name: { en: 'Corona / Stella / Heineken / Budweiser / Hoegaarden', ar: 'كورونا / ستيلا / هاينكن / بادفايزر / هوغاردن', hi: 'कोरोना / स्टेला / हाइनेकेन / बडवाइज़र' }, desc: { en: 'Refreshing bottled beer', ar: 'بيرة زجاجية منعشة', hi: 'ताज़ा बोतलबंद बीयर' }, price: 40 },
+            { id: 'bc2', category: 'Beers & Cocktails', name: { en: 'Guinness Stout / Strongbow Cider', ar: 'غينيس ستوت / سترونغبو سايدر', hi: 'गिनीज स्टाउट / स्ट्रॉन्गबो साइडर' }, desc: { en: 'Irish stout or refreshing cider', ar: 'بيرة غينيس أو عصير تفاح مخمر', hi: 'आयरिश स्टाउट या ताज़ा साइडर' }, price: 44 },
+            { id: 'bc3', category: 'Beers & Cocktails', name: { en: 'Bacardi Breezers', ar: 'بكاردي بريزرز', hi: 'बकार्डी ब्रीज़र' }, desc: { en: 'Flavored alcoholic beverage', ar: 'مشروب كحولي بنكهات الفواكه', hi: 'स्वादिष्ट मादक पेय' }, price: 35 },
+            { id: 'bc4', category: 'Beers & Cocktails', name: { en: 'Soju', ar: 'سوجو', hi: 'सोजू' }, desc: { en: 'Traditional clear alcoholic beverage', ar: 'مشروب كحولي تقليدي صافي', hi: 'पारंपरिक स्पष्ट मादक पेय' }, price: 55 },
+            { id: 'bc5', category: 'Beers & Cocktails', name: { en: 'Bloody Mary / Cosmopolitan / Margarita / Piña Colada / Negroni / Martini', ar: 'بلودي ماري / كوزموبوليتان / مارغريتا / بينا كولادا / نيجروني / مارتيني', hi: 'ब्लडी मैरी / कॉस्मॉपोलिटन / मार्गारिटा / पिना कोलाडा / नेग्रोनी / मार्टिनी' }, desc: { en: 'Classic alcoholic cocktail', ar: 'كوكتيل كحولي كلاسيكي', hi: 'क्लासिक मादक कॉकटेल' }, price: 44 },
+            { id: 'bc6', category: 'Beers & Cocktails', name: { en: 'Bull Frog / Long Island Tea / Aperol Spritz', ar: 'بول فروغ / لونغ آيلاند / أبيرول سبريتز', hi: 'बुल मेढक / लॉन्ग आइलैंड टी / एपेरोल स्प्रिट्ज़' }, desc: { en: 'Strong or refreshing long cocktail', ar: 'كوكتيل طويل قوي ومنعش', hi: 'मजबूत या ताज़ा लंबा कॉकटेल' }, price: 65 }
+        ];
+
+        let cart = {};
+        let currentRoom = '';
+        let currentLang = 'en';
+        let currentCategory = 'All';
+
+        function initApp() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const roomParam = urlParams.get('room');
+            
+            if (roomParam) {
+                currentRoom = roomParam;
+                document.getElementById('input-room').value = currentRoom;
+                document.getElementById('lbl-room').innerText = currentRoom;
+                localStorage.setItem('remal_room_simple', currentRoom);
+            } else {
+                currentRoom = localStorage.getItem('remal_room_simple') || '';
+                if (currentRoom) {
+                    document.getElementById('input-room').value = currentRoom;
+                    document.getElementById('lbl-room').innerText = currentRoom;
+                }
+            }
+            setLang('en');
+        }
+
+        function saveRoom(room) {
+            currentRoom = room.trim();
+            localStorage.setItem('remal_room_simple', currentRoom);
+            document.getElementById('lbl-room').innerText = currentRoom || '...';
+        }
+
+        function setLang(lang) {
+            currentLang = lang;
+            const t = i18n[lang];
+
+            document.getElementById('htmlRoot').setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+
+            ['en', 'ar', 'hi'].forEach(l => {
+                const btn = document.getElementById(`btn-${l}`);
+                if (l === lang) {
+                    btn.className = "px-2.5 py-1 rounded-full bg-stone-900 text-white shadow-xs";
+                } else {
+                    btn.className = "px-2.5 py-1 rounded-full text-stone-600";
+                }
+            });
+
+            document.getElementById('lblRoomTitle').innerText = t.roomTitle;
+            document.getElementById('heroTitle').innerText = t.heroTitle;
+            document.getElementById('heroSub').innerText = t.heroSub;
+            document.getElementById('lblRoomInput').innerText = t.lblRoomInput;
+            document.getElementById('input-room').placeholder = t.placeholderRoom;
+            document.getElementById('lblItemsText').innerText = t.itemsText;
+            document.getElementById('lblWhatsappBtn').innerText = t.whatsappBtn;
+            document.getElementById('current-category-title').innerText = currentCategory === 'All' ? t.allDishes : (t.categories[currentCategory] || currentCategory);
+
+            renderCategories();
+            renderMenu();
+        }
+
+        function renderCategories() {
+            const t = i18n[currentLang];
+            const categories = ['All', ...new Set(menuItems.map(i => i.category))];
+            const container = document.getElementById('category-filters');
+            
+            container.innerHTML = categories.map(cat => {
+                const displayName = cat === 'All' ? t.catAll : (t.categories[cat] || cat);
+                return `
+                    <button onclick="filterCategory('${cat}')" class="px-4 py-2 rounded-full whitespace-nowrap text-xs font-semibold ${currentCategory === cat ? 'bg-stone-900 text-white' : 'bg-white text-stone-600 border border-stone-200'}">${displayName}</button>
+                `;
+            }).join('');
+        }
+
+        function filterCategory(cat) {
+            currentCategory = cat;
+            const t = i18n[currentLang];
+            document.getElementById('current-category-title').innerText = cat === 'All' ? t.allDishes : (t.categories[cat] || cat);
+            renderMenu();
+            renderCategories();
+        }
+
+        function renderMenu() {
+            const container = document.getElementById('menu-list');
+            const filtered = currentCategory === 'All' ? menuItems : menuItems.filter(i => i.category === currentCategory);
+
+            container.innerHTML = filtered.map(item => {
+                const nameText = item.name[currentLang] || item.name.en;
+                const descText = item.desc[currentLang] || item.desc.en;
+
+                return `
+                    <div class="bg-white p-4 rounded-2xl border border-stone-200 shadow-xs flex justify-between items-center">
+                        <div class="pr-2">
+                            <h4 class="font-bold text-stone-900 text-sm">${nameText}</h4>
+                            <p class="text-[11px] text-stone-500">${descText}</p>
+                            <span class="text-xs font-bold text-amber-800 mt-1 inline-block">${item.price} AED</span>
+                        </div>
+                        <div class="flex items-center space-x-2 bg-stone-100 p-1 rounded-xl shrink-0">
+                            <button onclick="updateQty('${item.id}', -1)" class="w-7 h-7 bg-white rounded-lg font-bold text-stone-700 shadow-xs">-</button>
+                            <span id="qty-${item.id}" class="font-bold text-xs px-2">0</span>
+                            <button onclick="updateQty('${item.id}', 1)" class="w-7 h-7 bg-stone-900 text-white rounded-lg font-bold shadow-xs">+</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateQty(id, change) {
+            if (!cart[id]) cart[id] = 0;
+            cart[id] = Math.max(0, cart[id] + change);
+            if (cart[id] === 0) delete cart[id];
+            
+            const qtyEl = document.getElementById(`qty-${id}`);
+            if (qtyEl) qtyEl.innerText = cart[id] || 0;
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            let totalCount = 0;
+            let totalPrice = 0;
+
+            for (const [id, qty] of Object.entries(cart)) {
+                const item = menuItems.find(i => i.id == id);
+                totalCount += qty;
+                totalPrice += item.price * qty;
+            }
+
+            document.getElementById('cart-count').innerText = totalCount;
+            document.getElementById('cart-total').innerText = totalPrice;
+
+            const cartBar = document.getElementById('cart-bar');
+            if (totalCount > 0) {
+                cartBar.classList.remove('translate-y-full');
+            } else {
+                cartBar.classList.add('translate-y-full');
+            }
+        }
+
+        async function sendOrderSupabaseAndWhatsApp() {
+            const t = i18n[currentLang];
+            if (!currentRoom) {
+                alert(t.alertRoom);
+                document.getElementById('input-room').focus();
+                return;
+            }
+
+            let orderItems = [];
+            let totalPrice = 0;
+
+            for (const [id, qty] of Object.entries(cart)) {
+                const item = menuItems.find(i => i.id == id);
+                orderItems.push({ id: item.id, name: item.name.en, qty: qty, price: item.price });
+                totalPrice += item.price * qty;
+            }
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('orders')
+                    .insert([
+                        { room_number: currentRoom, language: currentLang, items: orderItems, total_amount: totalPrice }
+                    ]);
+                if (error) console.error("Erreur Supabase:", error);
+            } catch (err) {
+                console.error("Erreur de connexion Supabase:", err);
+            }
+
+            let message = `*NEW ROOM SERVICE ORDER*%0A`;
+            message += `*Room / Villa:* ${currentRoom}%0A%0A`;
+            message += `*Details:*%0A`;
+
+            orderItems.forEach(i => {
+                message += `- ${i.qty}x ${i.name} (${i.price * i.qty} AED)%0A`;
+            });
+
+            message += `%0A*Total Amount:* ${totalPrice} AED`;
+
+            const phone = "971526966865";
+            window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+        }
+
+        window.onload = initApp;
+    </script>
 </body>
 </html>
