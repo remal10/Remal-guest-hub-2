@@ -66,7 +66,7 @@
       </div>
     </div>
 
-    <!-- SECTION OFFRES -->
+    <!-- SECTION OFFRES AVEC IMAGES -->
     <div id="guestOffersSection" class="hidden space-y-5">
       <div id="categoryFilters" class="flex space-x-2 overflow-x-auto pb-1 text-xs font-semibold scrollbar-none"></div>
       <div id="cardsContainer" class="space-y-5">
@@ -74,7 +74,7 @@
       </div>
     </div>
 
-    <!-- SECTION INSTALLATIONS / FACILITIES -->
+    <!-- SECTION INSTALLATIONS / FACILITIES AVEC PHOTOS & CARROUSEL -->
     <div id="guestFacilitiesSection" class="hidden space-y-5">
       <div class="text-center border-b border-stone-200 pb-3">
         <h3 class="text-lg font-serif-luxury font-bold text-stone-900" id="facHeader">Hotel Facilities & Amenities</h3>
@@ -103,7 +103,6 @@
           <div>
             <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblRoom">Room Number</label>
             <input type="text" id="req_room" placeholder="e.g., 104, 201 or 601" onkeyup="onRoomNumberChange()" onchange="onRoomNumberChange()" class="w-full border border-stone-200 rounded-xl p-3 text-sm bg-stone-50/55 outline-none" required>
-            <p id="roomErrorMsg" class="text-rose-600 text-[11px] font-bold mt-1 hidden">❌ Erreur de numéro : Numéro de chambre ou de villa invalide.</p>
           </div>
           <div>
             <label class="block text-xs font-bold text-stone-600 mb-1 tracking-wide" id="lblService">Service Type</label>
@@ -112,7 +111,7 @@
 
           <div id="bookingBlock" class="hidden space-y-3 bg-emerald-50/60 p-4 rounded-2xl border border-emerald-200">
             <div class="flex items-center space-x-2 text-emerald-900 font-bold text-xs">
-              <span>📅</span><span id="lblBookingTitle">Table / Spa Reservation Details</span>
+              <span>📅</span><span>Table / Spa Reservation Details</span>
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
@@ -287,6 +286,9 @@
     let activeAnnouncement = null;
     let currentFeedbackRating = 5;
 
+    // Index de carrousel actif par facility id
+    let facilitySlideIndexes = {};
+
     const FAQ_DATA = [
       { q: { en: "What is the Wi-Fi password?", ar: "ما هي كلمة مرور الواي فاي؟", hi: "वाई-फाई पासवर्ड क्या है?" }, a: { en: "Wi-Fi is completely free and open across the hotel. Connect to 'Remal_Guest' without any password.", ar: "الواي فاي مجاني ومفتوح في جميع أنحاء الفندق.", hi: "वाई-फाई पूरी तरह से मुफ़्त है।" } },
       { q: { en: "What are the breakfast hours?", ar: "ما هي مواعيد وجبة الإفطار؟", hi: "नाश्ते का समय क्या है?" }, a: { en: "Breakfast is served daily at Falaj Restaurant from 06:30 AM to 11:00 AM.", ar: "يُقدم الإفطار يومياً في مطعم الفلج.", hi: "नाश्ता प्रतिदिन फलज रेस्टोरेंट में।" } }
@@ -306,6 +308,7 @@
       en: {
         welcome: "Welcome to Remal Hotel & Villas", lblOffers: "Offers", lblFacilities: "Facilities", lblService: "Service", lblFaq: "FAQ",
         facHeader: "Hotel Facilities & Amenities", facSub: "Explore our premium venues and spaces", reqHeader: "Request Guest Service",
+        swipePhotos: "👈 Swipe or click arrows for photos 👉", bookInquiry: "Book / Inquiry →",
         services: [
           { val: "Room Service / Dining", text: "Room Service / Order Food" },
           { val: "Table / Spa Reservation", text: "Table or Spa Reservation" },
@@ -320,6 +323,7 @@
       ar: {
         welcome: "مرحباً بكم في فندق وڤلل رمال", lblOffers: "العروض", lblFacilities: "المرافق", lblService: "طلب خدمة", lblFaq: "الأسئلة",
         facHeader: "مرافق الفندق والخدمات", facSub: "استكشف أرقى مرافقنا", reqHeader: "طلب خدمة النزلاء",
+        swipePhotos: "👈 اسحب أو اضغط الأسهم للصور 👉", bookInquiry: "حجز / استفسار ←",
         services: [
           { val: "Room Service / Dining", text: "خدمة الغرف / طلب طعام" },
           { val: "Table / Spa Reservation", text: "حجز طاولة أو سبا" },
@@ -334,6 +338,7 @@
       hi: {
         welcome: "रेमल होटल में आपका स्वागत है", lblOffers: "ऑफ़र", lblFacilities: "सुविधाएं", lblService: "सेवा", lblFaq: "प्रश्न",
         facHeader: "होटल सुविधाएं", facSub: "सुविधाओं का अन्वेषण करें", reqHeader: "सेवा अनुरोध करें",
+        swipePhotos: "👈 फ़ोटो के लिए तीर दबाएं 👉", bookInquiry: "बुक / पूछताछ →",
         services: [
           { val: "Room Service / Dining", text: "रूम सर्विस / खाना ऑर्डर करें" },
           { val: "Table / Spa Reservation", text: "टेबल या स्पा बुकिंग" },
@@ -606,15 +611,52 @@
       }
     }
 
+    // Gestion du carrousel pour les facilities
+    function changeFacilitySlide(facilityId, direction) {
+      const facility = facilitiesData.find(f => f.id === facilityId);
+      if (!facility || !facility.images) return;
+      if (!facilitySlideIndexes[facilityId]) facilitySlideIndexes[facilityId] = 0;
+      
+      facilitySlideIndexes[facilityId] += direction;
+      if (facilitySlideIndexes[facilityId] >= facility.images.length) {
+        facilitySlideIndexes[facilityId] = 0;
+      } else if (facilitySlideIndexes[facilityId] < 0) {
+        facilitySlideIndexes[facilityId] = facility.images.length - 1;
+      }
+      
+      const imgEl = document.getElementById(`facility-img-${facilityId}`);
+      if (imgEl) {
+        imgEl.src = facility.images[facilitySlideIndexes[facilityId]];
+      }
+    }
+
     function renderFacilities() {
       const container = document.getElementById('facilitiesContainer');
       if (!container) return;
-      container.innerHTML = facilitiesData.map(item => `
-        <div class="remal-card rounded-3xl overflow-hidden shadow-sm p-5 space-y-3">
-          <h4 class="text-base font-serif-luxury font-bold text-stone-900">${item.title[currentLang] || item.title.en}</h4>
-          <p class="text-xs text-stone-600">${item.desc[currentLang] || item.desc.en}</p>
-          <div class="text-[11px] font-bold text-remal-sand bg-amber-50 px-3 py-1.5 rounded-xl inline-block">🕒 Open: ${item.timing[currentLang] || item.timing.en}</div>
-        </div>`).join('');
+      const t = i18n[currentLang] || i18n.en;
+      container.innerHTML = facilitiesData.map(item => {
+        if (!facilitySlideIndexes[item.id]) facilitySlideIndexes[item.id] = 0;
+        let currentImg = item.images[facilitySlideIndexes[item.id]];
+        return `
+        <div class="remal-card rounded-3xl overflow-hidden shadow-sm p-4 space-y-3">
+          <div class="relative rounded-2xl overflow-hidden h-48 bg-stone-100">
+            <img id="facility-img-${item.id}" src="${currentImg}" alt="${item.title.en}" class="w-full h-full object-cover transition-all duration-300">
+            ${item.images.length > 1 ? `
+              <button onclick="changeFacilitySlide('${item.id}', -1)" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow">‹</button>
+              <button onclick="changeFacilitySlide('${item.id}', 1)" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow">›</button>
+            ` : ''}
+            <span class="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-md backdrop-blur-sm">${t.swipePhotos}</span>
+          </div>
+          <div class="space-y-1">
+            <h4 class="text-base font-serif-luxury font-bold text-stone-900">${item.title[currentLang] || item.title.en}</h4>
+            <p class="text-xs text-stone-600">${item.desc[currentLang] || item.desc.en}</p>
+          </div>
+          <div class="flex justify-between items-center pt-2 border-t border-stone-100 text-xs">
+            <span class="font-bold text-stone-700">🕒 ${item.timing[currentLang] || item.timing.en}</span>
+            <button onclick="switchGuestTab('request'); document.getElementById('req_service').value='Table / Spa Reservation'; toggleServiceDynamicFields();" class="text-remal-sand font-bold hover:underline">${t.bookInquiry}</button>
+          </div>
+        </div>`;
+      }).join('');
     }
 
     function renderCategoryFilters() {
@@ -635,7 +677,8 @@
         return;
       }
       container.innerHTML = filtered.map(item => `
-        <div class="remal-card rounded-3xl p-5 space-y-2">
+        <div class="remal-card rounded-3xl overflow-hidden p-5 space-y-3">
+          ${item.image_url ? `<div class="rounded-2xl overflow-hidden h-40 bg-stone-100"><img src="${item.image_url}" class="w-full h-full object-cover"></div>` : ''}
           <div class="flex justify-between items-start">
             <h3 class="font-bold text-stone-900 text-sm">${item.title.en || item.title}</h3>
             <span class="text-xs font-bold text-remal-sand bg-amber-50 px-2 py-0.5 rounded-lg">${item.price || ''}</span>
