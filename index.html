@@ -467,8 +467,9 @@
   </div>
 
   <script>
-    const SUPABASE_URL = 'https://tbsroleffqhyzbbfmtvp.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRic3JvbGVmZnFoeXpiYmZtdHZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MzUyMzMsImV4cCI6MjEwMDQxMTIzM30.oNKhoPJ7v__YJQW7flC9UsP2cIDHLMuxjqmf6_NvYW4';
+    // Coordonnées Supabase mises à jour
+    const SUPABASE_URL = 'https://qlyeekkzxzrniahwsjob.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFseWVla2t6eHJ6bmlhandzam9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0NzA4NzEsImV4cCI6MjEwMjA0Njg3MX0.gcxq1S8NaoltalXvu8KsbUuvpE6WUAUb59ltXpX7h8w';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let audioContext = null;
@@ -596,7 +597,7 @@
       { id: 'hm_mk2', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'पिना कोलाडा' }, name: { en: 'Piña Colada', ar: 'بينا كولادا', hi: 'पिना कोलाडा' }, desc: { en: 'Pineapple juice, coconut cream', ar: 'عصير أناناس، كريمة جوز الهند' }, price: 33 },
       { id: 'hm_mk3', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'स्ट्रॉबेरी मार्गारिटा' }, name: { en: 'Strawberry Margarita', ar: 'مارغريتا الفراولة', hi: 'स्ट्रॉबेरी मार्गारिटा' }, desc: { en: 'Fresh strawberries, lime juice, lime-flavored seltzer', ar: 'فراولة طازجة، عصير ليمون أخضر، صودا بنكهة الليمون' }, price: 33 },
       { id: 'hm_mk4', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोहितो' }, name: { en: 'Mojito', ar: 'موهيتو', hi: 'मोहितो' }, desc: { en: 'Fresh mint leaves, lime, demerara sugar, soda water', ar: 'أوراق نعناع طازجة، ليمون أخضر، سكر ديميرارا، مياه صودا' }, price: 33 },
-      { id: 'hm_mk5', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोكتيل' }, name: { en: 'Mai Tai', ar: 'ماي تاي', hi: 'माई ताई' }, desc: { en: 'Lemon-lime soda, pineapple juice, orange juice, grenadine syrup', ar: 'مشروب صودا بالليمون، عصير أناناس، عصير برتقال، شراب الغرينادين' }, price: 33 },
+      { id: 'hm_mk5', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'माई ताई' }, name: { en: 'Mai Tai', ar: 'ماي تاي', hi: 'माई ताई' }, desc: { en: 'Lemon-lime soda, pineapple juice, orange juice, grenadine syrup', ar: 'مشروب صودا بالليمون، عصير أناناس، عصير برتقال، شراب الغرينادين' }, price: 33 },
       { id: 'hm_mk6', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'नूटेला हॉट चॉकलेट' }, name: { en: 'Nutella Hot Chocolate', ar: 'شوكولاتة ساخنة مع نوتيلا', hi: 'नूटेला हॉट चॉकलेट' }, desc: { en: 'Milk, Nutella, cocoa', ar: 'حليب، نوتيلا، كاكاو' }, price: 33 },
       { id: 'hm_mk7', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'बनाना मिल्क कॉफी' }, name: { en: 'Banana Milk Coffee', ar: 'قهوة مع حليب الموز', hi: 'बनाना मिल्क कॉफी' }, desc: { en: 'Ripe banana, coffee, milk, cinnamon', ar: 'موز ناضج، قهوة، حليب، قرفة' }, price: 33 },
 
@@ -1784,7 +1785,6 @@
       await fetchOffersFromCloud();
     }
 
-    // --- INTERFACE OPTIMISTE (OPTIMISTIC UI) POUR SOUMISSION & CHANGEMENT DE STATUT ---
     async function submitGuestRequest() {
       const room = document.getElementById('req_room').value.trim();
       const service = document.getElementById('req_service').value;
@@ -1821,7 +1821,6 @@
         details = `📅 BOOKING VENUE: ${venue}\n👥 Guests: ${guests}\n📅 Date: ${bDate} at ${bTime}\n📝 Notes: ${details || 'No additional comments'}`;
       }
 
-      // MISE À JOUR OPTIMISTE LOCALE IMMÉDIATE (0ms de latence perçue)
       const optimisticReq = { id: 'temp-' + Date.now(), room, service, details, status: 'Pending' };
       cachedRequests.unshift(optimisticReq);
       updateRequestsUIState();
@@ -1835,18 +1834,15 @@
       renderRoomServiceMenu();
       calculateCartTotal();
 
-      // Envoi en arrière-plan à Supabase
       await supabaseClient.from('requests').insert([{ room, service, details, status: 'Pending' }]);
       await fetchRequestsFromCloud();
     }
 
     async function updateRequestStatus(id, newStatus) {
-      // Interface Optimiste : Mise à jour visuelle instantanée
       const req = cachedRequests.find(r => r.id === id);
       if (req) req.status = newStatus;
       updateRequestsUIState();
 
-      // Synchro en arrière-plan
       await supabaseClient.from('requests').update({ status: newStatus }).eq('id', id);
     }
 
