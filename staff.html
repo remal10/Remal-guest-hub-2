@@ -3,188 +3,578 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Remal Hotel - Staff Portal</title>
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Remal Hotel & Villas - Staff Portal (No Auth + Full Menu)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FAFAFA; color: #222222; }
     .font-serif-luxury { font-family: 'Playfair Display', serif; }
+    .scrollbar-none::-webkit-scrollbar { display: none; }
+    .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
     .bg-remal-sand { background-color: #E2B383; }
     .text-remal-sand { color: #DCA773; }
+    .remal-card { background: #FFFFFF; border: 1px solid #EAEAEA; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); }
+    
+    @keyframes pulse-red {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.05); }
+    }
+    .pulse-notification { animation: pulse-red 1.5s infinite; }
+
+    @media print {
+      body * { visibility: hidden !important; }
+      #printTicketSection, #printTicketSection *, 
+      #printFolioSection, #printFolioSection * { visibility: visible !important; }
+      #printTicketSection, #printFolioSection {
+        display: block !important; position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; padding: 20px !important; box-sizing: border-box !important; background: #ffffff !important;
+      }
+    }
   </style>
 </head>
 <body class="min-h-screen pb-20">
 
-  <!-- MODALE DE CONNEXION STAFF -->
-  <div id="authModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-5 border border-stone-100">
-      <div class="text-center space-y-1">
-        <h3 class="text-lg font-serif-luxury font-bold text-stone-900">Staff Authentication</h3>
-        <p class="text-xs text-stone-500">Sign in with your department credentials</p>
+  <div id="printTicketSection" class="hidden"></div>
+  <div id="printFolioSection" class="hidden"></div>
+
+  <!-- EN-TÊTE STAFF DIRECT -->
+  <header class="bg-white sticky top-0 z-50 border-b border-stone-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <h1 class="text-sm font-serif-luxury text-stone-900 font-bold tracking-widest">REMAL</h1>
+        <p class="text-[8px] text-stone-500 uppercase tracking-wider">Staff Portal • Open Access</p>
       </div>
-      <form id="loginForm" onsubmit="loginAdmin(event)" class="space-y-4">
-        <div>
-          <label class="block text-[11px] font-bold text-stone-600 uppercase mb-1">Email Address</label>
-          <input type="email" id="loginEmail" placeholder="staff@remalhotel.com" class="w-full border border-stone-200 rounded-xl p-3 text-xs bg-stone-50 outline-none" required>
+      <div class="flex items-center space-x-3">
+        <span class="bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-full text-xs font-semibold">
+          🟢 Authentification désactivée
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- TABLEAU DE BORD STAFF COMPLET -->
+  <div id="adminView" class="max-w-7xl mx-auto px-6 py-8 space-y-8">
+    <div class="flex justify-between items-center bg-white p-3 rounded-2xl border border-stone-200 shadow-sm text-sm font-bold overflow-x-auto scrollbar-none">
+      <div class="flex space-x-3 w-full md:w-auto">
+        <button onclick="switchAdminTab('offers')" id="admTabOffers" class="px-5 py-3 rounded-xl bg-stone-900 text-white whitespace-nowrap shadow-sm transition">🏷️ Content & Menu</button>
+        <button onclick="switchAdminTab('requests')" id="admTabRequests" class="px-5 py-3 rounded-xl bg-stone-100 text-stone-700 hover:bg-stone-200 relative whitespace-nowrap transition">
+          🔔 Live Requests
+          <span id="requestBadge" class="hidden absolute -top-1 -right-1 bg-rose-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full pulse-notification">0</span>
+        </button>
+        <button onclick="switchAdminTab('feedback')" id="admTabFeedback" class="px-5 py-3 rounded-xl bg-stone-100 text-stone-700 hover:bg-stone-200 whitespace-nowrap transition">⭐ Guest Reviews</button>
+        <button onclick="switchAdminTab('analytics')" id="admTabAnalytics" class="px-5 py-3 rounded-xl bg-stone-100 text-stone-700 hover:bg-stone-200 whitespace-nowrap transition">📊 Analytics & Performance</button>
+        <button onclick="switchAdminTab('banner')" id="admTabBanner" class="px-5 py-3 rounded-xl bg-stone-100 text-stone-700 hover:bg-stone-200 whitespace-nowrap transition">📢 Announcement</button>
+      </div>
+    </div>
+
+    <!-- 1. OFFRES ET MENU -->
+    <div id="adminOffersPanel" class="space-y-6">
+      <div class="flex space-x-3 border-b border-stone-200 pb-3 text-sm font-bold">
+        <button onclick="switchAdminSubTab('offersList')" id="btnSubOffers" class="px-5 py-2.5 rounded-xl bg-stone-900 text-white shadow-sm">Promotions & Events</button>
+        <button onclick="switchAdminSubTab('menuList')" id="btnSubMenu" class="px-5 py-2.5 rounded-xl bg-stone-100 text-stone-700 hover:bg-stone-200">🍔 Room Service Menu Editor</button>
+      </div>
+
+      <div id="adminOffersSubSection" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-5 bg-white rounded-3xl p-8 shadow-sm border border-stone-200 space-y-5 h-fit">
+          <h2 class="text-lg font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-3">New Cloud Offer</h2>
+          <form id="adminForm" class="space-y-5">
+            <div>
+              <label class="block text-xs font-bold text-stone-600 uppercase mb-1.5">Category</label>
+              <select id="adm_category" class="w-full border border-stone-200 rounded-xl p-3.5 bg-stone-50 text-sm outline-none font-medium">
+                <option value="Falaj Restaurant">Falaj Restaurant</option>
+                <option value="Sarab">Sarab Bar & Lounge</option>
+                <option value="Al Waha Pool">Al Waha Pool</option>
+                <option value="The Spa">The Spa</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-stone-600 uppercase mb-1.5">Price / Rate (e.g., AED 75)</label>
+              <input type="text" id="adm_price" placeholder="AED 75" class="w-full border border-stone-200 rounded-xl p-3.5 text-sm bg-stone-50 outline-none" required>
+            </div>
+            <div class="p-5 bg-stone-50 rounded-2xl border border-stone-200 space-y-3">
+              <input type="text" id="adm_title_en" placeholder="Title (English)" class="w-full border border-stone-200 rounded-xl p-3 text-sm outline-none" required>
+              <input type="text" id="adm_title_ar" placeholder="العنوان (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-xl p-3 text-sm outline-none" required>
+              <input type="text" id="adm_title_hi" placeholder="शीर्षक (हिंदी)" class="w-full border border-stone-200 rounded-xl p-3 text-sm outline-none" required>
+            </div>
+            <div class="p-5 bg-stone-50 rounded-2xl border border-stone-200 space-y-3">
+              <input type="text" id="adm_timing_en" placeholder="Timings (English)" class="w-full border border-stone-200 rounded-xl p-3 text-sm outline-none" required>
+              <input type="text" id="adm_timing_ar" placeholder="الأوقات (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-xl p-3 text-sm outline-none" required>
+              <input type="text" id="adm_timing_hi" placeholder="समय (हिंदी)" class="w-full border border-stone-200 rounded-xl p-3 text-sm outline-none" required>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-stone-600 uppercase mb-1.5">Offer Image</label>
+              <input type="file" id="imageFileInput" accept="image/*" onchange="previewPromoImage(event)" class="w-full text-xs text-stone-500 mb-2" />
+              <img id="promoImagePreview" class="hidden w-full h-40 object-cover rounded-xl mt-2 border border-stone-200" alt="Preview">
+            </div>
+            <button type="button" onclick="saveAdminData()" class="w-full bg-remal-sand hover:bg-amber-700 text-white font-bold py-4 rounded-xl shadow-md transition text-sm tracking-wide">Publish Offer</button>
+          </form>
         </div>
-        <div>
-          <label class="block text-[11px] font-bold text-stone-600 uppercase mb-1">Password</label>
-          <input type="password" id="loginPassword" placeholder="••••••••" class="w-full border border-stone-200 rounded-xl p-3 text-xs bg-stone-50 outline-none" required>
+        <div class="lg:col-span-7 bg-white rounded-3xl p-8 shadow-sm border border-stone-200 space-y-5">
+          <h3 class="text-xs font-bold text-stone-500 uppercase tracking-widest border-b border-stone-100 pb-3">Active Offers</h3>
+          <div id="adminListContainer" class="grid grid-cols-1 gap-4 max-h-[700px] overflow-y-auto pr-2"></div>
         </div>
-        <p id="authErrorMsg" class="text-rose-600 text-[11px] font-semibold text-center hidden"></p>
-        <button type="submit" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-bold py-3 rounded-xl text-xs transition shadow-md">🔐 Unlock Dashboard</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- PANNEAU STAFF -->
-  <div id="adminView" class="hidden max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-    <div class="flex justify-between items-center bg-stone-200/80 p-1.5 rounded-2xl text-xs font-bold overflow-x-auto">
-      <div class="flex space-x-2" id="staffTabsContainer">
-        <button onclick="switchAdminTab('requests')" id="admTabRequests" class="px-4 py-2.5 rounded-xl bg-stone-900 text-white whitespace-nowrap">🔔 Live Requests</button>
-        <button onclick="switchAdminTab('offers')" id="admTabOffers" class="px-4 py-2.5 rounded-xl text-stone-600 whitespace-nowrap">🏷️ Content & Menu</button>
-        <button onclick="switchAdminTab('feedback')" id="admTabFeedback" class="px-4 py-2.5 rounded-xl text-stone-600 whitespace-nowrap">⭐ Reviews</button>
-        <button onclick="switchAdminTab('analytics')" id="admTabAnalytics" class="px-4 py-2.5 rounded-xl text-stone-600 whitespace-nowrap">📊 Analytics</button>
       </div>
-      <div>
-        <button onclick="logoutAdmin()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 px-3 py-1.5 rounded-xl text-xs font-bold border border-rose-200 transition">🚪 Logout</button>
-      </div>
-    </div>
 
-    <!-- REQUÊTES -->
-    <div id="adminRequestsPanel" class="space-y-4">
-      <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
-        <div class="flex justify-between items-center border-b pb-3">
-          <h2 class="text-base font-serif-luxury font-bold">Live Service Requests (<span id="staffRoleDisplay">Staff</span>)</h2>
-          <button onclick="fetchRequestsFromCloud()" class="text-xs bg-stone-100 px-3 py-2 rounded-xl font-semibold">🔄 Refresh</button>
+      <div id="adminMenuSubSection" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-5 bg-white rounded-3xl p-8 shadow-sm border border-stone-200 space-y-5 h-fit">
+          <h2 class="text-lg font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-3">Add New Menu Dish</h2>
+          <form id="foodMenuForm" onsubmit="addMenuItem(event)" class="space-y-4">
+            <input type="text" id="food_name_en" placeholder="Item Name (English)" class="w-full border border-stone-200 rounded-xl p-3.5 text-sm bg-stone-50 outline-none" required>
+            <input type="text" id="food_name_ar" placeholder="اسم الوجبة (عربي)" dir="rtl" class="w-full border border-stone-200 rounded-xl p-3.5 text-sm bg-stone-50 outline-none" required>
+            <input type="text" id="food_desc_en" placeholder="Description / Ingredients (English)" class="w-full border border-stone-200 rounded-xl p-3.5 text-sm bg-stone-50 outline-none">
+            <input type="text" id="food_desc_ar" placeholder="المكونات والتفاصيل (عربي)" dir="rtl" class="w-full border border-stone-200 rounded-xl p-3.5 text-sm bg-stone-50 outline-none">
+            <input type="number" id="food_price" placeholder="Price (AED)" class="w-full border border-stone-200 rounded-xl p-3.5 text-sm bg-stone-50 outline-none" required>
+            <select id="food_category" class="w-full border border-stone-200 rounded-xl p-3.5 bg-stone-50 text-sm outline-none font-medium">
+              <option value="Breakfast">Breakfast | وجبة الإفطار</option>
+              <option value="Soup">Soup | الشوربة</option>
+              <option value="Salads and Mezzeh">Salads and Mezzeh | السلطات والمقبلات</option>
+              <option value="Sandwich and Burger">Sandwich and Burger | الساندويش والبرجر</option>
+              <option value="Pizza">Pizza | البيتزا</option>
+              <option value="Pasta">Pasta | الباستا</option>
+              <option value="Main Course">Main Course | الأطباق الرئيسية</option>
+              <option value="Hot Beverage">Hot Beverage | القهوة/ الشاي</option>
+              <option value="Milkshake">Milkshake | ميلك شيك</option>
+              <option value="Mocktail">Mocktail | الموكتيل</option>
+              <option value="Alcoholic Beverages">Alcoholic Beverages</option>
+            </select>
+            <button type="submit" class="w-full bg-stone-900 hover:bg-stone-800 text-white font-bold py-4 rounded-xl text-sm shadow-md transition">➕ Add Dish</button>
+          </form>
         </div>
-        <div id="adminRequestsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        <div class="lg:col-span-7 bg-white rounded-3xl p-8 shadow-sm border border-stone-200 space-y-5">
+          <h3 class="text-xs font-bold text-stone-500 uppercase tracking-widest border-b border-stone-100 pb-3">Live Menu Items</h3>
+          <div id="adminMenuListContainer" class="space-y-4 max-h-[700px] overflow-y-auto pr-2"></div>
+        </div>
       </div>
     </div>
 
-    <!-- OFFRES ET MENU -->
-    <div id="adminOffersPanel" class="hidden space-y-4">
-      <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200">
-        <h2 class="text-base font-serif-luxury font-bold mb-4">Content Management</h2>
-        <p class="text-xs text-stone-500">Manage promotional offers and room service items here.</p>
+    <!-- 2. REQUÊTES EN DIRECT -->
+    <div id="adminRequestsPanel" class="hidden space-y-6">
+      <div class="bg-white rounded-3xl p-8 shadow-sm border border-stone-200 space-y-6">
+        <div class="flex justify-between items-center border-b border-stone-100 pb-4">
+          <div>
+            <h2 class="text-xl font-serif-luxury font-bold text-stone-900">Live Service Requests</h2>
+            <p class="text-xs text-stone-500">Real-time room service and guest requests stream</p>
+          </div>
+          <div class="flex items-center space-x-3">
+            <button onclick="enableAudioAlerts()" id="btnAudioEnable" class="text-xs bg-amber-50 text-amber-800 hover:bg-amber-100 px-4 py-2.5 rounded-xl font-bold border border-amber-200 shadow-sm transition">
+              🔔 Enable Sound Alerts
+            </button>
+            <button onclick="fetchRequestsFromCloud()" class="text-xs bg-stone-100 text-stone-700 hover:bg-stone-200 px-4 py-2.5 rounded-xl font-semibold border border-stone-200 transition">🔄 Refresh Stream</button>
+          </div>
+        </div>
+        <div id="adminRequestsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 max-h-[750px] overflow-y-auto pr-2"></div>
       </div>
     </div>
 
-    <!-- AVIS -->
-    <div id="adminFeedbackPanel" class="hidden space-y-4">
-      <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
-        <h2 class="text-base font-serif-luxury font-bold border-b pb-2">Guest Feedback & Ratings</h2>
-        <div id="adminFeedbackContainer" class="space-y-3"><p class="text-xs text-stone-400">Loading...</p></div>
+    <!-- 3. AVIS DES CLIENTS -->
+    <div id="adminFeedbackPanel" class="hidden space-y-6">
+      <div class="bg-white rounded-3xl p-8 shadow-sm border border-stone-200 space-y-6">
+        <h2 class="text-xl font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-4">Guest Feedback & Ratings</h2>
+        <div id="adminFeedbackContainer" class="space-y-4 max-h-[700px] overflow-y-auto pr-2">
+          <p class="text-xs text-stone-400">Loading reviews...</p>
+        </div>
       </div>
     </div>
 
-    <!-- ANALYTICS -->
-    <div id="adminAnalyticsPanel" class="hidden space-y-4">
-      <div class="bg-white rounded-3xl p-6 shadow-sm border border-stone-200 space-y-4">
-        <h2 class="text-base font-serif-luxury font-bold border-b pb-2">Analytics & Performance</h2>
-        <p id="statTotalReq" class="text-xs text-stone-600">Calculating metrics...</p>
+    <!-- 4. ANALYTICS -->
+    <div id="adminAnalyticsPanel" class="hidden space-y-8">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-2">
+          <p class="text-xs text-stone-500 font-bold uppercase tracking-wider">Total Requests</p>
+          <h3 id="statTotalReq" class="text-3xl font-serif-luxury font-bold text-stone-900">0</h3>
+        </div>
+        <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-2">
+          <p class="text-xs text-stone-500 font-bold uppercase tracking-wider">Resolution Rate</p>
+          <h3 id="statResolutionRate" class="text-3xl font-serif-luxury font-bold text-emerald-600">0%</h3>
+        </div>
+        <div class="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-2">
+          <p class="text-xs text-stone-500 font-bold uppercase tracking-wider">Room Service Revenue</p>
+          <h3 id="statRevenue" class="text-3xl font-serif-luxury font-bold text-remal-sand">AED 0</h3>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-3xl p-8 shadow-sm border border-stone-200 space-y-6">
+        <h3 class="text-lg font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-3">📈 Service Breakdown & Performance</h3>
+        <div id="analyticsContentContainer" class="space-y-4 text-sm text-stone-600">
+          <p class="text-stone-400 italic">Calculating live metrics...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. ANNONCES -->
+    <div id="adminBannerPanel" class="hidden space-y-6 max-w-3xl mx-auto">
+      <div class="bg-white rounded-3xl p-8 shadow-sm border border-stone-200 space-y-6">
+        <h2 class="text-xl font-serif-luxury font-bold text-stone-900 border-b border-stone-100 pb-4">Banner Management</h2>
+        <div class="p-5 bg-stone-50 rounded-2xl border border-stone-200 space-y-3">
+          <input type="text" id="ann_en" placeholder="Announcement (English)" class="w-full border border-stone-200 rounded-xl p-3.5 text-sm outline-none">
+          <input type="text" id="ann_ar" placeholder="الإعلان (بالعربية)" dir="rtl" class="w-full border border-stone-200 rounded-xl p-3.5 text-sm outline-none">
+          <input type="text" id="ann_hi" placeholder="घोषणा (हिंदी)" class="w-full border border-stone-200 rounded-xl p-3.5 text-sm outline-none">
+        </div>
+        <div class="flex space-x-4">
+          <button onclick="saveAnnouncement(true)" class="flex-1 bg-remal-sand hover:bg-amber-700 text-white font-bold py-3.5 rounded-xl text-sm transition">📢 Publish Announcement</button>
+          <button onclick="saveAnnouncement(false)" class="flex-1 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold py-3.5 rounded-xl text-sm transition">🚫 Hide Announcement</button>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
-    const SUPABASE_URL = 'https://bqusphztkwxacczqeiuo.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJxdXNwaHp0a3d4YWNjenFlaXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxOTg3MDgsImV4cCI6MjEwMDc3NDcwOH0.geeVnnELbA85xXfDsW9pry_VcdJTfiC_bjw_48XC6Ik';
+    const SUPABASE_URL = 'https://tbsroleffqhyzbbfmtvp.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRic3JvbGVmZnFoeXpiYmZtdHZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MzUyMzMsImV4cCI6MjEwMDQxMTIzM30.oNKhoPJ7v__YJQW7flC9UsP2cIDHLMuxjqmf6_NvYW4';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    let audioContext = null;
+    let audioEnabled = false;
+    let previousPendingCount = 0;
+    let roomServiceMenu = [];
+    let cachedOffers = [];
     let cachedRequests = [];
-    let currentStaffRole = 'admin';
+    let cachedFeedback = [];
+    let currentPromoImageData = null;
 
-    async function initStaff() {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (!session) {
-        document.getElementById('authModal').classList.remove('hidden');
-        return;
-      }
-      await applyStaffPermissions(session.user.id);
-    }
+    // MENU COMPLET D'ORIGINE
+    const HARDCODED_MENU = [
+      { id: 'hm_bf1', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Continental', ar: 'كونتيننتال', hi: 'महाद्वीपीय' }, desc: { en: 'Croissant, Muffin, Danish and Seasonal Sliced Fruits', ar: 'تشكيلة من الكرواسون والمفن والدانش، وفواكه موسمية مقطعة', hi: 'क्रॉसेंट, मफिन, दानिश और मौसमी कटे हुए फल' }, price: 49 },
+      { id: 'hm_bf2', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Emirati Flavors', ar: 'الفطور بالطعم الإماراتي', hi: 'अमीराती स्वाद' }, desc: { en: 'Harees, Chebab, Balaleet, Arabic Cheese, Labneh, Olives, Cucumber, Tomatoes, Foul Medames, Egg Shakshuka, Kuboos, and Seasonal Sliced Fruits', ar: 'هريس، جباب، بالاليط، جبن عريج، لبنة، زيتون، خيار، طماطم، فول مدمس، شكشوكة البيض، خبز، وفواكه موسمية مقطعة', hi: 'हरीस, चेबाब, बलालीट, अरबी पनीर, लाबनेह, जैतून, ककड़ी, टमाटर, फुल मेदमेस, अंडा शक्शुका' }, price: 59 },
+      { id: 'hm_bf3', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Arabic Breakfast', ar: 'فطور عربي', hi: 'अरबी नाश्ता' }, desc: { en: 'Hummus, Falafel, Foul Medames, Labneh, Halloumi White Cheese, Fried Egg, Assorted Vegetables, Olives, Mixed Pickles, and Seasonal Fruits', ar: 'حمص، فلافل، فول مدمس، لبنة، جبنة حلومي، بيض مقلي، تشكيلة من الخضروات، زيتون، مخللات مشكلة، وفواكه موسمية', hi: 'हम्मुस, फलाफेल, फुल मेदमेस, लाबनेह, हलोमी सफेद पनीर, तला हुआ अंडा, मिश्रित सब्जियां' }, price: 59 },
+      { id: 'hm_bf4', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'International', ar: 'العالمي', hi: 'अंतर्राष्ट्रीय' }, desc: { en: 'Fresh bakery basket, Two eggs prepared to your liking, Chicken sausage, turkey bacon, and hash brown potatoes, Grilled tomatoes, sautéed mushrooms, and baked beans, Yogurt with dried fruits and nuts or mixed berries, Seasonal sliced fruits', ar: 'سلة مخبوزات طازجة، بيضتان تحضران حسب رغبتك، سقا دجاج، لحم ديك رومي مقدد، بطاطس هاش براون، طماطم مشوية، فطر سوتيه، فاصوليا مطبوخة، زبادي مع فواكه مجففة ومكسرات أو توت مشكل وفواكه موسمية مقطعة', hi: 'ताजा बेकरी बास्केट, आपकी पसंद के अनुसार दो अंडे, चिकन सॉसेज, टर्की बेकन' }, price: 61 },
+      { id: 'hm_bf5', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Choice of Eggs', ar: 'اختيارات من البيض', hi: 'अंडे की पसंद' }, desc: { en: 'Scrambled Eggs, Fried Eggs, Boiled Eggs, Plain Omelette, Vegetable Omelette, Cheese Omelette, Poached Eggs, Sunny Side Up Eggs', ar: 'بيض مخفوق، بيض مقلي، بيض مسلوق، أومليت سادة، أومليت بالخضار، أومليت بالجبن، بيض مسلوق (بوشيه)، بيض عيون', hi: 'स्क्रैम्बल अंडे, तले हुए अंडे, उबले हुए अंडे, सादा आमलेट, सब्जी आमलेट, पनीर आमलेट' }, price: 25 },
+      { id: 'hm_bf6', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Shakshuka', ar: 'شكشوكة', hi: 'शक्शुका' }, desc: { en: 'Poached eggs in a spicy tomato and bell pepper sauce, seasoned with garlic and onions. Served with Arabic bread.', ar: 'بيض مسلوق بطريقة بوشيه في صلصة طماطم حارة مع الفلفل، متبل بالثوم والبصل، يقدم مع الخبز العربي', hi: ' मसालेदार टमाटर और शिमला मिर्च की चटनी में उबले हुए अंडे। अरबी ब्रेड के साथ परोसा जाता है।' }, price: 30 },
+      { id: 'hm_bf7', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Eggs Benedict with Turkey Ham', ar: 'بيض بندكت مع ديك رومي', hi: 'टर्की हैम के साथ अंडे बेनेडिक्ट' }, desc: { en: 'Poached eggs and turkey ham on a toasted English muffin, topped with rich Hollandaise sauce.', ar: 'بيض مسلوق (بوشيه) مع هام ديك رومي، يقدم على مافن إنجليزي محمص، مع صلصة الهولنديز', hi: 'टोस्टेड इंग्लिश मफिन पर उबले अंडे और टर्की हैम, समृद्ध होलांडाइज सॉस के साथ।' }, price: 30 },
+      { id: 'hm_bf8', categoryKey: 'Breakfast', catName: { en: 'Breakfast', ar: 'وجبة الإفطار', hi: 'नाश्ता' }, name: { en: 'Eggs Benedict with Smoked Salmon', ar: 'بيض بندكت مع سلمون مدخن', hi: 'स्मोक्ड सैल्मन के साथ अंडे बेनेडिक्ट' }, desc: { en: 'Poached eggs and smoked salmon on a toasted English muffin, topped with creamy Hollandaise sauce.', ar: 'بيض مسلوق (بوشيه) مع سلمون مدخن، يقدم على مافن إنجليزي محمص، مع صلصة الهولنديز الكريمية', hi: 'टोस्टेड इंग्लिश मफिन पर उबले अंडे और स्मोक्ड सैल्मन, मलाईदार होलांडाइज सॉस के साथ।' }, price: 35 },
 
-    async function loginAdmin(event) {
-      event.preventDefault();
-      const email = document.getElementById('loginEmail').value;
-      const password = document.getElementById('loginPassword').value;
-      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      { id: 'hm_sp1', categoryKey: 'Soup', catName: { en: 'Soup', ar: 'الشوربة', hi: 'सूप' }, name: { en: 'Traditional Lentil Soup', ar: 'شوربة العدس', hi: 'पारंपरिक दाल का सूप' }, desc: { en: 'With roasted cumin, fresh lemon and crispy pita bread', ar: 'تقدم مع كمون محمص، ليمون طازج وخبر بيتا مقرمش', hi: 'भुना हुआ जीरा, ताज़ा नींबू और कुरकुरी पिटा ब्रेड के साथ' }, price: 25 },
+      { id: 'hm_sp2', categoryKey: 'Soup', catName: { en: 'Soup', ar: 'الشوربة', hi: 'सूप' }, name: { en: 'Minestrone Soup', ar: 'شوربة المينستروني', hi: 'मिनस्ट्रोनी सूप' }, desc: { en: 'Classic Italian vegetable soup with pasta and herbs', ar: 'شوربة إيطالية كلاسيكية من الخضار مع المعكرونة والأعشاب', hi: 'पास्ता और जड़ी-बूटियों के साथ क्लासिक इतालवी सब्जी सूप' }, price: 25 },
+      { id: 'hm_sp3', categoryKey: 'Soup', catName: { en: 'Soup', ar: 'الشوربة', hi: 'सूप' }, name: { en: 'Harira Soup', ar: 'شوربة الحريرة', hi: 'हरीरा सूप' }, desc: { en: 'Moroccan spiced soup made with lentils, chickpeas and tomatoes', ar: 'شوربة مغربية متبلة من العدس والحمص والطماطم', hi: 'दाल, छोले और टमाटर से बना मोरक्कन मसालेदार सूप' }, price: 25 },
+      { id: 'hm_sp4', categoryKey: 'Soup', catName: { en: 'Soup', ar: 'الشوربة', hi: 'सूप' }, name: { en: 'Soup of the Day', ar: 'شوربة اليوم', hi: 'दिन का सूप' }, desc: { en: 'Chef\'s daily special, freshly prepared with seasonal ingredients', ar: 'الشوربة اليومية المميزة من إعداد الشيف، تحضر طازجة باستخدام مكونات موسمية مختارة', hi: 'शेफ की दैनिक विशेष डिश, मौसमी सामग्री के साथ ताज़ा तैयार की गई' }, price: 25 },
 
-      if (error) {
-        document.getElementById('authErrorMsg').innerText = "❌ Invalid email or password.";
-        document.getElementById('authErrorMsg').classList.remove('hidden');
-      } else {
-        document.getElementById('authModal').classList.add('hidden');
-        await applyStaffPermissions(data.session.user.id);
-      }
-    }
+      { id: 'hm_sl1', categoryKey: 'Salads and Mezzeh', catName: { en: 'Salads and Mezzeh', ar: 'السلطات والمقبلات', hi: 'सलाद और मेज़ेह' }, name: { en: 'Classic Caesar Salad', ar: 'سلطة سيزر الكلاسيكية', hi: 'क्लासिक सीज़र सलाद' }, desc: { en: 'Lettuce, shaved parmesan cheese, Caesar dressing, croutons', ar: 'خس، جبنة بارميزان مبشورة، صلصة سيزر، خبز محمص', hi: 'सलाद पत्ता, परमेसन पनीर, सीज़र ड्रेसिंग, क्रौटन' }, price: 45 },
+      { id: 'hm_sl2', categoryKey: 'Salads and Mezzeh', catName: { en: 'Salads and Mezzeh', ar: 'السلطات والمقبلات', hi: 'सलाद और मेज़ेह' }, name: { en: 'Chicken Caesar Salad', ar: 'سلطة سيزر مع الدجاج', hi: 'चिकन सीज़र सलाद' }, desc: { en: 'Lettuce, chicken, beef bacon, shaved parmesan cheese, Caesar dressing, croutons', ar: 'خس، دجاج، لحم بقري مقدد، جبنة بارميزان مبشورة، صلصة سيزر، خبز محمص', hi: 'सलाद पत्ता, चिकन, बीफ बेकन, परमेसन पनीर, सीज़र ड्रेसिंग' }, price: 49 },
+      { id: 'hm_sl3', categoryKey: 'Salads and Mezzeh', catName: { en: 'Salads and Mezzeh', ar: 'السلطات والمقبلات', hi: 'सलाद और मेज़ेह' }, name: { en: 'Shrimps Caesar Salad', ar: 'سلطة سيزر بالروبيان', hi: 'झींगा सीज़र सलाद' }, desc: { en: 'Lettuce, grilled shrimps, parmesan cheese, Caesar dressing, croutons', ar: 'خس، روبيان مشوي، جبنة بارميزان، صلصة سيزر، خبز محمص', hi: 'सलाद पत्ता, ग्रिल्ड झींगा, परमेसन पनीर, सीज़र ड्रेसिंग' }, price: 59 },
+      { id: 'hm_sl4', categoryKey: 'Salads and Mezzeh', catName: { en: 'Salads and Mezzeh', ar: 'السلطات والمقبلات', hi: 'सलाद और मेज़ेह' }, name: { en: 'Quinoa Salad', ar: 'سلطة الكينوا', hi: 'क्विनोआ सलाद' }, desc: { en: 'Quinoa combined with finely chopped parsley and tomato', ar: 'كينوا مع بقدونس وطماطم مفرومة ناعماً', hi: 'बारीक कटे अजमोद और टमाटर के साथ क्विनोआ' }, price: 40 },
+      { id: 'hm_sl5', categoryKey: 'Salads and Mezzeh', catName: { en: 'Salads and Mezzeh', ar: 'السلطات والمقبلات', hi: 'सलाद और मेज़ेह' }, name: { en: 'Fattoush', ar: 'فتوش', hi: 'फत्तूश सलाद' }, desc: { en: 'Lettuce, mint, zaatar, tomatoes, peppers, cucumber, onion, radish, olive oil, lemon juice, pomegranate molasses', ar: 'خس، نعناع، زعتر، طماطم، فلفل، خيار، بصل، فجل، زيت زيتون، عصير ليمون، دبس الرمان', hi: 'सलाद पत्ता, पुदीना, जतूर, टमाटर, शिमला मिर्च, ककड़ी, प्याज, मूली, जैतून का तेल' }, price: 40 },
+      { id: 'hm_sl6', categoryKey: 'Salads and Mezzeh', catName: { en: 'Salads and Mezzeh', ar: 'السلطات والمقبلات', hi: 'सलाद और मेज़ेह' }, name: { en: '(Warak Enab) Vine Leaves', ar: 'ورق عنب', hi: 'अंगूर के पत्ते (वारक एनाब)' }, desc: { en: 'Stuffed grape leaves with rice, herbs, and lemon', ar: 'ورق عنب محشو بالأرز والأعشاب والليمون', hi: 'चावल, जड़ी-बूटियों और नींबू के साथ भरे हुए अंगूर के पत्ते' }, price: 40 },
 
-    async function logoutAdmin() {
-      await supabaseClient.auth.signOut();
-      window.location.reload();
-    }
+      { id: 'hm_sw1', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Beef Burger', ar: 'برجر لحم بقري', hi: 'बीफ बर्गर' }, desc: { en: 'Juicy beef patty with mayonnaise, lettuce, tomato, gherkins, cheddar cheese, and caramelized onions, served with French fries', ar: 'برجر لحم بقري مع مايونيز، خس، طماطم، خيار مخلل، جبنة شيدر وبصل مكرمل، يقدم مع بطاطس مقلية', hi: 'मयोनीज़, सलाद पत्ता, टमाटर, चेडर पनीर और caramelized प्याज के साथ रसदार बीफ पैटी' }, price: 60 },
+      { id: 'hm_sw2', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Mac Beef Burger', ar: 'برجر لحم بقري ماك', hi: 'मैक बीफ बर्गर' }, desc: { en: 'Special beef patty with signature toppings, served with French fries', ar: 'برجر لحم بقري مميز مع مكونات خاصة، يقدم مع بطاطس مقلية', hi: 'French fries के साथ परोसा जाने वाला विशेष बीफ बर्गर' }, price: 65 },
+      { id: 'hm_sw3', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Grilled Chicken Burger', ar: 'برجر الدجاج المشوي', hi: 'ग्रिल्ड चिकन बर्गर' }, desc: { en: 'Juicy chicken patty with mayonnaise, tomato, jalapeño, lettuce, and mozzarella cheese, served with French fries', ar: 'برجر دجاج مع مايونيز، طماطم، هالابينو، خس وجبنة موزاريلا، يقدم مع بطاطس مقلية', hi: 'मयोनीज़, टमाटर, जलापीनो और मोज़ेरेला पनीर के साथ चिकन पैटी' }, price: 55 },
+      { id: 'hm_sw4', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Club Sandwich', ar: 'كلوب ساندويتش', hi: 'क्लब सैंडविच' }, desc: { en: 'Triple decker with turkey bacon, lettuce, tomato, chicken mousse, cheese, fried egg, cocktail sauce, served with French fries', ar: 'توست مع ثلاث طبقات من لحم ديك رومي مقدد، خس، طماطم، موس دجاج، جبنة، بيض مقلي، ووصوص كوكتيل، يقدم مع بطاطس مقلية', hi: 'टर्की बेकन, सलाद पत्ता, टमाटर, चिकन मूस और तले हुए अंडे के साथ ट्रिपल डेकर' }, price: 60 },
+      { id: 'hm_sw5', categoryKey: 'Sandwich and Burger', catName: { en: 'Sandwich and Burger', ar: 'الساندويش والبرجر', hi: 'सैंडविच और बर्गर' }, name: { en: 'Fish and Chips', ar: 'سمك مقلي مع بطاطس مقلية', hi: 'फिश एंड चिप्स' }, desc: { en: 'Crispy battered fried fish served with tartar sauce and French fries', ar: 'أصابع سمك مقلية مقرمشة تقدم مع صلصة التارتار والبطاطس المقلية', hi: 'टारटर सॉस और फ्रेंच फ्राइज़ के साथ परोसी जाने वाली कुरकुरी तली हुई मछली' }, price: 69 },
 
-    async function applyStaffPermissions(userId) {
-      // Interroge la table staff_profiles que vous avez créée en SQL
-      const { data: profile, error } = await supabaseClient
-        .from('staff_profiles')
-        .select('role, department, full_name')
-        .eq('id', userId)
-        .single();
+      { id: 'hm_pz1', categoryKey: 'Pizza', catName: { en: 'Pizza', ar: 'البيتزا', hi: 'पिज़्ज़ा' }, name: { en: 'Margherita', ar: 'مارغريتا', hi: 'मार्गेरिटा' }, desc: { en: 'Mozzarella cheese, tomato sauce, oregano', ar: 'جبن موزاريلا، صلصة الطماطم، أوريغانو', hi: 'मोज़ेरेला पनीर, टमाटर की चटनी, ओरेगानो' }, price: 49 },
+      { id: 'hm_pz2', categoryKey: 'Pizza', catName: { en: 'Pizza', ar: 'البيتزا', hi: 'पिज़्ज़ा' }, name: { en: 'Pepperoni', ar: 'بيبروني', hi: 'पेपरोनी पिज़्ज़ा' }, desc: { en: 'Mozzarella, beef pepperoni, tomato sauce', ar: 'جبن موزاريلا، بيبروني لحم بقري، صلصة الطماطم', hi: 'मोज़ेरेला, बीफ पेपरोनी, टमाटर की चटनी' }, price: 65 },
 
-      if (error || !profile) {
-        alert("Access Denied: No staff profile found for this user.");
-        await logoutAdmin();
-        return;
-      }
+      { id: 'hm_pt1', categoryKey: 'Pasta', catName: { en: 'Pasta', ar: 'الباستا', hi: 'पास्ता' }, name: { en: 'Spaghetti Bolognese', ar: 'سباغيتي بولونيز', hi: 'स्पघेटी बोलोमीज़' }, desc: { en: 'Classic Italian pasta with rich tomato sauce, minced beef, garlic, and herbs', ar: 'سباغيتي إيطالية كلاسيكية بصلصة طماطم غنية مع لحم مفروم، ثوم وأعشاب', hi: 'समृद्ध टमाटर की चटनी, कीमा बनाया हुआ बीफ और लहसुन के साथ क्लासिक पास्ता' }, price: 56 },
+      { id: 'hm_pt3', categoryKey: 'Pasta', catName: { en: 'Pasta', ar: 'الباستا', hi: 'पास्ता' }, name: { en: 'Fettuccine Alfredo with Grilled Chicken', ar: 'فيتوتشيني ألفريدو مع دجاج مشوي', hi: 'ग्रिल्ड चिकन के साथ फेटुचिनी अल्फ्रेडो' }, desc: { en: 'Fettuccine in rich creamy Alfredo sauce topped with grilled chicken', ar: 'فيتوتشيني بصلصة ألفريدو كريمية غنية مع دجاج مشوي', hi: 'ग्रिल्ड चिकन के साथ समृद्ध मलाईदार अल्फ्रेडो सॉस में फेटुचिनी' }, price: 60 },
 
-      currentStaffRole = profile.role;
-      document.getElementById('staffRoleDisplay').innerText = `${profile.full_name} (${profile.role.toUpperCase()})`;
-      document.getElementById('adminView').classList.remove('hidden');
+      { id: 'hm_mc1', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Lamb Machboos', ar: 'مجبوس لحم', hi: 'लैंब मचबूज़' }, desc: { en: 'Fragrant rice with tender lamb and Middle Eastern spices, served with tomato salsa', ar: 'أرز مندي مطبوخ مع لحم غنم طري وبهارات شرق أوسطية، يقدم مع صلصة الطماطم', hi: 'कोमल मेमने और मध्य पूर्वी मसालों के साथ सुगंधित चावल' }, price: 75 },
+      { id: 'hm_mc2', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Chicken Machboos', ar: 'مجبوس دجاج', hi: 'चिकन मचबूज़' }, desc: { en: 'Rice cooked with tender bone-in chicken', ar: 'أرز مطبوخ مع دجاج طري بالعظم', hi: 'कोमल हड्डी वाले चिकन के साथ पकाया गया चावल' }, price: 65 },
+      { id: 'hm_mc4', categoryKey: 'Main Course', catName: { en: 'Main Course', ar: 'الأطباق الرئيسية', hi: 'मुख्य पाठ्यक्रम' }, name: { en: 'Chicken Tikka Biryani', ar: 'برياني دجاج تيكا', hi: 'चिकन टिक्का बिरयानी' }, desc: { en: 'Basmati rice layered with marinated chicken tikka, served with raita, papad, and pickle', ar: 'أرز بسمتي مع دجاج تيكا متبل، يقدم مع رايتا، باباد ومخلل', hi: 'मैरीनेटेड चिकन टिक्का के साथ पकी बासमती चावल की बिरयानी' }, price: 65 },
 
-      // Filtrage par Rôle (RBAC)
-      if (profile.role === 'kitchen' || profile.role === 'maintenance') {
-        ['admTabOffers', 'admTabFeedback', 'admTabAnalytics'].forEach(id => {
-          const el = document.getElementById(id);
-          if (el) el.style.display = 'none';
+      { id: 'hm_hb1', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي', hi: 'गर्म पेय' }, name: { en: 'Espresso', ar: 'إسبريسو', hi: 'एस्प्रेसो' }, desc: { en: 'Rich & strong espresso shot', ar: 'إسبريسو غني وقوي' }, price: 16 },
+      { id: 'hm_hb4', categoryKey: 'Hot Beverage', catName: { en: 'Hot Beverage', ar: 'القهوة/ الشاي', hi: 'गर्म पेय' }, name: { en: 'Cappuccino', ar: 'كابتشينو', hi: 'कपुचिनो' }, desc: { en: 'Espresso with steamed milk and thick foam', ar: 'إسبريسو مع حليب مبشور ورغوة كثيفة' }, price: 27 },
+
+      { id: 'hm_ms1', categoryKey: 'Milkshake', catName: { en: 'Milkshake', ar: 'ميلك شيك', hi: 'मिल्कशेेक' }, name: { en: 'Chocolate', ar: 'شوكولاتة', hi: 'चॉकलेट' }, desc: { en: 'Milk, chocolate ice cream, chocolate sauce, sugar', ar: 'حليب، آيس كريم شوكولاتة، صوص شوكولاتة، سكر' }, price: 33 },
+
+      { id: 'hm_mk4', categoryKey: 'Mocktail', catName: { en: 'Mocktail', ar: 'الموكتيل', hi: 'मोहितो' }, name: { en: 'Mojito', ar: 'موهيتو', hi: 'मोहितो' }, desc: { en: 'Fresh mint leaves, lime, demerara sugar, soda water', ar: 'أوراق نعناع طازجة، ليمون أخضر، سكر ديميرارا، مياه صودا' }, price: 33 },
+
+      { id: 'hm_b1', categoryKey: 'Alcoholic Beverages', catName: { en: 'Alcoholic Beverages', ar: 'المشروبات الكحولية', hi: 'मादक पेय' }, name: { en: 'Corona', ar: 'كورونا', hi: 'कोरोना' }, desc: { en: 'Mexican refreshing beer', ar: 'بيرة مكسيكية منعشة' }, price: 40 }
+    ];
+
+    function enableAudioAlerts() {
+      try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        audioContext.resume().then(() => {
+          audioEnabled = true;
+          playNotificationSound();
+          const btn = document.getElementById('btnAudioEnable');
+          if (btn) {
+            btn.className = "text-xs bg-emerald-100 text-emerald-800 px-4 py-2.5 rounded-xl font-bold border border-emerald-300 shadow-sm";
+            btn.innerText = "🔊 Sound Alerts Active";
+          }
         });
-        switchAdminTab('requests');
+      } catch (e) { console.error("Audio Error:", e); }
+    }
+
+    function playNotificationSound() {
+      if (!audioEnabled || !audioContext) return;
+      try {
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, audioContext.currentTime);
+        osc.frequency.setValueAtTime(880, audioContext.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.start();
+        osc.stop(audioContext.currentTime + 0.5);
+      } catch (e) { console.error(e); }
+    }
+
+    async function init() {
+      await fetchMenuItemsFromCloud();
+      await fetchOffersFromCloud();
+      await fetchRequestsFromCloud();
+      await fetchFeedbackFromCloud();
+      setupRealtimeSubscriptions();
+    }
+
+    function setupRealtimeSubscriptions() {
+      supabaseClient
+        .channel('public-db-changes-instant')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'requests' }, payload => {
+          if (payload.eventType === 'INSERT') {
+            cachedRequests.unshift(payload.new);
+          } else if (payload.eventType === 'UPDATE') {
+            const index = cachedRequests.findIndex(r => r.id === payload.new.id);
+            if (index !== -1) cachedRequests[index] = payload.new;
+          } else if (payload.eventType === 'DELETE') {
+            cachedRequests = cachedRequests.filter(r => r.id !== payload.old.id);
+          }
+          updateRequestsUIState();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'offers' }, () => { fetchOffersFromCloud(); })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'feedback' }, () => { fetchFeedbackFromCloud(); })
+        .subscribe();
+    }
+
+    function updateRequestsUIState() {
+      const pendingRequests = cachedRequests.filter(r => r.status === 'Pending' || !r.status);
+      if (pendingRequests.length > previousPendingCount) {
+        playNotificationSound();
+      }
+      previousPendingCount = pendingRequests.length;
+
+      const badge = document.getElementById('requestBadge');
+      if (pendingRequests.length > 0) { 
+        badge.innerText = pendingRequests.length; 
+        badge.classList.remove('hidden'); 
+      } else {
+        badge.classList.add('hidden');
       }
 
-      fetchRequestsFromCloud();
+      renderAdminRequests();
+      renderAnalyticsData();
+    }
+
+    async function fetchMenuItemsFromCloud() {
+      const { data } = await supabaseClient.from('menu_items').select('*').order('id', { ascending: true });
+      const formattedCloudItems = (data || []).map(item => ({
+        ...item,
+        catName: { en: item.category, ar: item.category, hi: item.category },
+        name: { en: item.name, ar: item.name, hi: item.name },
+        desc: { en: item.desc || '', ar: item.desc || '', hi: item.desc || '' }
+      }));
+      roomServiceMenu = [...HARDCODED_MENU, ...formattedCloudItems];
+      renderAdminMenuList();
+    }
+
+    async function addMenuItem(event) {
+      event.preventDefault();
+      const nameEn = document.getElementById('food_name_en').value;
+      const nameAr = document.getElementById('food_name_ar').value;
+      const descEn = document.getElementById('food_desc_en').value;
+      const descAr = document.getElementById('food_desc_ar').value;
+      const price = parseFloat(document.getElementById('food_price').value);
+      const category = document.getElementById('food_category').value;
+
+      const fullItem = {
+        name: `${nameEn} | ${nameAr}`,
+        desc: `${descEn} | ${descAr}`,
+        price: price,
+        category: category
+      };
+
+      await supabaseClient.from('menu_items').insert([fullItem]);
+      alert('Dish added to database!');
+      document.getElementById('foodMenuForm').reset();
+      await fetchMenuItemsFromCloud();
+    }
+
+    async function deleteMenuItem(id) {
+      if (String(id).startsWith('hm')) {
+        alert("This item is part of the core PDF menu and cannot be deleted here.");
+        return;
+      }
+      if (confirm('Delete dish from database?')) {
+        await supabaseClient.from('menu_items').delete().eq('id', id);
+        await fetchMenuItemsFromCloud();
+      }
+    }
+
+    function renderAdminMenuList() {
+      const container = document.getElementById('adminMenuListContainer');
+      if (!container) return;
+      if (roomServiceMenu.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400">No dishes.</p>`; return; }
+      
+      const grouped = {};
+      roomServiceMenu.forEach(item => {
+        const catKey = item.catName ? item.catName.en : item.category;
+        if (!grouped[catKey]) grouped[catKey] = [];
+        grouped[catKey].push(item);
+      });
+
+      let html = '';
+      for (const [category, items] of Object.entries(grouped)) {
+        html += `<h4 class="text-xs font-bold text-stone-500 uppercase mt-4 mb-2 border-b border-stone-200 pb-1">${category}</h4>`;
+        html += items.map(item => {
+          const isHardcoded = String(item.id).startsWith('hm');
+          const deleteBtn = isHardcoded 
+            ? `<span class="text-[10px] bg-stone-200 text-stone-500 px-2.5 py-1 rounded font-bold">Fixed</span>`
+            : `<button onclick="deleteMenuItem(${item.id})" class="text-rose-600 font-bold p-1 hover:underline">🗑️ Delete</button>`;
+          
+          const displayName = typeof item.name === 'object' ? (item.name.en) : item.name;
+          const displayDesc = typeof item.desc === 'object' ? (item.desc.en) : item.desc;
+
+          return `
+          <div class="flex items-center justify-between p-3.5 mb-2 bg-stone-50 rounded-xl border border-stone-200 text-sm">
+            <div><p class="font-bold text-stone-900">${displayName}</p><p class="text-xs text-stone-500">${displayDesc || ''}</p><p class="text-xs text-remal-sand font-semibold mt-0.5">AED ${item.price}</p></div>
+            ${deleteBtn}
+          </div>
+        `}).join('');
+      }
+      container.innerHTML = html;
+    }
+
+    async function fetchOffersFromCloud() {
+      const { data } = await supabaseClient.from('offers').select('*').order('id', { ascending: false }).limit(20);
+      cachedOffers = data || [];
+      renderAdminList();
     }
 
     async function fetchRequestsFromCloud() {
-      let query = supabaseClient.from('requests').select('*').order('id', { ascending: false });
-      
-      // Sécurité additionnelle côté client selon le rôle
-      if (currentStaffRole === 'kitchen') {
-        query = query.ilike('service', '%Room Service%');
-      } else if (currentStaffRole === 'maintenance') {
-        query = query.ilike('service', '%Maintenance%');
-      }
-
-      const { data } = await query;
+      const { data } = await supabaseClient.from('requests').select('*').order('id', { ascending: false }).limit(30);
       cachedRequests = data || [];
-      renderAdminRequests();
+      updateRequestsUIState();
+    }
+
+    async function fetchFeedbackFromCloud() {
+      const { data } = await supabaseClient.from('feedback').select('*').order('id', { ascending: false }).limit(20);
+      cachedFeedback = data || [];
+      renderAdminFeedback();
+    }
+
+    function renderAdminFeedback() {
+      const container = document.getElementById('adminFeedbackContainer');
+      if (!container) return;
+      if (cachedFeedback.length === 0) {
+        container.innerHTML = `<p class="text-xs text-stone-400">No guest reviews submitted yet.</p>`;
+        return;
+      }
+      container.innerHTML = cachedFeedback.map(fb => `
+        <div class="p-5 bg-stone-50 rounded-2xl border border-stone-200 text-sm space-y-2">
+          <div class="flex justify-between font-bold text-stone-900">
+            <span>Room/Villa: ${fb.room}</span>
+            <span class="text-amber-500 text-base">${'★'.repeat(fb.rating)}${'☆'.repeat(5 - fb.rating)}</span>
+          </div>
+          <p class="text-stone-700">${fb.comment}</p>
+        </div>
+      `).join('');
+    }
+
+    function renderAnalyticsData() {
+      const totalReq = cachedRequests.length;
+      const completedReq = cachedRequests.filter(r => r.status === 'Completed').length;
+      const resolutionRate = totalReq > 0 ? Math.round((completedReq / totalReq) * 100) : 0;
+
+      let totalRevenue = 0;
+      const serviceCounts = {};
+
+      cachedRequests.forEach(req => {
+        const s = req.service || 'Other';
+        serviceCounts[s] = (serviceCounts[s] || 0) + 1;
+
+        if (req.details && req.details.includes('AED')) {
+          const match = req.details.match(/AED\s+([0-9]+(?:\.[0-9]+)?)/);
+          if (match) totalRevenue += parseFloat(match[1]);
+        }
+      });
+
+      document.getElementById('statTotalReq').innerText = totalReq;
+      document.getElementById('statResolutionRate').innerText = `${resolutionRate}%`;
+      document.getElementById('statRevenue').innerText = `AED ${totalRevenue}`;
+
+      let analyticsHtml = `<div class="grid grid-cols-1 md:grid-cols-2 gap-6">`;
+      analyticsHtml += `<div class="bg-stone-50 p-6 rounded-2xl border border-stone-200 space-y-3">`;
+      analyticsHtml += `<p class="font-bold text-stone-800 uppercase text-xs tracking-wider">Requests by Department</p>`;
+      for (const [srv, count] of Object.entries(serviceCounts)) {
+        analyticsHtml += `<div class="flex justify-between items-center text-sm border-b border-stone-200 pb-2"><span>${srv}</span><span class="font-bold bg-white px-3 py-1 rounded border">${count}</span></div>`;
+      }
+      analyticsHtml += `</div></div>`;
+      document.getElementById('analyticsContentContainer').innerHTML = analyticsHtml;
+    }
+
+    function renderAdminList() {
+      const container = document.getElementById('adminListContainer');
+      if (!container) return;
+      if (cachedOffers.length === 0) { container.innerHTML = `<p class="text-xs text-stone-400">No active offers.</p>`; return; }
+      container.innerHTML = cachedOffers.map(item => `
+        <div class="flex items-center justify-between p-4 bg-stone-50 rounded-2xl border text-sm">
+          <div class="flex items-center space-x-4"><img src="${item.image}" class="w-16 h-16 object-cover rounded-xl shadow-sm" onerror="this.onerror=null; this.src='logo.png';"><div><p class="font-bold text-stone-900">${item.title?.en || ''}</p><p class="text-remal-sand text-xs font-semibold mt-0.5">${item.category} • ${item.price}</p></div></div>
+          <button onclick="deleteOffer(${item.id})" class="text-rose-600 font-bold p-2 hover:bg-rose-50 rounded-xl transition">🗑️ Delete</button>
+        </div>
+      `).join('');
     }
 
     function renderAdminRequests() {
       const container = document.getElementById('adminRequestsContainer');
-      if (!cachedRequests.length) { container.innerHTML = `<p class="text-xs text-stone-400 col-span-2">No active requests found.</p>`; return; }
+      if (!container) return;
+      if (cachedRequests.length === 0) { container.innerHTML = `<p class="text-sm text-stone-400 text-center py-6 col-span-2">No active requests.</p>`; return; }
       container.innerHTML = cachedRequests.map(req => `
-        <div class="p-4 bg-stone-50 rounded-2xl border text-xs space-y-3">
-          <div class="flex justify-between font-bold"><span>Room: ${req.room}</span><span class="text-remal-sand">${req.service}</span></div>
-          <p class="bg-white p-3 rounded-xl border">${req.details}</p>
-          <div class="flex justify-between items-center pt-2 border-t">
-            <span class="px-2 py-0.5 rounded font-bold ${req.status === 'Completed' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${req.status || 'Pending'}</span>
-            <div class="space-x-1">
-              <button onclick="updateRequestStatus(${req.id}, 'In Progress')" class="px-2 py-1 bg-blue-100 text-blue-800 rounded font-semibold">In Progress</button>
-              <button onclick="updateRequestStatus(${req.id}, 'Completed')" class="px-2 py-1 bg-emerald-100 text-emerald-800 rounded font-semibold">Complete</button>
+        <div class="p-6 bg-stone-50 rounded-3xl border border-stone-200 text-sm space-y-4 flex flex-col justify-between shadow-sm">
+          <div class="space-y-3">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="font-bold text-stone-900 text-base">Room / Villa: ${req.room || 'N/A'}</span>
+                <p class="text-remal-sand font-bold text-xs uppercase tracking-wide mt-0.5">${req.service}</p>
+              </div>
+              <span class="text-xs font-bold px-3 py-1 rounded-full ${req.status === 'Completed' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${req.status || 'Pending'}</span>
             </div>
+            <p class="text-stone-700 bg-white p-4 rounded-2xl border border-stone-200 leading-relaxed whitespace-pre-line">${req.details}</p>
           </div>
-        </div>`).join('');
+          <div class="flex justify-between items-center pt-3 border-t border-stone-200 text-xs">
+            <div class="space-x-1.5">
+              <button onclick="updateRequestStatus(${req.id}, 'Pending')" class="px-3 py-1.5 bg-amber-100 text-amber-800 hover:bg-amber-200 rounded-lg font-bold transition">Pending</button>
+              <button onclick="updateRequestStatus(${req.id}, 'In Progress')" class="px-3 py-1.5 bg-blue-100 text-blue-800 hover:bg-blue-200 rounded-lg font-bold transition">In Progress</button>
+              <button onclick="updateRequestStatus(${req.id}, 'Completed')" class="px-3 py-1.5 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 rounded-lg font-bold transition">Completed</button>
+            </div>
+            <button onclick="deleteRequest(${req.id})" class="text-rose-600 font-bold p-2 hover:bg-rose-50 rounded-xl transition">🗑️</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function previewPromoImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          currentPromoImageData = e.target.result;
+          const img = document.getElementById('promoImagePreview');
+          img.src = currentPromoImageData;
+          img.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    async function saveAdminData() {
+      if (!currentPromoImageData) { alert("Please select an image."); return; }
+      const newItem = { 
+        category: document.getElementById('adm_category').value, 
+        price: document.getElementById('adm_price').value, 
+        image: currentPromoImageData, 
+        title: { en: document.getElementById('adm_title_en').value, ar: document.getElementById('adm_title_ar').value, hi: document.getElementById('adm_title_hi').value }, 
+        timing: { en: document.getElementById('adm_timing_en').value, ar: document.getElementById('adm_timing_ar').value, hi: document.getElementById('adm_timing_hi').value } 
+      };
+      await supabaseClient.from('offers').insert([newItem]);
+      alert('Offer published!');
+      document.getElementById('adminForm').reset();
+      currentPromoImageData = null;
+      document.getElementById('promoImagePreview').classList.add('hidden');
+      await fetchOffersFromCloud();
     }
 
     async function updateRequestStatus(id, newStatus) {
@@ -192,15 +582,70 @@
       fetchRequestsFromCloud();
     }
 
-    function switchAdminTab(tab) {
-      ['adminRequestsPanel', 'adminOffersPanel', 'adminFeedbackPanel', 'adminAnalyticsPanel'].forEach(p => document.getElementById(p).classList.add('hidden'));
-      if (tab === 'requests') document.getElementById('adminRequestsPanel').classList.remove('hidden');
-      else if (tab === 'offers') document.getElementById('adminOffersPanel').classList.remove('hidden');
-      else if (tab === 'feedback') document.getElementById('adminFeedbackPanel').classList.remove('hidden');
-      else if (tab === 'analytics') document.getElementById('adminAnalyticsPanel').classList.remove('hidden');
+    async function deleteRequest(id) { 
+      if (confirm('Delete?')) { 
+        await supabaseClient.from('requests').delete().eq('id', id); 
+        fetchRequestsFromCloud(); 
+      } 
     }
 
-    window.onload = initStaff;
+    async function deleteOffer(id) { 
+      if (confirm('Delete?')) { 
+        await supabaseClient.from('offers').delete().eq('id', id); 
+        fetchOffersFromCloud(); 
+      } 
+    }
+
+    async function saveAnnouncement(isActive) {
+      const newAnn = { message: { en: document.getElementById('ann_en').value, ar: document.getElementById('ann_ar').value, hi: document.getElementById('ann_hi').value }, is_active: isActive };
+      await supabaseClient.from('announcements').insert([newAnn]);
+      alert("Announcement updated!");
+    }
+
+    function switchAdminTab(tab) {
+      ['adminOffersPanel', 'adminRequestsPanel', 'adminFeedbackPanel', 'adminAnalyticsPanel', 'adminBannerPanel'].forEach(p => document.getElementById(p).classList.add('hidden'));
+      ['admTabOffers', 'admTabRequests', 'admTabFeedback', 'admTabAnalytics', 'admTabBanner'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.className = "px-5 py-3 rounded-xl bg-stone-100 text-stone-700 hover:bg-stone-200 whitespace-nowrap transition";
+      });
+
+      if (tab === 'offers') {
+        document.getElementById('adminOffersPanel').classList.remove('hidden');
+        document.getElementById('admTabOffers').className = "px-5 py-3 rounded-xl bg-stone-900 text-white whitespace-nowrap shadow-sm transition";
+      } else if (tab === 'requests') { 
+        document.getElementById('adminRequestsPanel').classList.remove('hidden'); 
+        document.getElementById('admTabRequests').className = "px-5 py-3 rounded-xl bg-stone-900 text-white whitespace-nowrap shadow-sm transition relative";
+        fetchRequestsFromCloud(); 
+      } else if (tab === 'feedback') {
+        document.getElementById('adminFeedbackPanel').classList.remove('hidden');
+        document.getElementById('admTabFeedback').className = "px-5 py-3 rounded-xl bg-stone-900 text-white whitespace-nowrap shadow-sm transition";
+        fetchFeedbackFromCloud();
+      } else if (tab === 'analytics') {
+        document.getElementById('adminAnalyticsPanel').classList.remove('hidden');
+        document.getElementById('admTabAnalytics').className = "px-5 py-3 rounded-xl bg-stone-900 text-white whitespace-nowrap shadow-sm transition";
+        renderAnalyticsData();
+      } else if (tab === 'banner') {
+        document.getElementById('adminBannerPanel').classList.remove('hidden');
+        document.getElementById('admTabBanner').className = "px-5 py-3 rounded-xl bg-stone-900 text-white whitespace-nowrap shadow-sm transition";
+      }
+    }
+
+    function switchAdminSubTab(subTab) {
+      if (subTab === 'offersList') { 
+        document.getElementById('adminOffersSubSection').classList.remove('hidden'); 
+        document.getElementById('adminMenuSubSection').classList.add('hidden'); 
+        document.getElementById('btnSubOffers').className = "px-5 py-2.5 rounded-xl bg-stone-900 text-white shadow-sm";
+        document.getElementById('btnSubMenu').className = "px-5 py-2.5 rounded-xl bg-stone-100 text-stone-700 hover:bg-stone-200";
+      } else { 
+        document.getElementById('adminMenuSubSection').classList.remove('hidden'); 
+        document.getElementById('adminOffersSubSection').classList.add('hidden'); 
+        document.getElementById('btnSubMenu').className = "px-5 py-2.5 rounded-xl bg-stone-900 text-white shadow-sm";
+        document.getElementById('btnSubOffers').className = "px-5 py-2.5 rounded-xl bg-stone-100 text-stone-700 hover:bg-stone-200";
+        renderAdminMenuList(); 
+      }
+    }
+
+    window.onload = init;
   </script>
 </body>
 </html>
